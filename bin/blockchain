@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Runs an Ethereum blockchain locally for development and testing.
+
+yarn hardhat node
