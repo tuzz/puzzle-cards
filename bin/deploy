@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Deploys the PuzzleCard contract to the given network.
+
+if [ "$#" -ne 1 ]; then
+  echo "Usage: ./bin/deploy network"
+fi
+
+yarn hardhat run bin/deploy.js --network $1
