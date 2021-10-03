@@ -16,6 +16,13 @@ contract PuzzleCard is ERC721Tradable {
         setBaseTokenURI("https://cd6c-2a02-6b6c-60-0-cdb2-1b9f-aa0f-454f.ngrok.io/api/");
     }
 
+    function mint(address to, string memory foo) public onlyOwner {
+        uint256 tokenID = getNextTokenId();
+        cardAttributes[tokenID] = Attributes(foo);
+
+        mintTo(to);
+    }
+
     function baseTokenURI() override public view returns (string memory) {
         return currentBaseTokenURI;
     }

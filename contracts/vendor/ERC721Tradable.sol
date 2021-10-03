@@ -41,7 +41,7 @@ abstract contract ERC721Tradable is ContextMixin, ERC721Enumerable, NativeMetaTr
      * @param _to address of the future owner of the token
      */
     function mintTo(address _to) public onlyOwner {
-        uint256 newTokenId = _getNextTokenId();
+        uint256 newTokenId = getNextTokenId();
         _mint(_to, newTokenId);
         _incrementTokenId();
     }
@@ -50,7 +50,7 @@ abstract contract ERC721Tradable is ContextMixin, ERC721Enumerable, NativeMetaTr
      * @dev calculates the next token ID based on value of _currentTokenId
      * @return uint256 for the next token ID
      */
-    function _getNextTokenId() private view returns (uint256) {
+    function getNextTokenId() public view returns (uint256) {
         return _currentTokenId.add(1);
     }
 
