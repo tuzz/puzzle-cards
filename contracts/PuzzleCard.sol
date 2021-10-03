@@ -10,4 +10,8 @@ contract PuzzleCard is ERC721Tradable {
     function baseTokenURI() override public pure returns (string memory) {
         return "https://cd6c-2a02-6b6c-60-0-cdb2-1b9f-aa0f-454f.ngrok.io/api/";
     }
+
+    function tokenURI(uint256 _tokenId) override public pure returns (string memory) {
+        return string(abi.encodePacked(baseTokenURI(), "foo"));
+    }
 }
