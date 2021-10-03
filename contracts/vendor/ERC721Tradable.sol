@@ -61,7 +61,7 @@ abstract contract ERC721Tradable is ContextMixin, ERC721Enumerable, NativeMetaTr
         _currentTokenId++;
     }
 
-    function baseTokenURI() virtual public pure returns (string memory);
+    function baseTokenURI() virtual public view returns (string memory);
 
     /**
      * Override isApprovedForAll to whitelist user's OpenSea proxy accounts to enable gas-less listings.
