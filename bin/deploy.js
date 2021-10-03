@@ -10,7 +10,7 @@ async function main() {
   const contract = await factory.deploy(proxyAddress || owner.address);
   console.log(`Contract address: ${contract.address}`);
 
-  const transaction = await contract.mint(owner.address, "hello");
+  const transaction = await contract.mintMany(owner.address, 100);
   console.log(`Mint transaction: ${transaction.hash}`);
 }
 
