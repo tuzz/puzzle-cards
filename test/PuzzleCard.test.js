@@ -60,6 +60,20 @@ describe("PuzzleCard", function () {
     });
   });
 
+  describe("#gift", () => {
+    it("allows the contract owner to mint puzzle cards as a gift to a user", async () => {
+      await contract.gift(3, user1.address);
+      const balance = await contract.balanceOf(user1.address);
+
+      expect(balance.toNumber()).to.equal(3);
+    });
+
+    it("does not allow other users to gift puzzle cards", async () => {
+      const contractAsUser1 = contract.connect(user1);
+      await expectRevert.unspecified(contractAsUser1.gift(3, user1.address));
+    });
+  });
+
   describe("#priceToMint", () => {
     it("returns the price to mint the given number of puzzle cards", async () => {
       const priceForOne = await contract.priceToMint(1);

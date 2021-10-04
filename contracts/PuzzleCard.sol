@@ -68,6 +68,12 @@ contract PuzzleCard is ERC721Tradable {
 
     // onlyOwner methods
 
+    function gift(uint256 numberToGift, address to) public onlyOwner {
+        for (uint i = 0; i < numberToGift; i += 1) {
+            mintRandomCard(to);
+        }
+    }
+
     function setPriceToMint(uint256 newPrice) public onlyOwner {
         currentPriceToMint = newPrice;
     }

@@ -10,8 +10,8 @@ async function main() {
   const contract = await factory.deploy(proxyAddress || owner.address);
   console.log(`Contract address: ${contract.address}`);
 
-  const transaction = await contract.mintMany(owner.address, 100);
-  console.log(`Mint transaction: ${transaction.hash}`);
+  const transaction = await contract.gift(100, owner.address);
+  console.log(`Gift transaction: ${transaction.hash}`);
 }
 
 main().then(() => process.exit(0)).catch(error => {
