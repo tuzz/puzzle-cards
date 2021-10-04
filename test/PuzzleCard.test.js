@@ -11,7 +11,7 @@ describe("PuzzleCard", function () {
 
   beforeEach(async () => {
     contract = await factory.deploy(constants.ZERO_ADDRESS);
-    await contract.deployed();
+    await contract.setBaseTokenURI("https://example.com/api/");
   });
 
   describe("#priceToMint", () => {
@@ -35,6 +35,27 @@ describe("PuzzleCard", function () {
     it("does not allow other users to set the price", async () => {
       const contractAsUser1 = contract.connect(user1);
       await expectRevert.unspecified(contractAsUser1.setPriceToMint(50000000000000000n));
+    });
+  });
+
+  describe("#baseTokenURI", () => {
+    it("returns the URL of the off-chain API for the puzzle cards", async () => {
+      const baseTokenURI = await contract.baseTokenURI();
+      expect(baseTokenURI).to.equal("https://example.com/api/");
+    });
+  });
+
+  describe("#setBaseTokenURI", () => {
+    it("allows the contract owner to set the URL of the off-chain API", async () => {
+      await contract.setBaseTokenURI("https://foo.com/api/");
+
+      const baseTokenURI = await contract.baseTokenURI();
+      expect(baseTokenURI).to.equal("https://foo.com/api/");
+    });
+
+    it("does not allow other users to set the price", async () => {
+      const contractAsUser1 = contract.connect(user1);
+      await expectRevert.unspecified(contractAsUser1.setBaseTokenURI("https://foo.com/api"));
     });
   });
 
