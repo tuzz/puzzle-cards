@@ -42,6 +42,18 @@ contract PuzzleCard is ERC721Tradable {
         }
     }
 
+    function combine(uint256[] memory tokenIDs) public {
+      require(tokenIDs.length >= 2, "please combine at least two puzzle cards");
+      require(tokenIDs.length <= 4, "please combine at most four puzzle cards");
+
+      for (uint i = 0; i < tokenIDs.length; i += 1) {
+        require(ownerOf(tokenIDs[i]) == msg.sender, "please ensure you own all the puzzle cards");
+        _burn(tokenIDs[i]);
+      }
+
+      mintRandomCard(msg.sender);
+    }
+
     function priceToMint(uint256 numberOfCards) public view returns (uint256) {
         return currentPriceToMint * numberOfCards;
     }

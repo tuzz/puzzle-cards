@@ -118,4 +118,21 @@ describe("PuzzleCard", function () {
       await expectRevert.unspecified(contractAsUser1.setBaseTokenURI("https://foo.com/api"));
     });
   });
+
+  describe("#combine", () => {
+    it("allows a puzzle card owner to combine several cards to mint a new one", async () => {
+      const contractAsUser1 = contract.connect(user1);
+
+      const price = await contractAsUser1.priceToMint(3);
+      await contractAsUser1.mint(3, user1.address, { value: price });
+
+      const balanceBefore = await contractAsUser1.balanceOf(user1.address);
+      expect(balanceBefore.toNumber()).to.equal(3);
+
+      await contractAsUser1.combine([1, 2]);
+
+      const balanceAfter = await contractAsUser1.balanceOf(user1.address);
+      expect(balanceAfter.toNumber()).to.equal(2);
+    });
+  });
 });
