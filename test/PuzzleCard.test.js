@@ -1,5 +1,5 @@
 const { expect } = require("chai");
-const openseaProxyAddress = "0x0000000000000000000000000000000000000000";
+const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 
 describe("PuzzleCard", function () {
   let factory, contract, owner, user1, user2;
@@ -10,8 +10,32 @@ describe("PuzzleCard", function () {
   });
 
   beforeEach(async () => {
-    contract = await factory.deploy(openseaProxyAddress);
+    contract = await factory.deploy(constants.ZERO_ADDRESS);
     await contract.deployed();
+  });
+
+  describe("#priceToMint", () => {
+    it("returns the price to mint the given number of puzzle cards", async () => {
+      const priceForOne = await contract.priceToMint(1);
+      expect(priceForOne.toBigInt()).to.equal(78830000000000000n);
+
+      const priceForOneThousand = await contract.priceToMint(1000);
+      expect(priceForOneThousand.toBigInt()).to.equal(78830000000000000000n);
+    });
+  });
+
+  describe("#setPriceToMint", () => {
+    it("allows the contract owner to set the price of a puzzle card", async () => {
+      await contract.setPriceToMint(50000000000000000n);
+
+      const priceForOne = await contract.priceToMint(1);
+      expect(priceForOne.toBigInt()).to.equal(50000000000000000n);
+    });
+
+    it("does not allow other users to set the price", async () => {
+      const contractAsUser1 = contract.connect(user1);
+      await expectRevert.unspecified(contractAsUser1.setPriceToMint(50000000000000000n));
+    });
   });
 
   it("can mint a puzzle card to a user", async () => {

@@ -11,7 +11,9 @@ contract PuzzleCard is ERC721Tradable {
     string[] private VARIANT_NAMES = ["sun", "moon"];
     uint256[] private VARIANT_PROBABILITIES = [667, 333];
 
+    uint256 private currentPriceToMint;
     string private currentBaseTokenURI;
+
     mapping(uint256 => Attributes) cardAttributes;
 
     struct Attributes {
@@ -20,19 +22,22 @@ contract PuzzleCard is ERC721Tradable {
     }
 
     constructor(address proxyAddress) ERC721Tradable("PuzzleCard", "WSUN", proxyAddress) {
+        setPriceToMint(uint256(0.1 * 0.7883 * 1000000000000000000)); // $0.10 in Polygon Wei.
         setBaseTokenURI("https://4cc8-2a02-6b6c-60-0-cdb2-1b9f-aa0f-454f.ngrok.io/api/");
     }
 
-    function tokenURI(uint256 tokenID) override public view returns (string memory) {
-        return string(abi.encodePacked(baseTokenURI(), slug(tokenID), ".json"));
+    // public methods
+
+    function priceToMint(uint256 numberOfCards) public view returns (uint256) {
+        return currentPriceToMint * numberOfCards;
     }
 
     function baseTokenURI() override public view returns (string memory) {
         return currentBaseTokenURI;
     }
 
-    function setBaseTokenURI(string memory newURI) public onlyOwner {
-        currentBaseTokenURI = newURI;
+    function tokenURI(uint256 tokenID) override public view returns (string memory) {
+        return string(abi.encodePacked(baseTokenURI(), slug(tokenID), ".json"));
     }
 
     function slug(uint256 tokenID) public view returns (string memory) {
@@ -47,7 +52,7 @@ contract PuzzleCard is ERC721Tradable {
         return VARIANT_NAMES[cardAttributes[tokenID].variant];
     }
 
-    function mintOne(address to) public onlyOwner {
+    function mintOne(address to) public payable {
         uint256 tokenID = getNextTokenId();
 
         cardAttributes[tokenID] = Attributes(
@@ -62,7 +67,17 @@ contract PuzzleCard is ERC721Tradable {
         for (uint i = 0; i < numberToMint; i += 1) { mintOne(to); }
     }
 
-    // private
+    // onlyOwner methods
+
+    function setPriceToMint(uint256 newPrice) public onlyOwner {
+        currentPriceToMint = newPrice;
+    }
+
+    function setBaseTokenURI(string memory newURI) public onlyOwner {
+        currentBaseTokenURI = newURI;
+    }
+
+    // private methods
 
     function pickRandom(uint256 callCount, uint256[] memory probabilities) internal view returns (uint8) {
         uint256 cumulative = 0;
