@@ -3,7 +3,7 @@
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@openzeppelin/contracts": "^4.3.2",
-    "chai": "^4.3.4",
+    "@openzeppelin/test-helpers": "^0.5.13",
     "ethers": "^5.0.0",
     "hardhat": "^2.6.4"
   }
