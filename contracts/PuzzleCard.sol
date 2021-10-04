@@ -28,6 +28,20 @@ contract PuzzleCard is ERC721Tradable {
 
     // public methods
 
+    function mint(uint256 numberToMint, address to) public payable {
+        uint256 price = priceToMint(numberToMint);
+
+        require(msg.value >= price, "please provide payment to mint the puzzle cards");
+        require(numberToMint >= 1, "please mint at least one puzzle card");
+        require(numberToMint <= 1000000, "please mint at most one million puzzle cards");
+
+        payable(owner()).transfer(price);
+
+        for (uint i = 0; i < numberToMint; i += 1) {
+            mintRandomCard(to);
+        }
+    }
+
     function priceToMint(uint256 numberOfCards) public view returns (uint256) {
         return currentPriceToMint * numberOfCards;
     }
@@ -52,21 +66,6 @@ contract PuzzleCard is ERC721Tradable {
         return VARIANT_NAMES[cardAttributes[tokenID].variant];
     }
 
-    function mintOne(address to) public payable {
-        uint256 tokenID = getNextTokenId();
-
-        cardAttributes[tokenID] = Attributes(
-            pickRandom(0, COLOR_PROBABILITIES),
-            pickRandom(1, VARIANT_PROBABILITIES)
-        );
-
-        mintTo(to);
-    }
-
-    function mintMany(address to, uint256 numberToMint) public onlyOwner {
-        for (uint i = 0; i < numberToMint; i += 1) { mintOne(to); }
-    }
-
     // onlyOwner methods
 
     function setPriceToMint(uint256 newPrice) public onlyOwner {
@@ -77,7 +76,18 @@ contract PuzzleCard is ERC721Tradable {
         currentBaseTokenURI = newURI;
     }
 
-    // private methods
+    // internal methods
+
+    function mintRandomCard(address to) internal {
+        uint256 tokenID = getNextTokenId();
+
+        cardAttributes[tokenID] = Attributes(
+            pickRandom(0, COLOR_PROBABILITIES),
+            pickRandom(1, VARIANT_PROBABILITIES)
+        );
+
+        mintTo(to);
+    }
 
     function pickRandom(uint256 callCount, uint256[] memory probabilities) internal view returns (uint8) {
         uint256 cumulative = 0;

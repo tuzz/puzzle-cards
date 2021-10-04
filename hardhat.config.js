@@ -6,7 +6,11 @@ const privateKey = system("gpg --decrypt ~/Dropbox/Secrets/metamask/private-key.
 module.exports = {
   solidity: "0.8.4",
   networks: {
-    hardhat: {},
+    hardhat: {
+      accounts: {
+        accountsBalance: "1000000000000000000000000", // 1 million ETH
+      },
+    },
     test: {
       url: "https://rpc-mumbai.maticvigil.com",
       openseaProxyAddress: "0xff7ca10af37178bdd056628ef42fd7f799fac77c",
