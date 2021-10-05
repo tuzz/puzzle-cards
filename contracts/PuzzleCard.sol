@@ -5,32 +5,32 @@ pragma solidity ^0.8.0;
 import "./vendor/ERC721Tradable.sol";
 
 contract PuzzleCard is ERC721Tradable {
-    string[] private SERIES_NAMES = ["None", "Teamwork"];
-    string[] private PUZZLE_NAMES = ["Trial of Skill", "Trial of Reign", "1", "2", "3"];
-    string[] private TIER_NAMES = ["Mortal", "Immortal", "Ethereal", "Virtual", "Celestial", "Godly", "Master"];
-    string[] private TYPE_NAMES = ["Player", "Crab", "Inactive", "Active", "Cloak", "Telescope", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Door", "Hidden", "Artwork", "Star"];
-    string[] private COLOR_NAMES = ["None", "Yellow", "Black", "Green", "White", "Blue", "Red", "Pink"];
-    string[] private VARIANT_NAMES = ["None", "Sun", "Moon", "Open", "Closed"];
-    string[] private CONDITION_NAMES = ["Dire", "Poor", "Reasonable", "Excellent", "Pristine"];
+    string[] public SERIES_NAMES = ["None", "Teamwork"];
+    string[] public PUZZLE_NAMES = ["Trial of Skill", "Trial of Reign", "1", "2", "3"];
+    string[] public TIER_NAMES = ["Mortal", "Immortal", "Ethereal", "Virtual", "Celestial", "Godly", "Master"];
+    string[] public TYPE_NAMES = ["Player", "Crab", "Inactive", "Active", "Cloak", "Telescope", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Door", "Hidden", "Artwork", "Star"];
+    string[] public COLOR_NAMES = ["None", "Yellow", "Black", "Green", "White", "Blue", "Red", "Pink"];
+    string[] public VARIANT_NAMES = ["None", "Sun", "Moon", "Open", "Closed"];
+    string[] public CONDITION_NAMES = ["Dire", "Poor", "Reasonable", "Excellent", "Pristine"];
 
-    uint8 constant NUM_SERIES = 2;
-    uint8 constant NUM_COLORS = 7;
-    uint8 constant NUM_CONDITIONS = 5;
+    uint8 public NUM_SERIES = 2;
+    uint8 public NUM_COLORS = 7;
+    uint8 public NUM_CONDITIONS = 5;
 
-    uint8[] private NUM_PUZZLES_PER_SERIES = [2, 3];
-    uint8[] private PUZZLE_OFFSET_PER_SERIES = [0, 2];
-    uint8[] private NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 0, 1];
-    uint8[] private NUM_VARIANTS_PER_TYPE = [0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0];
-    uint8[] private VARIANT_OFFSET_PER_TYPE = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0];
+    uint8[] public NUM_PUZZLES_PER_SERIES = [2, 3];
+    uint8[] public PUZZLE_OFFSET_PER_SERIES = [0, 2];
+    uint8[] public NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 0, 1];
+    uint8[] public NUM_VARIANTS_PER_TYPE = [0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0];
+    uint8[] public VARIANT_OFFSET_PER_TYPE = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0];
 
-    uint256[] private TIER_PROBABILITIES = [90, 10];
-    uint256[] private TYPE_PROBABILITIES = [200, 200, 200, 100, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
-    uint256[] private CONDITION_PROBABILITIES = [80, 20];
+    uint256[] public TIER_PROBABILITIES = [90, 10];
+    uint256[] public TYPE_PROBABILITIES = [200, 200, 200, 100, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
+    uint256[] public CONDITION_PROBABILITIES = [80, 20];
 
-    uint256 private currentPriceToMint;
-    string private currentBaseTokenURI;
+    uint256 public currentPriceToMint;
+    string public currentBaseTokenURI;
 
-    mapping(uint256 => Attributes) cardAttributes;
+    mapping(uint256 => Attributes) public cardAttributes;
 
     struct Attributes {
         uint8 series;
