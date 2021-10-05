@@ -8,14 +8,14 @@ contract PuzzleCard is ERC721Tradable {
     string[] public seriesNames = ["None", "Teamwork"];
     string[] public puzzleNames = ["Trial of Skill", "Trial of Reign", "1", "2", "3"];
     string[] public tierNames = ["Mortal", "Immortal", "Ethereal", "Virtual", "Celestial", "Godly", "Master"];
-    string[] public typeNames = ["Player", "Crab", "Inactive", "Active", "Cloak", "Telescope", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Door", "Hidden", "Artwork", "Star"];
+    string[] public typeNames = ["Player", "Crab", "Inactive", "Active", "Cloak", "Telescope", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Door", "Hidden", "Star", "Artwork"];
     string[] public colorNames = ["None", "Yellow", "Black", "Green", "White", "Blue", "Red", "Pink"];
     string[] public variantNames = ["None", "Sun", "Moon", "Open", "Closed"];
     string[] public conditionNames = ["Dire", "Poor", "Reasonable", "Excellent", "Pristine"];
 
     uint8[] public numPuzzlesPerSeries = [2, 3];
     uint16[] public puzzleOffsetPerSeries = [0, 2];
-    uint8[] public numColorSlotsPerType = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 0, 1];
+    uint8[] public numColorSlotsPerType = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 1, 0];
     uint8[] public numVariantsPerType = [0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0];
     uint16[] public variantOffsetPerType = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0];
 
