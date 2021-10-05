@@ -17,7 +17,7 @@ contract PuzzleCard is ERC721Tradable {
     uint16[] public puzzleOffsetPerSeries = [0, 2];
     uint8[] public numColorSlotsPerType = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 0, 1];
     uint8[] public numVariantsPerType = [0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0];
-    uint8[] public variantOffsetPerType = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0];
+    uint16[] public variantOffsetPerType = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0];
 
     uint256[] public tierProbabilities = [90, 10];
     uint256[] public typeProbabilities = [200, 200, 200, 100, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
@@ -145,6 +145,19 @@ contract PuzzleCard is ERC721Tradable {
 
     function setBaseTokenURI(string memory newURI) public onlyOwner {
         currentBaseTokenURI = newURI;
+    }
+
+    function setPuzzleNames(string[] memory seriesNames_, string[] memory puzzleNames_, uint8[] memory numPuzzlesPerSeries_, uint16[] memory puzzleOffsetPerSeries_) public onlyOwner {
+        seriesNames = seriesNames_;
+        puzzleNames = puzzleNames_;
+        numPuzzlesPerSeries = numPuzzlesPerSeries_;
+        puzzleOffsetPerSeries = puzzleOffsetPerSeries_;
+    }
+
+    function setVariantNames(string[] memory variantNames_, uint8[] memory numVariantsPerType_, uint16[] memory variantOffsetPerType_) public onlyOwner {
+        variantNames = variantNames_;
+        numVariantsPerType = numVariantsPerType_;
+        variantOffsetPerType = variantOffsetPerType_;
     }
 
     // internal methods
