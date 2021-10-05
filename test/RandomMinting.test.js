@@ -21,8 +21,36 @@ describe("RandomMinting", () => {
     contract = await factory.deploy(constants.ZERO_ADDRESS);
   });
 
+  describe("series", () => {
+    it(0)("picks randomly", async () => {
+      await mintInBatches(1000);
+
+      const seriesNames = await mapTokenIDs(1, 1000, contract.seriesName);
+      const frequencies = tallyFrequencies(seriesNames);
+
+      expect(frequencies["none"]).to.be.within(0.47, 0.53);     // 50%
+      expect(frequencies["teamwork"]).to.be.within(0.47, 0.53); // 50%
+    });
+  });
+
+  describe("puzzle", () => {
+    it(1)("picks randomly within the series", async () => {
+      await mintInBatches(2500);
+
+      const puzzleNames = await mapTokenIDsBySeries(1, 2500, contract.puzzleName);
+      const frequencies = tallyFrequenciesInGroups(puzzleNames);
+
+      expect(frequencies["none"]["trial of skill"]).to.be.within(0.47, 0.53); // 50%
+      expect(frequencies["none"]["trial of reign"]).to.be.within(0.47, 0.53); // 50%
+
+      expect(frequencies["teamwork"]["1"]).to.be.within(0.303, 0.366); // 33.3%
+      expect(frequencies["teamwork"]["2"]).to.be.within(0.303, 0.366); // 33.3%
+      expect(frequencies["teamwork"]["3"]).to.be.within(0.303, 0.366); // 33.3%
+    }).timeout(50000);
+  });
+
   describe("tier", () => {
-    it(0)("picks according to the probability distribution", async () => {
+    it(2)("picks according to the probability distribution", async () => {
       await mintInBatches(1000);
 
       const tierNames = await mapTokenIDs(1, 1000, contract.tierName);
@@ -39,7 +67,7 @@ describe("RandomMinting", () => {
   });
 
   describe("type", () => {
-    it(1)("picks according to the probability distribution", async () => {
+    it(3)("picks according to the probability distribution", async () => {
       await mintInBatches(1000);
 
       const typeNames = await mapTokenIDs(1, 1000, contract.typeName);
@@ -66,7 +94,7 @@ describe("RandomMinting", () => {
   });
 
   describe("color1", () => {
-    it(2)("picks according to the probability distribution for types with one or more colors", async () => {
+    it(4)("picks according to the probability distribution for types with one or more colors", async () => {
       await mintInBatches(2000);
 
       const pairs = await mapTokenIDsByType(1, 2000, contract.color1Name);
@@ -94,7 +122,7 @@ describe("RandomMinting", () => {
   });
 
   describe("color2", () => {
-    it(3)("picks according to the probability distribution for types with two colors", async () => {
+    it(5)("picks according to the probability distribution for types with two colors", async () => {
       await mintInBatches(15000);
 
       const pairs = await mapTokenIDsByType(1, 15000, contract.color2Name);
@@ -122,7 +150,7 @@ describe("RandomMinting", () => {
   });
 
   describe("variant", () => {
-    it(4)("picks according to the probability distribution for types with variants", async () => {
+    it(6)("picks according to the probability distribution for types with variants", async () => {
       await mintInBatches(2500);
 
       const pairs = await mapTokenIDsByType(1, 2500, contract.variantName);
@@ -149,7 +177,7 @@ describe("RandomMinting", () => {
   });
 
   describe("condition", () => {
-    it(5)("picks according to the probability distribution", async () => {
+    it(7)("picks according to the probability distribution", async () => {
       await mintInBatches(1000);
 
       const conditionNames = await mapTokenIDs(1, 1000, contract.conditionName);
@@ -186,6 +214,10 @@ describe("RandomMinting", () => {
     return Promise.all(promises);
   };
 
+  const mapTokenIDsBySeries = (from, to, fn) => (
+    mapTokenIDs(from, to, (id) => Promise.all([contract.seriesName(id), fn(id)]))
+  );
+
   const mapTokenIDsByType = (from, to, fn) => (
     mapTokenIDs(from, to, (id) => Promise.all([contract.typeName(id), fn(id)]))
   );
@@ -206,17 +238,17 @@ describe("RandomMinting", () => {
     return frequencies;
   };
 
-  const tallyFrequenciesByType = (pairs) => {
+  const tallyFrequenciesInGroups = (pairs) => {
     const arrays = {};
     const groups = {};
 
-    for (const [type, value] of pairs) {
-      arrays[type] = arrays[type] || [];
-      arrays[type].push(value);
+    for (const [key, value] of pairs) {
+      arrays[key] = arrays[key] || [];
+      arrays[key].push(value);
     };
 
-    for (const [type, array] of Object.entries(arrays)) {
-      groups[type] = tallyFrequencies(array);
+    for (const [key, array] of Object.entries(arrays)) {
+      groups[key] = tallyFrequencies(array);
     }
 
     return groups;
