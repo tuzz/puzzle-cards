@@ -18,7 +18,7 @@ contract PuzzleCard is ERC721Tradable {
     uint8 public NUM_CONDITIONS = 5;
 
     uint8[] public NUM_PUZZLES_PER_SERIES = [2, 3];
-    uint8[] public PUZZLE_OFFSET_PER_SERIES = [0, 2];
+    uint16[] public PUZZLE_OFFSET_PER_SERIES = [0, 2];
     uint8[] public NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 0, 1];
     uint8[] public NUM_VARIANTS_PER_TYPE = [0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0];
     uint8[] public VARIANT_OFFSET_PER_TYPE = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0];
