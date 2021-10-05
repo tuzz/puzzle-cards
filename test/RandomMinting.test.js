@@ -51,12 +51,14 @@ describe("RandomMinting", () => {
       expect(frequencies["active"]).to.be.within(0.07, 0.13);    // 10%
       expect(frequencies["cloak"]).to.be.within(0.07, 0.13);     // 10%
       expect(frequencies["telescope"]).to.be.within(0.07, 0.13); // 10%
-      expect(frequencies["helix"]).to.be.below(0.06);            // 3%
-      expect(frequencies["torch"]).to.be.below(0.06);            // 3%
-      expect(frequencies["beacon"]).to.be.below(0.06);           // 3%
-      expect(frequencies["map"]).to.exist;                       // 0.33%
-      expect(frequencies["teleport"]).to.exist;                  // 0.33%
-      expect(frequencies["glasses"]).to.exist;                   // 0.33%
+      expect(frequencies["helix"]).to.be.below(0.05);            // 2%
+      expect(frequencies["torch"]).to.be.below(0.05);            // 2%
+      expect(frequencies["beacon"]).to.be.below(0.05);           // 2%
+      expect(frequencies["map"]).to.be.below(0.03);              // 1%
+      expect(frequencies["teleport"]).to.be.below(0.03);         // 1%
+      expect(frequencies["glasses"]).to.be.below(0.03);          // 1%
+      expect(frequencies["eclipse"]).to.be.below(0.02);          // 0.4%
+      expect(frequencies["door"]).to.be.below(0.02);             // 0.6%
       expect(frequencies["hidden"]).to.be.undefined;             // 0%
       expect(frequencies["artwork"]).to.be.undefined;            // 0%
     });
@@ -68,7 +70,7 @@ describe("RandomMinting", () => {
 
       const pairs = await mapTokenIDsByType(1, 2000, contract.color1Name);
 
-      const uncolored = ["player", "crab", "map", "teleport", "hidden", "artwork"];
+      const uncolored = ["player", "crab", "map", "teleport", "eclipse", "door", "hidden", "artwork"];
       const colored = ["inactive", "active", "cloak", "telescope", "helix", "torch", "beacon", "glasses"];
 
       const colors1 = pairs.filter(([type, _]) => uncolored.indexOf(type) !== -1).map(([_, color]) => color);
@@ -96,7 +98,7 @@ describe("RandomMinting", () => {
 
       const pairs = await mapTokenIDsByType(1, 15000, contract.color2Name);
 
-      const uncolored = ["player", "crab", "map", "teleport", "inactive", "active", "cloak", "telescope", "beacon", "hidden", "artwork"];
+      const uncolored = ["player", "crab", "map", "teleport", "inactive", "active", "cloak", "telescope", "beacon", "eclipse", "door", "hidden", "artwork"];
       const colored = ["helix", "torch", "glasses"];
 
       const colors1 = pairs.filter(([k, _]) => uncolored.indexOf(k) !== -1).map(([_, v]) => v);
@@ -124,8 +126,8 @@ describe("RandomMinting", () => {
 
       const pairs = await mapTokenIDsByType(1, 2500, contract.variantName);
 
-      const dontVary = ["player", "crab", "cloak", "helix", "torch", "beacon", "map", "teleport", "glasses", "hidden", "artwork"];
-      const vary = ["inactive", "active", "telescope"];
+      const dontVary = ["player", "crab", "cloak", "helix", "torch", "beacon", "map", "teleport", "glasses", "eclipse", "hidden", "artwork"];
+      const vary = ["inactive", "active", "telescope", "door"];
 
       const variants1 = pairs.filter(([k, _]) => dontVary.indexOf(k) !== -1).map(([_, v]) => v);
       const variants2 = pairs.filter(([k, _]) => vary.indexOf(k) !== -1).map(([_, v]) => v);
@@ -135,9 +137,13 @@ describe("RandomMinting", () => {
 
       expect(frequencies1["none"]).to.equal(1); // 100%
 
-      expect(frequencies2["sun"]).to.be.within(0.47, 0.53);  // 50%;
-      expect(frequencies2["moon"]).to.be.within(0.47, 0.53); // 50%;
-      expect(frequencies2["none"]).to.be.undefined;          // 0%;
+      // active/inactive occur 30% of the time, doors occur 0.6% of the time
+      expect(frequencies2["sun"]).to.be.within(0.46, 0.52);  // 49% = 50% * (30/30.6)
+      expect(frequencies2["moon"]).to.be.within(0.48, 0.52); // 49% = 50% * (30/30.6)
+      expect(frequencies2["open"]).to.be.below(0.01);       // 0.1% = 50% * (0.6/30.6)
+      expect(frequencies2["closed"]).to.be.below(0.01);     // 0.1% = 50% * (0.6/30.6)
+      expect(frequencies2["none"]).to.be.undefined;
+
     }).timeout(50000);
   });
 
