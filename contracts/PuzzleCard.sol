@@ -6,16 +6,16 @@ import "./vendor/ERC721Tradable.sol";
 
 contract PuzzleCard is ERC721Tradable {
     string[] private TIER_NAMES = ["mortal", "immortal", "ethereal", "virtual", "celestial", "godly", "master"];
-    string[] private TYPE_NAMES = ["player", "crab", "inactive", "active", "cloak", "telescope", "helix", "torch", "beacon", "map", "teleport", "glasses", "eclipse", "door", "hidden", "artwork"];
+    string[] private TYPE_NAMES = ["player", "crab", "inactive", "active", "cloak", "telescope", "helix", "torch", "beacon", "map", "teleport", "glasses", "eclipse", "door", "hidden", "artwork", "star"];
     string[] private COLOR_NAMES = ["none", "yellow", "black", "green", "white", "blue", "red", "pink"];
     string[] private VARIANT_NAMES = ["none", "sun", "moon", "open", "closed"];
     string[] private CONDITION_NAMES = ["dire", "poor", "reasonable", "excellent", "pristine"];
 
     uint8 constant NUM_COLORS = 7;
     uint8 constant NUM_CONDITIONS = 5;
-    uint8[] private NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 0];
-    uint8[] private NUM_VARIANTS_PER_TYPE = [0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0];
-    uint8[] private VARIANT_OFFSET_PER_TYPE = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0];
+    uint8[] private NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 0, 1];
+    uint8[] private NUM_VARIANTS_PER_TYPE = [0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0];
+    uint8[] private VARIANT_OFFSET_PER_TYPE = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0];
 
     uint256[] private TIER_PROBABILITIES = [90, 10];
     uint256[] private TYPE_PROBABILITIES = [200, 200, 200, 100, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];

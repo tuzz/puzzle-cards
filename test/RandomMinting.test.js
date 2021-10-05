@@ -61,6 +61,7 @@ describe("RandomMinting", () => {
       expect(frequencies["door"]).to.be.below(0.02);             // 0.6%
       expect(frequencies["hidden"]).to.be.undefined;             // 0%
       expect(frequencies["artwork"]).to.be.undefined;            // 0%
+      expect(frequencies["star"]).to.be.undefined;               // 0%
     });
   });
 
@@ -71,7 +72,7 @@ describe("RandomMinting", () => {
       const pairs = await mapTokenIDsByType(1, 2000, contract.color1Name);
 
       const uncolored = ["player", "crab", "map", "teleport", "eclipse", "door", "hidden", "artwork"];
-      const colored = ["inactive", "active", "cloak", "telescope", "helix", "torch", "beacon", "glasses"];
+      const colored = ["inactive", "active", "cloak", "telescope", "helix", "torch", "beacon", "glasses", "star"];
 
       const colors1 = pairs.filter(([type, _]) => uncolored.indexOf(type) !== -1).map(([_, color]) => color);
       const colors2 = pairs.filter(([type, _]) => colored.indexOf(type) !== -1).map(([_, color]) => color);
@@ -98,7 +99,7 @@ describe("RandomMinting", () => {
 
       const pairs = await mapTokenIDsByType(1, 15000, contract.color2Name);
 
-      const uncolored = ["player", "crab", "map", "teleport", "inactive", "active", "cloak", "telescope", "beacon", "eclipse", "door", "hidden", "artwork"];
+      const uncolored = ["player", "crab", "map", "teleport", "inactive", "active", "cloak", "telescope", "beacon", "eclipse", "door", "hidden", "artwork", "star"];
       const colored = ["helix", "torch", "glasses"];
 
       const colors1 = pairs.filter(([k, _]) => uncolored.indexOf(k) !== -1).map(([_, v]) => v);
@@ -126,7 +127,7 @@ describe("RandomMinting", () => {
 
       const pairs = await mapTokenIDsByType(1, 2500, contract.variantName);
 
-      const dontVary = ["player", "crab", "cloak", "helix", "torch", "beacon", "map", "teleport", "glasses", "eclipse", "hidden", "artwork"];
+      const dontVary = ["player", "crab", "cloak", "helix", "torch", "beacon", "map", "teleport", "glasses", "eclipse", "hidden", "artwork", "star"];
       const vary = ["inactive", "active", "telescope", "door"];
 
       const variants1 = pairs.filter(([k, _]) => dontVary.indexOf(k) !== -1).map(([_, v]) => v);
