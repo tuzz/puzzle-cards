@@ -5,27 +5,27 @@ pragma solidity ^0.8.0;
 import "./vendor/ERC721Tradable.sol";
 
 contract PuzzleCard is ERC721Tradable {
-    string[] public SERIES_NAMES = ["None", "Teamwork"];
-    string[] public PUZZLE_NAMES = ["Trial of Skill", "Trial of Reign", "1", "2", "3"];
-    string[] public TIER_NAMES = ["Mortal", "Immortal", "Ethereal", "Virtual", "Celestial", "Godly", "Master"];
-    string[] public TYPE_NAMES = ["Player", "Crab", "Inactive", "Active", "Cloak", "Telescope", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Door", "Hidden", "Artwork", "Star"];
-    string[] public COLOR_NAMES = ["None", "Yellow", "Black", "Green", "White", "Blue", "Red", "Pink"];
-    string[] public VARIANT_NAMES = ["None", "Sun", "Moon", "Open", "Closed"];
-    string[] public CONDITION_NAMES = ["Dire", "Poor", "Reasonable", "Excellent", "Pristine"];
+    string[] public seriesNames = ["None", "Teamwork"];
+    string[] public puzzleNames = ["Trial of Skill", "Trial of Reign", "1", "2", "3"];
+    string[] public tierNames = ["Mortal", "Immortal", "Ethereal", "Virtual", "Celestial", "Godly", "Master"];
+    string[] public typeNames = ["Player", "Crab", "Inactive", "Active", "Cloak", "Telescope", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Door", "Hidden", "Artwork", "Star"];
+    string[] public colorNames = ["None", "Yellow", "Black", "Green", "White", "Blue", "Red", "Pink"];
+    string[] public variantNames = ["None", "Sun", "Moon", "Open", "Closed"];
+    string[] public conditionNames = ["Dire", "Poor", "Reasonable", "Excellent", "Pristine"];
 
-    uint8 public NUM_SERIES = 2;
-    uint8 public NUM_COLORS = 7;
-    uint8 public NUM_CONDITIONS = 5;
+    uint8 public numSeries = 2;
+    uint8 public numColors = 7;
+    uint8 public numConditions = 5;
 
-    uint8[] public NUM_PUZZLES_PER_SERIES = [2, 3];
-    uint16[] public PUZZLE_OFFSET_PER_SERIES = [0, 2];
-    uint8[] public NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 0, 1];
-    uint8[] public NUM_VARIANTS_PER_TYPE = [0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0];
-    uint8[] public VARIANT_OFFSET_PER_TYPE = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0];
+    uint8[] public numPuzzlesPerSeries = [2, 3];
+    uint16[] public puzzleOffsetPerSeries = [0, 2];
+    uint8[] public numColorSlotsPerType = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 0, 1];
+    uint8[] public numVariantsPerType = [0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0];
+    uint8[] public variantOffsetPerType = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0];
 
-    uint256[] public TIER_PROBABILITIES = [90, 10];
-    uint256[] public TYPE_PROBABILITIES = [200, 200, 200, 100, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
-    uint256[] public CONDITION_PROBABILITIES = [80, 20];
+    uint256[] public tierProbabilities = [90, 10];
+    uint256[] public typeProbabilities = [200, 200, 200, 100, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
+    uint256[] public conditionProbabilities = [80, 20];
 
     uint256 public currentPriceToMint;
     string public currentBaseTokenURI;
@@ -102,37 +102,37 @@ contract PuzzleCard is ERC721Tradable {
     }
 
     function seriesName(uint256 tokenID) public view returns (string memory) {
-        return SERIES_NAMES[cardAttributes[tokenID].series];
+        return seriesNames[cardAttributes[tokenID].series];
     }
 
     function puzzleName(uint256 tokenID) public view returns (string memory) {
         Attributes memory attr = cardAttributes[tokenID];
-        return PUZZLE_NAMES[PUZZLE_OFFSET_PER_SERIES[attr.series] + attr.puzzle];
+        return puzzleNames[puzzleOffsetPerSeries[attr.series] + attr.puzzle];
     }
 
     function tierName(uint256 tokenID) public view returns (string memory) {
-        return TIER_NAMES[cardAttributes[tokenID].tier];
+        return tierNames[cardAttributes[tokenID].tier];
     }
 
     function typeName(uint256 tokenID) public view returns (string memory) {
-        return TYPE_NAMES[cardAttributes[tokenID].type_];
+        return typeNames[cardAttributes[tokenID].type_];
     }
 
     function color1Name(uint256 tokenID) public view returns (string memory) {
-        return COLOR_NAMES[cardAttributes[tokenID].color1];
+        return colorNames[cardAttributes[tokenID].color1];
     }
 
     function color2Name(uint256 tokenID) public view returns (string memory) {
-        return COLOR_NAMES[cardAttributes[tokenID].color2];
+        return colorNames[cardAttributes[tokenID].color2];
     }
 
     function variantName(uint256 tokenID) public view returns (string memory) {
         Attributes memory attr = cardAttributes[tokenID];
-        return VARIANT_NAMES[VARIANT_OFFSET_PER_TYPE[attr.type_] + attr.variant];
+        return variantNames[variantOffsetPerType[attr.type_] + attr.variant];
     }
 
     function conditionName(uint256 tokenID) public view returns (string memory) {
-        return CONDITION_NAMES[cardAttributes[tokenID].condition];
+        return conditionNames[cardAttributes[tokenID].condition];
     }
 
     // onlyOwner methods
@@ -154,23 +154,23 @@ contract PuzzleCard is ERC721Tradable {
     // internal methods
 
     function mintRandomCard(address to) internal {
-        uint8 series = uint8(randomNumber(0) % NUM_SERIES);
+        uint8 series = uint8(randomNumber(0) % numSeries);
 
-        uint8 numPuzzles = NUM_PUZZLES_PER_SERIES[series];
+        uint8 numPuzzles = numPuzzlesPerSeries[series];
         uint8 puzzle = uint8(randomNumber(1) % numPuzzles);
 
-        uint8 tier = pickRandom(2, TIER_PROBABILITIES);
-        uint8 type_ = pickRandom(3, TYPE_PROBABILITIES);
+        uint8 tier = pickRandom(2, tierProbabilities);
+        uint8 type_ = pickRandom(3, typeProbabilities);
 
-        uint8 numSlots = NUM_COLOR_SLOTS_PER_TYPE[type_];
-        uint8 color1 = numSlots < 1 ? 0 : 1 + uint8(randomNumber(4) % NUM_COLORS);
-        uint8 color2 = numSlots < 2 ? 0 : 1 + uint8(randomNumber(5) % NUM_COLORS);
+        uint8 numSlots = numColorSlotsPerType[type_];
+        uint8 color1 = numSlots < 1 ? 0 : 1 + uint8(randomNumber(4) % numColors);
+        uint8 color2 = numSlots < 2 ? 0 : 1 + uint8(randomNumber(5) % numColors);
 
-        uint8 numVariants = NUM_VARIANTS_PER_TYPE[type_];
+        uint8 numVariants = numVariantsPerType[type_];
         uint8 variant = numVariants < 1 ? 0 : uint8(randomNumber(6) % numVariants);
 
-        uint8 pristine = NUM_CONDITIONS - 1;
-        uint8 condition = pristine - pickRandom(7, CONDITION_PROBABILITIES);
+        uint8 pristine = numConditions - 1;
+        uint8 condition = pristine - pickRandom(7, conditionProbabilities);
 
         cardAttributes[getNextTokenId()] = Attributes(
           series, puzzle, tier, type_, color1, color2, variant, condition
