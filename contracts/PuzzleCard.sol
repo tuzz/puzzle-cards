@@ -5,13 +5,13 @@ pragma solidity ^0.8.0;
 import "./vendor/ERC721Tradable.sol";
 
 contract PuzzleCard is ERC721Tradable {
-    string[] private SERIES_NAMES = ["none", "teamwork"];
-    string[] private PUZZLE_NAMES = ["trial of skill", "trial of reign", "1", "2", "3"];
-    string[] private TIER_NAMES = ["mortal", "immortal", "ethereal", "virtual", "celestial", "godly", "master"];
-    string[] private TYPE_NAMES = ["player", "crab", "inactive", "active", "cloak", "telescope", "helix", "torch", "beacon", "map", "teleport", "glasses", "eclipse", "door", "hidden", "artwork", "star"];
-    string[] private COLOR_NAMES = ["none", "yellow", "black", "green", "white", "blue", "red", "pink"];
-    string[] private VARIANT_NAMES = ["none", "sun", "moon", "open", "closed"];
-    string[] private CONDITION_NAMES = ["dire", "poor", "reasonable", "excellent", "pristine"];
+    string[] private SERIES_NAMES = ["None", "Teamwork"];
+    string[] private PUZZLE_NAMES = ["Trial of Skill", "Trial of Reign", "1", "2", "3"];
+    string[] private TIER_NAMES = ["Mortal", "Immortal", "Ethereal", "Virtual", "Celestial", "Godly", "Master"];
+    string[] private TYPE_NAMES = ["Player", "Crab", "Inactive", "Active", "Cloak", "Telescope", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Door", "Hidden", "Artwork", "Star"];
+    string[] private COLOR_NAMES = ["None", "Yellow", "Black", "Green", "White", "Blue", "Red", "Pink"];
+    string[] private VARIANT_NAMES = ["None", "Sun", "Moon", "Open", "Closed"];
+    string[] private CONDITION_NAMES = ["Dire", "Poor", "Reasonable", "Excellent", "Pristine"];
 
     uint8 constant NUM_SERIES = 2;
     uint8 constant NUM_COLORS = 7;
@@ -90,14 +90,14 @@ contract PuzzleCard is ERC721Tradable {
 
     function slug(uint256 tokenID) public view returns (string memory) {
         return string(abi.encodePacked(
-          seriesName(tokenID), "-",
-          puzzleName(tokenID), "-",
-          tierName(tokenID), "-",
-          typeName(tokenID), "-",
-          color1Name(tokenID), "-",
-          color2Name(tokenID), "-",
-          variantName(tokenID), "-",
-          conditionName(tokenID)
+          dasherize(lowercase(seriesName(tokenID))), "-",
+          dasherize(lowercase(puzzleName(tokenID))), "-",
+          dasherize(lowercase(tierName(tokenID))), "-",
+          dasherize(lowercase(typeName(tokenID))), "-",
+          dasherize(lowercase(color1Name(tokenID))), "-",
+          dasherize(lowercase(color2Name(tokenID))), "-",
+          dasherize(lowercase(variantName(tokenID))), "-",
+          dasherize(lowercase(conditionName(tokenID)))
         ));
     }
 
@@ -206,4 +206,36 @@ contract PuzzleCard is ERC721Tradable {
             callCount
         )));
     }
+
+    function dasherize(string memory string_) internal pure returns (string memory) {
+        bytes memory bytes_ = bytes(string_);
+
+        for (uint256 i = 0; i < bytes_.length; i += 1) {
+            if (bytes_[i] == ASCII_SPACE) {
+                bytes_[i] = ASCII_DASH;
+            }
+        }
+
+        return string(bytes_);
+    }
+
+    function lowercase(string memory string_) internal pure returns (string memory) {
+        bytes memory bytes_ = bytes(string_);
+
+        for (uint256 i = 0; i < bytes_.length; i += 1) {
+            bytes1 b = bytes_[i];
+
+            if (b >= ASCII_CAPITAL_A && b <= ASCII_CAPITAL_Z) {
+                bytes_[i] = bytes1(uint8(bytes_[i]) + ASCII_TO_LOWERCASE);
+            }
+        }
+
+        return string(bytes_);
+    }
+
+    bytes1 constant ASCII_SPACE = 0x20;
+    bytes1 constant ASCII_DASH = 0x2D;
+    bytes1 constant ASCII_CAPITAL_A = 0x41;
+    bytes1 constant ASCII_CAPITAL_Z = 0x5A;
+    uint8 constant ASCII_TO_LOWERCASE = 32;
 }

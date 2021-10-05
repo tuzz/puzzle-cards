@@ -54,9 +54,9 @@ describe("PuzzleCard", () => {
       await expectRevert.unspecified(contract.mint(0, user2.address));
     });
 
-    it("reverts if the number to mint is greater than one million", async () => {
-      const price = contract.priceToMint(1000001);
-      await expectRevert.unspecified(contract.mint(1000001, user2.address, { value: price }));
+    it("reverts if the number to mint is greater than one hundred", async () => {
+      const price = contract.priceToMint(101);
+      await expectRevert.unspecified(contract.mint(101, user2.address, { value: price }));
     });
   });
 
@@ -79,8 +79,8 @@ describe("PuzzleCard", () => {
       const priceForOne = await contract.priceToMint(1);
       expect(priceForOne.toBigInt()).to.equal(78830000000000000n);
 
-      const priceForOneThousand = await contract.priceToMint(1000);
-      expect(priceForOneThousand.toBigInt()).to.equal(78830000000000000000n);
+      const priceForOneThousand = await contract.priceToMint(100);
+      expect(priceForOneThousand.toBigInt()).to.equal(7883000000000000000n);
     });
   });
 
@@ -116,6 +116,26 @@ describe("PuzzleCard", () => {
     it("does not allow other users to set the price", async () => {
       const contractAsUser1 = contract.connect(user1);
       await expectRevert.unspecified(contractAsUser1.setBaseTokenURI("https://foo.com/api"));
+    });
+  });
+
+  describe("#slug", () => {
+    it("lowercases the attribute names", async () => {
+      await contract.gift(10, owner.address);
+
+      for (let tokenID = 1; tokenID <= 10; tokenID += 1) {
+        const slug = await contract.slug(tokenID);
+        expect(slug).to.equal(slug.toLowerCase());
+      }
+    });
+
+    it("replaces spaces in attribute names with dashes", async () => {
+      await contract.gift(10, owner.address);
+
+      for (let tokenID = 1; tokenID <= 10; tokenID += 1) {
+        const slug = await contract.slug(tokenID);
+        expect(slug).to.equal(slug.replaceAll(" ", "-"));
+      }
     });
   });
 

@@ -28,8 +28,8 @@ describe("RandomMinting", () => {
       const seriesNames = await mapTokenIDs(1, 1000, contract.seriesName);
       const frequencies = tallyFrequencies(seriesNames);
 
-      expect(frequencies["none"]).to.be.within(0.47, 0.53);     // 50%
-      expect(frequencies["teamwork"]).to.be.within(0.47, 0.53); // 50%
+      expect(frequencies["None"]).to.be.within(0.47, 0.53);     // 50%
+      expect(frequencies["Teamwork"]).to.be.within(0.47, 0.53); // 50%
     });
   });
 
@@ -40,12 +40,12 @@ describe("RandomMinting", () => {
       const puzzleNames = await mapTokenIDsBySeries(1, 2500, contract.puzzleName);
       const frequencies = tallyFrequenciesInGroups(puzzleNames);
 
-      expect(frequencies["none"]["trial of skill"]).to.be.within(0.47, 0.53); // 50%
-      expect(frequencies["none"]["trial of reign"]).to.be.within(0.47, 0.53); // 50%
+      expect(frequencies["None"]["Trial of Skill"]).to.be.within(0.47, 0.53); // 50%
+      expect(frequencies["None"]["Trial of Reign"]).to.be.within(0.47, 0.53); // 50%
 
-      expect(frequencies["teamwork"]["1"]).to.be.within(0.303, 0.366); // 33.3%
-      expect(frequencies["teamwork"]["2"]).to.be.within(0.303, 0.366); // 33.3%
-      expect(frequencies["teamwork"]["3"]).to.be.within(0.303, 0.366); // 33.3%
+      expect(frequencies["Teamwork"]["1"]).to.be.within(0.303, 0.366); // 33.3%
+      expect(frequencies["Teamwork"]["2"]).to.be.within(0.303, 0.366); // 33.3%
+      expect(frequencies["Teamwork"]["3"]).to.be.within(0.303, 0.366); // 33.3%
     }).timeout(50000);
   });
 
@@ -56,13 +56,13 @@ describe("RandomMinting", () => {
       const tierNames = await mapTokenIDs(1, 1000, contract.tierName);
       const frequencies = tallyFrequencies(tierNames);
 
-      expect(frequencies["mortal"]).to.be.within(0.87, 0.93);   // 90%
-      expect(frequencies["immortal"]).to.be.within(0.07, 0.13); // 10%
-      expect(frequencies["ethereal"]).to.be.undefined;          // 0%
-      expect(frequencies["virtual"]).to.be.undefined;           // 0%
-      expect(frequencies["celestial"]).to.be.undefined;         // 0%
-      expect(frequencies["godly"]).to.be.undefined;             // 0%
-      expect(frequencies["master"]).to.be.undefined;            // 0%
+      expect(frequencies["Mortal"]).to.be.within(0.87, 0.93);   // 90%
+      expect(frequencies["Immortal"]).to.be.within(0.07, 0.13); // 10%
+      expect(frequencies["Ethereal"]).to.be.undefined;          // 0%
+      expect(frequencies["Virtual"]).to.be.undefined;           // 0%
+      expect(frequencies["Celestial"]).to.be.undefined;         // 0%
+      expect(frequencies["Godly"]).to.be.undefined;             // 0%
+      expect(frequencies["Master"]).to.be.undefined;            // 0%
     });
   });
 
@@ -73,23 +73,23 @@ describe("RandomMinting", () => {
       const typeNames = await mapTokenIDs(1, 1000, contract.typeName);
       const frequencies = tallyFrequencies(typeNames);
 
-      expect(frequencies["player"]).to.be.within(0.17, 0.23);    // 20%
-      expect(frequencies["crab"]).to.be.within(0.17, 0.23);      // 20%
-      expect(frequencies["inactive"]).to.be.within(0.17, 0.23);  // 20%
-      expect(frequencies["active"]).to.be.within(0.07, 0.13);    // 10%
-      expect(frequencies["cloak"]).to.be.within(0.07, 0.13);     // 10%
-      expect(frequencies["telescope"]).to.be.within(0.07, 0.13); // 10%
-      expect(frequencies["helix"]).to.be.below(0.05);            // 2%
-      expect(frequencies["torch"]).to.be.below(0.05);            // 2%
-      expect(frequencies["beacon"]).to.be.below(0.05);           // 2%
-      expect(frequencies["map"]).to.be.below(0.03);              // 1%
-      expect(frequencies["teleport"]).to.be.below(0.03);         // 1%
-      expect(frequencies["glasses"]).to.be.below(0.03);          // 1%
-      expect(frequencies["eclipse"]).to.be.below(0.02);          // 0.4%
-      expect(frequencies["door"]).to.be.below(0.02);             // 0.6%
-      expect(frequencies["hidden"]).to.be.undefined;             // 0%
-      expect(frequencies["artwork"]).to.be.undefined;            // 0%
-      expect(frequencies["star"]).to.be.undefined;               // 0%
+      expect(frequencies["Player"]).to.be.within(0.17, 0.23);    // 20%
+      expect(frequencies["Crab"]).to.be.within(0.17, 0.23);      // 20%
+      expect(frequencies["Inactive"]).to.be.within(0.17, 0.23);  // 20%
+      expect(frequencies["Active"]).to.be.within(0.07, 0.13);    // 10%
+      expect(frequencies["Cloak"]).to.be.within(0.07, 0.13);     // 10%
+      expect(frequencies["Telescope"]).to.be.within(0.07, 0.13); // 10%
+      expect(frequencies["Helix"]).to.be.below(0.05);            // 2%
+      expect(frequencies["Torch"]).to.be.below(0.05);            // 2%
+      expect(frequencies["Beacon"]).to.be.below(0.05);           // 2%
+      expect(frequencies["Map"]).to.be.below(0.03);              // 1%
+      expect(frequencies["Teleport"]).to.be.below(0.03);         // 1%
+      expect(frequencies["Glasses"]).to.be.below(0.03);          // 1%
+      expect(frequencies["Eclipse"]).to.be.below(0.02);          // 0.4%
+      expect(frequencies["Door"]).to.be.below(0.02);             // 0.6%
+      expect(frequencies["Hidden"]).to.be.undefined;             // 0%
+      expect(frequencies["Artwork"]).to.be.undefined;            // 0%
+      expect(frequencies["Star"]).to.be.undefined;               // 0%
     });
   });
 
@@ -99,8 +99,8 @@ describe("RandomMinting", () => {
 
       const pairs = await mapTokenIDsByType(1, 2000, contract.color1Name);
 
-      const uncolored = ["player", "crab", "map", "teleport", "eclipse", "door", "hidden", "artwork"];
-      const colored = ["inactive", "active", "cloak", "telescope", "helix", "torch", "beacon", "glasses", "star"];
+      const uncolored = ["Player", "Crab", "Map", "Teleport", "Eclipse", "Door", "Hidden", "Artwork"];
+      const colored = ["Inactive", "Active", "Cloak", "Telescope", "Helix", "Torch", "Beacon", "Glasses", "Star"];
 
       const colors1 = pairs.filter(([type, _]) => uncolored.indexOf(type) !== -1).map(([_, color]) => color);
       const colors2 = pairs.filter(([type, _]) => colored.indexOf(type) !== -1).map(([_, color]) => color);
@@ -108,16 +108,16 @@ describe("RandomMinting", () => {
       const frequencies1 = tallyFrequencies(colors1)
       const frequencies2 = tallyFrequencies(colors2)
 
-      expect(frequencies1["none"]).to.equal(1); // 100%
+      expect(frequencies1["None"]).to.equal(1); // 100%
 
-      expect(frequencies2["red"]).to.be.within(0.11, 0.17);    // 14.3%
-      expect(frequencies2["green"]).to.be.within(0.11, 0.17);  // 14.3%
-      expect(frequencies2["blue"]).to.be.within(0.11, 0.17);   // 14.3%
-      expect(frequencies2["yellow"]).to.be.within(0.11, 0.17); // 14.3%
-      expect(frequencies2["pink"]).to.be.within(0.11, 0.17);   // 14.3%
-      expect(frequencies2["white"]).to.be.within(0.11, 0.17);  // 14.3%
-      expect(frequencies2["black"]).to.be.within(0.11, 0.17);  // 14.3%
-      expect(frequencies2["none"]).to.be.undefined;            // 0%;
+      expect(frequencies2["Red"]).to.be.within(0.11, 0.17);    // 14.3%
+      expect(frequencies2["Green"]).to.be.within(0.11, 0.17);  // 14.3%
+      expect(frequencies2["Blue"]).to.be.within(0.11, 0.17);   // 14.3%
+      expect(frequencies2["Yellow"]).to.be.within(0.11, 0.17); // 14.3%
+      expect(frequencies2["Pink"]).to.be.within(0.11, 0.17);   // 14.3%
+      expect(frequencies2["White"]).to.be.within(0.11, 0.17);  // 14.3%
+      expect(frequencies2["Black"]).to.be.within(0.11, 0.17);  // 14.3%
+      expect(frequencies2["None"]).to.be.undefined;            // 0%;
     }).timeout(40000);
   });
 
@@ -127,8 +127,8 @@ describe("RandomMinting", () => {
 
       const pairs = await mapTokenIDsByType(1, 15000, contract.color2Name);
 
-      const uncolored = ["player", "crab", "map", "teleport", "inactive", "active", "cloak", "telescope", "beacon", "eclipse", "door", "hidden", "artwork", "star"];
-      const colored = ["helix", "torch", "glasses"];
+      const uncolored = ["Player", "Crab", "Map", "Teleport", "Inactive", "Active", "Cloak", "Telescope", "Beacon", "Eclipse", "Door", "Hidden", "Artwork", "Star"];
+      const colored = ["Helix", "Torch", "Glasses"];
 
       const colors1 = pairs.filter(([k, _]) => uncolored.indexOf(k) !== -1).map(([_, v]) => v);
       const colors2 = pairs.filter(([k, _]) => colored.indexOf(k) !== -1).map(([_, v]) => v);
@@ -136,16 +136,16 @@ describe("RandomMinting", () => {
       const frequencies1 = tallyFrequencies(colors1)
       const frequencies2 = tallyFrequencies(colors2)
 
-      expect(frequencies1["none"]).to.equal(1); // 100%
+      expect(frequencies1["None"]).to.equal(1); // 100%
 
-      expect(frequencies2["red"]).to.be.within(0.11, 0.17);    // 14.3%
-      expect(frequencies2["green"]).to.be.within(0.11, 0.17);  // 14.3%
-      expect(frequencies2["blue"]).to.be.within(0.11, 0.17);   // 14.3%
-      expect(frequencies2["yellow"]).to.be.within(0.11, 0.17); // 14.3%
-      expect(frequencies2["pink"]).to.be.within(0.11, 0.17);   // 14.3%
-      expect(frequencies2["white"]).to.be.within(0.11, 0.17);  // 14.3%
-      expect(frequencies2["black"]).to.be.within(0.11, 0.17);  // 14.3%
-      expect(frequencies2["none"]).to.be.undefined;            // 0%;
+      expect(frequencies2["Red"]).to.be.within(0.11, 0.17);    // 14.3%
+      expect(frequencies2["Green"]).to.be.within(0.11, 0.17);  // 14.3%
+      expect(frequencies2["Blue"]).to.be.within(0.11, 0.17);   // 14.3%
+      expect(frequencies2["Yellow"]).to.be.within(0.11, 0.17); // 14.3%
+      expect(frequencies2["Pink"]).to.be.within(0.11, 0.17);   // 14.3%
+      expect(frequencies2["White"]).to.be.within(0.11, 0.17);  // 14.3%
+      expect(frequencies2["Black"]).to.be.within(0.11, 0.17);  // 14.3%
+      expect(frequencies2["None"]).to.be.undefined;            // 0%;
     }).timeout(300000);
   });
 
@@ -155,8 +155,8 @@ describe("RandomMinting", () => {
 
       const pairs = await mapTokenIDsByType(1, 2500, contract.variantName);
 
-      const dontVary = ["player", "crab", "cloak", "helix", "torch", "beacon", "map", "teleport", "glasses", "eclipse", "hidden", "artwork", "star"];
-      const vary = ["inactive", "active", "telescope", "door"];
+      const dontVary = ["Player", "Crab", "Cloak", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Hidden", "Artwork", "Star"];
+      const vary = ["Inactive", "Active", "Telescope", "Door"];
 
       const variants1 = pairs.filter(([k, _]) => dontVary.indexOf(k) !== -1).map(([_, v]) => v);
       const variants2 = pairs.filter(([k, _]) => vary.indexOf(k) !== -1).map(([_, v]) => v);
@@ -164,14 +164,14 @@ describe("RandomMinting", () => {
       const frequencies1 = tallyFrequencies(variants1)
       const frequencies2 = tallyFrequencies(variants2)
 
-      expect(frequencies1["none"]).to.equal(1); // 100%
+      expect(frequencies1["None"]).to.equal(1); // 100%
 
       // active/inactive occur 30% of the time, doors occur 0.6% of the time
-      expect(frequencies2["sun"]).to.be.within(0.46, 0.52);  // 49% = 50% * (30/30.6)
-      expect(frequencies2["moon"]).to.be.within(0.48, 0.52); // 49% = 50% * (30/30.6)
-      expect(frequencies2["open"]).to.be.below(0.01);       // 0.1% = 50% * (0.6/30.6)
-      expect(frequencies2["closed"]).to.be.below(0.01);     // 0.1% = 50% * (0.6/30.6)
-      expect(frequencies2["none"]).to.be.undefined;
+      expect(frequencies2["Sun"]).to.be.within(0.46, 0.52);  // 49% = 50% * (30/30.6)
+      expect(frequencies2["Moon"]).to.be.within(0.48, 0.52); // 49% = 50% * (30/30.6)
+      expect(frequencies2["Open"]).to.be.below(0.01);       // 0.1% = 50% * (0.6/30.6)
+      expect(frequencies2["Closed"]).to.be.below(0.01);     // 0.1% = 50% * (0.6/30.6)
+      expect(frequencies2["None"]).to.be.undefined;
 
     }).timeout(50000);
   });
@@ -183,11 +183,11 @@ describe("RandomMinting", () => {
       const conditionNames = await mapTokenIDs(1, 1000, contract.conditionName);
       const frequencies = tallyFrequencies(conditionNames);
 
-      expect(frequencies["dire"]).to.be.undefined;                // 0%
-      expect(frequencies["poor"]).to.be.undefined;                // 0%
-      expect(frequencies["reasonable"]).to.be.undefined;          // 0%
-      expect(frequencies["excellent"]).to.be.within(0.17, 0.23);  // 20%
-      expect(frequencies["pristine"]).to.be.within(0.77, 0.83);   // 80%
+      expect(frequencies["Dire"]).to.be.undefined;                // 0%
+      expect(frequencies["Poor"]).to.be.undefined;                // 0%
+      expect(frequencies["Reasonable"]).to.be.undefined;          // 0%
+      expect(frequencies["Excellent"]).to.be.within(0.17, 0.23);  // 20%
+      expect(frequencies["Pristine"]).to.be.within(0.77, 0.83);   // 80%
     });
   });
 
