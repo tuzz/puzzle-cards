@@ -13,10 +13,6 @@ contract PuzzleCard is ERC721Tradable {
     string[] public variantNames = ["None", "Sun", "Moon", "Open", "Closed"];
     string[] public conditionNames = ["Dire", "Poor", "Reasonable", "Excellent", "Pristine"];
 
-    uint8 public numSeries = 2;
-    uint8 public numColors = 7;
-    uint8 public numConditions = 5;
-
     uint8[] public numPuzzlesPerSeries = [2, 3];
     uint16[] public puzzleOffsetPerSeries = [0, 2];
     uint8[] public numColorSlotsPerType = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 0, 1];
@@ -154,7 +150,7 @@ contract PuzzleCard is ERC721Tradable {
     // internal methods
 
     function mintRandomCard(address to) internal {
-        uint8 series = uint8(randomNumber(0) % numSeries);
+        uint8 series = uint8(randomNumber(0) % seriesNames.length);
 
         uint8 numPuzzles = numPuzzlesPerSeries[series];
         uint8 puzzle = uint8(randomNumber(1) % numPuzzles);
@@ -163,13 +159,14 @@ contract PuzzleCard is ERC721Tradable {
         uint8 type_ = pickRandom(3, typeProbabilities);
 
         uint8 numSlots = numColorSlotsPerType[type_];
+        uint8 numColors = uint8(colorNames.length) - 1;
         uint8 color1 = numSlots < 1 ? 0 : 1 + uint8(randomNumber(4) % numColors);
         uint8 color2 = numSlots < 2 ? 0 : 1 + uint8(randomNumber(5) % numColors);
 
         uint8 numVariants = numVariantsPerType[type_];
         uint8 variant = numVariants < 1 ? 0 : uint8(randomNumber(6) % numVariants);
 
-        uint8 pristine = numConditions - 1;
+        uint8 pristine = uint8(conditionNames.length) - 1;
         uint8 condition = pristine - pickRandom(7, conditionProbabilities);
 
         cardAttributes[getNextTokenId()] = Attributes(
