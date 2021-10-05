@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 
-describe("PuzzleCard", function () {
+describe("PuzzleCard", () => {
   let factory, contract, owner, user1, user2;
 
   before(async () => {

@@ -3,7 +3,7 @@ const network = hardhatArguments.network;
 const metadata = config.networks[network];
 const proxyAddress = metadata.openseaProxyAddress;
 
-async function main() {
+const main = async () => {
   const [owner] = await ethers.getSigners();
   const factory = await ethers.getContractFactory("PuzzleCard");
 

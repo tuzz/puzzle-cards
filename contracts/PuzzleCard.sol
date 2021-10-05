@@ -12,6 +12,7 @@ contract PuzzleCard is ERC721Tradable {
     string[] private CONDITION_NAMES = ["dire", "poor", "reasonable", "excellent", "pristine"];
 
     uint8 constant NUM_COLORS = 7;
+    uint8 constant NUM_CONDITIONS = 5;
     uint8[] private NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0];
     uint8[] private NUM_VARIANTS_PER_TYPE = [0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0];
     uint8[] private VARIANT_OFFSET_PER_TYPE = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -135,7 +136,6 @@ contract PuzzleCard is ERC721Tradable {
     function mintRandomCard(address to) internal {
         uint8 tier = pickRandom(0, TIER_PROBABILITIES);
         uint8 type_ = pickRandom(1, TYPE_PROBABILITIES);
-        uint8 condition = pickRandom(2, CONDITION_PROBABILITIES);
 
         uint8 numSlots = NUM_COLOR_SLOTS_PER_TYPE[type_];
         uint8 color1 = numSlots < 1 ? 0 : 1 + uint8(randomNumber(3) % NUM_COLORS);
@@ -144,6 +144,9 @@ contract PuzzleCard is ERC721Tradable {
         uint8 numVariants = NUM_VARIANTS_PER_TYPE[type_];
         uint8 indexOffset = VARIANT_OFFSET_PER_TYPE[type_];
         uint8 variant = numVariants < 1 ? 0 : indexOffset + uint8(randomNumber(5) % numVariants);
+
+        uint8 pristine = NUM_CONDITIONS - 1;
+        uint8 condition = pristine - pickRandom(2, CONDITION_PROBABILITIES);
 
         cardAttributes[getNextTokenId()] = Attributes(
           tier, type_, color1, color2, variant, condition
