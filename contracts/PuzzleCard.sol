@@ -38,6 +38,7 @@ contract PuzzleCard is ERC721Tradable {
 
     uint256 public currentPriceToMint;
     string public currentBaseTokenURI;
+    uint256 public randomCallCount = 0;
 
     constructor(address proxyAddress) ERC721Tradable("PuzzleCard", "WSUN", proxyAddress) {
         setPriceToMint(uint256(0.1 * 0.7883 * 1000000000000000000)); // $0.10 in Polygon Wei.
@@ -101,36 +102,36 @@ contract PuzzleCard is ERC721Tradable {
 
         payable(owner()).transfer(price);
 
-        for (uint i = 0; i < numberToMint; i += 1) {
+        for (uint8 i = 0; i < numberToMint; i += 1) {
             mintRandomCard(to);
         }
     }
 
     function gift(uint256 numberToGift, address to) public onlyOwner {
-        for (uint i = 0; i < numberToGift; i += 1) {
+        for (uint8 i = 0; i < numberToGift; i += 1) {
             mintRandomCard(to);
         }
     }
 
     function mintRandomCard(address to) private {
-        uint8 series = uint8(randomNumber(0) % seriesNames.length);
+        uint8 series = uint8(randomNumber() % seriesNames.length);
 
         uint8 numPuzzles = numPuzzlesPerSeries[series];
-        uint8 puzzle = uint8(randomNumber(1) % numPuzzles);
+        uint8 puzzle = uint8(randomNumber() % numPuzzles);
 
-        uint8 tier = pickRandom(2, tierProbabilities);
-        uint8 type_ = pickRandom(3, typeProbabilities);
+        uint8 tier = pickRandom(tierProbabilities);
+        uint8 type_ = pickRandom(typeProbabilities);
 
         uint8 numSlots = numColorSlotsPerType[type_];
         uint8 numColors = uint8(colorNames.length) - 1;
-        uint8 color1 = numSlots < 1 ? 0 : 1 + uint8(randomNumber(4) % numColors);
-        uint8 color2 = numSlots < 2 ? 0 : 1 + uint8(randomNumber(5) % numColors);
+        uint8 color1 = numSlots < 1 ? 0 : 1 + uint8(randomNumber() % numColors);
+        uint8 color2 = numSlots < 2 ? 0 : 1 + uint8(randomNumber() % numColors);
 
         uint8 numVariants = numVariantsPerType[type_];
-        uint8 variant = numVariants < 1 ? 0 : uint8(randomNumber(6) % numVariants);
+        uint8 variant = numVariants < 1 ? 0 : uint8(randomNumber() % numVariants);
 
         uint8 pristine = uint8(conditionNames.length) - 1;
-        uint8 condition = pristine - pickRandom(7, conditionProbabilities);
+        uint8 condition = pristine - pickRandom(conditionProbabilities);
 
         cards[getNextTokenId()] = Attributes(
           series, puzzle, tier, type_, color1, color2, variant, condition
@@ -141,13 +142,13 @@ contract PuzzleCard is ERC721Tradable {
 
     // utilities
 
-    function pickRandom(uint256 callCount, uint256[] memory probabilities) private view returns (uint8) {
+    function pickRandom(uint256[] memory probabilities) private returns (uint8) {
         uint256 cumulative = 0;
         for (uint8 i = 0; i < probabilities.length; i += 1) {
             cumulative += probabilities[i];
         }
 
-        uint256 random = randomNumber(callCount) % cumulative;
+        uint256 random = randomNumber() % cumulative;
 
         uint256 total = 0;
         for (uint8 i = 0; i < probabilities.length; i += 1) {
@@ -158,14 +159,14 @@ contract PuzzleCard is ERC721Tradable {
         return 255; // Unreachable.
     }
 
-    function randomNumber(uint256 callCount) private view returns (uint256) {
+    function randomNumber() private returns (uint256) {
         return uint256(keccak256(abi.encode(
             block.timestamp,
             block.difficulty,
             proxyRegistryAddress,
             currentBaseTokenURI,
             getNextTokenId(),
-            callCount
+            randomCallCount++
         )));
     }
 
