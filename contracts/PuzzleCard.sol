@@ -31,6 +31,7 @@ contract PuzzleCard is ERC721Tradable {
     uint8[] public numColorSlotsPerType = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 1, 0];
     uint8[] public numVariantsPerType = [0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0];
     uint16[] public variantOffsetPerType = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0];
+    uint16[] public cardSlotPerType = [0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     uint256[] public tierProbabilities = [90, 10];
     uint256[] public typeProbabilities = [200, 200, 200, 100, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
@@ -97,8 +98,8 @@ contract PuzzleCard is ERC721Tradable {
         uint256 price = priceToMint(numberToMint);
 
         require(msg.value >= price, "[insufficient payment provided]");
-        require(numberToMint >= 1, "[unable to mint 0 puzzle cards]");
-        require(numberToMint <= 100, "[unable to mint more than 100 puzzle cards in a single call]");
+        require(numberToMint >= 1, "[unable to mint 0 cards]");
+        require(numberToMint <= 100, "[unable to mint more than 100 cards in a single call]");
 
         payable(owner()).transfer(price);
 
@@ -143,7 +144,6 @@ contract PuzzleCard is ERC721Tradable {
     // actions
 
     function activateSunOrMoon(uint256[] memory tokenIDs) public view {
-      require(false, string(abi.encodePacked(tokenIDs)));
         (bool ok, string[] memory r,) = _canActivateSunOrMoon(tokenIDs); require(ok, string(abi.encode(r)));
     }
 
@@ -152,13 +152,29 @@ contract PuzzleCard is ERC721Tradable {
     }
 
     function _canActivateSunOrMoon(uint256[] memory tokenIDs) private view returns (bool, string[] memory, Attributes[] memory) {
-        (bool ok, string[] memory r) = (true, new string[](2));
+        (bool ok, string[] memory r) = (true, new string[](7));
 
-        if (tokenIDs.length != 2) { ok = false; r[0] = "[action requires 2 puzzle cards]"; }
-        if (!ownsAll(tokenIDs)) { ok = false; r[1] = "[user doesn't own all the puzzle cards]"; }
+        Attributes[] memory slots = cardsInSlots(tokenIDs);
 
-        Attributes[] memory cards_ = new Attributes[](3);
-        return (ok, r, cards_);
+        Attributes memory activator = slots[0];
+        Attributes memory inactive = slots[2];
+
+        if (tokenIDs.length != 2)            { ok = false; r[0] = "[2 cards are required]"; }
+        if (!ownsAll(tokenIDs))              { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (activator.tier != inactive.tier) { ok = false; r[2] = "[the tiers of the cards don't match]"; }
+
+        if (!ok) { return (ok, r, slots); } // Return early if the basic checks fail.
+
+        bool inaccessible = activator.tier == ETHEREAL_TIER || activator.tier == GODLY_TIER;
+        bool cloakUsed = activator.type_ == CLOAK_TYPE;
+        bool colorsMatch = activator.color1 == inactive.color1;
+
+        if (activator.type_ == NO_TYPE)      { ok = false; r[3] = "[a player, crab or cloak card is required]"; }
+        if (inaccessible && !cloakUsed)      { ok = false; r[4] = "[only works with a cloak card at this tier]"; }
+        if (inactive.type_ != INACTIVE_TYPE) { ok = false; r[5] = "[an inactive sun or moon card is required]"; }
+        if (cloakUsed && !colorsMatch)       { ok = false; r[6] = "[the color of the cloak does not match]"; }
+
+        return (ok, r, slots);
     }
 
     // utilities
@@ -169,6 +185,24 @@ contract PuzzleCard is ERC721Tradable {
         }
 
         return true;
+    }
+
+    function cardsInSlots(uint256[] memory tokenIDs) private view returns (Attributes[] memory) {
+        Attributes[] memory slots = new Attributes[](3);
+
+        // Set the initial value of each slot's type to an invalid value so that
+        // the type checks will fail when the cards in the slots are queried.
+        slots[0].type_ = NO_TYPE;
+        slots[1].type_ = NO_TYPE;
+        slots[2].type_ = NO_TYPE;
+
+        // Lookup the cards and put them into one of three slots.
+        for (uint8 i = 0; i < tokenIDs.length; i += 1) {
+          Attributes memory card = cards[tokenIDs[i]];
+          slots[cardSlotPerType[card.type_]] = card;
+        }
+
+        return slots;
     }
 
     function pickRandom(uint256[] memory probabilities) private returns (uint8) {
@@ -224,6 +258,33 @@ contract PuzzleCard is ERC721Tradable {
 
         return string(bytes_);
     }
+
+    uint8 constant PLAYER_TYPE = 0;
+    uint8 constant CRAB_TYPE = 1;
+    uint8 constant INACTIVE_TYPE = 2;
+    uint8 constant ACTIVE_TYPE = 3;
+    uint8 constant CLOAK_TYPE = 4;
+    uint8 constant TELESCOPE_TYPE = 5;
+    uint8 constant HELIX_TYPE = 6;
+    uint8 constant TORCH_TYPE = 7;
+    uint8 constant BEACON_TYPE = 8;
+    uint8 constant MAP_TYPE = 9;
+    uint8 constant TELEPORT_TYPE = 10;
+    uint8 constant GLASSES_TYPE = 11;
+    uint8 constant ECLIPSE_TYPE = 12;
+    uint8 constant DOOR_TYPE = 13;
+    uint8 constant HIDDEN_TYPE = 14;
+    uint8 constant STAR_TYPE = 15;
+    uint8 constant ARTWORK_TYPE = 16;
+    uint8 constant NO_TYPE = 99;
+
+    uint8 constant MORTAL_TIER = 0;
+    uint8 constant IMMORTAL_TIER = 1;
+    uint8 constant ETHEREAL_TIER = 2;
+    uint8 constant VIRTUAL_TIER = 3;
+    uint8 constant CELESTIAL_TIER = 4;
+    uint8 constant GODLY_TIER = 5;
+    uint8 constant MASTER_TIER = 6;
 
     bytes1 constant ASCII_SPACE = 0x20;
     bytes1 constant ASCII_DASH = 0x2D;

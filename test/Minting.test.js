@@ -14,7 +14,7 @@ describe("Minting", () => {
   });
 
   describe("#mint", () => {
-    it("allows a user to mint puzzle cards in exchange for payment", async () => {
+    it("allows a user to mint cards in exchange for payment", async () => {
       const contractAsUser1 = contract.connect(user1);
 
       const balanceBefore = await contractAsUser1.balanceOf(user2.address);
@@ -60,14 +60,14 @@ describe("Minting", () => {
   });
 
   describe("#gift", () => {
-    it("allows the contract owner to mint puzzle cards as a gift to a user", async () => {
+    it("allows the contract owner to mint cards as a gift to a user", async () => {
       await contract.gift(3, user1.address);
       const balance = await contract.balanceOf(user1.address);
 
       expect(balance.toNumber()).to.equal(3);
     });
 
-    it("does not allow other users to gift puzzle cards", async () => {
+    it("does not allow other users to gift cards", async () => {
       const contractAsUser1 = contract.connect(user1);
       await expectRevert.unspecified(contractAsUser1.gift(3, user1.address));
     });
