@@ -96,9 +96,9 @@ contract PuzzleCard is ERC721Tradable {
     function mint(uint256 numberToMint, address to) public payable {
         uint256 price = priceToMint(numberToMint);
 
-        require(msg.value >= price, "insufficient payment provided");
-        require(numberToMint >= 1, "unable to mint 0 puzzle cards");
-        require(numberToMint <= 100, "unable to mint more than 100 puzzle cards in a single call");
+        require(msg.value >= price, "[insufficient payment provided]");
+        require(numberToMint >= 1, "[unable to mint 0 puzzle cards]");
+        require(numberToMint <= 100, "[unable to mint more than 100 puzzle cards in a single call]");
 
         payable(owner()).transfer(price);
 
@@ -140,7 +140,36 @@ contract PuzzleCard is ERC721Tradable {
         mintTo(to);
     }
 
+    // actions
+
+    function activateSunOrMoon(uint256[] memory tokenIDs) public view {
+      require(false, string(abi.encodePacked(tokenIDs)));
+        (bool ok, string[] memory r,) = _canActivateSunOrMoon(tokenIDs); require(ok, string(abi.encode(r)));
+    }
+
+    function canActivateSunOrMoon(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
+        (bool ok, string[] memory r,) = _canActivateSunOrMoon(tokenIDs); return (ok, r);
+    }
+
+    function _canActivateSunOrMoon(uint256[] memory tokenIDs) private view returns (bool, string[] memory, Attributes[] memory) {
+        (bool ok, string[] memory r) = (true, new string[](2));
+
+        if (tokenIDs.length != 2) { ok = false; r[0] = "[action requires 2 puzzle cards]"; }
+        if (!ownsAll(tokenIDs)) { ok = false; r[1] = "[user doesn't own all the puzzle cards]"; }
+
+        Attributes[] memory cards_ = new Attributes[](3);
+        return (ok, r, cards_);
+    }
+
     // utilities
+
+    function ownsAll(uint256[] memory tokenIDs) private view returns (bool) {
+        for (uint256 i = 0; i < tokenIDs.length; i += 1) {
+            if (ownerOf(tokenIDs[i]) != msg.sender) { return false; }
+        }
+
+        return true;
+    }
 
     function pickRandom(uint256[] memory probabilities) private returns (uint8) {
         uint256 cumulative = 0;
