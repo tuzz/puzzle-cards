@@ -139,9 +139,9 @@ contract PuzzleCard is ERC721Tradable {
     // actions
 
     function activateSunOrMoon(uint256[] memory tokenIDs) public {
-        (bool ok, string[] memory r, Attributes[] memory slots) = _canActivateSunOrMoon(tokenIDs); require(ok, string(abi.encode(r)));
+        (bool ok, string[] memory r, CardSlot[] memory slots) = _canActivateSunOrMoon(tokenIDs); require(ok, string(abi.encode(r)));
 
-        Attributes memory inactive = slots[2];
+        Attributes memory inactive = slots[2].card;
 
         uint8 series = uint8(randomNumber() % seriesNames.length);
         uint8 puzzle = uint8(randomNumber() % numPuzzlesPerSeries[series]);
@@ -159,47 +159,42 @@ contract PuzzleCard is ERC721Tradable {
         (bool ok, string[] memory r,) = _canActivateSunOrMoon(tokenIDs); return (ok, r);
     }
 
-    function _canActivateSunOrMoon(uint256[] memory tokenIDs) private view returns (bool, string[] memory, Attributes[] memory) {
+    function _canActivateSunOrMoon(uint256[] memory tokenIDs) private view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](7));
 
-        Attributes[] memory slots = cardsInSlots(tokenIDs);
+        CardSlot[] memory slots = cardsInSlots(tokenIDs);
 
-        if (tokenIDs.length != 2)             { ok = false; r[0] = "[2 cards are required]"; }
-        if (!ownsAll(tokenIDs))               { ok = false; r[1] = "[user doesn't own all the cards]"; }
-        if (!sameTier(slots))                 { ok = false; r[2] = "[the tiers of the cards don't match]"; }
+        if (tokenIDs.length != 2)              { ok = false; r[0] = "[2 cards are required]"; }
+        if (!ownsAll(tokenIDs))                { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!sameTier(slots))                  { ok = false; r[2] = "[the tiers of the cards don't match]"; }
 
         if (!ok) { return (ok, r, slots); } // Return early if the basic checks fail.
 
-        Attributes memory activator = slots[0];
-        Attributes memory inactive = slots[2];
+        Attributes memory activator = slots[0].card;
+        Attributes memory inactive = slots[2].card;
 
         bool inaccessible = activator.tier == ETHEREAL_TIER || activator.tier == GODLY_TIER;
         bool cloakUsed = activator.type_ == CLOAK_TYPE;
         bool colorsMatch = activator.color1 == inactive.color1;
 
-        if (activator.condition == MAX_VALUE) { ok = false; r[3] = "[a player, crab or cloak card is required]"; }
-        if (inaccessible && !cloakUsed)       { ok = false; r[4] = "[only works with a cloak card at this tier]"; }
-        if (inactive.type_ != INACTIVE_TYPE)  { ok = false; r[5] = "[an inactive sun or moon card is required]"; }
-        if (cloakUsed && !colorsMatch)        { ok = false; r[6] = "[the color of the cloak does not match]"; }
+        if (!slots[0].occupied)                { ok = false; r[3] = "[a player, crab or cloak card is required]"; }
+        if (!hasType(slots[2], INACTIVE_TYPE)) { ok = false; r[4] = "[an inactive sun or moon card is required]"; }
+        if (inaccessible && !cloakUsed)        { ok = false; r[4] = "[only works with a cloak card at this tier]"; }
+        if (cloakUsed && !colorsMatch)         { ok = false; r[6] = "[the color of the cloak does not match]"; }
 
         return (ok, r, slots);
     }
 
     // utilities
 
-    function cardsInSlots(uint256[] memory tokenIDs) private view returns (Attributes[] memory) {
-        Attributes[] memory slots = new Attributes[](3);
+    struct CardSlot { Attributes card; bool occupied; }
 
-        // Set the initial value of each slot's condition to an invalid value so
-        // that the checks will fail when the cards in the slots are queried.
-        slots[0].condition = MAX_VALUE;
-        slots[1].condition = MAX_VALUE;
-        slots[2].condition = MAX_VALUE;
+    function cardsInSlots(uint256[] memory tokenIDs) private view returns (CardSlot[] memory) {
+        CardSlot[] memory slots = new CardSlot[](3);
 
-        // Lookup the cards and put them into one of three slots.
         for (uint8 i = 0; i < tokenIDs.length; i += 1) {
           Attributes memory card = cards[tokenIDs[i]];
-          slots[cardSlotPerType[card.type_]] = card;
+          slots[cardSlotPerType[card.type_]] = CardSlot(card, true);
         }
 
         return slots;
@@ -213,24 +208,35 @@ contract PuzzleCard is ERC721Tradable {
         return true;
     }
 
-    function sameTier(Attributes[] memory slots) private view returns (bool) {
-        uint8 tier = slots[0].tier; // Slot 0 is always populated.
+    function sameTier(CardSlot[] memory slots) private pure returns (bool) {
+        CardSlot memory slot0 = slots[0];
+        CardSlot memory slot1 = slots[1];
+        CardSlot memory slot2 = slots[2];
 
-        Attributes memory card1 = slots[1];
-        Attributes memory card2 = slots[2];
+        if (slot0.occupied) {
+            return (!slot1.occupied || slot0.card.tier == slot1.card.tier) &&
+                   (!slot2.occupied || slot0.card.tier == slot2.card.tier);
+        }
 
-        return (card1.tier == tier || card1.condition == MAX_VALUE) &&
-               (card2.tier == tier || card2.condition == MAX_VALUE);
+        if (slot1.occupied) {
+            return (!slot2.occupied || slot1.card.tier == slot2.card.tier);
+        }
+
+        return true;
     }
 
-    function degrade(Attributes[] memory slots, uint8 tier) private returns (uint8) {
+    function hasType(CardSlot memory slot, uint8 type_) private pure returns (bool) {
+        return slot.occupied && slot.card.type_ == type_;
+    }
+
+    function degrade(CardSlot[] memory slots, uint8 tier) private returns (uint8) {
         uint8 worstCondition = MAX_VALUE;
 
         for (uint8 i = 0; i < slots.length; i += 1) {
-            uint8 condition = slots[i].condition;
+            CardSlot memory slot = slots[i];
 
-            if (condition < worstCondition) {
-              worstCondition = condition;
+            if (slot.occupied && slot.card.condition < worstCondition) {
+                worstCondition = slot.card.condition;
             }
         }
 
