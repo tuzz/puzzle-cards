@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cp test/TestUtils.sol contracts/ && \
+cp test/test_utils/TestUtils.sol contracts/ && \
 yarn hardhat test
 
 rm -f contracts/TestUtils.sol
