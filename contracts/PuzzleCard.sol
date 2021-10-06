@@ -96,9 +96,9 @@ contract PuzzleCard is ERC721Tradable {
     function mint(uint256 numberToMint, address to) public payable {
         uint256 price = priceToMint(numberToMint);
 
-        require(msg.value >= price, "please provide payment to mint the puzzle cards");
-        require(numberToMint >= 1, "please mint at least one puzzle card");
-        require(numberToMint <= 100, "please mint at most one hundred puzzle cards");
+        require(msg.value >= price, "insufficient payment provided");
+        require(numberToMint >= 1, "unable to mint 0 puzzle cards");
+        require(numberToMint <= 100, "unable to mint more than 100 puzzle cards in a single call");
 
         payable(owner()).transfer(price);
 
