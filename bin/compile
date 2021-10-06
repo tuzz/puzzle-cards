@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# Compiles all the contracts in the contracts/ directory.
-
-yarn hardhat compile

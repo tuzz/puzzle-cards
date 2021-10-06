@@ -5,7 +5,7 @@ describe("Minting", () => {
   let factory, contract, owner, user1, user2;
 
   before(async () => {
-    factory = await ethers.getContractFactory("PuzzleCard");
+    factory = await ethers.getContractFactory("TestUtils");
     [owner, user1, user2] = await ethers.getSigners();
   });
 

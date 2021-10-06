@@ -6,4 +6,5 @@ if [ "$#" -ne 1 ]; then
   echo "Usage: ./bin/deploy network"
 fi
 
+rm -f contracts/TestUtils.sol && \
 yarn hardhat run bin/deploy.js --network $1

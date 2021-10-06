@@ -13,7 +13,7 @@ describe("MintingRandomly", () => {
   let factory, contract, owner;
 
   before(async () => {
-    factory = await ethers.getContractFactory("PuzzleCard");
+    factory = await ethers.getContractFactory("TestUtils");
     [owner] = await ethers.getSigners();
   });
 
