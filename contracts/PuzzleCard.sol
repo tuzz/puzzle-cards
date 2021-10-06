@@ -60,6 +60,7 @@ contract PuzzleCard is ERC721Tradable {
     function priceToMint(uint256 numberOfCards) public view returns (uint256) { return currentPriceToMint * numberOfCards; }
     function baseTokenURI() override public view returns (string memory) { return currentBaseTokenURI; }
     function tokenURI(uint256 tokenID) override public view returns (string memory) { return string(abi.encodePacked(baseTokenURI(), slug(tokenID), ".json")); }
+    function isDiscarded(uint256 tokenID) public view returns (bool) { return !_exists(tokenID); }
 
     function slug(uint256 tokenID) public view returns (string memory) {
         return string(abi.encodePacked(
@@ -116,10 +117,7 @@ contract PuzzleCard is ERC721Tradable {
 
     function mintRandomCard(address to) private {
         uint8 series = uint8(randomNumber() % seriesNames.length);
-
-        uint8 numPuzzles = numPuzzlesPerSeries[series];
-        uint8 puzzle = uint8(randomNumber() % numPuzzles);
-
+        uint8 puzzle = uint8(randomNumber() % numPuzzlesPerSeries[series]);
         uint8 tier = pickRandom(tierProbabilities);
         uint8 type_ = pickRandom(typeProbabilities);
 
@@ -134,17 +132,27 @@ contract PuzzleCard is ERC721Tradable {
         uint8 pristine = uint8(conditionNames.length) - 1;
         uint8 condition = pristine - pickRandom(conditionProbabilities);
 
-        cards[getNextTokenId()] = Attributes(
-          series, puzzle, tier, type_, color1, color2, variant, condition
-        );
-
+        cards[getNextTokenId()] = Attributes(series, puzzle, tier, type_, color1, color2, variant, condition);
         mintTo(to);
     }
 
     // actions
 
-    function activateSunOrMoon(uint256[] memory tokenIDs) public view {
-        (bool ok, string[] memory r,) = _canActivateSunOrMoon(tokenIDs); require(ok, string(abi.encode(r)));
+    function activateSunOrMoon(uint256[] memory tokenIDs) public {
+        (bool ok, string[] memory r, Attributes[] memory slots) = _canActivateSunOrMoon(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes memory inactive = slots[2];
+
+        uint8 series = uint8(randomNumber() % seriesNames.length);
+        uint8 puzzle = uint8(randomNumber() % numPuzzlesPerSeries[series]);
+        uint8 tier = inactive.tier;
+        uint8 type_ = ACTIVE_TYPE;
+        uint8 color1 = inactive.color1;
+        uint8 color2 = inactive.color2;
+        uint8 variant = inactive.variant;
+        uint8 condition = 0; // TODO: degrade
+
+        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
     }
 
     function canActivateSunOrMoon(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -205,6 +213,15 @@ contract PuzzleCard is ERC721Tradable {
         return slots;
     }
 
+    function replace(uint256[] memory tokenIDs, Attributes memory newCard) private {
+        cards[getNextTokenId()] = newCard;
+        mintTo(ownerOf(tokenIDs[0]));
+
+        for (uint8 i = 0; i < tokenIDs.length; i += 1) {
+          _burn(tokenIDs[i]);
+        }
+    }
+
     function pickRandom(uint256[] memory probabilities) private returns (uint8) {
         uint256 cumulative = 0;
         for (uint8 i = 0; i < probabilities.length; i += 1) {
@@ -259,6 +276,20 @@ contract PuzzleCard is ERC721Tradable {
         return string(bytes_);
     }
 
+    bytes1 constant ASCII_SPACE = 0x20;
+    bytes1 constant ASCII_DASH = 0x2D;
+    bytes1 constant ASCII_CAPITAL_A = 0x41;
+    bytes1 constant ASCII_CAPITAL_Z = 0x5A;
+    uint8 constant ASCII_TO_LOWERCASE = 32;
+
+    uint8 constant MORTAL_TIER = 0;
+    uint8 constant IMMORTAL_TIER = 1;
+    uint8 constant ETHEREAL_TIER = 2;
+    uint8 constant VIRTUAL_TIER = 3;
+    uint8 constant CELESTIAL_TIER = 4;
+    uint8 constant GODLY_TIER = 5;
+    uint8 constant MASTER_TIER = 6;
+
     uint8 constant PLAYER_TYPE = 0;
     uint8 constant CRAB_TYPE = 1;
     uint8 constant INACTIVE_TYPE = 2;
@@ -278,17 +309,5 @@ contract PuzzleCard is ERC721Tradable {
     uint8 constant ARTWORK_TYPE = 16;
     uint8 constant NO_TYPE = 99;
 
-    uint8 constant MORTAL_TIER = 0;
-    uint8 constant IMMORTAL_TIER = 1;
-    uint8 constant ETHEREAL_TIER = 2;
-    uint8 constant VIRTUAL_TIER = 3;
-    uint8 constant CELESTIAL_TIER = 4;
-    uint8 constant GODLY_TIER = 5;
-    uint8 constant MASTER_TIER = 6;
-
-    bytes1 constant ASCII_SPACE = 0x20;
-    bytes1 constant ASCII_DASH = 0x2D;
-    bytes1 constant ASCII_CAPITAL_A = 0x41;
-    bytes1 constant ASCII_CAPITAL_Z = 0x5A;
-    uint8 constant ASCII_TO_LOWERCASE = 32;
+    uint8 constant NO_COLOR = 0;
 }
