@@ -164,14 +164,14 @@ contract PuzzleCard is ERC721Tradable {
 
         Attributes[] memory slots = cardsInSlots(tokenIDs);
 
-        Attributes memory activator = slots[0];
-        Attributes memory inactive = slots[2];
-
         if (tokenIDs.length != 2)             { ok = false; r[0] = "[2 cards are required]"; }
         if (!ownsAll(tokenIDs))               { ok = false; r[1] = "[user doesn't own all the cards]"; }
-        if (activator.tier != inactive.tier)  { ok = false; r[2] = "[the tiers of the cards don't match]"; }
+        if (!sameTier(slots))                 { ok = false; r[2] = "[the tiers of the cards don't match]"; }
 
         if (!ok) { return (ok, r, slots); } // Return early if the basic checks fail.
+
+        Attributes memory activator = slots[0];
+        Attributes memory inactive = slots[2];
 
         bool inaccessible = activator.tier == ETHEREAL_TIER || activator.tier == GODLY_TIER;
         bool cloakUsed = activator.type_ == CLOAK_TYPE;
@@ -186,14 +186,6 @@ contract PuzzleCard is ERC721Tradable {
     }
 
     // utilities
-
-    function ownsAll(uint256[] memory tokenIDs) private view returns (bool) {
-        for (uint256 i = 0; i < tokenIDs.length; i += 1) {
-            if (ownerOf(tokenIDs[i]) != msg.sender) { return false; }
-        }
-
-        return true;
-    }
 
     function cardsInSlots(uint256[] memory tokenIDs) private view returns (Attributes[] memory) {
         Attributes[] memory slots = new Attributes[](3);
@@ -211,6 +203,24 @@ contract PuzzleCard is ERC721Tradable {
         }
 
         return slots;
+    }
+
+    function ownsAll(uint256[] memory tokenIDs) private view returns (bool) {
+        for (uint8 i = 0; i < tokenIDs.length; i += 1) {
+            if (ownerOf(tokenIDs[i]) != msg.sender) { return false; }
+        }
+
+        return true;
+    }
+
+    function sameTier(Attributes[] memory slots) private view returns (bool) {
+        uint8 tier = slots[0].tier; // Slot 0 is always populated.
+
+        Attributes memory card1 = slots[1];
+        Attributes memory card2 = slots[2];
+
+        return (card1.tier == tier || card1.condition == MAX_VALUE) &&
+               (card2.tier == tier || card2.condition == MAX_VALUE);
     }
 
     function degrade(Attributes[] memory slots, uint8 tier) private returns (uint8) {

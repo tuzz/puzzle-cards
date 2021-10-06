@@ -73,7 +73,7 @@ describe("ActivateSunOrMoon", () => {
       await contract.mintExactByNames({ ...playerCard, tier: "Immortal" }, owner.address);
       await contract.mintExactByNames(inactiveCard, owner.address);
 
-      const [isAllowed, reasons] = await contract.canActivateSunOrMoon([1]);
+      const [isAllowed, reasons] = await contract.canActivateSunOrMoon([1, 2]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the tiers of the cards don't match]", reasons);
