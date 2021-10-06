@@ -33,153 +33,82 @@ describe("Actions", () => {
     expect(await contract.conditionName(tokenID)).to.equal("Excellent");
   });
 
-  describe("#activateSunOrMoon", () => {
-    it("discards the provided cards and mints a new one", async () => {
+  it("randomly picks a new puzzle each time a card is minted", async () => {
+    const puzzleNames = [];
+
+    for (let tokenID = 1; tokenID <= 15; tokenID += 3) {
       await contract.mintExactByNames(playerCard, owner.address);
       await contract.mintExactByNames(inactiveCard, owner.address);
 
-      await contract.activateSunOrMoon([1, 2]);
+      await contract.activateSunOrMoon([tokenID, tokenID + 1]);
+      puzzleNames.push(await contract.puzzleName(tokenID + 2));
+    }
 
-      expect(await contract.isDiscarded(1)).to.equal(true);
-      expect(await contract.isDiscarded(2)).to.equal(true);
-      expect(await contract.isDiscarded(3)).to.equal(false);
-    });
-
-    it("sets some of the new card's attributes from the inactive card", async () => {
-      await contract.mintExactByNames(playerCard, owner.address);
-      await contract.mintExactByNames(inactiveCard, owner.address);
-
-      await contract.activateSunOrMoon([1, 2]);
-
-      expect(await contract.tierName(3)).to.equal("Mortal");
-      expect(await contract.typeName(3)).to.equal("Active");
-      expect(await contract.color1Name(3)).to.equal("Black");
-      expect(await contract.color2Name(3)).to.equal("None");
-      expect(await contract.variantName(3)).to.equal("Sun");
-    });
-
-    it("randomly picks a new puzzle", async () => {
-      const puzzleNames = [];
-
-      for (let tokenID = 1; tokenID <= 15; tokenID += 3) {
-        await contract.mintExactByNames(playerCard, owner.address);
-        await contract.mintExactByNames(inactiveCard, owner.address);
-
-        await contract.activateSunOrMoon([tokenID, tokenID + 1]);
-        puzzleNames.push(await contract.puzzleName(tokenID + 2));
-      }
-
-      expect(puzzleNames.length).to.be.above(1);
-    });
-
-    it("has a chance to degrade the condition of the card", async () => {
-      const conditionNames = [];
-
-      for (let tokenID = 1; tokenID <= 300; tokenID += 3) {
-        await contract.mintExactByNames(playerCard, owner.address);
-        await contract.mintExactByNames(inactiveCard, owner.address);
-
-        await contract.activateSunOrMoon([tokenID, tokenID + 1]);
-        conditionNames.push(await contract.conditionName(tokenID + 2));
-      }
-
-      const set = new Set(conditionNames);
-      expect(set.size).to.equal(2);
-
-      expect(set.has("Excellent")).to.equal(true);
-      expect(set.has("Reasonable")).to.equal(true);
-
-      const numExcellent = conditionNames.filter(s => s === "Excellent").length;
-      const numReasonable = conditionNames.filter(s => s === "Reasonable").length;
-
-      expect(numExcellent).to.be.above(numReasonable * 3);
-    });
-
-    it("reverts if #canActivateSunOrMoon is false", async () => {
-      await contract.mintExactByNames(playerCard, owner.address);
-      await contract.mintExactByNames({ ...inactiveCard, tier: "Godly" }, owner.address);
-
-      await expectRevert.unspecified(contract.activateSunOrMoon([1, 2]));
-    });
+    expect(puzzleNames.length).to.be.above(1);
   });
 
-  describe("#canActivateSunOrMoon", () => {
-    it("returns false if the wrong number of cards is provided", async () => {
-      const [isAllowed, reasons] = await contract.canActivateSunOrMoon([]);
+  it("has a chance to degrade the condition of the minted card", async () => {
+    const conditionNames = [];
 
-      expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[2 cards are required]", reasons);
-    });
+    for (let tokenID = 1; tokenID <= 600; tokenID += 3) {
+      await contract.mintExactByNames(playerCard, owner.address);
+      await contract.mintExactByNames(inactiveCard, owner.address);
 
-    it("returns false if the user doesn't own all the cards", async () => {
-      await contract.mintExactByNames(playerCard, user1.address);
+      await contract.activateSunOrMoon([tokenID, tokenID + 1]);
+      conditionNames.push(await contract.conditionName(tokenID + 2));
+    }
 
-      const [isAllowed, reasons] = await contract.canActivateSunOrMoon([1]);
+    const set = new Set(conditionNames);
+    expect(set.size).to.equal(2);
 
-      expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[user doesn't own all the cards]", reasons);
-    });
+    expect(set.has("Excellent")).to.equal(true);
+    expect(set.has("Reasonable")).to.equal(true);
 
-    it("returns false if the tiers don't match", async () => {
+    const numExcellent = conditionNames.filter(s => s === "Excellent").length;
+    const numReasonable = conditionNames.filter(s => s === "Reasonable").length;
+
+    expect(numExcellent).to.be.above(numReasonable * 3);
+  });
+
+  it("doesn't degrade cards that are already the lowest condition", async () => {
+    const conditionNames = new Set();
+
+    for (let tokenID = 1; tokenID <= 60; tokenID += 3) {
+      await contract.mintExactByNames({ ...playerCard, condition: "Dire" }, owner.address);
+      await contract.mintExactByNames({ ...inactiveCard, condition: "Dire" }, owner.address);
+
+      await contract.activateSunOrMoon([tokenID, tokenID + 1]);
+      conditionNames.add(await contract.conditionName(tokenID + 2));
+    }
+
+    expect(conditionNames.size).to.equal(1);
+  });
+
+  it("doesn't degrade cards at immortal tier", async () => {
+    const conditionNames = new Set();
+
+    for (let tokenID = 1; tokenID <= 60; tokenID += 3) {
       await contract.mintExactByNames({ ...playerCard, tier: "Immortal" }, owner.address);
-      await contract.mintExactByNames(inactiveCard, owner.address);
+      await contract.mintExactByNames({ ...inactiveCard, tier: "Immortal" }, owner.address);
 
-      const [isAllowed, reasons] = await contract.canActivateSunOrMoon([1]);
+      await contract.activateSunOrMoon([tokenID, tokenID + 1]);
+      conditionNames.add(await contract.conditionName(tokenID + 2));
+    }
 
-      expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[the tiers of the cards don't match]", reasons);
-    });
+    expect(conditionNames.size).to.equal(1);
+  });
 
-    it("returns false if no player, crab or cloak card is provided", async () => {
-      await contract.mintExactByNames(inactiveCard, owner.address);
-      await contract.mintExactByNames(inactiveCard, owner.address);
+  it("doesn't degrade cards at godly tier", async () => {
+    const conditionNames = new Set();
 
-      const [isAllowed, reasons] = await contract.canActivateSunOrMoon([1, 2]);
+    for (let tokenID = 1; tokenID <= 60; tokenID += 3) {
+      await contract.mintExactByNames({ ...cloakCard, tier: "Godly" }, owner.address);
+      await contract.mintExactByNames({ ...inactiveCard, tier: "Godly" }, owner.address);
 
-      expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[a player, crab or cloak card is required]", reasons);
-    });
+      await contract.activateSunOrMoon([tokenID, tokenID + 1]);
+      conditionNames.add(await contract.conditionName(tokenID + 2));
+    }
 
-    it("returns false if no inactive sun or moon card is provided", async () => {
-      await contract.mintExactByNames(playerCard, owner.address);
-      await contract.mintExactByNames(playerCard, owner.address);
-
-      const [isAllowed, reasons] = await contract.canActivateSunOrMoon([1, 2]);
-
-      expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[an inactive sun or moon card is required]", reasons);
-    });
-
-    it("returns false if the cloak's color does not match that of the sun or moon", async () => {
-      await contract.mintExactByNames({ ...cloakCard, color1: "Red" }, owner.address);
-      await contract.mintExactByNames({ ...inactiveCard, color1: "Blue" }, owner.address);
-
-      const [isAllowed, reasons] = await contract.canActivateSunOrMoon([1, 2]);
-
-      expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[the color of the cloak does not match]", reasons);
-    });
-
-    it("returns true otherwise", async () => {
-      await contract.mintExactByNames({ ...cloakCard, color: "Red" }, owner.address);
-      await contract.mintExactByNames({ ...inactiveCard, color: "Red" }, owner.address);
-
-      const [isAllowed, reasons] = await contract.canActivateSunOrMoon([1, 2]);
-
-      expect(isAllowed).to.equal(true, reasons);
-      expect(reasons.filter(s => s !== "")).to.be.empty;
-    });
-
-    context("at ethereal or godly tier", () => {
-      it("returns false if a non-cloak card is provided", async () => {
-        await contract.mintExactByNames({ ...playerCard, tier: "Ethereal" }, owner.address);
-        await contract.mintExactByNames({ ...inactiveCard, tier: "Ethereal" }, owner.address);
-
-        const [isAllowed, reasons] = await contract.canActivateSunOrMoon([1, 2]);
-
-        expect(isAllowed).to.equal(false);
-        expect(reasons).to.deep.include("[only works with a cloak card at this tier]", reasons);
-      });
-    });
+    expect(conditionNames.size).to.equal(1);
   });
 });
