@@ -5,6 +5,19 @@ pragma solidity ^0.8.0;
 import "./vendor/ERC721Tradable.sol";
 
 contract PuzzleCard is ERC721Tradable {
+    struct Attributes {
+        uint8 series;
+        uint8 puzzle;
+        uint8 tier;
+        uint8 type_;
+        uint8 color1;
+        uint8 color2;
+        uint8 variant;
+        uint8 condition;
+    }
+
+    mapping(uint256 => Attributes) public cards;
+
     string[] public seriesNames = ["None", "Teamwork"];
     string[] public puzzleNames = ["Trial of Skill", "Trial of Reign", "1", "2", "3"];
     string[] public tierNames = ["Mortal", "Immortal", "Ethereal", "Virtual", "Celestial", "Godly", "Master"];
@@ -26,25 +39,58 @@ contract PuzzleCard is ERC721Tradable {
     uint256 public currentPriceToMint;
     string public currentBaseTokenURI;
 
-    mapping(uint256 => Attributes) public cardAttributes;
-
-    struct Attributes {
-        uint8 series;
-        uint8 puzzle;
-        uint8 tier;
-        uint8 type_;
-        uint8 color1;
-        uint8 color2;
-        uint8 variant;
-        uint8 condition;
-    }
-
     constructor(address proxyAddress) ERC721Tradable("PuzzleCard", "WSUN", proxyAddress) {
         setPriceToMint(uint256(0.1 * 0.7883 * 1000000000000000000)); // $0.10 in Polygon Wei.
         setBaseTokenURI("https://4cc8-2a02-6b6c-60-0-cdb2-1b9f-aa0f-454f.ngrok.io/api/");
     }
 
-    // public methods
+    // getters
+
+    function seriesName(uint256 tokenID) public view returns (string memory) { return seriesNames[cards[tokenID].series]; }
+    function puzzleName(uint256 tokenID) public view returns (string memory) { return puzzleNames[puzzleOffsetPerSeries[cards[tokenID].series] + cards[tokenID].puzzle]; }
+    function tierName(uint256 tokenID) public view returns (string memory) { return tierNames[cards[tokenID].tier]; }
+    function typeName(uint256 tokenID) public view returns (string memory) { return typeNames[cards[tokenID].type_]; }
+    function color1Name(uint256 tokenID) public view returns (string memory) { return colorNames[cards[tokenID].color1]; }
+    function color2Name(uint256 tokenID) public view returns (string memory) { return colorNames[cards[tokenID].color2]; }
+    function variantName(uint256 tokenID) public view returns (string memory) { return variantNames[variantOffsetPerType[cards[tokenID].type_] + cards[tokenID].variant]; }
+    function conditionName(uint256 tokenID) public view returns (string memory) { return conditionNames[cards[tokenID].condition]; }
+
+    function priceToMint(uint256 numberOfCards) public view returns (uint256) { return currentPriceToMint * numberOfCards; }
+    function baseTokenURI() override public view returns (string memory) { return currentBaseTokenURI; }
+    function tokenURI(uint256 tokenID) override public view returns (string memory) { return string(abi.encodePacked(baseTokenURI(), slug(tokenID), ".json")); }
+
+    function slug(uint256 tokenID) public view returns (string memory) {
+        return string(abi.encodePacked(
+          dasherize(lowercase(seriesName(tokenID))), "-",
+          dasherize(lowercase(puzzleName(tokenID))), "-",
+          dasherize(lowercase(tierName(tokenID))), "-",
+          dasherize(lowercase(typeName(tokenID))), "-",
+          dasherize(lowercase(color1Name(tokenID))), "-",
+          dasherize(lowercase(color2Name(tokenID))), "-",
+          dasherize(lowercase(variantName(tokenID))), "-",
+          dasherize(lowercase(conditionName(tokenID)))
+        ));
+    }
+
+    // setters
+
+    function setPriceToMint(uint256 newPrice) public onlyOwner { currentPriceToMint = newPrice; }
+    function setBaseTokenURI(string memory newURI) public onlyOwner { currentBaseTokenURI = newURI; }
+
+    function setPuzzleNames(string[] memory seriesNames_, string[] memory puzzleNames_, uint8[] memory numPuzzlesPerSeries_, uint16[] memory puzzleOffsetPerSeries_) public onlyOwner {
+        seriesNames = seriesNames_;
+        puzzleNames = puzzleNames_;
+        numPuzzlesPerSeries = numPuzzlesPerSeries_;
+        puzzleOffsetPerSeries = puzzleOffsetPerSeries_;
+    }
+
+    function setVariantNames(string[] memory variantNames_, uint8[] memory numVariantsPerType_, uint16[] memory variantOffsetPerType_) public onlyOwner {
+        variantNames = variantNames_;
+        numVariantsPerType = numVariantsPerType_;
+        variantOffsetPerType = variantOffsetPerType_;
+    }
+
+    // minting
 
     function mint(uint256 numberToMint, address to) public payable {
         uint256 price = priceToMint(numberToMint);
@@ -60,109 +106,13 @@ contract PuzzleCard is ERC721Tradable {
         }
     }
 
-    function combine(uint256[] memory tokenIDs) public {
-      require(tokenIDs.length >= 2, "please combine at least two puzzle cards");
-      require(tokenIDs.length <= 4, "please combine at most four puzzle cards");
-
-      for (uint i = 0; i < tokenIDs.length; i += 1) {
-        require(ownerOf(tokenIDs[i]) == msg.sender, "please ensure you own all the puzzle cards");
-        _burn(tokenIDs[i]);
-      }
-
-      mintRandomCard(msg.sender);
-    }
-
-    function priceToMint(uint256 numberOfCards) public view returns (uint256) {
-        return currentPriceToMint * numberOfCards;
-    }
-
-    function baseTokenURI() override public view returns (string memory) {
-        return currentBaseTokenURI;
-    }
-
-    function tokenURI(uint256 tokenID) override public view returns (string memory) {
-        return string(abi.encodePacked(baseTokenURI(), slug(tokenID), ".json"));
-    }
-
-    function slug(uint256 tokenID) public view returns (string memory) {
-        return string(abi.encodePacked(
-          dasherize(lowercase(seriesName(tokenID))), "-",
-          dasherize(lowercase(puzzleName(tokenID))), "-",
-          dasherize(lowercase(tierName(tokenID))), "-",
-          dasherize(lowercase(typeName(tokenID))), "-",
-          dasherize(lowercase(color1Name(tokenID))), "-",
-          dasherize(lowercase(color2Name(tokenID))), "-",
-          dasherize(lowercase(variantName(tokenID))), "-",
-          dasherize(lowercase(conditionName(tokenID)))
-        ));
-    }
-
-    function seriesName(uint256 tokenID) public view returns (string memory) {
-        return seriesNames[cardAttributes[tokenID].series];
-    }
-
-    function puzzleName(uint256 tokenID) public view returns (string memory) {
-        Attributes memory attr = cardAttributes[tokenID];
-        return puzzleNames[puzzleOffsetPerSeries[attr.series] + attr.puzzle];
-    }
-
-    function tierName(uint256 tokenID) public view returns (string memory) {
-        return tierNames[cardAttributes[tokenID].tier];
-    }
-
-    function typeName(uint256 tokenID) public view returns (string memory) {
-        return typeNames[cardAttributes[tokenID].type_];
-    }
-
-    function color1Name(uint256 tokenID) public view returns (string memory) {
-        return colorNames[cardAttributes[tokenID].color1];
-    }
-
-    function color2Name(uint256 tokenID) public view returns (string memory) {
-        return colorNames[cardAttributes[tokenID].color2];
-    }
-
-    function variantName(uint256 tokenID) public view returns (string memory) {
-        Attributes memory attr = cardAttributes[tokenID];
-        return variantNames[variantOffsetPerType[attr.type_] + attr.variant];
-    }
-
-    function conditionName(uint256 tokenID) public view returns (string memory) {
-        return conditionNames[cardAttributes[tokenID].condition];
-    }
-
-    // onlyOwner methods
-
     function gift(uint256 numberToGift, address to) public onlyOwner {
         for (uint i = 0; i < numberToGift; i += 1) {
             mintRandomCard(to);
         }
     }
 
-    function setPriceToMint(uint256 newPrice) public onlyOwner {
-        currentPriceToMint = newPrice;
-    }
-
-    function setBaseTokenURI(string memory newURI) public onlyOwner {
-        currentBaseTokenURI = newURI;
-    }
-
-    function setPuzzleNames(string[] memory seriesNames_, string[] memory puzzleNames_, uint8[] memory numPuzzlesPerSeries_, uint16[] memory puzzleOffsetPerSeries_) public onlyOwner {
-        seriesNames = seriesNames_;
-        puzzleNames = puzzleNames_;
-        numPuzzlesPerSeries = numPuzzlesPerSeries_;
-        puzzleOffsetPerSeries = puzzleOffsetPerSeries_;
-    }
-
-    function setVariantNames(string[] memory variantNames_, uint8[] memory numVariantsPerType_, uint16[] memory variantOffsetPerType_) public onlyOwner {
-        variantNames = variantNames_;
-        numVariantsPerType = numVariantsPerType_;
-        variantOffsetPerType = variantOffsetPerType_;
-    }
-
-    // internal methods
-
-    function mintRandomCard(address to) internal {
+    function mintRandomCard(address to) private {
         uint8 series = uint8(randomNumber(0) % seriesNames.length);
 
         uint8 numPuzzles = numPuzzlesPerSeries[series];
@@ -182,14 +132,16 @@ contract PuzzleCard is ERC721Tradable {
         uint8 pristine = uint8(conditionNames.length) - 1;
         uint8 condition = pristine - pickRandom(7, conditionProbabilities);
 
-        cardAttributes[getNextTokenId()] = Attributes(
+        cards[getNextTokenId()] = Attributes(
           series, puzzle, tier, type_, color1, color2, variant, condition
         );
 
         mintTo(to);
     }
 
-    function pickRandom(uint256 callCount, uint256[] memory probabilities) internal view returns (uint8) {
+    // utilities
+
+    function pickRandom(uint256 callCount, uint256[] memory probabilities) private view returns (uint8) {
         uint256 cumulative = 0;
         for (uint8 i = 0; i < probabilities.length; i += 1) {
             cumulative += probabilities[i];
@@ -206,7 +158,7 @@ contract PuzzleCard is ERC721Tradable {
         return 255; // Unreachable.
     }
 
-    function randomNumber(uint256 callCount) internal view returns (uint256) {
+    function randomNumber(uint256 callCount) private view returns (uint256) {
         return uint256(keccak256(abi.encode(
             block.timestamp,
             block.difficulty,
@@ -217,7 +169,7 @@ contract PuzzleCard is ERC721Tradable {
         )));
     }
 
-    function dasherize(string memory string_) internal pure returns (string memory) {
+    function dasherize(string memory string_) private pure returns (string memory) {
         bytes memory bytes_ = bytes(string_);
 
         for (uint256 i = 0; i < bytes_.length; i += 1) {
@@ -229,7 +181,7 @@ contract PuzzleCard is ERC721Tradable {
         return string(bytes_);
     }
 
-    function lowercase(string memory string_) internal pure returns (string memory) {
+    function lowercase(string memory string_) private pure returns (string memory) {
         bytes memory bytes_ = bytes(string_);
 
         for (uint256 i = 0; i < bytes_.length; i += 1) {

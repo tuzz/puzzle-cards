@@ -9,7 +9,7 @@ const it = (n) => {
 
 const TEST_TO_ISOLATE = -1;
 
-describe("RandomMinting", () => {
+describe("MintingRandomly", () => {
   let factory, contract, owner;
 
   before(async () => {
