@@ -11,7 +11,6 @@ describe("Setters", () => {
 
   beforeEach(async () => {
     contract = await factory.deploy(constants.ZERO_ADDRESS);
-    await contract.setBaseTokenURI("https://example.com/api/");
   });
 
   describe("#setPriceToMint", () => {
