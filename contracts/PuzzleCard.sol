@@ -150,7 +150,7 @@ contract PuzzleCard is ERC721Tradable {
         uint8 color1 = inactive.color1;
         uint8 color2 = inactive.color2;
         uint8 variant = inactive.variant;
-        uint8 condition = 0; // TODO: degrade
+        uint8 condition = degrade(slots, inactive.tier);
 
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
     }
@@ -167,9 +167,9 @@ contract PuzzleCard is ERC721Tradable {
         Attributes memory activator = slots[0];
         Attributes memory inactive = slots[2];
 
-        if (tokenIDs.length != 2)            { ok = false; r[0] = "[2 cards are required]"; }
-        if (!ownsAll(tokenIDs))              { ok = false; r[1] = "[user doesn't own all the cards]"; }
-        if (activator.tier != inactive.tier) { ok = false; r[2] = "[the tiers of the cards don't match]"; }
+        if (tokenIDs.length != 2)             { ok = false; r[0] = "[2 cards are required]"; }
+        if (!ownsAll(tokenIDs))               { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (activator.tier != inactive.tier)  { ok = false; r[2] = "[the tiers of the cards don't match]"; }
 
         if (!ok) { return (ok, r, slots); } // Return early if the basic checks fail.
 
@@ -177,10 +177,10 @@ contract PuzzleCard is ERC721Tradable {
         bool cloakUsed = activator.type_ == CLOAK_TYPE;
         bool colorsMatch = activator.color1 == inactive.color1;
 
-        if (activator.type_ == NO_TYPE)      { ok = false; r[3] = "[a player, crab or cloak card is required]"; }
-        if (inaccessible && !cloakUsed)      { ok = false; r[4] = "[only works with a cloak card at this tier]"; }
-        if (inactive.type_ != INACTIVE_TYPE) { ok = false; r[5] = "[an inactive sun or moon card is required]"; }
-        if (cloakUsed && !colorsMatch)       { ok = false; r[6] = "[the color of the cloak does not match]"; }
+        if (activator.condition == MAX_VALUE) { ok = false; r[3] = "[a player, crab or cloak card is required]"; }
+        if (inaccessible && !cloakUsed)       { ok = false; r[4] = "[only works with a cloak card at this tier]"; }
+        if (inactive.type_ != INACTIVE_TYPE)  { ok = false; r[5] = "[an inactive sun or moon card is required]"; }
+        if (cloakUsed && !colorsMatch)        { ok = false; r[6] = "[the color of the cloak does not match]"; }
 
         return (ok, r, slots);
     }
@@ -198,11 +198,11 @@ contract PuzzleCard is ERC721Tradable {
     function cardsInSlots(uint256[] memory tokenIDs) private view returns (Attributes[] memory) {
         Attributes[] memory slots = new Attributes[](3);
 
-        // Set the initial value of each slot's type to an invalid value so that
-        // the type checks will fail when the cards in the slots are queried.
-        slots[0].type_ = NO_TYPE;
-        slots[1].type_ = NO_TYPE;
-        slots[2].type_ = NO_TYPE;
+        // Set the initial value of each slot's condition to an invalid value so
+        // that the checks will fail when the cards in the slots are queried.
+        slots[0].condition = MAX_VALUE;
+        slots[1].condition = MAX_VALUE;
+        slots[2].condition = MAX_VALUE;
 
         // Lookup the cards and put them into one of three slots.
         for (uint8 i = 0; i < tokenIDs.length; i += 1) {
@@ -211,6 +211,24 @@ contract PuzzleCard is ERC721Tradable {
         }
 
         return slots;
+    }
+
+    function degrade(Attributes[] memory slots, uint8 tier) private returns (uint8) {
+        uint8 worstCondition = MAX_VALUE;
+
+        for (uint8 i = 0; i < slots.length; i += 1) {
+            uint8 condition = slots[i].condition;
+
+            if (condition < worstCondition) {
+              worstCondition = condition;
+            }
+        }
+
+        if (worstCondition == DIRE_CONDITION || tier == IMMORTAL_TIER || tier == GODLY_TIER) {
+            return worstCondition;
+        } else {
+            return worstCondition - pickRandom(conditionProbabilities);
+        }
     }
 
     function replace(uint256[] memory tokenIDs, Attributes memory newCard) private {
@@ -236,7 +254,7 @@ contract PuzzleCard is ERC721Tradable {
           if (random < total) { return i; }
         }
 
-        return 255; // Unreachable.
+        return MAX_VALUE; // Unreachable.
     }
 
     function randomNumber() private returns (uint256) {
@@ -307,7 +325,7 @@ contract PuzzleCard is ERC721Tradable {
     uint8 constant HIDDEN_TYPE = 14;
     uint8 constant STAR_TYPE = 15;
     uint8 constant ARTWORK_TYPE = 16;
-    uint8 constant NO_TYPE = 99;
 
-    uint8 constant NO_COLOR = 0;
+    uint8 constant DIRE_CONDITION = 0;
+    uint8 constant MAX_VALUE = 255;
 }
