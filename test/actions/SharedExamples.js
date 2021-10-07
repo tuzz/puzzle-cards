@@ -41,12 +41,24 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier)
     });
 
     it("cannot be performed if the user doesn't own all the cards", async () => {
-      await contract.mintExactByNames(validCards[0], user1.address);
+      for (let i = 0; i < validCards.length; i += 1) {
+        const thisCard = validCards[i];
+        const otherCards = validCards.filter((_, j) => i !== j);
 
-      const [isAllowed, reasons] = await contract[canAction]([1]);
+        await contract.mintExactByNames(thisCard, user1.address);
 
-      expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[user doesn't own all the cards]", reasons);
+        for (card of otherCards) {
+          await contract.mintExactByNames(card, owner.address);
+        }
+
+        const batchOffset = i * numCards;
+        const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
+
+        const [isAllowed, reasons] = await contract[canAction](batchTokenIDs);
+
+        expect(isAllowed).to.equal(false);
+        expect(reasons).to.deep.include("[user doesn't own all the cards]", reasons);
+      }
     });
 
     it("cannot be performed if the tiers don't match", async () => {

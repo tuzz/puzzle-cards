@@ -179,7 +179,7 @@ contract PuzzleCard is ERC721Tradable {
 
         if (!slots[0].occupied)                { ok = false; r[3] = "[a player, crab or cloak card is required]"; }
         if (!hasType(slots[2], INACTIVE_TYPE)) { ok = false; r[4] = "[an inactive sun or moon card is required]"; }
-        if (inaccessible && !cloakUsed)        { ok = false; r[4] = "[only works with a cloak card at this tier]"; }
+        if (inaccessible && !cloakUsed)        { ok = false; r[5] = "[only works with a cloak card at this tier]"; }
         if (cloakUsed && !colorsMatch)         { ok = false; r[6] = "[the color of the cloak does not match]"; }
 
         return (ok, r, slots);
