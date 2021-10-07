@@ -8,7 +8,7 @@ describe("ActivateSunOrMoon", () => {
   const cloakCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Cloak", color1: "Black", color2: "None", variant: "None", condition: "Excellent" };
   const inactiveCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Inactive", color1: "Black", color2: "None", variant: "Sun", condition: "Excellent" };
 
-  itBehavesLikeAnAction("activateSunOrMoon", [cloakCard, inactiveCard], "Mortal");
+  itBehavesLikeAnAction("activateSunOrMoon", [cloakCard, inactiveCard], [["Player", "Crab", "Cloak"], ["Inactive"]], "Mortal");
 
   describe("action specific behaviour", () => {
     let factory, contract, owner, user1;

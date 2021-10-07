@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("../test_utils/TestUtils");
 
-const itBehavesLikeAnAction = (actionName, validCards, expectedTier) => {
+const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier) => {
   const titleized = actionName[0].toUpperCase() + actionName.slice(1);
   const canAction = `can${titleized}`;
 
@@ -67,20 +67,59 @@ const itBehavesLikeAnAction = (actionName, validCards, expectedTier) => {
     });
 
     for (let i = 0; i < numCards; i += 1) {
-      it(`cannot be performed if card ${i} is missing`, async () => {
-        const replacedCard = { ...validCards[i], type: "Artwork" };
-        const presentCards = validCards.filter((_, j) => i !== j);
+      it(`cannot be performed if card ${i} has the wrong type`, async () => {
+        const thisCard = validCards[i];
+        const otherCards = validCards.filter((_, j) => i !== j);
 
-        await contract.mintExactByNames(replacedCard, owner.address);
+        const wrongTypes = TestUtils.typeNames.filter(t => !validTypes[i].includes(t));
 
-        for (card of presentCards) {
-            await contract.mintExactByNames(card, owner.address);
+        for (let j = 0; j < wrongTypes.length; j += 1) {
+          const type = wrongTypes[j];
+          await contract.mintExactByNames({ ...thisCard, type, puzzle: 0, variant: 0 }, owner.address);
+
+          for (card of otherCards) {
+              await contract.mintExactByNames(card, owner.address);
+          }
+
+          const batchOffset = j * numCards;
+          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
+
+          const [isAllowed, reasons] = await contract[canAction](batchTokenIDs);
+          const typeSpecificReasons = reasons.filter(s => s.match(/an? .*? card is required/));
+
+          expect(isAllowed).to.equal(false, `card ${i} shouldn't be allowed to have type ${type}`);
+          expect(typeSpecificReasons.length).to.be.above(0, reasons);
         }
+      });
+    }
 
-        const [isAllowed, reasons] = await contract[canAction](tokenIDs);
+    for (let i = 0; i < numCards; i += 1) {
+      it(`can be performed if card ${i} has the right type`, async () => {
+        const thisCard = validCards[i];
+        const otherCards = validCards.filter((_, j) => i !== j);
 
-        expect(isAllowed).to.equal(false);
-        expect(reasons.some(s => s.match(/an? .*? card is required/))).to.equal(true, reasons);
+        const rightTypes = validTypes[i];
+
+        for (let j = 0; j < rightTypes.length; j += 1) {
+          const type = rightTypes[j];
+          await contract.mintExactByNames({ ...thisCard, type, puzzle: 0, variant: 0 }, owner.address);
+
+          for (card of otherCards) {
+              await contract.mintExactByNames(card, owner.address);
+          }
+
+          const batchOffset = j * numCards;
+          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
+
+          const [_isAllowed, reasons] = await contract[canAction](batchTokenIDs);
+          const typeSpecificReasons = reasons.filter(s => s.match(/an? .*? card is required/));
+
+          // The action might still not be allowed because one of our cards is
+          // now invalid, e.g. a cloak card without a color set on it. We can
+          // still check that the type-specific reason doesn't occur, though.
+
+          expect(typeSpecificReasons.length).to.be.equal(0, reasons);
+        }
       });
     }
 

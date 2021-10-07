@@ -7,11 +7,16 @@ TestUtils.addHelpfulMethodsTo = (contract) => {
 TestUtils.mintExactByNames = (contract) => async ({ series, puzzle, tier, type, type_, color1, color2, variant, condition }, toAddress) => {
   if (!TestUtils.arraysRead) { await TestUtils.readArrays(contract); }
 
+  // If puzzle or variant are set to 0 rather than a name, just set them to 0
+  // rather than looking up the name and using relative indexing.
+
   const seriesIndex = TestUtils.seriesNames.indexOf(series);
-  const puzzleIndex = TestUtils.puzzleNames.indexOf(puzzle) - TestUtils.puzzleOffsetPerSeries[seriesIndex];
+  const relPuzzleIndex = TestUtils.puzzleNames.indexOf(puzzle) - TestUtils.puzzleOffsetPerSeries[seriesIndex];
+  const puzzleIndex = puzzle === 0 ? 0 : relPuzzleIndex;
 
   const typeIndex = TestUtils.typeNames.indexOf(type || type_);
-  const variantIndex = TestUtils.variantNames.indexOf(variant) - TestUtils.variantOffsetPerType[typeIndex];
+  const relVariantIndex = TestUtils.variantNames.indexOf(variant) - TestUtils.variantOffsetPerType[typeIndex];
+  const variantIndex = variant === 0 ? 0 : relVariantIndex;
 
   return contract.mintExact(
     seriesIndex,
