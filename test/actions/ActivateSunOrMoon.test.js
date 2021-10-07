@@ -33,25 +33,17 @@ describe("ActivateSunOrMoon", () => {
       expect(reasons).to.deep.include("[the color of the cloak does not match]", reasons);
     });
 
-    it("cannot be performed if a non-cloak card is provided at Ethereal tier", async () => {
-      await contract.mintExactByNames({ ...playerCard, tier: "Ethereal" }, owner.address);
-      await contract.mintExactByNames({ ...inactiveCard, tier: "Ethereal" }, owner.address);
+    for (const tier of ["Ethereal", "Godly"]) {
+      it(`cannot be performed if a non-cloak card is provided at ${tier} tier`, async () => {
+        await contract.mintExactByNames({ ...playerCard, tier }, owner.address);
+        await contract.mintExactByNames({ ...inactiveCard, tier }, owner.address);
 
-      const [isAllowed, reasons] = await contract.canActivateSunOrMoon([1, 2]);
+        const [isAllowed, reasons] = await contract.canActivateSunOrMoon([1, 2]);
 
-      expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[only works with a cloak card at this tier]", reasons);
-    });
-
-    it("cannot be performed if a non-cloak card is provided at Godly tier", async () => {
-      await contract.mintExactByNames({ ...playerCard, tier: "Godly" }, owner.address);
-      await contract.mintExactByNames({ ...inactiveCard, tier: "Godly" }, owner.address);
-
-      const [isAllowed, reasons] = await contract.canActivateSunOrMoon([1, 2]);
-
-      expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[only works with a cloak card at this tier]", reasons);
-    });
+        expect(isAllowed).to.equal(false);
+        expect(reasons).to.deep.include("[only works with a cloak card at this tier]", reasons);
+      });
+    }
 
     it("sets the type of the minted card to Active", async () => {
       await contract.mintExactByNames(playerCard, owner.address);

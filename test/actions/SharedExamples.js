@@ -251,47 +251,28 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier)
       expect(conditionNames.size).to.equal(1);
     });
 
-    it("doesn't degrade cards at Immortal tier", async () => {
-      const conditionNames = new Set();
+    for (const tier of ["Immortal", "Godly"]) {
+      it(`doesn't degrade cards at ${tier} tier`, async () => {
+        const conditionNames = new Set();
 
-      for (let i = 0; i < 20; i += 1) {
-        const batchSize = numCards + 1; // Includes the newly minted card.
-        const batchOffset = i * batchSize;
+        for (let i = 0; i < 20; i += 1) {
+          const batchSize = numCards + 1; // Includes the newly minted card.
+          const batchOffset = i * batchSize;
 
-        for (card of validCards) {
-          await contract.mintExactByNames({ ...card, tier: "Immortal" }, owner.address);
+          for (card of validCards) {
+            await contract.mintExactByNames({ ...card, tier }, owner.address);
+          }
+
+          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
+          await contract[actionName](batchTokenIDs);
+
+          const mintedTokenID = batchOffset + batchSize;
+          conditionNames.add(await contract.conditionName(mintedTokenID));
         }
 
-        const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-        await contract[actionName](batchTokenIDs);
-
-        const mintedTokenID = batchOffset + batchSize;
-        conditionNames.add(await contract.conditionName(mintedTokenID));
-      }
-
-      expect(conditionNames.size).to.equal(1);
-    });
-
-    it("doesn't degrade cards at Godly tier", async () => {
-      const conditionNames = new Set();
-
-      for (let i = 0; i < 20; i += 1) {
-        const batchSize = numCards + 1; // Includes the newly minted card.
-        const batchOffset = i * batchSize;
-
-        for (card of validCards) {
-          await contract.mintExactByNames({ ...card, tier: "Godly" }, owner.address);
-        }
-
-        const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-        await contract[actionName](batchTokenIDs);
-
-        const mintedTokenID = batchOffset + batchSize;
-        conditionNames.add(await contract.conditionName(mintedTokenID));
-      }
-
-      expect(conditionNames.size).to.equal(1);
-    });
+        expect(conditionNames.size).to.equal(1);
+      });
+    }
   });
 };
 
