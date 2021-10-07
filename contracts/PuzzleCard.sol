@@ -31,7 +31,7 @@ contract PuzzleCard is ERC721Tradable {
     uint8[] public numColorSlotsPerType = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 1, 0];
     uint8[] public numVariantsPerType = [0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0];
     uint16[] public variantOffsetPerType = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0];
-    uint16[] public cardSlotPerType = [0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    uint16[] public cardSlotPerType = [0, 0, 2, 2, 0, 1, 2, 1, 2, 2, 1, 1, 2, 1, 2, 2, 1];
 
     uint256[] public tierProbabilities = [90, 10];
     uint256[] public typeProbabilities = [200, 200, 200, 100, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
@@ -136,7 +136,7 @@ contract PuzzleCard is ERC721Tradable {
         mintTo(to);
     }
 
-    // actions
+    // actions: activateSunOrMoon
 
     function activateSunOrMoon(uint256[] memory tokenIDs) public {
         (bool ok, string[] memory r, CardSlot[] memory slots) = _canActivateSunOrMoon(tokenIDs); require(ok, string(abi.encode(r)));
@@ -167,20 +167,74 @@ contract PuzzleCard is ERC721Tradable {
         if (tokenIDs.length != 2)              { ok = false; r[0] = "[2 cards are required]"; }
         if (!ownsAll(tokenIDs))                { ok = false; r[1] = "[user doesn't own all the cards]"; }
         if (!sameTier(slots))                  { ok = false; r[2] = "[the tiers of the cards don't match]"; }
+        if (!ok)                               { return (ok, r, slots); } // Basic checks failed.
 
-        if (!ok) { return (ok, r, slots); } // Return early if the basic checks fail.
+        if (!slots[0].occupied)                { ok = false; r[3] = "[a player, crab or cloak card is required]"; }
+        if (!hasType(slots[2], INACTIVE_TYPE)) { ok = false; r[4] = "[an inactive sun or moon card is required]"; }
+        if (!ok)                               { return (ok, r, slots); } // Type checks failed.
 
         Attributes memory activator = slots[0].card;
         Attributes memory inactive = slots[2].card;
 
-        bool inaccessible = activator.tier == ETHEREAL_TIER || activator.tier == GODLY_TIER;
         bool cloakUsed = activator.type_ == CLOAK_TYPE;
         bool colorsMatch = activator.color1 == inactive.color1;
+        bool inaccessible = activator.tier == ETHEREAL_TIER || activator.tier == GODLY_TIER;
 
-        if (!slots[0].occupied)                { ok = false; r[3] = "[a player, crab or cloak card is required]"; }
-        if (!hasType(slots[2], INACTIVE_TYPE)) { ok = false; r[4] = "[an inactive sun or moon card is required]"; }
-        if (inaccessible && !cloakUsed)        { ok = false; r[5] = "[only works with a cloak card at this tier]"; }
-        if (cloakUsed && !colorsMatch)         { ok = false; r[6] = "[the color of the cloak does not match]"; }
+        if (cloakUsed && !colorsMatch)         { ok = false; r[5] = "[the color of the cloak does not match]"; }
+        if (!cloakUsed && inaccessible)        { ok = false; r[6] = "[only works with a cloak card at this tier]"; }
+
+        return (ok, r, slots);
+    }
+
+    // actions: lookThroughTelescope
+
+    function lookThroughTelescope(uint256[] memory tokenIDs) public {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = _canLookThroughTelescope(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes memory telescope = slots[1].card;
+
+        uint8 series = uint8(randomNumber() % seriesNames.length);
+        uint8 puzzle = uint8(randomNumber() % numPuzzlesPerSeries[series]);
+        uint8 tier = telescope.tier;
+        uint8 type_ = HELIX_TYPE + uint8(randomNumber() % 3);
+
+        uint8 numSlots = numColorSlotsPerType[type_];
+        uint8 numColors = uint8(colorNames.length) - 1;
+        uint8 color1 = numSlots < 1 ? 0 : 1 + uint8(randomNumber() % numColors);
+        uint8 color2 = numSlots < 2 ? 0 : 1 + uint8(randomNumber() % numColors);
+
+        uint8 variant = numVariantsPerType[type_] < 1 ? 0 : uint8(randomNumber() % numVariantsPerType[type_]);
+        uint8 condition = degrade(slots, telescope.tier);
+
+        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
+    }
+
+    function canLookThroughTelescope(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
+        (bool ok, string[] memory r,) = _canLookThroughTelescope(tokenIDs); return (ok, r);
+    }
+
+    function _canLookThroughTelescope(uint256[] memory tokenIDs) private view returns (bool, string[] memory, CardSlot[] memory) {
+        (bool ok, string[] memory r) = (true, new string[](7));
+
+        CardSlot[] memory slots = cardsInSlots(tokenIDs);
+
+        if (tokenIDs.length != 3)               { ok = false; r[0] = "[3 cards are required]"; }
+        if (!ownsAll(tokenIDs))                 { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!sameTier(slots))                   { ok = false; r[2] = "[the tiers of the cards don't match]"; }
+        if (!ok)                                { return (ok, r, slots); } // Basic checks failed.
+
+        if (!hasType(slots[0], PLAYER_TYPE))    { ok = false; r[3] = "[a player card is required]"; }
+        if (!hasType(slots[1], TELESCOPE_TYPE)) { ok = false; r[4] = "[a telescope card is required]"; }
+        if (!hasType(slots[2], ACTIVE_TYPE))    { ok = false; r[5] = "[an active sun or moon card is required]"; }
+        if (!ok)                                { return (ok, r, slots); } // Type checks failed.
+
+        Attributes memory telescope = slots[1].card;
+        Attributes memory active = slots[2].card;
+
+        bool sameVariant = telescope.variant == active.variant;
+        bool sameColor = telescope.color1 == active.color1;
+
+        if (!sameVariant || !sameColor)         { ok = false; r[6] = "[the sun or moon card does not match the telescope]"; }
 
         return (ok, r, slots);
     }

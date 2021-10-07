@@ -31,6 +31,42 @@ TestUtils.mintExactByNames = (contract) => async ({ series, puzzle, tier, type, 
   );
 };
 
+TestUtils.isRealColor = (colorName) => (
+  TestUtils.colorNames.includes(colorName) && colorName !== "None"
+);
+
+TestUtils.tallyFrequencies = (array) => {
+  const tally = {};
+  const frequencies = {};
+
+  for (const element of array) {
+    tally[element] = tally[element] || 0;
+    tally[element] += 1;
+  }
+
+  for (const [element, count] of Object.entries(tally)) {
+    frequencies[element] = count / array.length;
+  }
+
+  return frequencies;
+};
+
+TestUtils.tallyFrequenciesInGroups = (pairs) => {
+  const arrays = {};
+  const groups = {};
+
+  for (const [key, value] of pairs) {
+    arrays[key] = arrays[key] || [];
+    arrays[key].push(value);
+  };
+
+  for (const [key, array] of Object.entries(arrays)) {
+    groups[key] = tallyFrequencies(array);
+  }
+
+  return groups;
+};
+
 TestUtils.readArrays = async (contract) => {
   await TestUtils.readArray(contract, "seriesNames");
   await TestUtils.readArray(contract, "puzzleNames");

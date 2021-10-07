@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { it: _it } = require("mocha");
 const { constants } = require("@openzeppelin/test-helpers");
+const TestUtils = require("./test_utils/TestUtils");
 
 const it = (n) => {
   if (typeof n !== "number") { throw new Error(`No test number for '${n}'`); }
@@ -26,7 +27,7 @@ describe("MintingRandomly", () => {
       await mintInBatches(1000);
 
       const seriesNames = await mapTokenIDs(1, 1000, contract.seriesName);
-      const frequencies = tallyFrequencies(seriesNames);
+      const frequencies = TestUtils.tallyFrequencies(seriesNames);
 
       expect(frequencies["None"]).to.be.within(0.47, 0.53);     // 50%
       expect(frequencies["Teamwork"]).to.be.within(0.47, 0.53); // 50%
@@ -38,7 +39,7 @@ describe("MintingRandomly", () => {
       await mintInBatches(2500);
 
       const puzzleNames = await mapTokenIDsBySeries(1, 2500, contract.puzzleName);
-      const frequencies = tallyFrequenciesInGroups(puzzleNames);
+      const frequencies = TestUtils.tallyFrequenciesInGroups(puzzleNames);
 
       expect(frequencies["None"]["Trial of Skill"]).to.be.within(0.47, 0.53); // 50%
       expect(frequencies["None"]["Trial of Reign"]).to.be.within(0.47, 0.53); // 50%
@@ -54,7 +55,7 @@ describe("MintingRandomly", () => {
       await mintInBatches(1000);
 
       const tierNames = await mapTokenIDs(1, 1000, contract.tierName);
-      const frequencies = tallyFrequencies(tierNames);
+      const frequencies = TestUtils.tallyFrequencies(tierNames);
 
       expect(frequencies["Mortal"]).to.be.within(0.87, 0.93);   // 90%
       expect(frequencies["Immortal"]).to.be.within(0.07, 0.13); // 10%
@@ -71,7 +72,7 @@ describe("MintingRandomly", () => {
       await mintInBatches(1000);
 
       const typeNames = await mapTokenIDs(1, 1000, contract.typeName);
-      const frequencies = tallyFrequencies(typeNames);
+      const frequencies = TestUtils.tallyFrequencies(typeNames);
 
       expect(frequencies["Player"]).to.be.within(0.17, 0.23);    // 20%
       expect(frequencies["Crab"]).to.be.within(0.17, 0.23);      // 20%
@@ -105,8 +106,8 @@ describe("MintingRandomly", () => {
       const colors1 = pairs.filter(([type, _]) => uncolored.indexOf(type) !== -1).map(([_, color]) => color);
       const colors2 = pairs.filter(([type, _]) => colored.indexOf(type) !== -1).map(([_, color]) => color);
 
-      const frequencies1 = tallyFrequencies(colors1)
-      const frequencies2 = tallyFrequencies(colors2)
+      const frequencies1 = TestUtils.tallyFrequencies(colors1)
+      const frequencies2 = TestUtils.tallyFrequencies(colors2)
 
       expect(frequencies1["None"]).to.equal(1); // 100%
 
@@ -133,8 +134,8 @@ describe("MintingRandomly", () => {
       const colors1 = pairs.filter(([k, _]) => uncolored.indexOf(k) !== -1).map(([_, v]) => v);
       const colors2 = pairs.filter(([k, _]) => colored.indexOf(k) !== -1).map(([_, v]) => v);
 
-      const frequencies1 = tallyFrequencies(colors1)
-      const frequencies2 = tallyFrequencies(colors2)
+      const frequencies1 = TestUtils.tallyFrequencies(colors1)
+      const frequencies2 = TestUtils.tallyFrequencies(colors2)
 
       expect(frequencies1["None"]).to.equal(1); // 100%
 
@@ -161,8 +162,8 @@ describe("MintingRandomly", () => {
       const variants1 = pairs.filter(([k, _]) => dontVary.indexOf(k) !== -1).map(([_, v]) => v);
       const variants2 = pairs.filter(([k, _]) => vary.indexOf(k) !== -1).map(([_, v]) => v);
 
-      const frequencies1 = tallyFrequencies(variants1)
-      const frequencies2 = tallyFrequencies(variants2)
+      const frequencies1 = TestUtils.tallyFrequencies(variants1)
+      const frequencies2 = TestUtils.tallyFrequencies(variants2)
 
       expect(frequencies1["None"]).to.equal(1); // 100%
 
@@ -181,7 +182,7 @@ describe("MintingRandomly", () => {
       await mintInBatches(1000);
 
       const conditionNames = await mapTokenIDs(1, 1000, contract.conditionName);
-      const frequencies = tallyFrequencies(conditionNames);
+      const frequencies = TestUtils.tallyFrequencies(conditionNames);
 
       expect(frequencies["Dire"]).to.be.undefined;                // 0%
       expect(frequencies["Poor"]).to.be.undefined;                // 0%
@@ -221,36 +222,4 @@ describe("MintingRandomly", () => {
   const mapTokenIDsByType = (from, to, fn) => (
     mapTokenIDs(from, to, (id) => Promise.all([contract.typeName(id), fn(id)]))
   );
-
-  const tallyFrequencies = (array) => {
-    const tally = {};
-    const frequencies = {};
-
-    for (const element of array) {
-      tally[element] = tally[element] || 0;
-      tally[element] += 1;
-    }
-
-    for (const [element, count] of Object.entries(tally)) {
-      frequencies[element] = count / array.length;
-    }
-
-    return frequencies;
-  };
-
-  const tallyFrequenciesInGroups = (pairs) => {
-    const arrays = {};
-    const groups = {};
-
-    for (const [key, value] of pairs) {
-      arrays[key] = arrays[key] || [];
-      arrays[key].push(value);
-    };
-
-    for (const [key, array] of Object.entries(arrays)) {
-      groups[key] = tallyFrequencies(array);
-    }
-
-    return groups;
-  };
 });
