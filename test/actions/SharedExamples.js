@@ -33,6 +33,17 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier)
       expect(reasons.filter(s => s !== "")).to.be.empty;
     });
 
+    it("does not care in which order the cards are provided", async () => {
+      for (let i = validCards.length - 1; i >= 0; i -= 1) {
+        await contract.mintExactByNames(validCards[i], owner.address);
+      }
+
+      const [isAllowed, reasons] = await contract[canAction](tokenIDs);
+
+      expect(isAllowed).to.equal(true);
+      expect(reasons.filter(s => s !== "")).to.be.empty;
+    });
+
     it("cannot be performed if the wrong number of cards is provided", async () => {
       const [isAllowed, reasons] = await contract[canAction]([]);
 
