@@ -58,8 +58,9 @@ describe("LookThroughTelescope", () => {
 
     it("mints either a Helix, Torch or Beacon card with equal probability", async () => {
       const typeNames = [];
+      const colorMatches = [];
 
-      for (let i = 0; i < 100; i += 1) {
+      for (let i = 0; i < 500; i += 1) {
         await contract.mintExactByNames(playerCard, owner.address);
         await contract.mintExactByNames(telescopeCard, owner.address);
         await contract.mintExactByNames(activeCard, owner.address);
@@ -88,13 +89,54 @@ describe("LookThroughTelescope", () => {
         }
 
         typeNames.push(type);
+        colorMatches.push([type, color1 == color2]);
       }
 
-      const frequencies = TestUtils.tallyFrequencies(typeNames)
+      const typeFrequencies = TestUtils.tallyFrequencies(typeNames)
+      const matchFrequencies = TestUtils.tallyFrequenciesInGroups(colorMatches)
 
-      expect(frequencies["Helix"]).to.be.within(0.233, 0.433);  // 33.3%
-      expect(frequencies["Torch"]).to.be.within(0.233, 0.433);  // 33.3%
-      expect(frequencies["Beacon"]).to.be.within(0.233, 0.433); // 33.3%
-    });
+      expect(typeFrequencies["Helix"]).to.be.within(0.233, 0.433);  // 33.3%
+      expect(typeFrequencies["Torch"]).to.be.within(0.233, 0.433);  // 33.3%
+      expect(typeFrequencies["Beacon"]).to.be.within(0.233, 0.433); // 33.3%
+
+      expect(matchFrequencies["Helix"][true]).to.be.within(0.093, 0.193);    // 14.3%
+      expect(matchFrequencies["Helix"][false]).to.be.within(0.807, 0.907);   // 85.7%
+
+      expect(matchFrequencies["Torch"][true]).to.be.within(0.093, 0.193);    // 14.3%
+      expect(matchFrequencies["Torch"][false]).to.be.within(0.807, 0.907);   // 85.7%
+
+      // color1 is always a real color and color2 is always None for Beacons
+      expect(matchFrequencies["Beacon"][true]).to.be.undefined; // 0%
+      expect(matchFrequencies["Beacon"][false]).to.be.equal(1); // 100%
+    }).timeout(60000);
+
+    for (const tier of ["Celestial", "Godly"]) {
+      it(`mints Helix cards with two of the same color at ${tier} tier}`, async () => {
+        let sampleSize = 0;
+
+        for (let i = 0; i < 100; i += 1) {
+          await contract.mintExactByNames({ ...playerCard, tier }, owner.address);
+          await contract.mintExactByNames({ ...telescopeCard, tier }, owner.address);
+          await contract.mintExactByNames({ ...activeCard, tier }, owner.address);
+
+          const batchOffset = i * 4;
+          const batchTokenIDs = [1, 2, 3].map(t => t + batchOffset);
+
+          await contract.lookThroughTelescope(batchTokenIDs);
+          const mintedTokenID = batchOffset + 4;
+
+          const type = await contract.typeName(mintedTokenID);
+          if (type !== "Helix") { continue; }
+
+          const color1 = await contract.color1Name(mintedTokenID);
+          const color2 = await contract.color2Name(mintedTokenID);
+
+          expect(color1).to.equal(color2);
+          sampleSize += 1;
+        };
+
+        expect(sampleSize).to.be.above(10);
+      });
+    }
   });
 });

@@ -201,7 +201,10 @@ contract PuzzleCard is ERC721Tradable {
         uint8 numSlots = numColorSlotsPerType[type_];
         uint8 numColors = uint8(colorNames.length) - 1;
         uint8 color1 = numSlots < 1 ? 0 : 1 + uint8(randomNumber() % numColors);
-        uint8 color2 = numSlots < 2 ? 0 : 1 + uint8(randomNumber() % numColors);
+
+        uint8 color2 = numSlots < 2 ? 0 :
+          (type_ == HELIX_TYPE && tier == CELESTIAL_TIER || tier == GODLY_TIER) ? color1 :
+          1 + uint8(randomNumber() % numColors);
 
         uint8 variant = numVariantsPerType[type_] < 1 ? 0 : uint8(randomNumber() % numVariantsPerType[type_]);
         uint8 condition = degrade(slots, telescope.tier);

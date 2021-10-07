@@ -61,7 +61,7 @@ TestUtils.tallyFrequenciesInGroups = (pairs) => {
   };
 
   for (const [key, array] of Object.entries(arrays)) {
-    groups[key] = tallyFrequencies(array);
+    groups[key] = TestUtils.tallyFrequencies(array);
   }
 
   return groups;
