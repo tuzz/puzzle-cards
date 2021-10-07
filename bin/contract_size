@@ -1,0 +1,3 @@
+#!/bin/bash
+
+yarn run hardhat compile && yarn run hardhat size-contracts

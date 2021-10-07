@@ -1,7 +1,9 @@
 require("@nomiclabs/hardhat-ethers");
+require("hardhat-contract-sizer");
 
 const system = (command) => require("child_process").execSync(command).toString().trim();
 const privateKey = system("gpg --decrypt ~/Dropbox/Secrets/metamask/private-key.gpg 2>/dev/null");
+const u32MaxValue = Math.pow(2, 32) - 1;
 
 module.exports = {
   solidity: {
@@ -9,12 +11,13 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 1000,
+        runs: u32MaxValue,
       },
     },
   },
   networks: {
     hardhat: {
+      allowUnlimitedContractSize: true,
       accounts: {
         accountsBalance: "1000000000000000000000000", // 1 million ETH
       },
