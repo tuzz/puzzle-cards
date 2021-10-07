@@ -7,7 +7,13 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier)
   const canAction = `can${titleized}`;
 
   const numCards = validCards.length;
+  const batchSize = numCards + 1; // Includes the newly minted card.
+
   const tokenIDs = [...Array(numCards).keys()].map(i => i + 1);
+
+  if (validCards.some(({ condition }) => condition !== "Excellent")) {
+    throw new Error("Please set the condition of validCards to Excellent before running these tests.");
+  }
 
   describe("it behaves like an action", () => {
     let factory, contract, owner, user1;
@@ -168,7 +174,6 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier)
       const puzzleNames = [];
 
       for (let i = 0; i < 20; i += 1) {
-        const batchSize = numCards + 1; // Includes the newly minted card.
         const batchOffset = i * batchSize;
 
         for (card of validCards) {
@@ -197,14 +202,9 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier)
     });
 
     it("has a chance to degrade the condition of the minted card", async () => {
-      if (validCards.some(({ condition }) => condition !== "Excellent")) {
-        throw new Error("Please set the condition of validCards to Excellent before running this test.");
-      }
-
       const conditionNames = [];
 
       for (let i = 0; i < 100; i += 1) {
-        const batchSize = numCards + 1; // Includes the newly minted card.
         const batchOffset = i * batchSize;
 
         for (card of validCards) {
@@ -234,7 +234,6 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier)
       const conditionNames = new Set();
 
       for (let i = 0; i < 20; i += 1) {
-        const batchSize = numCards + 1; // Includes the newly minted card.
         const batchOffset = i * batchSize;
 
         for (card of validCards) {
@@ -256,7 +255,6 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier)
         const conditionNames = new Set();
 
         for (let i = 0; i < 20; i += 1) {
-          const batchSize = numCards + 1; // Includes the newly minted card.
           const batchOffset = i * batchSize;
 
           for (card of validCards) {
@@ -276,4 +274,207 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier)
   });
 };
 
-module.exports = { itBehavesLikeAnAction };
+const itMintsAPromotedCard = (actionName, validCards, tierIncreases) => {
+  const numCards = validCards.length;
+  const batchSize = numCards + 1; // Includes the newly minted card.
+
+  const tokenIDs = [...Array(numCards).keys()].map(i => i + 1);
+
+  if (validCards.some(({ condition }) => condition !== "Excellent")) {
+    throw new Error("Please set the condition of validCards to Excellent before running these tests.");
+  }
+
+  describe("it mints a promoted card", () => {
+    let factory, contract, owner, user1;
+
+    before(async () => {
+      factory = await ethers.getContractFactory("TestUtils");
+      [owner, user1] = await ethers.getSigners();
+    });
+
+    beforeEach(async () => {
+      contract = await factory.deploy(constants.ZERO_ADDRESS);
+      TestUtils.addHelpfulMethodsTo(contract);
+    });
+
+    const allTiers = [
+      ["Mortal", "Immortal"],
+      ["Immortal", "Ethereal"],
+      ["Ethereal", "Virtual"],
+      ["Virtual", "Celestial"],
+      ["Celestial", "Godly"],
+      ["Godly", "Master"],
+    ];
+
+    let standardRulesTiers, virtualRulesTiers, masterRulesTiers;
+
+    if (!tierIncreases) {
+      it("has the same tier as the provided cards", async () => {
+        for (let i = 0; i < allTiers.length; i += 1) {
+          const [before, after] = allTiers[i];
+
+          for (card of validCards) {
+            await contract.mintExactByNames({ ...card, tier: before }, owner.address);
+          }
+
+          const batchOffset = i * batchSize;
+          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
+
+          await contract[actionName](batchTokenIDs);
+          const mintedTokenID = batchOffset + batchSize;
+
+          expect(await contract.tierName(mintedTokenID)).to.equal(before);
+        }
+      });
+
+      virtualRulesTiers = ["Virtual", "Godly"];
+      masterRulesTiers = ["Master"];
+      standardRulesTiers = ["Mortal", "Immortal", "Ethereal"];
+    }
+
+    if (tierIncreases) {
+      it("increases the tier by 1", async () => {
+        for (let i = 0; i < allTiers.length; i += 1) {
+          const [before, after] = allTiers[i];
+
+          for (card of validCards) {
+            await contract.mintExactByNames({ ...card, tier: before }, owner.address);
+          }
+
+          const batchOffset = i * batchSize;
+          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
+
+          await contract[actionName](batchTokenIDs);
+          const mintedTokenID = batchOffset + batchSize;
+
+          expect(await contract.tierName(mintedTokenID)).to.equal(after);
+        }
+      });
+
+      // These are one tier below what they normally are because the current
+      // action promotes up to the tier above which has the special rules.
+      virtualRulesTiers = ["Ethereal", "Celestial"];
+      masterRulesTiers = ["Godly"];
+      standardRulesTiers = ["Mortal", "Immortal", "Virtual"];
+    }
+
+    for (const tier of standardRulesTiers) {
+      it(`mints using the standard type probabilities at ${tier} tier`, async () => {
+        const typeNames = [];
+
+        for (let i = 0; i < 500; i += 1) {
+          for (card of validCards) {
+            await contract.mintExactByNames({ ...card, tier }, owner.address);
+          }
+
+          const batchOffset = i * batchSize;
+          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
+
+          await contract[actionName](batchTokenIDs);
+          const mintedTokenID = batchOffset + batchSize;
+
+          typeNames.push(await contract.typeName(mintedTokenID));
+        }
+
+        const frequencies = TestUtils.tallyFrequencies(typeNames);
+
+        expect(frequencies["Player"]).to.be.within(0.15, 0.25);    // 20%
+        expect(frequencies["Crab"]).to.be.within(0.15, 0.25);      // 20%
+        expect(frequencies["Inactive"]).to.be.within(0.15, 0.25);  // 20%
+        expect(frequencies["Active"]).to.be.within(0.05, 0.15);    // 10%
+        expect(frequencies["Cloak"]).to.be.within(0.05, 0.15);     // 10%
+        expect(frequencies["Telescope"]).to.be.within(0.05, 0.15); // 10%
+        // ...
+      }).timeout(60000);
+    }
+
+    for (const tier of virtualRulesTiers) {
+      it(`mints either a Player, Glasses or Hidden card at ${tier} tier`, async () => {
+        const typeNames = [];
+
+        for (let i = 0; i < 500; i += 1) {
+          for (card of validCards) {
+            await contract.mintExactByNames({ ...card, tier }, owner.address);
+          }
+
+          const batchOffset = i * batchSize;
+          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
+
+          await contract[actionName](batchTokenIDs);
+          const mintedTokenID = batchOffset + batchSize;
+
+          const type = await contract.typeName(mintedTokenID);
+          const color1 = await contract.color1Name(mintedTokenID);
+          const color2 = await contract.color2Name(mintedTokenID);
+          const variant = await contract.variantName(mintedTokenID);
+
+          expect(["Player", "Glasses", "Hidden"]).to.include(type);
+          expect(variant).to.equal("None");
+
+          const hasColor = type === "Glasses";
+
+          if (hasColor) {
+            expect(TestUtils.isRealColor(color1)).to.equal(true);
+            expect(TestUtils.isRealColor(color2)).to.equal(true);
+          } else {
+            expect(color1).to.equal("None");
+            expect(color2).to.equal("None");
+          }
+
+          typeNames.push(type);
+        }
+
+        const frequencies = TestUtils.tallyFrequencies(typeNames);
+
+        expect(frequencies["Player"]).to.be.within(0.233, 0.433);  // 33.3%
+        expect(frequencies["Glasses"]).to.be.within(0.233, 0.433); // 33.3%
+        expect(frequencies["Hidden"]).to.be.within(0.233, 0.433);  // 33.3%
+      }).timeout(60000);
+    }
+
+    for (const tier of masterRulesTiers) {
+      it(`mints either a Player, Eclipse or Star card at ${tier} tier`, async () => {
+        const typeNames = [];
+
+        for (let i = 0; i < 500; i += 1) {
+          for (card of validCards) {
+            await contract.mintExactByNames({ ...card, tier }, owner.address);
+          }
+
+          const batchOffset = i * batchSize;
+          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
+
+          await contract[actionName](batchTokenIDs);
+          const mintedTokenID = batchOffset + batchSize;
+
+          const type = await contract.typeName(mintedTokenID);
+          const color1 = await contract.color1Name(mintedTokenID);
+          const color2 = await contract.color2Name(mintedTokenID);
+          const variant = await contract.variantName(mintedTokenID);
+
+          expect(["Player", "Eclipse", "Star"]).to.include(type);
+          expect(variant).to.equal("None");
+          expect(color2).to.equal("None");
+
+          const hasColor = type === "Star";
+
+          if (hasColor) {
+            expect(TestUtils.isRealColor(color1)).to.equal(true);
+          } else {
+            expect(color1).to.equal("None");
+          }
+
+          typeNames.push(type);
+        }
+
+        const frequencies = TestUtils.tallyFrequencies(typeNames);
+
+        expect(frequencies["Player"]).to.be.within(0.45, 0.55);  // 50%
+        expect(frequencies["Eclipse"]).to.be.within(0.35, 0.45); // 40%
+        expect(frequencies["Star"]).to.be.within(0.05, 0.15);    // 10%
+      }).timeout(60000);
+    }
+  });
+};
+
+module.exports = { itBehavesLikeAnAction, itMintsAPromotedCard };

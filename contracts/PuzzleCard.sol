@@ -35,6 +35,8 @@ contract PuzzleCard is ERC721Tradable {
 
     uint256[] public tierProbabilities = [90, 10];
     uint256[] public typeProbabilities = [200, 200, 200, 100, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
+    uint256[] public masterTypeProbabilities = [50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 10];
+    uint256[] public virtualTypeProbabilities = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
     uint256[] public conditionProbabilities = [80, 20];
 
     uint256 public currentPriceToMint;
@@ -105,27 +107,28 @@ contract PuzzleCard is ERC721Tradable {
         payable(owner()).transfer(price);
 
         for (uint8 i = 0; i < numberToMint; i += 1) {
-            mintStarterCard(to);
+            cards[getNextTokenId()] = starterCard();
+            mintTo(to);
         }
     }
 
     function gift(uint256 numberToGift, address to) public onlyOwner {
         for (uint8 i = 0; i < numberToGift; i += 1) {
-            mintStarterCard(to);
+            cards[getNextTokenId()] = starterCard();
+            mintTo(to);
         }
     }
 
-    function mintStarterCard(address to) private {
+    function starterCard() private returns (Attributes memory) {
         uint8 tier = pickRandom(tierProbabilities);
 
         uint8 pristine = uint8(conditionNames.length) - 1;
         uint8 condition = pristine - pickRandom(conditionProbabilities);
 
-        cards[getNextTokenId()] = randomCard(tier, condition);
-        mintTo(to);
+        return standardCard(tier, condition);
     }
 
-    function randomCard(uint8 tier, uint8 condition) private returns (Attributes memory) {
+    function standardCard(uint8 tier, uint8 condition) private returns (Attributes memory) {
         uint8 series = uint8(randomNumber() % seriesNames.length);
         uint8 puzzle = uint8(randomNumber() % numPuzzlesPerSeries[series]);
         uint8 type_ = pickRandom(typeProbabilities);
@@ -134,6 +137,36 @@ contract PuzzleCard is ERC721Tradable {
         uint8 numColors = uint8(colorNames.length) - 1;
         uint8 color1 = numSlots < 1 ? 0 : 1 + uint8(randomNumber() % numColors);
         uint8 color2 = numSlots < 2 ? 0 : 1 + uint8(randomNumber() % numColors);
+
+        uint8 numVariants = numVariantsPerType[type_];
+        uint8 variant = numVariants < 1 ? 0 : uint8(randomNumber() % numVariants);
+
+        return Attributes(series, puzzle, tier, type_, color1, color2, variant, condition);
+    }
+
+    // TODO: PromotingRandomly.test.js
+    function promotedCard(CardSlot[] memory slots) private returns (Attributes memory) {
+        Attributes memory card = slots[0].card;
+
+        uint8 tier = card.tier + 1;
+        uint8 condition = degrade(slots, card.tier);
+
+        bool standardRules = tier == IMMORTAL_TIER || tier == ETHEREAL_TIER || tier == CELESTIAL_TIER;
+        if (standardRules) { return standardCard(tier, condition); }
+
+        uint8 series = uint8(randomNumber() % seriesNames.length);
+        uint8 puzzle = uint8(randomNumber() % numPuzzlesPerSeries[series]);
+
+        uint256[] memory probabilities = tier == MASTER_TIER ? masterTypeProbabilities : virtualTypeProbabilities;
+        uint8 type_ = pickRandom(probabilities);
+
+        uint8 numSlots = numColorSlotsPerType[type_];
+        uint8 numColors = uint8(colorNames.length) - 1;
+        uint8 color1 = numSlots < 1 ? 0 : 1 + uint8(randomNumber() % numColors);
+
+        uint8 color2 = numSlots < 2 ? 0 : // TODO: remember to test this
+          (type_ == HELIX_TYPE && tier == CELESTIAL_TIER || tier == GODLY_TIER) ? color1 :
+          1 + uint8(randomNumber() % numColors);
 
         uint8 numVariants = numVariantsPerType[type_];
         uint8 variant = numVariants < 1 ? 0 : uint8(randomNumber() % numVariants);
@@ -281,13 +314,7 @@ contract PuzzleCard is ERC721Tradable {
 
     function teleportToNextArea(uint256[] memory tokenIDs) public {
         (bool ok, string[] memory r, CardSlot[] memory slots) = _canTeleportToNextArea(tokenIDs); require(ok, string(abi.encode(r)));
-
-        Attributes memory map = slots[2].card;
-
-        uint8 tierAbove = map.tier + 1;
-        uint8 condition = degrade(slots, map.tier);
-
-        replace(tokenIDs, randomCard(tierAbove, condition));
+        replace(tokenIDs, promotedCard(slots));
     }
 
     function canTeleportToNextArea(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -301,7 +328,6 @@ contract PuzzleCard is ERC721Tradable {
         if (!hasType(slots[0], PLAYER_TYPE))    { ok = false; r[3] = "[a player card is required]"; }
         if (!hasType(slots[1], TELEPORT_TYPE))  { ok = false; r[4] = "[a teleport card is required]"; }
         if (!hasType(slots[2], MAP_TYPE))       { ok = false; r[5] = "[a map card is required]"; }
-        if (!ok)                                { return (ok, r, slots); } // Type checks failed.
 
         return (ok, r, slots);
     }
