@@ -230,6 +230,48 @@ contract PuzzleCard is ERC721Tradable {
         return (ok, r, slots);
     }
 
+    // actions: shineTorchOnBasePair
+
+    function shineTorchOnBasePair(uint256[] memory tokenIDs) public {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = _canShineTorchOnBasePair(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes memory helix = slots[1].card;
+
+        uint8 series = uint8(randomNumber() % seriesNames.length);
+        uint8 puzzle = uint8(randomNumber() % numPuzzlesPerSeries[series]);
+        uint8 tier = helix.tier;
+        uint8 type_ = MAP_TYPE + uint8(randomNumber() % 2);
+        uint8 color1 = 0;
+        uint8 color2 = 0;
+        uint8 variant = numVariantsPerType[type_] < 1 ? 0 : uint8(randomNumber() % numVariantsPerType[type_]);
+        uint8 condition = degrade(slots, helix.tier);
+
+        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
+    }
+
+    function canShineTorchOnBasePair(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
+        (bool ok, string[] memory r,) = _canShineTorchOnBasePair(tokenIDs); return (ok, r);
+    }
+
+    function _canShineTorchOnBasePair(uint256[] memory tokenIDs) private view returns (bool, string[] memory, CardSlot[] memory) {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 3);
+
+        if (!ok)                                { return (ok, r, slots); } // Basic checks failed.
+        if (!hasType(slots[0], PLAYER_TYPE))    { ok = false; r[3] = "[a player card is required]"; }
+        if (!hasType(slots[1], TORCH_TYPE))     { ok = false; r[4] = "[a torch card is required]"; }
+        if (!hasType(slots[2], HELIX_TYPE))     { ok = false; r[5] = "[an helix card is required]"; }
+        if (!ok)                                { return (ok, r, slots); } // Type checks failed.
+
+        Attributes memory torch = slots[1].card;
+        Attributes memory helix = slots[2].card;
+
+        bool colorsMatch = torch.color1 == helix.color1 && torch.color2 == helix.color2;
+
+        if (!colorsMatch)                       { ok = false; r[6] = "[the torch colors don't match the base pair]"; }
+
+        return (ok, r, slots);
+    }
+
     // utilities
 
     struct CardSlot { Attributes card; bool occupied; }
