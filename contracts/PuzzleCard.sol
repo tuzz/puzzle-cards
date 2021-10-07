@@ -105,20 +105,29 @@ contract PuzzleCard is ERC721Tradable {
         payable(owner()).transfer(price);
 
         for (uint8 i = 0; i < numberToMint; i += 1) {
-            mintRandomCard(to);
+            mintStarterCard(to);
         }
     }
 
     function gift(uint256 numberToGift, address to) public onlyOwner {
         for (uint8 i = 0; i < numberToGift; i += 1) {
-            mintRandomCard(to);
+            mintStarterCard(to);
         }
     }
 
-    function mintRandomCard(address to) private {
+    function mintStarterCard(address to) private {
+        uint8 tier = pickRandom(tierProbabilities);
+
+        uint8 pristine = uint8(conditionNames.length) - 1;
+        uint8 condition = pristine - pickRandom(conditionProbabilities);
+
+        cards[getNextTokenId()] = randomCard(tier, condition);
+        mintTo(to);
+    }
+
+    function randomCard(uint8 tier, uint8 condition) private returns (Attributes memory) {
         uint8 series = uint8(randomNumber() % seriesNames.length);
         uint8 puzzle = uint8(randomNumber() % numPuzzlesPerSeries[series]);
-        uint8 tier = pickRandom(tierProbabilities);
         uint8 type_ = pickRandom(typeProbabilities);
 
         uint8 numSlots = numColorSlotsPerType[type_];
@@ -129,11 +138,7 @@ contract PuzzleCard is ERC721Tradable {
         uint8 numVariants = numVariantsPerType[type_];
         uint8 variant = numVariants < 1 ? 0 : uint8(randomNumber() % numVariants);
 
-        uint8 pristine = uint8(conditionNames.length) - 1;
-        uint8 condition = pristine - pickRandom(conditionProbabilities);
-
-        cards[getNextTokenId()] = Attributes(series, puzzle, tier, type_, color1, color2, variant, condition);
-        mintTo(to);
+        return Attributes(series, puzzle, tier, type_, color1, color2, variant, condition);
     }
 
     // actions: activateSunOrMoon
@@ -268,6 +273,35 @@ contract PuzzleCard is ERC721Tradable {
         bool colorsMatch = torch.color1 == helix.color1 && torch.color2 == helix.color2;
 
         if (!colorsMatch)                       { ok = false; r[6] = "[the torch colors don't match the base pair]"; }
+
+        return (ok, r, slots);
+    }
+
+    // actions: teleportToNextArea
+
+    function teleportToNextArea(uint256[] memory tokenIDs) public {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = _canTeleportToNextArea(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes memory map = slots[2].card;
+
+        uint8 tierAbove = map.tier + 1;
+        uint8 condition = degrade(slots, map.tier);
+
+        replace(tokenIDs, randomCard(tierAbove, condition));
+    }
+
+    function canTeleportToNextArea(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
+        (bool ok, string[] memory r,) = _canTeleportToNextArea(tokenIDs); return (ok, r);
+    }
+
+    function _canTeleportToNextArea(uint256[] memory tokenIDs) private view returns (bool, string[] memory, CardSlot[] memory) {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 3);
+
+        if (!ok)                                { return (ok, r, slots); } // Basic checks failed.
+        if (!hasType(slots[0], PLAYER_TYPE))    { ok = false; r[3] = "[a player card is required]"; }
+        if (!hasType(slots[1], TELEPORT_TYPE))  { ok = false; r[4] = "[a teleport card is required]"; }
+        if (!hasType(slots[2], MAP_TYPE))       { ok = false; r[5] = "[a map card is required]"; }
+        if (!ok)                                { return (ok, r, slots); } // Type checks failed.
 
         return (ok, r, slots);
     }
