@@ -404,6 +404,44 @@ contract PuzzleCard is ERC721Tradable {
         return (ok, r, slots);
     }
 
+    // actions: jumpIntoEclipse
+
+    function jumpIntoEclipse(uint256[] memory tokenIDs) public {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = _canJumpIntoEclipse(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes memory door = slots[1].card;
+
+        (uint8 series, uint8 puzzle) = randomPuzzle();
+        uint8 tier = door.tier;
+        uint8 type_ = DOOR_TYPE;
+        uint8 color1 = 0;
+        uint8 color2 = 0;
+        uint8 variant = OPEN_VARIANT;
+        uint8 condition = randomlyDegrade(slots, door.tier);
+
+        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
+    }
+
+    function canJumpIntoEclipse(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
+        (bool ok, string[] memory r,) = _canJumpIntoEclipse(tokenIDs); return (ok, r);
+    }
+
+    function _canJumpIntoEclipse(uint256[] memory tokenIDs) private view returns (bool, string[] memory, CardSlot[] memory) {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 3);
+
+        if (!ok)                              { return (ok, r, slots); } // Basic checks failed.
+        if (!hasType(slots[0], PLAYER_TYPE))  { ok = false; r[3] = "[a player card is required]"; }
+        if (!hasType(slots[1], DOOR_TYPE))    { ok = false; r[4] = "[a door card is required]"; }
+        if (!hasType(slots[2], ECLIPSE_TYPE)) { ok = false; r[5] = "[an eclipse card is required]"; }
+        if (!ok)                              { return (ok, r, slots); } // Type checks failed.
+
+        Attributes memory door = slots[1].card;
+
+        if (door.variant == OPEN_VARIANT)    { ok = false; r[5] = "[the door has already been opened]"; }
+
+        return (ok, r, slots);
+    }
+
     // utilities
 
     struct CardSlot { Attributes card; bool occupied; }
