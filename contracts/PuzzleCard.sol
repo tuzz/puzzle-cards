@@ -399,7 +399,7 @@ contract PuzzleCard is ERC721Tradable {
 
         Attributes memory door = slots[1].card;
 
-        if (door.variant != OPEN_VARIANT)    { ok = false; r[5] = "[the door hasn't been opened]"; }
+        if (door.variant != OPEN_VARIANT)    { ok = false; r[6] = "[the door hasn't been opened]"; }
 
         return (ok, r, slots);
     }
@@ -437,7 +437,61 @@ contract PuzzleCard is ERC721Tradable {
 
         Attributes memory door = slots[1].card;
 
-        if (door.variant == OPEN_VARIANT)    { ok = false; r[5] = "[the door has already been opened]"; }
+        if (door.variant == OPEN_VARIANT)    { ok = false; r[6] = "[the door has already been opened]"; }
+
+        return (ok, r, slots);
+    }
+
+    // actions: puzzleMastery1
+
+    function puzzleMastery1(uint256[] memory tokenIDs) public {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = _canPuzzleMastery1(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes memory artwork0 = slots[0].card;
+
+        uint8 series = artwork0.series;
+        uint8 puzzle = artwork0.puzzle;
+        uint8 tier = MASTER_TIER;
+        uint8 type_ = STAR_TYPE;
+        uint8 numColors = uint8(colorNames.length) - 1;
+        uint8 color1 = 1 + uint8(randomNumber() % numColors);
+        uint8 color2 = 0;
+        uint8 variant = 0;
+        uint8 condition = randomlyDegrade(slots, artwork0.tier);
+
+        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
+    }
+
+    function canPuzzleMastery1(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
+        (bool ok, string[] memory r,) = _canPuzzleMastery1(tokenIDs); return (ok, r);
+    }
+
+    function _canPuzzleMastery1(uint256[] memory tokenIDs) private view returns (bool, string[] memory, CardSlot[] memory) {
+        (bool ok, string[] memory r) = (true, new string[](4));
+
+        // We need to do this manually because both Artwork cards would be put into the same slot otherwise.
+        // We can skip the sameTier check because Artwork cards only spawn at Master tier.
+
+        CardSlot[] memory slots = new CardSlot[](2);
+
+        if (tokenIDs.length != 2) { ok = false; r[0] = "[2 cards are required]"; }
+        if (!ownsAll(tokenIDs))   { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!ok)                  { return (ok, r, slots); } // Basic checks failed.
+
+        Attributes memory card0 = cards[tokenIDs[0]];
+        Attributes memory card1 = cards[tokenIDs[1]];
+
+        bool artworkType = card0.type_ == ARTWORK_TYPE && card1.type_ == ARTWORK_TYPE;
+
+        if (!artworkType)         { ok = false; r[2] = "[two artwork cards are required]"; }
+        if (!ok)                  { return (ok, r, slots); } // Type checks failed.
+
+        bool samePuzzle = card0.series == card1.series && card0.puzzle == card1.puzzle;
+
+        if (!samePuzzle)          { ok = false; r[3] = "[the puzzles are different]"; }
+
+        slots[0] = CardSlot(card0, true);
+        slots[1] = CardSlot(card1, true);
 
         return (ok, r, slots);
     }

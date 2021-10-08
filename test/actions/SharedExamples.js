@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("../test_utils/TestUtils");
 
-const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier) => {
+const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier, { skipSameTierTest } = {}) => {
   const titleized = actionName[0].toUpperCase() + actionName.slice(1);
   const canAction = `can${titleized}`;
 
@@ -78,22 +78,24 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier)
       }
     });
 
-    it("cannot be performed if the tiers don't match", async () => {
-      for (let i = 0; i < numCards; i += 1) {
-        const batchOffset = i * numCards;
-        const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
+    if (!skipSameTierTest) {
+      it("cannot be performed if the tiers don't match", async () => {
+        for (let i = 0; i < numCards; i += 1) {
+          const batchOffset = i * numCards;
+          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
 
-        for (let j = 0; j < numCards; j += 1) {
-          const tier = i === j ? "Mortal" : "Immortal";
-          await contract.mintExactByNames({ ...validCards[j], tier }, owner.address);
+          for (let j = 0; j < numCards; j += 1) {
+            const tier = i === j ? "Mortal" : "Immortal";
+            await contract.mintExactByNames({ ...validCards[j], tier }, owner.address);
+          }
+
+          const [isAllowed, reasons] = await contract[canAction](batchTokenIDs);
+
+          expect(isAllowed).to.equal(false);
+          expect(reasons).to.deep.include("[the tiers of the cards don't match]", reasons);
         }
-
-        const [isAllowed, reasons] = await contract[canAction](batchTokenIDs);
-
-        expect(isAllowed).to.equal(false);
-        expect(reasons).to.deep.include("[the tiers of the cards don't match]", reasons);
-      }
-    });
+      });
+    }
 
     for (let i = 0; i < numCards; i += 1) {
       it(`cannot be performed if card ${i} has the wrong type`, async () => {
@@ -114,7 +116,7 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier)
           const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
 
           const [isAllowed, reasons] = await contract[canAction](batchTokenIDs);
-          const typeSpecificReasons = reasons.filter(s => s.match(/an? .*? card is required/));
+          const typeSpecificReasons = reasons.filter(s => s.match(/.*? cards? .*? required/));
 
           expect(isAllowed).to.equal(false, `card ${i} shouldn't be allowed to have type ${type}`);
           expect(typeSpecificReasons.length).to.be.above(0, reasons);
