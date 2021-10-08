@@ -364,7 +364,7 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
       it(`mints using the standard type probabilities at ${tier} tier`, async () => {
         const typeNames = [];
 
-        for (let i = 0; i < 500; i += 1) {
+        for (let i = 0; i < 1000; i += 1) {
           for (card of validCards) {
             await contract.mintExactByNames({ ...card, tier }, owner.address);
           }
@@ -387,14 +387,14 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         expect(frequencies["Cloak"]).to.be.within(0.05, 0.15);     // 10%
         expect(frequencies["Telescope"]).to.be.within(0.05, 0.15); // 10%
         // ...
-      }).timeout(60000);
+      }).timeout(120000);
     }
 
     for (const tier of virtualRulesTiers) {
       it(`mints either a Player, Glasses or Hidden card at ${tier} tier`, async () => {
         const typeNames = [];
 
-        for (let i = 0; i < 500; i += 1) {
+        for (let i = 0; i < 1000; i += 1) {
           for (card of validCards) {
             await contract.mintExactByNames({ ...card, tier }, owner.address);
           }
@@ -431,14 +431,14 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         expect(frequencies["Player"]).to.be.within(0.233, 0.433);  // 33.3%
         expect(frequencies["Glasses"]).to.be.within(0.233, 0.433); // 33.3%
         expect(frequencies["Hidden"]).to.be.within(0.233, 0.433);  // 33.3%
-      }).timeout(60000);
+      }).timeout(120000);
     }
 
     for (const tier of masterRulesTiers) {
       it(`mints either a Player, Eclipse or Star card at ${tier} tier`, async () => {
         const typeNames = [];
 
-        for (let i = 0; i < 500; i += 1) {
+        for (let i = 0; i < 1000; i += 1) {
           for (card of validCards) {
             await contract.mintExactByNames({ ...card, tier }, owner.address);
           }
@@ -474,7 +474,7 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         expect(frequencies["Player"]).to.be.within(0.45, 0.55);  // 50%
         expect(frequencies["Eclipse"]).to.be.within(0.35, 0.45); // 40%
         expect(frequencies["Star"]).to.be.within(0.05, 0.15);    // 10%
-      }).timeout(60000);
+      }).timeout(120000);
     }
   });
 };
