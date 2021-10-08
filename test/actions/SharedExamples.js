@@ -168,6 +168,17 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
       expect(await contract.isDiscarded(numCards + 1)).to.equal(false, `a new card wasn't minted`);
     });
 
+    it("does not allow the cards to be used again once discarded", async () => {
+      for (card of validCards) {
+        await contract.mintExactByNames(card, owner.address);
+      }
+
+      await contract[actionName](tokenIDs);
+
+      // Call the same action again.
+      await expectRevert.unspecified(contract[actionName](tokenIDs));
+    });
+
     it("reverts if the action cannot be performed", async () => {
       await expectRevert.unspecified(contract[actionName]([]));
     });
