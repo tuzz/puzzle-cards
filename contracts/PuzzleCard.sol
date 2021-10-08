@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "./vendor/ERC721Tradable.sol";
+//import "hardhat/console.sol";
 
 contract PuzzleCard is ERC721Tradable {
     struct Attributes {
@@ -31,7 +32,7 @@ contract PuzzleCard is ERC721Tradable {
     uint8[] public numColorSlotsPerType = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 1, 0];
     uint8[] public numVariantsPerType = [0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2];
     uint16[] public variantOffsetPerType = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 5];
-    uint16[] public cardSlotPerType = [0, 0, 2, 2, 0, 1, 2, 1, 2, 2, 1, 1, 2, 1, 2, 2, 1];
+    uint16[] public cardSlotPerType = [0, 0, 2, 2, 0, 1, 2, 1, 2, 2, 1, 1, 2, 1, 2, 2, 2];
 
     uint256[] public tierProbabilities = [90, 10];
     uint256[] public conditionProbabilities = [80, 20];
@@ -494,6 +495,65 @@ contract PuzzleCard is ERC721Tradable {
 
         slots[0] = CardSlot(card0, true);
         slots[1] = CardSlot(card1, true);
+
+        return (ok, r, slots);
+    }
+
+    // actions: puzzleMastery2
+
+    function puzzleMastery2(uint256[] memory tokenIDs) public {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = _canPuzzleMastery2(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes memory artwork0 = slots[0].card;
+
+        uint8 series = 0; // TODO: based on input cards
+        uint8 puzzle = 0; // TODO
+        uint8 tier = MASTER_TIER;
+        uint8 type_ = ARTWORK_TYPE;
+        uint8 color1 = 0;
+        uint8 color2 = 0;
+        uint8 variant = 0;
+        uint8 condition = randomlyDegrade(slots, artwork0.tier); // TODO: unless all pristine
+
+        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
+    }
+
+    function canPuzzleMastery2(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
+        (bool ok, string[] memory r,) = _canPuzzleMastery2(tokenIDs); return (ok, r);
+    }
+
+    function _canPuzzleMastery2(uint256[] memory tokenIDs) private view returns (bool, string[] memory, CardSlot[] memory) {
+        (bool ok, string[] memory r) = (true, new string[](4));
+
+        // We need to do this manually because all Star cards would be put into the same slot otherwise.
+        // We can skip the sameTier check because Star cards only spawn at Master tier.
+
+        CardSlot[] memory slots = new CardSlot[](7);
+
+        if (tokenIDs.length != 7)         { ok = false; r[0] = "[7 cards are required]"; }
+        if (!ownsAll(tokenIDs))           { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!ok)                          { return (ok, r, slots); } // Basic checks failed.
+
+        bool allStarType = true;
+
+        for (uint8 i = 0; i < 7; i += 1) {
+          Attributes memory card = cards[tokenIDs[i]];
+          slots[i] = CardSlot(card, true);
+
+          allStarType = allStarType && card.type_ == STAR_TYPE;
+        }
+
+        if (!allStarType)                 { ok = false; r[2] = "[7 star cards are required]"; }
+        if (!ok)                          { return (ok, r, slots); } // Type checks failed.
+
+        bool[7] memory alreadyUsed = [false, false, false, false, false, false, false];
+
+        for (uint8 i = 0; i < 7; i += 1) {
+          uint8 color = slots[i].card.color1 - 1;
+
+          if (alreadyUsed[color])         { ok = false; r[3] = "[a color was repeated]"; }
+          alreadyUsed[color] = true;
+        }
 
         return (ok, r, slots);
     }
