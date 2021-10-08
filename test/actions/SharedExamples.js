@@ -466,10 +466,12 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
           const color1 = await contract.color1Name(mintedTokenID);
           const color2 = await contract.color2Name(mintedTokenID);
           const variant = await contract.variantName(mintedTokenID);
+          const edition = await contract.editionName(mintedTokenID);
 
           expect(type).to.equal("Artwork");
           expect(color1).to.equal("None");
           expect(color2).to.equal("None");
+          expect(edition).to.equal("Standard");
 
           variantNames.push(variant);
         }

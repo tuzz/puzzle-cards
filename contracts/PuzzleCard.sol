@@ -19,6 +19,7 @@ contract PuzzleCard is ERC721Tradable {
     }
 
     mapping(uint256 => Attributes) public cards;
+    mapping(uint256 => uint256) public editions;
 
     string[] public seriesNames = ["None", "Teamwork"];
     string[] public puzzleNames = ["Trial of Skill", "Trial of Reign", "1", "2", "3"];
@@ -127,9 +128,7 @@ contract PuzzleCard is ERC721Tradable {
 
     function starterCard() private returns (Attributes memory) {
         uint8 tier = pickRandom(tierProbabilities);
-
-        uint8 pristine = uint8(conditionNames.length) - 1;
-        uint8 condition = pristine - pickRandom(conditionProbabilities);
+        uint8 condition = PRISTINE_CONDITION - pickRandom(conditionProbabilities);
 
         return randomCard(tier, condition, standardTypeProbabilities);
     }
@@ -478,7 +477,7 @@ contract PuzzleCard is ERC721Tradable {
     }
 
     function _canPuzzleMastery1(uint256[] memory tokenIDs) private view returns (bool, string[] memory, CardSlot[] memory) {
-        (bool ok, string[] memory r) = (true, new string[](5));
+        (bool ok, string[] memory r) = (true, new string[](6));
 
         // We need to do this manually because both Artwork cards would be put into the same slot otherwise.
         // We can skip the sameTier check because Artwork cards only spawn at Master tier.
@@ -500,8 +499,10 @@ contract PuzzleCard is ERC721Tradable {
         if (!ok)                  { return (ok, r, slots); } // Type checks failed.
 
         bool samePuzzle = card0.series == card1.series && card0.puzzle == card1.puzzle;
+        bool standardEdition = card0.edition == STANDARD_EDITION && card1.edition == STANDARD_EDITION;
 
-        if (!samePuzzle)          { ok = false; r[4] = "[the puzzles are different]"; }
+        if (!samePuzzle)          { ok = false; r[4] = "[the puzzles don't match]"; }
+        if (!standardEdition)     { ok = false; r[5] = "[the artwork is already signed]"; }
 
         slots[0] = CardSlot(card0, true);
         slots[1] = CardSlot(card1, true);
@@ -514,17 +515,36 @@ contract PuzzleCard is ERC721Tradable {
     function puzzleMastery2(uint256[] memory tokenIDs) public {
         (bool ok, string[] memory r, CardSlot[] memory slots) = _canPuzzleMastery2(tokenIDs); require(ok, string(abi.encode(r)));
 
-        Attributes memory artwork0 = slots[0].card;
+        Attributes memory star = slots[randomNumber() % 7].card;
 
-        uint8 series = 0; // TODO: based on input cards
-        uint8 puzzle = 0; // TODO
-        uint8 tier = MASTER_TIER;
+        uint8 series = star.series;
+        uint8 puzzle = star.puzzle;
+        uint8 tier = star.tier;
         uint8 type_ = ARTWORK_TYPE;
         uint8 color1 = 0;
         uint8 color2 = 0;
-        uint8 variant = 0;
-        uint8 condition = randomlyDegrade(slots, artwork0.tier); // TODO: unless all pristine
-        uint8 edition = STANDARD_EDITION;
+        uint8 variant = randomVariant(type_);
+        uint8 condition = randomlyDegrade(slots, tier);
+        uint8 edition = SIGNED_EDITION;
+
+        if (allPristine(slots)) {
+            condition = PRISTINE_CONDITION;
+
+            bool tryLimitedEdition = randomNumber() % 10 == 0;
+
+            if (tryLimitedEdition) {
+              uint256 editionsKey = (series << 8) | puzzle;
+              uint256 numOthers = editions[editionsKey];
+
+              if (numOthers == 0) {
+                  edition = MASTER_COPY_EDITION;
+                  editions[editionsKey] += 1;
+              } else if (numOthers < MAX_LIMITED_EDITIONS) {
+                  edition = LIMITED_EDITION;
+                  editions[editionsKey] += 1;
+              }
+            }
+        }
 
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
@@ -627,6 +647,16 @@ contract PuzzleCard is ERC721Tradable {
         return slot.occupied && slot.card.type_ == type_;
     }
 
+    function allPristine(CardSlot[] memory slots) private pure returns (bool) {
+        bool all = true;
+
+        for (uint8 i = 0; i < slots.length; i += 1) {
+            all = all && slots[i].card.condition == PRISTINE_CONDITION;
+        }
+
+        return all;
+    }
+
     function replace(uint256[] memory tokenIDs, Attributes memory newCard) private {
         cards[getNextTokenId()] = newCard;
         mintTo(ownerOf(tokenIDs[0]));
@@ -697,8 +727,14 @@ contract PuzzleCard is ERC721Tradable {
     uint8 constant OPEN_VARIANT = 0; // Relative
 
     uint8 constant DIRE_CONDITION = 0;
+    uint8 constant PRISTINE_CONDITION = 4;
 
     uint8 constant STANDARD_EDITION = 0;
+    uint8 constant SIGNED_EDITION = 1;
+    uint8 constant LIMITED_EDITION = 2;
+    uint8 constant MASTER_COPY_EDITION = 3;
+
+    uint8 constant MAX_LIMITED_EDITIONS = 10;
 
     uint8 constant MAX_VALUE = 255;
 }

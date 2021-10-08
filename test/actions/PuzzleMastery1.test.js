@@ -22,14 +22,14 @@ describe("PuzzleMastery1", () => {
       TestUtils.addHelpfulMethodsTo(contract);
     });
 
-    it("cannot be performed if the puzzles are different", async () => {
+    it("cannot be performed if the puzzles don't match", async () => {
       await contract.mintExactByNames(artworkCard1, owner.address);
       await contract.mintExactByNames({ ...artworkCard2, puzzle: "1" }, owner.address);
 
       const [isAllowed, reasons] = await contract.canPuzzleMastery1([1, 2]);
 
       expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[the puzzles are different]", reasons);
+      expect(reasons).to.deep.include("[the puzzles don't match]", reasons);
     });
 
     it("cannot be performed if the same card is used twice", async () => {
@@ -39,6 +39,19 @@ describe("PuzzleMastery1", () => {
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the same card was used twice]", reasons);
+    });
+
+    it("cannot be performed if the artwork is already signed", async () => {
+      await contract.mintExactByNames(artworkCard1, owner.address);
+
+      for (const edition of ["Signed", "Limited", "Master Copy"]) {
+        await contract.mintExactByNames({ ...artworkCard2, edition }, owner.address);
+
+        const [isAllowed, reasons] = await contract.canPuzzleMastery1([1, 2]);
+
+        expect(isAllowed).to.equal(false);
+        expect(reasons).to.deep.include("[the artwork is already signed]", reasons);
+      }
     });
 
     it("mints a star card", async () => {
