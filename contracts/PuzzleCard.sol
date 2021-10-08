@@ -378,6 +378,32 @@ contract PuzzleCard is ERC721Tradable {
         return (ok, r, slots);
     }
 
+    // actions: goThroughStarDoor
+
+    function goThroughStarDoor(uint256[] memory tokenIDs) public {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = _canGoThroughStarDoor(tokenIDs); require(ok, string(abi.encode(r)));
+        replace(tokenIDs, promotedCard(slots));
+    }
+
+    function canGoThroughStarDoor(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
+        (bool ok, string[] memory r,) = _canGoThroughStarDoor(tokenIDs); return (ok, r);
+    }
+
+    function _canGoThroughStarDoor(uint256[] memory tokenIDs) private view returns (bool, string[] memory, CardSlot[] memory) {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 2);
+
+        if (!ok)                             { return (ok, r, slots); } // Basic checks failed.
+        if (!hasType(slots[0], PLAYER_TYPE)) { ok = false; r[3] = "[a player card is required]"; }
+        if (!hasType(slots[1], DOOR_TYPE))   { ok = false; r[4] = "[a door card is required]"; }
+        if (!ok)                             { return (ok, r, slots); } // Type checks failed.
+
+        Attributes memory door = slots[1].card;
+
+        if (door.variant != OPEN_VARIANT)    { ok = false; r[5] = "[the door hasn't been opened]"; }
+
+        return (ok, r, slots);
+    }
+
     // utilities
 
     struct CardSlot { Attributes card; bool occupied; }
@@ -503,6 +529,9 @@ contract PuzzleCard is ERC721Tradable {
     uint8 constant STAR_TYPE = 15;
     uint8 constant ARTWORK_TYPE = 16;
 
+    uint8 constant OPEN_VARIANT = 0; // Relative
+
     uint8 constant DIRE_CONDITION = 0;
+
     uint8 constant MAX_VALUE = 255;
 }
