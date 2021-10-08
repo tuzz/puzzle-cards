@@ -274,7 +274,7 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier)
   });
 };
 
-const itMintsAPromotedCard = (actionName, validCards, tierIncreases) => {
+const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
   const numCards = validCards.length;
   const batchSize = numCards + 1; // Includes the newly minted card.
 
@@ -284,7 +284,9 @@ const itMintsAPromotedCard = (actionName, validCards, tierIncreases) => {
     throw new Error("Please set the condition of validCards to Excellent before running these tests.");
   }
 
-  describe("it mints a promoted card", () => {
+  const description = tierIncreases ? "tier above" : "same tier";
+
+  describe(`it mints a starter card for the ${description}`, () => {
     let factory, contract, owner, user1;
 
     before(async () => {
@@ -477,4 +479,4 @@ const itMintsAPromotedCard = (actionName, validCards, tierIncreases) => {
   });
 };
 
-module.exports = { itBehavesLikeAnAction, itMintsAPromotedCard };
+module.exports = { itBehavesLikeAnAction, itMintsATierStarterCard };
