@@ -74,8 +74,8 @@ describe("MintingRandomly", () => {
       const typeNames = await mapTokenIDs(1, 1000, contract.typeName);
       const frequencies = TestUtils.tallyFrequencies(typeNames);
 
-      expect(frequencies["Player"]).to.be.within(0.17, 0.23);    // 20%
-      expect(frequencies["Crab"]).to.be.within(0.17, 0.23);      // 20%
+      expect(frequencies["Player"]).to.be.within(0.27, 0.33);    // 30%
+      expect(frequencies["Crab"]).to.be.within(0.07, 0.13);      // 10%
       expect(frequencies["Inactive"]).to.be.within(0.17, 0.23);  // 20%
       expect(frequencies["Active"]).to.be.within(0.07, 0.13);    // 10%
       expect(frequencies["Cloak"]).to.be.within(0.07, 0.13);     // 10%

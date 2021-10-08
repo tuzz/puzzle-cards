@@ -380,8 +380,8 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
 
         const frequencies = TestUtils.tallyFrequencies(typeNames);
 
-        expect(frequencies["Player"]).to.be.within(0.15, 0.25);    // 20%
-        expect(frequencies["Crab"]).to.be.within(0.15, 0.25);      // 20%
+        expect(frequencies["Player"]).to.be.within(0.25, 0.35);    // 30%
+        expect(frequencies["Crab"]).to.be.within(0.05, 0.15);      // 10%
         expect(frequencies["Inactive"]).to.be.within(0.15, 0.25);  // 20%
         expect(frequencies["Active"]).to.be.within(0.05, 0.15);    // 10%
         expect(frequencies["Cloak"]).to.be.within(0.05, 0.15);     // 10%
