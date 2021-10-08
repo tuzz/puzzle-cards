@@ -4,7 +4,7 @@ TestUtils.addHelpfulMethodsTo = (contract) => {
   contract.mintExactByNames = TestUtils.mintExactByNames(contract);
 };
 
-TestUtils.mintExactByNames = (contract) => async ({ series, puzzle, tier, type, type_, color1, color2, variant, condition }, toAddress) => {
+TestUtils.mintExactByNames = (contract) => async ({ series, puzzle, tier, type, type_, color1, color2, variant, condition, edition }, toAddress) => {
   if (!TestUtils.arraysRead) { await TestUtils.readArrays(contract); }
 
   // If puzzle or variant are set to 0 rather than a name, just set them to 0
@@ -27,6 +27,7 @@ TestUtils.mintExactByNames = (contract) => async ({ series, puzzle, tier, type, 
     TestUtils.colorNames.indexOf(color2),
     variantIndex,
     TestUtils.conditionNames.indexOf(condition),
+    TestUtils.editionNames.indexOf(edition),
     toAddress,
   );
 };
@@ -75,6 +76,7 @@ TestUtils.readArrays = async (contract) => {
   await TestUtils.readArray(contract, "colorNames");
   await TestUtils.readArray(contract, "variantNames");
   await TestUtils.readArray(contract, "conditionNames");
+  await TestUtils.readArray(contract, "editionNames");
 
   await TestUtils.readArray(contract, "numPuzzlesPerSeries");
   await TestUtils.readArray(contract, "puzzleOffsetPerSeries");

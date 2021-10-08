@@ -4,13 +4,13 @@ const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExam
 const TestUtils = require("../test_utils/TestUtils");
 
 describe("PuzzleMastery2", () => {
-  const starCard1 = { series: "Teamwork", puzzle: "1", tier: "Master", type: "Star", color1: "Red", color2: "None", variant: "None", condition: "Excellent" };
-  const starCard2 = { series: "Teamwork", puzzle: "1", tier: "Master", type: "Star", color1: "Green", color2: "None", variant: "None", condition: "Excellent" };
-  const starCard3 = { series: "Teamwork", puzzle: "1", tier: "Master", type: "Star", color1: "Blue", color2: "None", variant: "None", condition: "Excellent" };
-  const starCard4 = { series: "Teamwork", puzzle: "1", tier: "Master", type: "Star", color1: "Yellow", color2: "None", variant: "None", condition: "Excellent" };
-  const starCard5 = { series: "Teamwork", puzzle: "2", tier: "Master", type: "Star", color1: "Pink", color2: "None", variant: "None", condition: "Excellent" };
-  const starCard6 = { series: "Teamwork", puzzle: "2", tier: "Master", type: "Star", color1: "White", color2: "None", variant: "None", condition: "Excellent" };
-  const starCard7 = { series: "Teamwork", puzzle: "3", tier: "Master", type: "Star", color1: "Black", color2: "None", variant: "None", condition: "Excellent" };
+  const starCard1 = { series: "Teamwork", puzzle: "1", tier: "Master", type: "Star", color1: "Red", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
+  const starCard2 = { series: "Teamwork", puzzle: "1", tier: "Master", type: "Star", color1: "Green", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
+  const starCard3 = { series: "Teamwork", puzzle: "1", tier: "Master", type: "Star", color1: "Blue", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
+  const starCard4 = { series: "Teamwork", puzzle: "1", tier: "Master", type: "Star", color1: "Yellow", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
+  const starCard5 = { series: "Teamwork", puzzle: "2", tier: "Master", type: "Star", color1: "Pink", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
+  const starCard6 = { series: "Teamwork", puzzle: "2", tier: "Master", type: "Star", color1: "White", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
+  const starCard7 = { series: "Teamwork", puzzle: "3", tier: "Master", type: "Star", color1: "Black", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
 
   const validCards = [starCard1, starCard2, starCard3, starCard4, starCard5, starCard6, starCard7];
   const validTypes = [["Star"], ["Star"], ["Star"], ["Star"], ["Star"], ["Star"], ["Star"]];

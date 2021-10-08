@@ -4,9 +4,9 @@ const { itBehavesLikeAnAction } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
 
 describe("ActivateSunOrMoon", () => {
-  const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent" };
-  const cloakCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Cloak", color1: "Black", color2: "None", variant: "None", condition: "Excellent" };
-  const inactiveCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Inactive", color1: "Black", color2: "None", variant: "Sun", condition: "Excellent" };
+  const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
+  const cloakCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Cloak", color1: "Black", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
+  const inactiveCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Inactive", color1: "Black", color2: "None", variant: "Sun", condition: "Excellent", edition: "Standard" };
 
   itBehavesLikeAnAction("activateSunOrMoon", [cloakCard, inactiveCard], [["Player", "Crab", "Cloak"], ["Inactive"]], "Mortal");
 

@@ -4,9 +4,9 @@ const { itBehavesLikeAnAction } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
 
 describe("ShineTorchOnBasePair", () => {
-  const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent" };
-  const torchCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Torch", color1: "Red", color2: "Green", variant: "None", condition: "Excellent" };
-  const helixCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Helix", color1: "Red", color2: "Green", variant: "None", condition: "Excellent" };
+  const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
+  const torchCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Torch", color1: "Red", color2: "Green", variant: "None", condition: "Excellent", edition: "Standard" };
+  const helixCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Helix", color1: "Red", color2: "Green", variant: "None", condition: "Excellent", edition: "Standard" };
 
   itBehavesLikeAnAction("shineTorchOnBasePair", [playerCard, torchCard, helixCard], [["Player"], ["Torch"], ["Helix"]], "Mortal");
 

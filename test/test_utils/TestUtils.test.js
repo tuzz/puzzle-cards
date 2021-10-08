@@ -16,7 +16,7 @@ describe("TestUtils", () => {
   });
 
   it("adds a helper method to the contract that mints exact cards by attribute names", async () => {
-    const attributeNames = { series: "Teamwork", puzzle: "2", tier: "Ethereal", type: "Active", color1: "Red", color2: "None", variant: "Sun", condition: "Excellent" }
+    const attributeNames = { series: "Teamwork", puzzle: "2", tier: "Ethereal", type: "Active", color1: "Red", color2: "None", variant: "Sun", condition: "Excellent", edition: "Standard" }
 
     await contract.mintExactByNames(attributeNames, owner.address);
     const tokenID = 1;

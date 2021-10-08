@@ -4,9 +4,9 @@ const { itBehavesLikeAnAction } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
 
 describe("JumpIntoEclipse", () => {
-  const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent" };
-  const doorCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Door", color1: "None", color2: "None", variant: "Closed", condition: "Excellent" };
-  const eclipseCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Eclipse", color1: "None", color2: "None", variant: "None", condition: "Excellent" };
+  const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
+  const doorCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Door", color1: "None", color2: "None", variant: "Closed", condition: "Excellent", edition: "Standard" };
+  const eclipseCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Eclipse", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
 
   itBehavesLikeAnAction("jumpIntoEclipse", [playerCard, doorCard, eclipseCard], [["Player"], ["Door"], ["Eclipse"]], "Mortal");
 

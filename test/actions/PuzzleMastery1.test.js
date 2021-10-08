@@ -4,8 +4,8 @@ const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExam
 const TestUtils = require("../test_utils/TestUtils");
 
 describe("PuzzleMastery1", () => {
-  const artworkCard1 = { series: "Teamwork", puzzle: "2", tier: "Master", type: "Artwork", color1: "None", color2: "None", variant: "Art1", condition: "Excellent" };
-  const artworkCard2 = { series: "Teamwork", puzzle: "2", tier: "Master", type: "Artwork", color1: "None", color2: "None", variant: "Art2", condition: "Excellent" };
+  const artworkCard1 = { series: "Teamwork", puzzle: "2", tier: "Master", type: "Artwork", color1: "None", color2: "None", variant: "Art1", condition: "Excellent", edition: "Standard" };
+  const artworkCard2 = { series: "Teamwork", puzzle: "2", tier: "Master", type: "Artwork", color1: "None", color2: "None", variant: "Art2", condition: "Excellent", edition: "Standard" };
 
   itBehavesLikeAnAction("puzzleMastery1", [artworkCard1, artworkCard2], [["Artwork"], ["Artwork"]], "Master", { skipSameTierTest: true });
 

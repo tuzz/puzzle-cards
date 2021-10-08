@@ -4,9 +4,9 @@ const { itBehavesLikeAnAction } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
 
 describe("LookThroughTelescope", () => {
-  const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent" };
-  const telescopeCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Telescope", color1: "Black", color2: "None", variant: "Sun", condition: "Excellent" };
-  const activeCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Active", color1: "Black", color2: "None", variant: "Sun", condition: "Excellent" };
+  const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
+  const telescopeCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Telescope", color1: "Black", color2: "None", variant: "Sun", condition: "Excellent", edition: "Standard" };
+  const activeCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Active", color1: "Black", color2: "None", variant: "Sun", condition: "Excellent", edition: "Standard" };
 
   itBehavesLikeAnAction("lookThroughTelescope", [playerCard, telescopeCard, activeCard], [["Player"], ["Telescope"], ["Active"]], "Mortal");
 

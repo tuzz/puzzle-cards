@@ -15,6 +15,7 @@ contract PuzzleCard is ERC721Tradable {
         uint8 color2;
         uint8 variant;
         uint8 condition;
+        uint8 edition;
     }
 
     mapping(uint256 => Attributes) public cards;
@@ -26,6 +27,7 @@ contract PuzzleCard is ERC721Tradable {
     string[] public colorNames = ["None", "Yellow", "Black", "Green", "White", "Blue", "Red", "Pink"];
     string[] public variantNames = ["None", "Sun", "Moon", "Open", "Closed", "Art1", "Art2"];
     string[] public conditionNames = ["Dire", "Poor", "Reasonable", "Excellent", "Pristine"];
+    string[] public editionNames = ["Standard", "Signed", "Limited", "Master Copy"];
 
     uint8[] public numPuzzlesPerSeries = [2, 3];
     uint16[] public puzzleOffsetPerSeries = [0, 2];
@@ -60,6 +62,7 @@ contract PuzzleCard is ERC721Tradable {
     function color2Name(uint256 tokenID) public view returns (string memory) { return colorNames[cards[tokenID].color2]; }
     function variantName(uint256 tokenID) public view returns (string memory) { return variantNames[variantOffsetPerType[cards[tokenID].type_] + cards[tokenID].variant]; }
     function conditionName(uint256 tokenID) public view returns (string memory) { return conditionNames[cards[tokenID].condition]; }
+    function editionName(uint256 tokenID) public view returns (string memory) { return editionNames[cards[tokenID].edition]; }
 
     function priceToMint(uint256 numberOfCards) public view returns (uint256) { return currentPriceToMint * numberOfCards; }
     function baseTokenURI() override public view returns (string memory) { return currentBaseTokenURI; }
@@ -75,7 +78,8 @@ contract PuzzleCard is ERC721Tradable {
           dasherize(lowercase(color1Name(tokenID))), "-",
           dasherize(lowercase(color2Name(tokenID))), "-",
           dasherize(lowercase(variantName(tokenID))), "-",
-          dasherize(lowercase(conditionName(tokenID)))
+          dasherize(lowercase(conditionName(tokenID))), "-",
+          dasherize(lowercase(editionName(tokenID)))
         ));
     }
 
@@ -153,8 +157,9 @@ contract PuzzleCard is ERC721Tradable {
         uint8 type_ = pickRandom(typeProbabilities);
         (uint8 color1, uint8 color2) = randomColors(tier, type_);
         uint8 variant = randomVariant(type_);
+        uint8 edition = STANDARD_EDITION;
 
-        return Attributes(series, puzzle, tier, type_, color1, color2, variant, condition);
+        return Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition);
     }
 
     // randomness
@@ -246,8 +251,9 @@ contract PuzzleCard is ERC721Tradable {
         uint8 color2 = inactive.color2;
         uint8 variant = inactive.variant;
         uint8 condition = randomlyDegrade(slots, inactive.tier);
+        uint8 edition = STANDARD_EDITION;
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
+        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
     function canActivateSunOrMoon(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -288,8 +294,9 @@ contract PuzzleCard is ERC721Tradable {
         (uint8 color1, uint8 color2) = randomColors(tier, type_);
         uint8 variant = randomVariant(type_);
         uint8 condition = randomlyDegrade(slots, telescope.tier);
+        uint8 edition = STANDARD_EDITION;
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
+        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
     function canLookThroughTelescope(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -330,8 +337,9 @@ contract PuzzleCard is ERC721Tradable {
         uint8 color2 = 0;
         uint8 variant = numVariantsPerType[type_] < 1 ? 0 : uint8(randomNumber() % numVariantsPerType[type_]);
         uint8 condition = randomlyDegrade(slots, helix.tier);
+        uint8 edition = STANDARD_EDITION;
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
+        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
     function canShineTorchOnBasePair(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -419,8 +427,9 @@ contract PuzzleCard is ERC721Tradable {
         uint8 color2 = 0;
         uint8 variant = OPEN_VARIANT;
         uint8 condition = randomlyDegrade(slots, door.tier);
+        uint8 edition = STANDARD_EDITION;
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
+        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
     function canJumpIntoEclipse(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -459,8 +468,9 @@ contract PuzzleCard is ERC721Tradable {
         uint8 color2 = 0;
         uint8 variant = 0;
         uint8 condition = randomlyDegrade(slots, artwork0.tier);
+        uint8 edition = STANDARD_EDITION;
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
+        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
     function canPuzzleMastery1(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -514,8 +524,9 @@ contract PuzzleCard is ERC721Tradable {
         uint8 color2 = 0;
         uint8 variant = 0;
         uint8 condition = randomlyDegrade(slots, artwork0.tier); // TODO: unless all pristine
+        uint8 edition = STANDARD_EDITION;
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
+        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
     function canPuzzleMastery2(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -686,6 +697,8 @@ contract PuzzleCard is ERC721Tradable {
     uint8 constant OPEN_VARIANT = 0; // Relative
 
     uint8 constant DIRE_CONDITION = 0;
+
+    uint8 constant STANDARD_EDITION = 0;
 
     uint8 constant MAX_VALUE = 255;
 }
