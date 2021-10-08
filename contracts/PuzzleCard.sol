@@ -34,10 +34,11 @@ contract PuzzleCard is ERC721Tradable {
     uint16[] public cardSlotPerType = [0, 0, 2, 2, 0, 1, 2, 1, 2, 2, 1, 1, 2, 1, 2, 2, 1];
 
     uint256[] public tierProbabilities = [90, 10];
-    uint256[] public typeProbabilities = [200, 200, 200, 100, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
-    uint256[] public masterTypeProbabilities = [50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 10];
-    uint256[] public virtualTypeProbabilities = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
     uint256[] public conditionProbabilities = [80, 20];
+
+    uint256[] public standardTypeProbabilities = [200, 200, 200, 100, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
+    uint256[] public virtualTypeProbabilities = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
+    uint256[] public masterTypeProbabilities = [50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 10];
 
     uint256 public currentPriceToMint;
     string public currentBaseTokenURI;
@@ -125,53 +126,109 @@ contract PuzzleCard is ERC721Tradable {
         uint8 pristine = uint8(conditionNames.length) - 1;
         uint8 condition = pristine - pickRandom(conditionProbabilities);
 
-        return standardCard(tier, condition);
+        return randomCard(tier, condition, standardTypeProbabilities);
     }
 
-    function standardCard(uint8 tier, uint8 condition) private returns (Attributes memory) {
-        uint8 series = uint8(randomNumber() % seriesNames.length);
-        uint8 puzzle = uint8(randomNumber() % numPuzzlesPerSeries[series]);
-        uint8 type_ = pickRandom(typeProbabilities);
+    function starterCardForTier(uint8 tier, uint8 condition) private returns (Attributes memory) {
+        uint256[] memory typeProbabilities =
+          tier == MASTER_TIER                        ? masterTypeProbabilities :
+          tier == VIRTUAL_TIER || tier == GODLY_TIER ? virtualTypeProbabilities :
+                                                       standardTypeProbabilities;
 
-        uint8 numSlots = numColorSlotsPerType[type_];
-        uint8 numColors = uint8(colorNames.length) - 1;
-        uint8 color1 = numSlots < 1 ? 0 : 1 + uint8(randomNumber() % numColors);
-        uint8 color2 = numSlots < 2 ? 0 : 1 + uint8(randomNumber() % numColors);
-
-        uint8 numVariants = numVariantsPerType[type_];
-        uint8 variant = numVariants < 1 ? 0 : uint8(randomNumber() % numVariants);
-
-        return Attributes(series, puzzle, tier, type_, color1, color2, variant, condition);
+        return randomCard(tier, condition, typeProbabilities);
     }
 
-    // TODO: PromotingRandomly.test.js
     function promotedCard(CardSlot[] memory slots) private returns (Attributes memory) {
         Attributes memory card = slots[0].card;
 
         uint8 tier = card.tier + 1;
-        uint8 condition = degrade(slots, card.tier);
+        uint8 condition = randomlyDegrade(slots, card.tier);
 
-        bool standardRules = tier == IMMORTAL_TIER || tier == ETHEREAL_TIER || tier == CELESTIAL_TIER;
-        if (standardRules) { return standardCard(tier, condition); }
+        return starterCardForTier(tier, condition);
+    }
 
+    function randomCard(uint8 tier, uint8 condition, uint256[] memory typeProbabilities) private returns (Attributes memory) {
+        (uint8 series, uint8 puzzle) = randomPuzzle();
+        uint8 type_ = pickRandom(typeProbabilities);
+        (uint8 color1, uint8 color2) = randomColors(tier, type_);
+        uint8 variant = randomVariant(type_);
+
+        return Attributes(series, puzzle, tier, type_, color1, color2, variant, condition);
+    }
+
+    // randomness
+
+    function randomPuzzle() private returns (uint8, uint8) {
         uint8 series = uint8(randomNumber() % seriesNames.length);
         uint8 puzzle = uint8(randomNumber() % numPuzzlesPerSeries[series]);
 
-        uint256[] memory probabilities = tier == MASTER_TIER ? masterTypeProbabilities : virtualTypeProbabilities;
-        uint8 type_ = pickRandom(probabilities);
+        return (series, puzzle);
+    }
 
+    function randomColors(uint8 tier, uint8 type_) private returns (uint8, uint8) {
         uint8 numSlots = numColorSlotsPerType[type_];
         uint8 numColors = uint8(colorNames.length) - 1;
+
         uint8 color1 = numSlots < 1 ? 0 : 1 + uint8(randomNumber() % numColors);
 
-        uint8 color2 = numSlots < 2 ? 0 : // TODO: remember to test this
+        uint8 color2 = numSlots < 2 ? 0 :
           (type_ == HELIX_TYPE && tier == CELESTIAL_TIER || tier == GODLY_TIER) ? color1 :
           1 + uint8(randomNumber() % numColors);
 
+        return (color1, color2);
+    }
+
+    function randomVariant(uint8 type_) private returns (uint8) {
         uint8 numVariants = numVariantsPerType[type_];
         uint8 variant = numVariants < 1 ? 0 : uint8(randomNumber() % numVariants);
 
-        return Attributes(series, puzzle, tier, type_, color1, color2, variant, condition);
+        return variant;
+    }
+
+    function randomlyDegrade(CardSlot[] memory slots, uint8 tier) private returns (uint8) {
+        uint8 worstCondition = MAX_VALUE;
+
+        for (uint8 i = 0; i < slots.length; i += 1) {
+            CardSlot memory slot = slots[i];
+
+            if (slot.occupied && slot.card.condition < worstCondition) {
+                worstCondition = slot.card.condition;
+            }
+        }
+
+        if (worstCondition == DIRE_CONDITION || tier == IMMORTAL_TIER || tier == GODLY_TIER) {
+            return worstCondition;
+        } else {
+            return worstCondition - pickRandom(conditionProbabilities);
+        }
+    }
+
+    function pickRandom(uint256[] memory probabilities) private returns (uint8) {
+        uint256 cumulative = 0;
+        for (uint8 i = 0; i < probabilities.length; i += 1) {
+            cumulative += probabilities[i];
+        }
+
+        uint256 random = randomNumber() % cumulative;
+
+        uint256 total = 0;
+        for (uint8 i = 0; i < probabilities.length; i += 1) {
+          total += probabilities[i];
+          if (random < total) { return i; }
+        }
+
+        return MAX_VALUE; // Unreachable.
+    }
+
+    function randomNumber() private returns (uint256) {
+        return uint256(keccak256(abi.encode(
+            block.timestamp,
+            block.difficulty,
+            proxyRegistryAddress,
+            currentBaseTokenURI,
+            getNextTokenId(),
+            randomCallCount++
+        )));
     }
 
     // actions: activateSunOrMoon
@@ -181,14 +238,13 @@ contract PuzzleCard is ERC721Tradable {
 
         Attributes memory inactive = slots[2].card;
 
-        uint8 series = uint8(randomNumber() % seriesNames.length);
-        uint8 puzzle = uint8(randomNumber() % numPuzzlesPerSeries[series]);
+        (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 tier = inactive.tier;
         uint8 type_ = ACTIVE_TYPE;
         uint8 color1 = inactive.color1;
         uint8 color2 = inactive.color2;
         uint8 variant = inactive.variant;
-        uint8 condition = degrade(slots, inactive.tier);
+        uint8 condition = randomlyDegrade(slots, inactive.tier);
 
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
     }
@@ -225,21 +281,12 @@ contract PuzzleCard is ERC721Tradable {
 
         Attributes memory telescope = slots[1].card;
 
-        uint8 series = uint8(randomNumber() % seriesNames.length);
-        uint8 puzzle = uint8(randomNumber() % numPuzzlesPerSeries[series]);
+        (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 tier = telescope.tier;
         uint8 type_ = HELIX_TYPE + uint8(randomNumber() % 3);
-
-        uint8 numSlots = numColorSlotsPerType[type_];
-        uint8 numColors = uint8(colorNames.length) - 1;
-        uint8 color1 = numSlots < 1 ? 0 : 1 + uint8(randomNumber() % numColors);
-
-        uint8 color2 = numSlots < 2 ? 0 :
-          (type_ == HELIX_TYPE && tier == CELESTIAL_TIER || tier == GODLY_TIER) ? color1 :
-          1 + uint8(randomNumber() % numColors);
-
-        uint8 variant = numVariantsPerType[type_] < 1 ? 0 : uint8(randomNumber() % numVariantsPerType[type_]);
-        uint8 condition = degrade(slots, telescope.tier);
+        (uint8 color1, uint8 color2) = randomColors(tier, type_);
+        uint8 variant = randomVariant(type_);
+        uint8 condition = randomlyDegrade(slots, telescope.tier);
 
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
     }
@@ -275,14 +322,13 @@ contract PuzzleCard is ERC721Tradable {
 
         Attributes memory helix = slots[1].card;
 
-        uint8 series = uint8(randomNumber() % seriesNames.length);
-        uint8 puzzle = uint8(randomNumber() % numPuzzlesPerSeries[series]);
+        (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 tier = helix.tier;
         uint8 type_ = MAP_TYPE + uint8(randomNumber() % 2);
         uint8 color1 = 0;
         uint8 color2 = 0;
         uint8 variant = numVariantsPerType[type_] < 1 ? 0 : uint8(randomNumber() % numVariantsPerType[type_]);
-        uint8 condition = degrade(slots, helix.tier);
+        uint8 condition = randomlyDegrade(slots, helix.tier);
 
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition));
     }
@@ -390,24 +436,6 @@ contract PuzzleCard is ERC721Tradable {
         return slot.occupied && slot.card.type_ == type_;
     }
 
-    function degrade(CardSlot[] memory slots, uint8 tier) private returns (uint8) {
-        uint8 worstCondition = MAX_VALUE;
-
-        for (uint8 i = 0; i < slots.length; i += 1) {
-            CardSlot memory slot = slots[i];
-
-            if (slot.occupied && slot.card.condition < worstCondition) {
-                worstCondition = slot.card.condition;
-            }
-        }
-
-        if (worstCondition == DIRE_CONDITION || tier == IMMORTAL_TIER || tier == GODLY_TIER) {
-            return worstCondition;
-        } else {
-            return worstCondition - pickRandom(conditionProbabilities);
-        }
-    }
-
     function replace(uint256[] memory tokenIDs, Attributes memory newCard) private {
         cards[getNextTokenId()] = newCard;
         mintTo(ownerOf(tokenIDs[0]));
@@ -415,34 +443,6 @@ contract PuzzleCard is ERC721Tradable {
         for (uint8 i = 0; i < tokenIDs.length; i += 1) {
           _burn(tokenIDs[i]);
         }
-    }
-
-    function pickRandom(uint256[] memory probabilities) private returns (uint8) {
-        uint256 cumulative = 0;
-        for (uint8 i = 0; i < probabilities.length; i += 1) {
-            cumulative += probabilities[i];
-        }
-
-        uint256 random = randomNumber() % cumulative;
-
-        uint256 total = 0;
-        for (uint8 i = 0; i < probabilities.length; i += 1) {
-          total += probabilities[i];
-          if (random < total) { return i; }
-        }
-
-        return MAX_VALUE; // Unreachable.
-    }
-
-    function randomNumber() private returns (uint256) {
-        return uint256(keccak256(abi.encode(
-            block.timestamp,
-            block.difficulty,
-            proxyRegistryAddress,
-            currentBaseTokenURI,
-            getNextTokenId(),
-            randomCallCount++
-        )));
     }
 
     function dasherize(string memory string_) private pure returns (string memory) {
