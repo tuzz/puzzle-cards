@@ -435,8 +435,8 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
     }
 
     for (const tier of masterRulesTiers) {
-      it(`mints either a Player, Eclipse or Star card at ${tier} tier`, async () => {
-        const typeNames = [];
+      it(`mints an Artwork card at ${tier} tier`, async () => {
+        const variantNames = [];
 
         for (let i = 0; i < 1000; i += 1) {
           for (card of validCards) {
@@ -454,26 +454,17 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
           const color2 = await contract.color2Name(mintedTokenID);
           const variant = await contract.variantName(mintedTokenID);
 
-          expect(["Player", "Eclipse", "Star"]).to.include(type);
-          expect(variant).to.equal("None");
+          expect(type).to.equal("Artwork");
+          expect(color1).to.equal("None");
           expect(color2).to.equal("None");
 
-          const hasColor = type === "Star";
-
-          if (hasColor) {
-            expect(TestUtils.isRealColor(color1)).to.equal(true);
-          } else {
-            expect(color1).to.equal("None");
-          }
-
-          typeNames.push(type);
+          variantNames.push(variant);
         }
 
-        const frequencies = TestUtils.tallyFrequencies(typeNames);
+        const frequencies = TestUtils.tallyFrequencies(variantNames);
 
-        expect(frequencies["Player"]).to.be.within(0.45, 0.55);  // 50%
-        expect(frequencies["Eclipse"]).to.be.within(0.35, 0.45); // 40%
-        expect(frequencies["Star"]).to.be.within(0.05, 0.15);    // 10%
+        expect(frequencies["Art1"]).to.be.within(0.45, 0.55); // 50%
+        expect(frequencies["Art2"]).to.be.within(0.45, 0.55); // 50%
       }).timeout(120000);
     }
   });
