@@ -467,7 +467,7 @@ contract PuzzleCard is ERC721Tradable {
     }
 
     function _canPuzzleMastery1(uint256[] memory tokenIDs) private view returns (bool, string[] memory, CardSlot[] memory) {
-        (bool ok, string[] memory r) = (true, new string[](4));
+        (bool ok, string[] memory r) = (true, new string[](5));
 
         // We need to do this manually because both Artwork cards would be put into the same slot otherwise.
         // We can skip the sameTier check because Artwork cards only spawn at Master tier.
@@ -482,13 +482,15 @@ contract PuzzleCard is ERC721Tradable {
         Attributes memory card1 = cards[tokenIDs[1]];
 
         bool artworkType = card0.type_ == ARTWORK_TYPE && card1.type_ == ARTWORK_TYPE;
+        bool sameCardUsedTwice = tokenIDs[0] == tokenIDs[1];
 
         if (!artworkType)         { ok = false; r[2] = "[two artwork cards are required]"; }
+        if (sameCardUsedTwice)    { ok = false; r[3] = "[the same card was used twice]"; }
         if (!ok)                  { return (ok, r, slots); } // Type checks failed.
 
         bool samePuzzle = card0.series == card1.series && card0.puzzle == card1.puzzle;
 
-        if (!samePuzzle)          { ok = false; r[3] = "[the puzzles are different]"; }
+        if (!samePuzzle)          { ok = false; r[4] = "[the puzzles are different]"; }
 
         slots[0] = CardSlot(card0, true);
         slots[1] = CardSlot(card1, true);

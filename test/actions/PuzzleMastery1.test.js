@@ -32,6 +32,15 @@ describe("PuzzleMastery1", () => {
       expect(reasons).to.deep.include("[the puzzles are different]", reasons);
     });
 
+    it("cannot be performed if the same card is used twice", async () => {
+      await contract.mintExactByNames(artworkCard1, owner.address);
+
+      const [isAllowed, reasons] = await contract.canPuzzleMastery1([1, 1]);
+
+      expect(isAllowed).to.equal(false);
+      expect(reasons).to.deep.include("[the same card was used twice]", reasons);
+    });
+
     it("mints a star card", async () => {
       await contract.mintExactByNames(artworkCard1, owner.address);
       await contract.mintExactByNames(artworkCard2, owner.address);
