@@ -601,6 +601,73 @@ contract PuzzleCard is ERC721Tradable {
         return (ok, r, slots);
     }
 
+    // actions: discard2Pickup1
+
+    function discard2Pickup1(uint256[] memory tokenIDs) public {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = _canDiscard2Pickup1(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes memory card0 = slots[0].card;
+        Attributes memory card1 = slots[1].card;
+
+        (uint8 highestTier, uint8 lowestTier) = high_low(card0.tier, card1.tier);
+        (uint8 highestCond, uint8 lowestCond) = high_low(card0.condition, card1.condition);
+
+        uint8 tier;
+        uint8 cond;
+
+        if (randomNumber() % 10 == 0) {
+          tier = highestTier;
+          cond = highestCond;
+        } else if (randomNumber() % 2 == 0) {
+          tier = highestTier;
+          cond = lowestCond;
+        } else {
+          tier = lowestTier;
+          cond = highestCond;
+        }
+
+        for (uint8 i = 0; i < 2; i += 1) {
+          Attributes memory card = slots[i].card;
+
+          if (card.edition >= LIMITED_EDITION) {
+            uint256 editionsKey_ = editionsKey(card.series, card.puzzle);
+            limitedEditions[editionsKey_] -= 1;
+
+            if (card.edition == MASTER_COPY_EDITION) {
+              masterCopiesClaimed[editionsKey_] = false;
+            }
+          }
+        }
+
+        replace(tokenIDs, starterCardForTier(tier, cond));
+    }
+
+    function canDiscard2Pickup1(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
+        (bool ok, string[] memory r,) = _canDiscard2Pickup1(tokenIDs); return (ok, r);
+    }
+
+    function _canDiscard2Pickup1(uint256[] memory tokenIDs) private view returns (bool, string[] memory, CardSlot[] memory) {
+        (bool ok, string[] memory r) = (true, new string[](4));
+
+        // We need to do this manually because the cards might be put into the same slot.
+        // We can skip the sameTier check because you're allowed to discard cards from mixed tiers.
+
+        CardSlot[] memory slots = new CardSlot[](2);
+
+        bool twoCards = tokenIDs.length == 2;
+        bool sameCardUsedTwice = twoCards && tokenIDs[0] == tokenIDs[1];
+
+        if (!twoCards)                    { ok = false; r[0] = "[2 cards are required]"; }
+        if (!ownsAll(tokenIDs))           { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (sameCardUsedTwice)            { ok = false; r[2] = "[the same card was used twice]"; }
+        if (!ok)                          { return (ok, r, slots); } // Basic checks failed.
+
+        slots[0] = CardSlot(cards[tokenIDs[0]], true);
+        slots[1] = CardSlot(cards[tokenIDs[1]], true);
+
+        return (ok, r, slots);
+    }
+
     // utilities
 
     struct CardSlot { Attributes card; bool occupied; }
@@ -711,6 +778,10 @@ contract PuzzleCard is ERC721Tradable {
         }
 
         return all;
+    }
+
+    function high_low(uint8 option1, uint8 option2) private pure returns (uint8, uint8) {
+      return (option1 > option2) ? (option1, option2) : (option2, option1);
     }
 
     function replace(uint256[] memory tokenIDs, Attributes memory newCard) private {

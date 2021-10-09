@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("../test_utils/TestUtils");
 
-const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier, { skipSameTierTest } = {}) => {
+const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier, { skipSameTierTest, skipDegradeTest } = {}) => {
   const titleized = actionName[0].toUpperCase() + actionName.slice(1);
   const canAction = `can${titleized}`;
 
@@ -214,34 +214,36 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
         expect(await contract.tierName(mintedTokenID)).to.equal(expectedTier);
     });
 
-    it("has a chance to degrade the condition of the minted card", async () => {
-      const conditionNames = [];
+    if (!skipDegradeTest) {
+      it("has a chance to degrade the condition of the minted card", async () => {
+        const conditionNames = [];
 
-      for (let i = 0; i < 100; i += 1) {
-        const batchOffset = i * batchSize;
+        for (let i = 0; i < 100; i += 1) {
+          const batchOffset = i * batchSize;
 
-        for (card of validCards) {
-          await contract.mintExactByNames(card, owner.address);
+          for (card of validCards) {
+            await contract.mintExactByNames(card, owner.address);
+          }
+
+          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
+          await contract[actionName](batchTokenIDs);
+
+          const mintedTokenID = batchOffset + batchSize;
+          conditionNames.push(await contract.conditionName(mintedTokenID));
         }
 
-        const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-        await contract[actionName](batchTokenIDs);
+        const set = new Set(conditionNames);
+        expect(set.size).to.equal(2);
 
-        const mintedTokenID = batchOffset + batchSize;
-        conditionNames.push(await contract.conditionName(mintedTokenID));
-      }
+        expect(set.has("Excellent")).to.equal(true);
+        expect(set.has("Reasonable")).to.equal(true);
 
-      const set = new Set(conditionNames);
-      expect(set.size).to.equal(2);
+        const numExcellent = conditionNames.filter(s => s === "Excellent").length;
+        const numReasonable = conditionNames.filter(s => s === "Reasonable").length;
 
-      expect(set.has("Excellent")).to.equal(true);
-      expect(set.has("Reasonable")).to.equal(true);
-
-      const numExcellent = conditionNames.filter(s => s === "Excellent").length;
-      const numReasonable = conditionNames.filter(s => s === "Reasonable").length;
-
-      expect(numExcellent).to.be.above(numReasonable * 2);
-    });
+        expect(numExcellent).to.be.above(numReasonable * 2);
+      });
+    }
 
     it("doesn't degrade cards that are already the lowest condition", async () => {
       const conditionNames = new Set();

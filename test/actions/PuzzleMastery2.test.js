@@ -185,10 +185,6 @@ describe("PuzzleMastery2", () => {
         expect(masterCopyMinted).to.equal(true);
       });
 
-      it.skip("can mint limited editions and the master copy again if others are discarded", async () => {
-
-      });
-
       it("provides methods to get the number of limited edition cards per puzzle", async () => {
         for (let i = 0; i < 200; i += 1) {
           for (const card of pristineCards) {
@@ -231,6 +227,60 @@ describe("PuzzleMastery2", () => {
 
         expect(isClaimed).to.equal(true);
         expect(allClaimed).to.deep.equal([false, false, true, false, false]);
+      });
+
+      it("can mint limited editions and the master copy again if others are discarded", async () => {
+        const puzzleIndex = TestUtils.puzzleNames.indexOf("1");
+        const [series, puzzle] = await contract.puzzleForIndex(puzzleIndex);
+
+        for (let i = 0; i < 200; i += 1) {
+          for (const card of pristineCards) {
+            await contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address);
+          }
+
+          const batchOffset = i * batchSize;
+          const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
+
+          await contract.puzzleMastery2(batchTokenIDs);
+        }
+
+        const numLimited = await contract.numLimitedEditions(series, puzzle);
+        const isClaimed = await contract.masterCopyClaimed(series, puzzle);
+
+        expect(numLimited.toString()).to.equal("10");
+        expect(isClaimed).to.equal(true);
+
+        // Discard the first half of the cards.
+        for (let i = 1; i <= 100; i += 2) {
+          const tokenID1 = batchSize * i;
+          const tokenID2 = batchSize * (i + 1);
+
+          await contract.discard2Pickup1([tokenID1, tokenID2]);
+        }
+
+        const numLimitedAfterDiscard = await contract.numLimitedEditions(series, puzzle);
+        const isClaimedAfterDiscard = await contract.masterCopyClaimed(series, puzzle);
+
+        expect(numLimitedAfterDiscard.toString()).not.to.equal("10");
+        expect(isClaimedAfterDiscard).to.equal(false)
+
+        // Mint another 100 cards.
+        for (let i = 0; i < 100; i += 1) {
+          for (const card of pristineCards) {
+            await contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address);
+          }
+
+          const batchOffset = (200 + i) * batchSize + 50; // 50 were picked up
+          const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
+
+          await contract.puzzleMastery2(batchTokenIDs);
+        }
+
+        const numLimitedAfterReMint = await contract.numLimitedEditions(series, puzzle);
+        const isClaimedAfterReMint = await contract.masterCopyClaimed(series, puzzle);
+
+        expect(numLimitedAfterReMint.toString()).to.equal("10");
+        expect(isClaimedAfterReMint).to.equal(true)
       });
     });
 
