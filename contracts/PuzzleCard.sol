@@ -277,15 +277,7 @@ contract PuzzleCard is ERC721Tradable {
         if (!hasType(slots[2], INACTIVE_TYPE)) { ok = false; r[4] = "[an inactive sun or moon card is required]"; }
         if (!ok)                               { return (ok, r, slots); } // Type checks failed.
 
-        Attributes memory activator = slots[0].card;
-        Attributes memory inactive = slots[2].card;
-
-        bool cloakUsed = activator.type_ == CLOAK_TYPE;
-        bool colorsMatch = activator.color1 == inactive.color1;
-        bool inaccessible = activator.tier == ETHEREAL_TIER || activator.tier == GODLY_TIER;
-
-        if (cloakUsed && !colorsMatch)         { ok = false; r[5] = "[the color of the cloak does not match]"; }
-        if (!cloakUsed && inaccessible)        { ok = false; r[6] = "[only works with a cloak card at this tier]"; }
+        ok = ok && cloakCanActivateSunOrMoon(slots, r);
 
         return (ok, r, slots);
     }
@@ -357,6 +349,54 @@ contract PuzzleCard is ERC721Tradable {
         if (!hasType(slots[1], GLASSES_TYPE)) { ok = false; r[4] = "[a glasses card is required]"; }
         if (!hasType(slots[2], HIDDEN_TYPE))  { ok = false; r[5] = "[a hidden card is required]"; }
         if (!ok)                              { return (ok, r, slots); } // Type checks failed.
+
+        return (ok, r, slots);
+    }
+
+    // actions: changeLensColor
+
+    function changeLensColor(uint256[] memory tokenIDs) public {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = _canChangeLensColor(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes memory torchOrGlasses = slots[1].card;
+        Attributes memory inactive = slots[2].card;
+
+        (uint8 series, uint8 puzzle) = randomPuzzle();
+        uint8 tier = torchOrGlasses.tier;
+        uint8 type_ = torchOrGlasses.type_;
+        uint8 color1 = torchOrGlasses.color2;
+        uint8 color2 = torchOrGlasses.color1;
+        uint8 variant = randomVariant(type_);
+        uint8 condition = randomlyDegrade(slots, torchOrGlasses.tier);
+        uint8 edition = STANDARD_EDITION;
+
+        if (inactive.color1 != color1 && inactive.color1 != color2) {
+            if (randomNumber() % 2 == 0) {
+              color1 = inactive.color1;
+            } else {
+              color2 = inactive.color1;
+            }
+        }
+
+        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
+    }
+
+    function canChangeLensColor(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
+        (bool ok, string[] memory r,) = _canChangeLensColor(tokenIDs); return (ok, r);
+    }
+
+    function _canChangeLensColor(uint256[] memory tokenIDs) private view returns (bool, string[] memory, CardSlot[] memory) {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 3);
+
+        bool torchOrGlassesType = hasType(slots[1], TORCH_TYPE) || hasType(slots[1], GLASSES_TYPE);
+
+        if (!ok)                               { return (ok, r, slots); } // Basic checks failed.
+        if (!slots[0].occupied)                { ok = false; r[3] = "[a player, crab or cloak card is required]"; }
+        if (!torchOrGlassesType)               { ok = false; r[4] = "[a torch or glasses card is required]"; }
+        if (!hasType(slots[2], INACTIVE_TYPE)) { ok = false; r[5] = "[an inactive sun or moon card is required]"; }
+        if (!ok)                               { return (ok, r, slots); } // Type checks failed.
+
+        ok = ok && cloakCanActivateSunOrMoon(slots, r);
 
         return (ok, r, slots);
     }
@@ -835,6 +875,22 @@ contract PuzzleCard is ERC721Tradable {
 
     function hasType(CardSlot memory slot, uint8 type_) private pure returns (bool) {
         return slot.occupied && slot.card.type_ == type_;
+    }
+
+    function cloakCanActivateSunOrMoon(CardSlot[] memory slots, string[] memory r) private pure returns (bool) {
+        bool ok = true;
+
+        Attributes memory activator = slots[0].card;
+        Attributes memory inactive = slots[2].card;
+
+        bool cloakUsed = activator.type_ == CLOAK_TYPE;
+        bool colorsMatch = activator.color1 == inactive.color1;
+        bool inaccessible = activator.tier == ETHEREAL_TIER || activator.tier == GODLY_TIER;
+
+        if (cloakUsed && !colorsMatch)         { ok = false; r[6] = "[the color of the cloak does not match]"; }
+        if (!cloakUsed && inaccessible)        { ok = false; r[7] = "[only works with a cloak card at this tier]"; }
+
+        return ok;
     }
 
     function allPristine(CardSlot[] memory slots) private pure returns (bool) {
