@@ -68,7 +68,7 @@ describe("PuzzleMastery2", () => {
     it("randomly chooses the puzzle from one of the star cards", async () => {
       const puzzleNames = [];
 
-      for (let i = 0; i < 1000; i += 1) {
+      for (let i = 0; i < 200; i += 1) {
         for (const card of validCards) {
           await contract.mintExactByNames(card, owner.address);
         }
@@ -79,8 +79,8 @@ describe("PuzzleMastery2", () => {
         await contract.puzzleMastery2(batchTokenIDs);
         const mintedTokenID = batchOffset + batchSize;
 
-        const series = await contract.typeName(mintedTokenID);
-        const puzzle = await contract.color1Name(mintedTokenID);
+        const series = await contract.seriesName(mintedTokenID);
+        const puzzle = await contract.puzzleName(mintedTokenID);
 
         puzzleNames.push([series, puzzle]);
       }
@@ -140,7 +140,7 @@ describe("PuzzleMastery2", () => {
       it("limits the total supply of limited edition cards for each puzzle to 10", async () => {
         const editionNames = [];
 
-        for (let i = 0; i < 500; i += 1) {
+        for (let i = 0; i < 200; i += 1) {
           for (const card of pristineCards) {
             await contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address);
           }
@@ -187,6 +187,50 @@ describe("PuzzleMastery2", () => {
 
       it.skip("can mint limited editions and the master copy again if others are discarded", async () => {
 
+      });
+
+      it("provides methods to get the number of limited edition cards per puzzle", async () => {
+        for (let i = 0; i < 200; i += 1) {
+          for (const card of pristineCards) {
+            await contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address);
+          }
+
+          const batchOffset = i * batchSize;
+          const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
+
+          await contract.puzzleMastery2(batchTokenIDs);
+        }
+
+        const puzzleIndex = TestUtils.puzzleNames.indexOf("1");
+
+        const [series, puzzle] = await contract.puzzleForIndex(puzzleIndex);
+        const numLimited = await contract.numLimitedEditions(series, puzzle);
+        const allLimited = await contract.numLimitedEditionsForAllPuzzles();
+
+        expect(numLimited.toString()).to.equal("10");
+        expect(allLimited.map(n => n.toString())).to.deep.equal(["0", "0", "10", "0", "0"]);
+      });
+
+      it("provides methods to get whether the master copy has been claimed per puzzle", async () => {
+        for (let i = 0; i < 50; i += 1) {
+          for (const card of pristineCards) {
+            await contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address);
+          }
+
+          const batchOffset = i * batchSize;
+          const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
+
+          await contract.puzzleMastery2(batchTokenIDs);
+        }
+
+        const puzzleIndex = TestUtils.puzzleNames.indexOf("1");
+
+        const [series, puzzle] = await contract.puzzleForIndex(puzzleIndex);
+        const isClaimed = await contract.masterCopyClaimed(series, puzzle);
+        const allClaimed = await contract.masterCopyClaimedForAllPuzzles();
+
+        expect(isClaimed).to.equal(true);
+        expect(allClaimed).to.deep.equal([false, false, true, false, false]);
       });
     });
 

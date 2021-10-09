@@ -19,7 +19,9 @@ contract PuzzleCard is ERC721Tradable {
     }
 
     mapping(uint256 => Attributes) public cards;
-    mapping(uint256 => uint256) public editions;
+
+    mapping(uint256 => uint256) public limitedEditions;
+    mapping(uint256 => bool) public masterCopiesClaimed;
 
     string[] public seriesNames = ["None", "Teamwork"];
     string[] public puzzleNames = ["Trial of Skill", "Trial of Reign", "1", "2", "3"];
@@ -64,6 +66,12 @@ contract PuzzleCard is ERC721Tradable {
     function variantName(uint256 tokenID) public view returns (string memory) { return variantNames[variantOffsetPerType[cards[tokenID].type_] + cards[tokenID].variant]; }
     function conditionName(uint256 tokenID) public view returns (string memory) { return conditionNames[cards[tokenID].condition]; }
     function editionName(uint256 tokenID) public view returns (string memory) { return editionNames[cards[tokenID].edition]; }
+
+    function puzzleForIndex(uint16 puzzleIndex) public view returns (uint8, uint8) { return _puzzleForIndex(puzzleIndex); }
+    function numLimitedEditions(uint8 series, uint8 puzzle) public view returns (uint256) { return limitedEditions[editionsKey(series, puzzle)]; }
+    function numLimitedEditionsForAllPuzzles() public view returns (uint256[] memory) { return _numLimitedEditionsForAllPuzzles(); }
+    function masterCopyClaimed(uint8 series, uint8 puzzle) public view returns (bool) { return masterCopiesClaimed[editionsKey(series, puzzle)]; }
+    function masterCopyClaimedForAllPuzzles() public view returns (bool[] memory) { return _masterCopyClaimedForAllPuzzles(); }
 
     function priceToMint(uint256 numberOfCards) public view returns (uint256) { return currentPriceToMint * numberOfCards; }
     function baseTokenURI() override public view returns (string memory) { return currentBaseTokenURI; }
@@ -535,15 +543,17 @@ contract PuzzleCard is ERC721Tradable {
             bool tryLimitedEdition = randomNumber() % 10 == 0;
 
             if (tryLimitedEdition) {
-              uint256 editionsKey = (series << 8) | puzzle;
-              uint256 numOthers = editions[editionsKey];
+              uint256 editionsKey_ = editionsKey(series, puzzle);
+              uint256 numOthers = limitedEditions[editionsKey_];
 
-              if (numOthers == 0) {
-                  edition = MASTER_COPY_EDITION;
-                  editions[editionsKey] += 1;
-              } else if (numOthers < MAX_LIMITED_EDITIONS) {
+              if (numOthers < MAX_LIMITED_EDITIONS) {
                   edition = LIMITED_EDITION;
-                  editions[editionsKey] += 1;
+                  limitedEditions[editionsKey_] += 1;
+
+                  if (!masterCopiesClaimed[editionsKey_]) {
+                    edition = MASTER_COPY_EDITION;
+                    masterCopiesClaimed[editionsKey_] = true;
+                  }
               }
             }
         }
@@ -594,6 +604,50 @@ contract PuzzleCard is ERC721Tradable {
     // utilities
 
     struct CardSlot { Attributes card; bool occupied; }
+
+    function _puzzleForIndex(uint16 puzzleIndex) private view returns (uint8, uint8) {
+        uint16 cumulative = 0;
+
+        for (uint8 series = 0; series < seriesNames.length; series += 1) {
+          uint8 numPuzzles = numPuzzlesPerSeries[series];
+
+          if (puzzleIndex < cumulative + numPuzzles) {
+            uint8 puzzle = uint8(puzzleIndex - cumulative);
+
+            return (series, puzzle);
+          }
+
+          cumulative += numPuzzles;
+        }
+
+        return (MAX_VALUE, MAX_VALUE); // Unreachable.
+    }
+
+    function _numLimitedEditionsForAllPuzzles() private view returns (uint256[] memory) {
+        uint256[] memory counts = new uint256[](puzzleNames.length);
+
+        for (uint16 i = 0; i < puzzleNames.length; i += 1) {
+          (uint8 series, uint8 puzzle) = _puzzleForIndex(i);
+          counts[i] = numLimitedEditions(series, puzzle);
+        }
+
+        return counts;
+    }
+
+    function _masterCopyClaimedForAllPuzzles() private view returns (bool[] memory) {
+        bool[] memory claimed = new bool[](puzzleNames.length);
+
+        for (uint16 i = 0; i < puzzleNames.length; i += 1) {
+          (uint8 series, uint8 puzzle) = _puzzleForIndex(i);
+          claimed[i] = masterCopyClaimed(series, puzzle);
+        }
+
+        return claimed;
+    }
+
+    function editionsKey(uint8 series, uint8 puzzle) private pure returns (uint256) {
+      return (uint256(series) << 8) | puzzle;
+    }
 
     function performBasicChecks(uint256[] memory tokenIDs, uint8 numCards) private view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](10));
