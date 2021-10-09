@@ -332,6 +332,35 @@ contract PuzzleCard is ERC721Tradable {
         return (ok, r, slots);
     }
 
+    // actions: lookThroughGlasses
+
+    function lookThroughGlasses(uint256[] memory tokenIDs) public {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = _canLookThroughGlasses(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes memory glasses = slots[1].card;
+
+        uint8 tier = glasses.tier;
+        uint8 condition = randomlyDegrade(slots, glasses.tier);
+
+        replace(tokenIDs, starterCardForTier(tier, condition));
+    }
+
+    function canLookThroughGlasses(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
+        (bool ok, string[] memory r,) = _canLookThroughGlasses(tokenIDs); return (ok, r);
+    }
+
+    function _canLookThroughGlasses(uint256[] memory tokenIDs) private view returns (bool, string[] memory, CardSlot[] memory) {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 3);
+
+        if (!ok)                              { return (ok, r, slots); } // Basic checks failed.
+        if (!hasType(slots[0], PLAYER_TYPE))  { ok = false; r[3] = "[a player card is required]"; }
+        if (!hasType(slots[1], GLASSES_TYPE)) { ok = false; r[4] = "[a glasses card is required]"; }
+        if (!hasType(slots[2], HIDDEN_TYPE))  { ok = false; r[5] = "[a hidden card is required]"; }
+        if (!ok)                              { return (ok, r, slots); } // Type checks failed.
+
+        return (ok, r, slots);
+    }
+
     // actions: shineTorchOnBasePair
 
     function shineTorchOnBasePair(uint256[] memory tokenIDs) public {
