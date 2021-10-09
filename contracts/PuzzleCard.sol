@@ -31,6 +31,7 @@ contract PuzzleCard is ERC721Tradable {
     string[] public variantNames = ["None", "Sun", "Moon", "Open", "Closed", "Art1", "Art2"];
     string[] public conditionNames = ["Dire", "Poor", "Reasonable", "Excellent", "Pristine"];
     string[] public editionNames = ["Standard", "Signed", "Limited", "Master Copy"];
+    string[] public actionNames = ["activateSunOrMoon", "changeLensColor", "discard2Pickup1", "goThroughStarDoor", "jumpIntoBeacon", "jumpIntoEclipse", "lookThroughGlasses", "lookThroughTelescope", "puzzleMastery1", "puzzleMastery2", "shineTorchOnBasePair", "teleportToNextArea"];
 
     uint8[] public numPuzzlesPerSeries = [2, 3];
     uint16[] public puzzleOffsetPerSeries = [0, 2];
@@ -90,6 +91,25 @@ contract PuzzleCard is ERC721Tradable {
           dasherize(lowercase(conditionName(tokenID))), "-",
           dasherize(lowercase(editionName(tokenID)))
         ));
+    }
+
+    function actionsThatCanBeTaken(uint256[] memory tokenIDs) public view returns (string[] memory) {
+        string[] memory names = new string[](actionNames.length);
+
+        (bool a0,)  = canActivateSunOrMoon(tokenIDs);    if (a0)  { names[0]  = actionNames[0]; }
+        (bool a1,)  = canChangeLensColor(tokenIDs);      if (a1)  { names[1]  = actionNames[1]; }
+        (bool a2,)  = canDiscard2Pickup1(tokenIDs);      if (a2)  { names[2]  = actionNames[2]; }
+        (bool a3,)  = canGoThroughStarDoor(tokenIDs);    if (a3)  { names[3]  = actionNames[3]; }
+        (bool a4,)  = canJumpIntoBeacon(tokenIDs);       if (a4)  { names[4]  = actionNames[4]; }
+        (bool a5,)  = canJumpIntoEclipse(tokenIDs);      if (a5)  { names[5]  = actionNames[5]; }
+        (bool a6,)  = canLookThroughGlasses(tokenIDs);   if (a6)  { names[6]  = actionNames[6]; }
+        (bool a7,)  = canLookThroughTelescope(tokenIDs); if (a7)  { names[7]  = actionNames[7]; }
+        (bool a8,)  = canPuzzleMastery1(tokenIDs);       if (a8)  { names[8]  = actionNames[8]; }
+        (bool a9,)  = canPuzzleMastery2(tokenIDs);       if (a9)  { names[9]  = actionNames[9]; }
+        (bool a10,) = canShineTorchOnBasePair(tokenIDs); if (a10) { names[10] = actionNames[10]; }
+        (bool a11,) = canTeleportToNextArea(tokenIDs);   if (a11) { names[11] = actionNames[11]; }
+
+        return names;
     }
 
     // setters
