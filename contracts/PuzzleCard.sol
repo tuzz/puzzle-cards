@@ -344,7 +344,7 @@ contract PuzzleCard is ERC721Tradable {
         uint8 type_ = MAP_TYPE + uint8(randomNumber() % 2);
         uint8 color1 = 0;
         uint8 color2 = 0;
-        uint8 variant = numVariantsPerType[type_] < 1 ? 0 : uint8(randomNumber() % numVariantsPerType[type_]);
+        uint8 variant = randomVariant(type_);
         uint8 condition = randomlyDegrade(slots, helix.tier);
         uint8 edition = STANDARD_EDITION;
 
@@ -422,6 +422,44 @@ contract PuzzleCard is ERC721Tradable {
         return (ok, r, slots);
     }
 
+    // actions: jumpIntoBeacon
+
+    function jumpIntoBeacon(uint256[] memory tokenIDs) public {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = _canJumpIntoBeacon(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes memory torchOrGlasses = slots[1].card;
+        Attributes memory beacon = slots[2].card;
+
+        (uint8 series, uint8 puzzle) = randomPuzzle();
+        uint8 tier = torchOrGlasses.tier;
+        uint8 type_ = torchOrGlasses.type_;
+        uint8 color1 = beacon.color1;
+        uint8 color2 = beacon.color1;
+        uint8 variant = randomVariant(type_);
+        uint8 condition = randomlyDegrade(slots, torchOrGlasses.tier);
+        uint8 edition = STANDARD_EDITION;
+
+        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
+    }
+
+    function canJumpIntoBeacon(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
+        (bool ok, string[] memory r,) = _canJumpIntoBeacon(tokenIDs); return (ok, r);
+    }
+
+    function _canJumpIntoBeacon(uint256[] memory tokenIDs) private view returns (bool, string[] memory, CardSlot[] memory) {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 3);
+
+        bool torchOrGlassesType = hasType(slots[1], TORCH_TYPE) || hasType(slots[1], GLASSES_TYPE);
+
+        if (!ok)                              { return (ok, r, slots); } // Basic checks failed.
+        if (!hasType(slots[0], PLAYER_TYPE))  { ok = false; r[3] = "[a player card is required]"; }
+        if (!torchOrGlassesType)              { ok = false; r[4] = "[a torch or glasses card is required]"; }
+        if (!hasType(slots[2], BEACON_TYPE))  { ok = false; r[5] = "[a beacon card is required]"; }
+        if (!ok)                              { return (ok, r, slots); } // Type checks failed.
+
+        return (ok, r, slots);
+    }
+
     // actions: jumpIntoEclipse
 
     function jumpIntoEclipse(uint256[] memory tokenIDs) public {
@@ -475,7 +513,7 @@ contract PuzzleCard is ERC721Tradable {
         uint8 numColors = uint8(colorNames.length) - 1;
         uint8 color1 = 1 + uint8(randomNumber() % numColors);
         uint8 color2 = 0;
-        uint8 variant = 0;
+        uint8 variant = randomVariant(type_);
         uint8 condition = randomlyDegrade(slots, artwork0.tier);
         uint8 edition = STANDARD_EDITION;
 
