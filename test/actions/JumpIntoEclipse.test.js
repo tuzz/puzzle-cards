@@ -51,6 +51,6 @@ describe("JumpIntoEclipse", () => {
       expect(color1).to.equal("None");
       expect(color2).to.equal("None");
       expect(variant).to.equal("Open");
-    }).timeout(60000);
+    });
   });
 });

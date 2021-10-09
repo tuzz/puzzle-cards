@@ -108,7 +108,7 @@ describe("LookThroughTelescope", () => {
       // color1 is always a real color and color2 is always None for Beacons
       expect(matchFrequencies["Beacon"][true]).to.be.undefined; // 0%
       expect(matchFrequencies["Beacon"][false]).to.be.equal(1); // 100%
-    }).timeout(60000);
+    });
 
     for (const tier of ["Celestial", "Godly"]) {
       it(`mints Helix cards with two of the same color at ${tier} tier}`, async () => {

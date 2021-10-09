@@ -400,7 +400,7 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         expect(frequencies["Cloak"]).to.be.within(0.05, 0.15);     // 10%
         expect(frequencies["Telescope"]).to.be.within(0.05, 0.15); // 10%
         // ...
-      }).timeout(120000);
+      });
     }
 
     for (const tier of virtualRulesTiers) {
@@ -444,7 +444,7 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         expect(frequencies["Player"]).to.be.within(0.233, 0.433);  // 33.3%
         expect(frequencies["Glasses"]).to.be.within(0.233, 0.433); // 33.3%
         expect(frequencies["Hidden"]).to.be.within(0.233, 0.433);  // 33.3%
-      }).timeout(120000);
+      });
     }
 
     for (const tier of masterRulesTiers) {
@@ -478,7 +478,7 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
 
         expect(frequencies["Art1"]).to.be.within(0.45, 0.55); // 50%
         expect(frequencies["Art2"]).to.be.within(0.45, 0.55); // 50%
-      }).timeout(120000);
+      });
     }
   });
 };

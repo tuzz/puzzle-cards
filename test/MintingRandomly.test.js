@@ -31,7 +31,7 @@ describe("MintingRandomly", () => {
 
       expect(frequencies["None"]).to.be.within(0.47, 0.53);     // 50%
       expect(frequencies["Teamwork"]).to.be.within(0.47, 0.53); // 50%
-    }).timeout(300000);
+    });
   });
 
   describe("puzzle", () => {
@@ -47,7 +47,7 @@ describe("MintingRandomly", () => {
       expect(frequencies["Teamwork"]["1"]).to.be.within(0.303, 0.366); // 33.3%
       expect(frequencies["Teamwork"]["2"]).to.be.within(0.303, 0.366); // 33.3%
       expect(frequencies["Teamwork"]["3"]).to.be.within(0.303, 0.366); // 33.3%
-    }).timeout(300000);
+    });
   });
 
   describe("tier", () => {
@@ -64,7 +64,7 @@ describe("MintingRandomly", () => {
       expect(frequencies["Celestial"]).to.be.undefined;         // 0%
       expect(frequencies["Godly"]).to.be.undefined;             // 0%
       expect(frequencies["Master"]).to.be.undefined;            // 0%
-    }).timeout(300000);
+    });
   });
 
   describe("type", () => {
@@ -91,7 +91,7 @@ describe("MintingRandomly", () => {
       expect(frequencies["Hidden"]).to.be.undefined;             // 0%
       expect(frequencies["Artwork"]).to.be.undefined;            // 0%
       expect(frequencies["Star"]).to.be.undefined;               // 0%
-    }).timeout(300000);
+    });
   });
 
   describe("color1", () => {
@@ -119,7 +119,7 @@ describe("MintingRandomly", () => {
       expect(frequencies2["White"]).to.be.within(0.11, 0.17);  // 14.3%
       expect(frequencies2["Black"]).to.be.within(0.11, 0.17);  // 14.3%
       expect(frequencies2["None"]).to.be.undefined;            // 0%;
-    }).timeout(300000);
+    });
   });
 
   describe("color2", () => {
@@ -147,7 +147,7 @@ describe("MintingRandomly", () => {
       expect(frequencies2["White"]).to.be.within(0.11, 0.17);  // 14.3%
       expect(frequencies2["Black"]).to.be.within(0.11, 0.17);  // 14.3%
       expect(frequencies2["None"]).to.be.undefined;            // 0%;
-    }).timeout(300000);
+    });
   });
 
   describe("variant", () => {
@@ -174,7 +174,7 @@ describe("MintingRandomly", () => {
       expect(frequencies2["Closed"]).to.be.below(0.01);     // 0.1% = 50% * (0.6/30.6)
       expect(frequencies2["None"]).to.be.undefined;
 
-    }).timeout(300000);
+    });
   });
 
   describe("condition", () => {
@@ -189,7 +189,7 @@ describe("MintingRandomly", () => {
       expect(frequencies["Reasonable"]).to.be.undefined;          // 0%
       expect(frequencies["Excellent"]).to.be.within(0.17, 0.23);  // 20%
       expect(frequencies["Pristine"]).to.be.within(0.77, 0.83);   // 80%
-    }).timeout(300000);
+    });
   });
 
   // utility functions
