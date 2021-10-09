@@ -89,6 +89,8 @@ contract PuzzleCard is ERC721Tradable {
     function setPriceToMint(uint256 newPrice) public onlyOwner { currentPriceToMint = newPrice; }
     function setBaseTokenURI(string memory newURI) public onlyOwner { currentBaseTokenURI = newURI; }
 
+    // Be very careful not to invalidate existing cards when calling these methods.
+    // The arrays must be append only and not reorder or remove puzzles.
     function setPuzzleNames(string[] memory seriesNames_, string[] memory puzzleNames_, uint8[] memory numPuzzlesPerSeries_, uint16[] memory puzzleOffsetPerSeries_) public onlyOwner {
         seriesNames = seriesNames_;
         puzzleNames = puzzleNames_;
