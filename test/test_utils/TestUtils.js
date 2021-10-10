@@ -35,18 +35,26 @@ TestUtils.mintExactByNames = (contract) => async ({ series, puzzle, tier, type, 
 TestUtils.tokenID = async (promise) => {
   const transaction = await promise;
   const receiver = await transaction.wait();
-  const transfer = receiver.events[0];
-  const tokenID = transfer.args.tokenId.toNumber();
 
-  return tokenID;
+  for (const e of receiver.events) {
+    if (e.event !== "TransferSingle") { continue; }
+    return e.args.id.toBigInt();
+  }
+
+  throw new Error("No TransferSingle event was emitted.");
 };
 
 TestUtils.batchTokenIDs = async (promise) => {
   const transaction = await promise;
   const receiver = await transaction.wait();
-  const tokenIDs = receiver.events.map(e => e.args.tokenId.toNumber());
 
-  return tokenIDs;
+  for (const e of receiver.events) {
+    if (e.event !== "TransferBatch") { continue; }
+    // TODO: continue past transfers to the zero address (_burnBatch).
+    return e.args.ids.map(id => id.toBigInt());
+  }
+
+  throw new Error("No TransferBatch event was emitted.");
 };
 
 TestUtils.tokenIDs = async (array, fn) => {
