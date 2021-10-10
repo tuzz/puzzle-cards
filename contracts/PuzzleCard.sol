@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "./vendor/ERC721Tradable.sol";
+import "./vendor/ERC1155Tradable.sol";
 //import "hardhat/console.sol";
 
 contract PuzzleCard is ERC721Tradable {
