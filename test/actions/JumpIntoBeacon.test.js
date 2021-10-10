@@ -9,7 +9,7 @@ describe("JumpIntoBeacon", () => {
   const glassesCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Glasses", color1: "Red", color2: "Green", variant: "None", condition: "Excellent", edition: "Standard" };
   const beaconCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Beacon", color1: "Blue", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
 
-  //itBehavesLikeAnAction("jumpIntoBeacon", [playerCard, torchCard, beaconCard], [["Player"], ["Torch", "Glasses"], ["Beacon"]], "Mortal");
+  itBehavesLikeAnAction("jumpIntoBeacon", [playerCard, torchCard, beaconCard], [["Player"], ["Torch", "Glasses"], ["Beacon"]], "Mortal");
 
   describe("action specific behaviour", () => {
     let factory, contract, owner, user1;

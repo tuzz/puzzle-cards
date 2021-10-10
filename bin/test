@@ -1,6 +1,6 @@
 #!/bin/bash
 
 cp test/test_utils/TestUtils.sol contracts/ && \
-yarn hardhat test $1
+yarn hardhat test --max-memory 8192 $1
 
 rm -f contracts/TestUtils.sol

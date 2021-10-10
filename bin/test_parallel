@@ -1,0 +1,4 @@
+#!/bin/bash
+
+find test -name '*.test.js' | parallel ./bin/test | tee test-output.txt &&
+cat test-output.txt | grep failing
