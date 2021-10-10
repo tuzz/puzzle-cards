@@ -2,6 +2,7 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
+const tokenID = TestUtils.tokenID;
 
 describe("ChangeLensColor", () => {
   const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
@@ -26,11 +27,11 @@ describe("ChangeLensColor", () => {
     });
 
     it("cannot be performed if the cloak's color does not match that of the sun or moon", async () => {
-      await contract.mintExactByNames({ ...cloakCard, color1: "Red" }, owner.address);
-      await contract.mintExactByNames(torchCard, owner.address);
-      await contract.mintExactByNames({ ...inactiveCard, color1: "Blue" }, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames({ ...cloakCard, color1: "Red" }, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames(torchCard, owner.address));
+      const tokenID3 = await tokenID(contract.mintExactByNames({ ...inactiveCard, color1: "Blue" }, owner.address));
 
-      const [isAllowed, reasons] = await contract.canChangeLensColor([1, 2, 3]);
+      const [isAllowed, reasons] = await contract.canChangeLensColor([tokenID1, tokenID2, tokenID3]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the color of the cloak does not match]", reasons);
@@ -38,11 +39,11 @@ describe("ChangeLensColor", () => {
 
     for (const tier of ["Ethereal", "Godly"]) {
       it(`cannot be performed if a non-cloak card is provided at ${tier} tier`, async () => {
-        await contract.mintExactByNames({ ...playerCard, tier }, owner.address);
-        await contract.mintExactByNames({ ...torchCard, tier}, owner.address);
-        await contract.mintExactByNames({ ...inactiveCard, tier }, owner.address);
+        const tokenID1 = await tokenID(contract.mintExactByNames({ ...playerCard, tier }, owner.address));
+        const tokenID2 = await tokenID(contract.mintExactByNames({ ...torchCard, tier}, owner.address));
+        const tokenID3 = await tokenID(contract.mintExactByNames({ ...inactiveCard, tier }, owner.address));
 
-        const [isAllowed, reasons] = await contract.canChangeLensColor([1, 2, 3]);
+        const [isAllowed, reasons] = await contract.canChangeLensColor([tokenID1, tokenID2, tokenID3]);
 
         expect(isAllowed).to.equal(false);
         expect(reasons).to.deep.include("[only works with a cloak card at this tier]", reasons);
@@ -50,12 +51,11 @@ describe("ChangeLensColor", () => {
     }
 
     it("mints a torch card if a torch card was combined", async () => {
-      await contract.mintExactByNames(cloakCard, owner.address);
-      await contract.mintExactByNames(torchCard, owner.address);
-      await contract.mintExactByNames(inactiveCard, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(cloakCard, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames(torchCard, owner.address));
+      const tokenID3 = await tokenID(contract.mintExactByNames(inactiveCard, owner.address));
 
-      await contract.changeLensColor([1, 2, 3]);
-      const mintedTokenID = 4;
+      const mintedTokenID = await tokenID(contract.changeLensColor([tokenID1, tokenID2, tokenID3]));
 
       const type = await contract.typeName(mintedTokenID);
       const variant = await contract.variantName(mintedTokenID);
@@ -65,12 +65,11 @@ describe("ChangeLensColor", () => {
     });
 
     it("mints a glasses card if a glasses card was combined", async () => {
-      await contract.mintExactByNames(cloakCard, owner.address);
-      await contract.mintExactByNames(glassesCard, owner.address);
-      await contract.mintExactByNames(inactiveCard, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(cloakCard, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames(glassesCard, owner.address));
+      const tokenID3 = await tokenID(contract.mintExactByNames(inactiveCard, owner.address));
 
-      await contract.changeLensColor([1, 2, 3]);
-      const mintedTokenID = 4;
+      const mintedTokenID = await tokenID(contract.changeLensColor([tokenID1, tokenID2, tokenID3]));
 
       const type = await contract.typeName(mintedTokenID);
       const variant = await contract.variantName(mintedTokenID);
@@ -80,12 +79,11 @@ describe("ChangeLensColor", () => {
     });
 
     it("only swaps the lens colors if the inactive color matches one of the lens colors", async () => {
-      await contract.mintExactByNames(cloakCard, owner.address);
-      await contract.mintExactByNames({ ...torchCard, color1: "Red", color2: "Green" }, owner.address);
-      await contract.mintExactByNames({ ...inactiveCard, color1: "Red" }, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(cloakCard, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames({ ...torchCard, color1: "Red", color2: "Green" }, owner.address));
+      const tokenID3 = await tokenID(contract.mintExactByNames({ ...inactiveCard, color1: "Red" }, owner.address));
 
-      await contract.changeLensColor([1, 2, 3]);
-      const mintedTokenID = 4;
+      const mintedTokenID = await tokenID(contract.changeLensColor([tokenID1, tokenID2, tokenID3]));
 
       const color1 = await contract.color1Name(mintedTokenID);
       const color2 = await contract.color2Name(mintedTokenID);
@@ -98,16 +96,11 @@ describe("ChangeLensColor", () => {
       const lensColors = [];
 
       for (let i = 0; i < 200; i += 1) {
-        await contract.mintExactByNames(playerCard, owner.address);
-        await contract.mintExactByNames({ ...torchCard, color1: "Red", color2: "Green" }, owner.address);
-        await contract.mintExactByNames({ ...inactiveCard, color1: "Blue" }, owner.address);
+        const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+        const tokenID2 = await tokenID(contract.mintExactByNames({ ...torchCard, color1: "Red", color2: "Green" }, owner.address));
+        const tokenID3 = await tokenID(contract.mintExactByNames({ ...inactiveCard, color1: "Blue" }, owner.address));
 
-        const batchSize = 4;
-        const batchOffset = i * batchSize;
-        const batchTokenIDs = [1, 2, 3].map(t => t + batchOffset);
-
-        await contract.changeLensColor(batchTokenIDs);
-        const mintedTokenID = batchOffset + batchSize;
+        const mintedTokenID = await tokenID(contract.changeLensColor([tokenID1, tokenID2, tokenID3]));
 
         const color1 = await contract.color1Name(mintedTokenID);
         const color2 = await contract.color2Name(mintedTokenID);

@@ -2,6 +2,7 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
+const tokenID = TestUtils.tokenID;
 
 describe("JumpIntoEclipse", () => {
   const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
@@ -24,23 +25,22 @@ describe("JumpIntoEclipse", () => {
     });
 
     it("cannot be performed if the door has already been opened", async () => {
-      await contract.mintExactByNames(playerCard, owner.address);
-      await contract.mintExactByNames({ ...doorCard, variant: "Open" }, owner.address);
-      await contract.mintExactByNames(eclipseCard, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames({ ...doorCard, variant: "Open" }, owner.address));
+      const tokenID3 = await tokenID(contract.mintExactByNames(eclipseCard, owner.address));
 
-      const [isAllowed, reasons] = await contract.canJumpIntoEclipse([1, 2, 3]);
+      const [isAllowed, reasons] = await contract.canJumpIntoEclipse([tokenID1, tokenID2, tokenID3]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the door has already been opened]", reasons);
     });
 
     it("mints a door card that has been opened", async () => {
-      await contract.mintExactByNames(playerCard, owner.address);
-      await contract.mintExactByNames(doorCard, owner.address);
-      await contract.mintExactByNames(eclipseCard, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames(doorCard, owner.address));
+      const tokenID3 = await tokenID(contract.mintExactByNames(eclipseCard, owner.address));
 
-      await contract.jumpIntoEclipse([1, 2, 3]);
-      const mintedTokenID = 4;
+      const mintedTokenID = await tokenID(contract.jumpIntoEclipse([tokenID1, tokenID2, tokenID3]));
 
       const type = await contract.typeName(mintedTokenID);
       const color1 = await contract.color1Name(mintedTokenID);

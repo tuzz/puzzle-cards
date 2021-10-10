@@ -32,6 +32,33 @@ TestUtils.mintExactByNames = (contract) => async ({ series, puzzle, tier, type, 
   );
 };
 
+TestUtils.tokenID = async (promise) => {
+  const transaction = await promise;
+  const receiver = await transaction.wait();
+  const transfer = receiver.events[0];
+  const tokenID = transfer.args.tokenId.toNumber();
+
+  return tokenID;
+};
+
+TestUtils.batchTokenIDs = async (promise) => {
+  const transaction = await promise;
+  const receiver = await transaction.wait();
+  const tokenIDs = receiver.events.map(e => e.args.tokenId.toNumber());
+
+  return tokenIDs;
+};
+
+TestUtils.tokenIDs = async (array, fn) => {
+  const tokenIDs = [];
+
+  for (let i = 0; i < array.length; i += 1) {
+    tokenIDs.push(await TestUtils.tokenID(fn(array[i], i)));
+  }
+
+  return tokenIDs;
+};
+
 TestUtils.isRealColor = (colorName) => (
   TestUtils.colorNames.includes(colorName) && colorName !== "None"
 );

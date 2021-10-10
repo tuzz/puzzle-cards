@@ -2,6 +2,7 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
+const tokenID = TestUtils.tokenID;
 
 describe("Discard2Pickup1", () => {
   const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
@@ -26,9 +27,9 @@ describe("Discard2Pickup1", () => {
     });
 
     it("cannot be performed if the same card is used twice", async () => {
-      await contract.mintExactByNames(playerCard, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
 
-      const [isAllowed, reasons] = await contract.canDiscard2Pickup1([1, 1]);
+      const [isAllowed, reasons] = await contract.canDiscard2Pickup1([tokenID1, tokenID1]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the same card was used twice]", reasons);
@@ -38,15 +39,10 @@ describe("Discard2Pickup1", () => {
       const tierConditionPairs = [];
 
       for (let i = 0; i < 200; i += 1) {
-        await contract.mintExactByNames({ ...playerCard, tier: "Immortal", condition: "Pristine" }, owner.address);
-        await contract.mintExactByNames({ ...doorCard, tier: "Master", condition: "Dire" }, owner.address);
+        const tokenID1 = await tokenID(contract.mintExactByNames({ ...playerCard, tier: "Immortal", condition: "Pristine" }, owner.address));
+        const tokenID2 = await tokenID(contract.mintExactByNames({ ...doorCard, tier: "Master", condition: "Dire" }, owner.address));
 
-        const batchSize = 3;
-        const batchOffset = i * batchSize;
-        const batchTokenIDs = [1, 2].map(t => t + batchOffset);
-
-        await contract.discard2Pickup1(batchTokenIDs);
-        const mintedTokenID = batchOffset + batchSize;
+        const mintedTokenID = await tokenID(contract.discard2Pickup1([tokenID1, tokenID2]));
 
         const tier = await contract.tierName(mintedTokenID);
         const condition = await contract.conditionName(mintedTokenID);

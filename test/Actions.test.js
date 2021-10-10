@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("./test_utils/TestUtils");
+const tokenID = TestUtils.tokenID;
 
 describe("Actions", () => {
   const playerCard     = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
@@ -38,16 +39,14 @@ describe("Actions", () => {
 
   it("can get a list of all actions that can be taken for a given card combination", async () => {
     const cardCombinations = {};
-    let tokenID = 1;
 
     // Find all actions that can be taken with two-card combinations.
     for (let i = 0; i < allCards.length; i += 1) {
       for (let j = i; j < allCards.length; j += 1) {
-        await contract.mintExactByNames(allCards[i], owner.address);
-        await contract.mintExactByNames(allCards[j], owner.address);
+        const tokenID1 = await tokenID(contract.mintExactByNames(allCards[i], owner.address));
+        const tokenID2 = await tokenID(contract.mintExactByNames(allCards[j], owner.address));
 
-        const actionNames = await contract.actionsThatCanBeTaken([tokenID, tokenID + 1]);
-        tokenID += 2;
+        const actionNames = await contract.actionsThatCanBeTaken([tokenID1, tokenID2]);
 
         for (const actionName of actionNames) {
           if (actionName === "") { continue; }
@@ -62,12 +61,11 @@ describe("Actions", () => {
     for (let i = 0; i < allCards.length; i += 1) {
       for (let j = i; j < allCards.length; j += 1) {
         for (let k = j; k < allCards.length; k += 1) {
-          await contract.mintExactByNames(allCards[i], owner.address);
-          await contract.mintExactByNames(allCards[j], owner.address);
-          await contract.mintExactByNames(allCards[k], owner.address);
+          const tokenID1 = await tokenID(contract.mintExactByNames(allCards[i], owner.address));
+          const tokenID2 = await tokenID(contract.mintExactByNames(allCards[j], owner.address));
+          const tokenID3 = await tokenID(contract.mintExactByNames(allCards[k], owner.address));
 
-          const actionNames = await contract.actionsThatCanBeTaken([tokenID, tokenID + 1, tokenID + 2]);
-          tokenID += 3;
+          const actionNames = await contract.actionsThatCanBeTaken([tokenID1, tokenID2, tokenID3]);
 
           for (const actionName of actionNames) {
             if (actionName === "") { continue; }
@@ -131,13 +129,13 @@ describe("Actions", () => {
 
     expect(Object.keys(cardCombinations).length).to.equal(11);
 
-    for (const color1 of ["Red", "Green", "Blue", "Yellow", "Pink", "White", "Black"]) {
-      await contract.mintExactByNames({ ...starCard, color1 }, owner.address);
-    }
+    const colors = ["Red", "Green", "Blue", "Yellow", "Pink", "White", "Black"];
 
-    const actionNames = await contract.actionsThatCanBeTaken([
-      tokenID, tokenID + 1, tokenID + 2, tokenID + 3, tokenID + 4, tokenID + 5, tokenID + 6,
-    ]);
+    const tokenIDs = await TestUtils.tokenIDs(colors, color1 => (
+      contract.mintExactByNames({ ...starCard, color1 }, owner.address)
+    ));
+
+    const actionNames = await contract.actionsThatCanBeTaken(tokenIDs);
 
     expect(actionNames.filter(s => s !== "")).to.deep.equal(["puzzleMastery2"]);
   });

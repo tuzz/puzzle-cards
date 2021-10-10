@@ -2,6 +2,7 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
+const tokenID = TestUtils.tokenID;
 
 describe("JumpIntoBeacon", () => {
   const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
@@ -25,12 +26,11 @@ describe("JumpIntoBeacon", () => {
     });
 
     it("mints a torch card matching the beacon color if a torch card was combined", async () => {
-      await contract.mintExactByNames(playerCard, owner.address);
-      await contract.mintExactByNames(torchCard, owner.address);
-      await contract.mintExactByNames(beaconCard, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames(torchCard, owner.address));
+      const tokenID3 = await tokenID(contract.mintExactByNames(beaconCard, owner.address));
 
-      await contract.jumpIntoBeacon([1, 2, 3]);
-      const mintedTokenID = 4;
+      const mintedTokenID = await tokenID(contract.jumpIntoBeacon([tokenID1, tokenID2, tokenID3]));
 
       const type = await contract.typeName(mintedTokenID);
       const color1 = await contract.color1Name(mintedTokenID);
@@ -44,12 +44,11 @@ describe("JumpIntoBeacon", () => {
     });
 
     it("mints a glasses card matching the beacon color if a glasses card was combined", async () => {
-      await contract.mintExactByNames(playerCard, owner.address);
-      await contract.mintExactByNames(glassesCard, owner.address);
-      await contract.mintExactByNames(beaconCard, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames(glassesCard, owner.address));
+      const tokenID3 = await tokenID(contract.mintExactByNames(beaconCard, owner.address));
 
-      await contract.jumpIntoBeacon([1, 2, 3]);
-      const mintedTokenID = 4;
+      const mintedTokenID = await tokenID(contract.jumpIntoBeacon([tokenID1, tokenID2, tokenID3]));
 
       const type = await contract.typeName(mintedTokenID);
       const color1 = await contract.color1Name(mintedTokenID);

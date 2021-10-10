@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
+const TestUtils = require("./test_utils/TestUtils");
 
 describe("Minting", () => {
   let factory, contract, owner, user1, user2;
@@ -17,14 +18,13 @@ describe("Minting", () => {
     it("allows a user to mint cards in exchange for payment", async () => {
       const contractAsUser1 = contract.connect(user1);
 
-      const balanceBefore = await contractAsUser1.balanceOf(user2.address);
-      expect(balanceBefore.toNumber()).to.equal(0);
-
       const price = await contractAsUser1.priceToMint(3);
-      await contractAsUser1.mint(3, user2.address, { value: price });
 
-      const balanceAfter = await contractAsUser1.balanceOf(user2.address);
-      expect(balanceAfter.toNumber()).to.equal(3);
+      const tokenIDs = await TestUtils.batchTokenIDs(
+        contractAsUser1.mint(3, user2.address, { value: price })
+      );
+
+      expect(tokenIDs.length).to.equal(3);
     });
 
     it("sends payment to the contract owner", async () => {
@@ -61,10 +61,9 @@ describe("Minting", () => {
 
   describe("#gift", () => {
     it("allows the contract owner to mint cards as a gift to a user", async () => {
-      await contract.gift(3, user1.address);
-      const balance = await contract.balanceOf(user1.address);
+      const tokenIDs = await TestUtils.batchTokenIDs(contract.gift(3, user1.address));
 
-      expect(balance.toNumber()).to.equal(3);
+      expect(tokenIDs.length).to.equal(3);
     });
 
     it("does not allow other users to gift cards", async () => {

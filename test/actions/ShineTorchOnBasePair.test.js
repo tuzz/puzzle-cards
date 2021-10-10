@@ -2,6 +2,7 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
+const tokenID = TestUtils.tokenID;
 
 describe("ShineTorchOnBasePair", () => {
   const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
@@ -24,22 +25,22 @@ describe("ShineTorchOnBasePair", () => {
     });
 
     it("cannot be performed if the colors don't match", async () => {
-      await contract.mintExactByNames(playerCard, owner.address);
-      await contract.mintExactByNames({ ...torchCard, color1: "Red", color2: "Green" }, owner.address);
-      await contract.mintExactByNames({ ...helixCard, color1: "Red", color2: "Blue" }, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames({ ...torchCard, color1: "Red", color2: "Green" }, owner.address));
+      const tokenID3 = await tokenID(contract.mintExactByNames({ ...helixCard, color1: "Red", color2: "Blue" }, owner.address));
 
-      const [isAllowed, reasons] = await contract.canShineTorchOnBasePair([1, 2, 3]);
+      const [isAllowed, reasons] = await contract.canShineTorchOnBasePair([tokenID1, tokenID2, tokenID3]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the torch colors don't match the base pair]", reasons);
     });
 
     it("cannot be performed if the colors are the wrong way round", async () => {
-      await contract.mintExactByNames(playerCard, owner.address);
-      await contract.mintExactByNames({ ...torchCard, color1: "Green", color2: "Red" }, owner.address);
-      await contract.mintExactByNames({ ...helixCard, color1: "Red", color2: "Green" }, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames({ ...torchCard, color1: "Green", color2: "Red" }, owner.address));
+      const tokenID3 = await tokenID(contract.mintExactByNames({ ...helixCard, color1: "Red", color2: "Green" }, owner.address));
 
-      const [isAllowed, reasons] = await contract.canShineTorchOnBasePair([1, 2, 3]);
+      const [isAllowed, reasons] = await contract.canShineTorchOnBasePair([tokenID1, tokenID2, tokenID3]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the torch colors don't match the base pair]", reasons);
@@ -49,15 +50,11 @@ describe("ShineTorchOnBasePair", () => {
       const typeNames = [];
 
       for (let i = 0; i < 100; i += 1) {
-        await contract.mintExactByNames(playerCard, owner.address);
-        await contract.mintExactByNames(torchCard, owner.address);
-        await contract.mintExactByNames(helixCard, owner.address);
+        const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+        const tokenID2 = await tokenID(contract.mintExactByNames(torchCard, owner.address));
+        const tokenID3 = await tokenID(contract.mintExactByNames(helixCard, owner.address));
 
-        const batchOffset = i * 4;
-        const batchTokenIDs = [1, 2, 3].map(t => t + batchOffset);
-
-        await contract.shineTorchOnBasePair(batchTokenIDs);
-        const mintedTokenID = batchOffset + 4;
+        const mintedTokenID = await tokenID(contract.shineTorchOnBasePair([tokenID1, tokenID2, tokenID3]));
 
         const type = await contract.typeName(mintedTokenID);
         const color1 = await contract.color1Name(mintedTokenID);

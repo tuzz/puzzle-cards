@@ -1,4 +1,4 @@
 #!/bin/bash
 
 which -s watchexec || brew install watchexec
-watchexec -c "./bin/test"
+watchexec -c -r "./bin/test"

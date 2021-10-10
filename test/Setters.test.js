@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
+const TestUtils = require("./test_utils/TestUtils");
 
 describe("Setters", () => {
   let factory, contract, owner, user1;
@@ -49,11 +50,11 @@ describe("Setters", () => {
       const puzzleOffsetPerSeries = [0, 2, 6];
 
       await contract.setPuzzleNames(seriesNames, puzzleNames, numPuzzlesPerSeries, puzzleOffsetPerSeries);
-      await contract.gift(100, owner.address);
+      const tokenIDs = await TestUtils.batchTokenIDs(contract.gift(100, owner.address));
 
       const names = [];
 
-      for (let tokenID = 1; tokenID <= 100; tokenID += 1) {
+      for (const tokenID of tokenIDs) {
         const seriesName = await contract.seriesName(tokenID);
         const puzzleName = await contract.puzzleName(tokenID);
 
@@ -79,11 +80,17 @@ describe("Setters", () => {
                               // the number of variants and the offset for the player type changed from 0
 
       await contract.setVariantNames(variantNames, numVariantsPerType, variantOffsetPerType);
-      for (let i = 0; i < 5; i += 1) await contract.gift(100, owner.address);
+
+      let tokenIDs = [];
+
+      for (let i = 0; i < 5; i += 1) {
+        const batch = await TestUtils.batchTokenIDs(contract.gift(100, owner.address));
+        tokenIDs = tokenIDs.concat(batch);
+      }
 
       const names = [];
 
-      for (let tokenID = 1; tokenID <= 500; tokenID += 1) {
+      for (const tokenID of tokenIDs) {
         const typeName = await contract.typeName(tokenID);
         const variantName = await contract.variantName(tokenID);
 

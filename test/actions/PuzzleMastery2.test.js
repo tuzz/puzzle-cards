@@ -2,6 +2,7 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
+const tokenID = TestUtils.tokenID;
 
 describe("PuzzleMastery2", () => {
   const starCard1 = { series: "Teamwork", puzzle: "1", tier: "Master", type: "Star", color1: "Red", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
@@ -32,27 +33,27 @@ describe("PuzzleMastery2", () => {
     });
 
     it("cannot be performed if a color was repeated", async () => {
-      await contract.mintExactByNames(starCard1, owner.address);
-      await contract.mintExactByNames(starCard2, owner.address);
-      await contract.mintExactByNames(starCard3, owner.address);
-      await contract.mintExactByNames(starCard4, owner.address);
-      await contract.mintExactByNames(starCard5, owner.address);
-      await contract.mintExactByNames(starCard6, owner.address);
-      await contract.mintExactByNames({ ...starCard7, color1: "Red" }, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(starCard1, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames(starCard2, owner.address));
+      const tokenID3 = await tokenID(contract.mintExactByNames(starCard3, owner.address));
+      const tokenID4 = await tokenID(contract.mintExactByNames(starCard4, owner.address));
+      const tokenID5 = await tokenID(contract.mintExactByNames(starCard5, owner.address));
+      const tokenID6 = await tokenID(contract.mintExactByNames(starCard6, owner.address));
+      const tokenID7 = await tokenID(contract.mintExactByNames({ ...starCard7, color1: "Red" }, owner.address));
 
-      const [isAllowed, reasons] = await contract.canPuzzleMastery2([1, 2, 3, 4, 5, 6, 7]);
+      const tokenIDs = [tokenID1, tokenID2, tokenID3, tokenID4, tokenID5, tokenID6, tokenID7];
+      const [isAllowed, reasons] = await contract.canPuzzleMastery2(tokenIDs);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[a color was repeated]", reasons);
     });
 
     it("mints an art card", async () => {
-      for (const card of validCards) {
-        await contract.mintExactByNames(card, owner.address);
-      }
+      const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
+        contract.mintExactByNames(card, owner.address)
+      ));
 
-      await contract.puzzleMastery2([1, 2, 3, 4, 5, 6, 7]);
-      const mintedTokenID = 8;
+      const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
 
       const type = await contract.typeName(mintedTokenID);
       const color1 = await contract.color1Name(mintedTokenID);
@@ -69,15 +70,11 @@ describe("PuzzleMastery2", () => {
       const puzzleNames = [];
 
       for (let i = 0; i < 200; i += 1) {
-        for (const card of validCards) {
-          await contract.mintExactByNames(card, owner.address);
-        }
+        const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
+          contract.mintExactByNames(card, owner.address)
+        ));
 
-        const batchOffset = i * batchSize;
-        const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
-
-        await contract.puzzleMastery2(batchTokenIDs);
-        const mintedTokenID = batchOffset + batchSize;
+        const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
 
         const series = await contract.seriesName(mintedTokenID);
         const puzzle = await contract.puzzleName(mintedTokenID);
@@ -97,15 +94,11 @@ describe("PuzzleMastery2", () => {
 
       it("guarantees that the minted card is also pristine", async () => {
         for (let i = 0; i < 50; i += 1) {
-          for (const card of pristineCards) {
-            await contract.mintExactByNames(card, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
+            contract.mintExactByNames(card, owner.address)
+          ));
 
-          const batchOffset = i * batchSize;
-          const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
-
-          await contract.puzzleMastery2(batchTokenIDs);
-          const mintedTokenID = batchOffset + batchSize;
+          const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
 
           expect(await contract.conditionName(mintedTokenID)).to.equal("Pristine");
         }
@@ -115,15 +108,11 @@ describe("PuzzleMastery2", () => {
         const editionNames = [];
 
         for (let i = 0; i < 100; i += 1) {
-          for (const card of pristineCards) {
-            await contract.mintExactByNames(card, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
+            contract.mintExactByNames(card, owner.address)
+          ));
 
-          const batchOffset = i * batchSize;
-          const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
-
-          await contract.puzzleMastery2(batchTokenIDs);
-          const mintedTokenID = batchOffset + batchSize;
+          const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
 
           editionNames.push(await contract.editionName(mintedTokenID));
         }
@@ -141,15 +130,11 @@ describe("PuzzleMastery2", () => {
         const editionNames = [];
 
         for (let i = 0; i < 200; i += 1) {
-          for (const card of pristineCards) {
-            await contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
+            contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address)
+          ));
 
-          const batchOffset = i * batchSize;
-          const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
-
-          await contract.puzzleMastery2(batchTokenIDs);
-          const mintedTokenID = batchOffset + batchSize;
+          const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
 
           editionNames.push(await contract.editionName(mintedTokenID));
         }
@@ -164,15 +149,11 @@ describe("PuzzleMastery2", () => {
         let masterCopyMinted = false;
 
         for (let i = 0; i < 100; i += 1) {
-          for (const card of pristineCards) {
-            await contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
+            contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address)
+          ));
 
-          const batchOffset = i * batchSize;
-          const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
-
-          await contract.puzzleMastery2(batchTokenIDs);
-          const mintedTokenID = batchOffset + batchSize;
+          const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
 
           const edition = await contract.editionName(mintedTokenID);
 
@@ -187,14 +168,11 @@ describe("PuzzleMastery2", () => {
 
       it("provides methods to get the number of limited edition cards per puzzle", async () => {
         for (let i = 0; i < 200; i += 1) {
-          for (const card of pristineCards) {
-            await contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
+            contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address)
+          ));
 
-          const batchOffset = i * batchSize;
-          const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
-
-          await contract.puzzleMastery2(batchTokenIDs);
+          await contract.puzzleMastery2(tokenIDs);
         }
 
         const puzzleIndex = TestUtils.puzzleNames.indexOf("1");
@@ -209,14 +187,11 @@ describe("PuzzleMastery2", () => {
 
       it("provides methods to get whether the master copy has been claimed per puzzle", async () => {
         for (let i = 0; i < 50; i += 1) {
-          for (const card of pristineCards) {
-            await contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
+            contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address)
+          ));
 
-          const batchOffset = i * batchSize;
-          const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
-
-          await contract.puzzleMastery2(batchTokenIDs);
+          await contract.puzzleMastery2(tokenIDs);
         }
 
         const puzzleIndex = TestUtils.puzzleNames.indexOf("1");
@@ -233,15 +208,14 @@ describe("PuzzleMastery2", () => {
         const puzzleIndex = TestUtils.puzzleNames.indexOf("1");
         const [series, puzzle] = await contract.puzzleForIndex(puzzleIndex);
 
+        const mintedTokenIDs = [];
+
         for (let i = 0; i < 200; i += 1) {
-          for (const card of pristineCards) {
-            await contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
+            contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address)
+          ));
 
-          const batchOffset = i * batchSize;
-          const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
-
-          await contract.puzzleMastery2(batchTokenIDs);
+          mintedTokenIDs.push(await tokenID(contract.puzzleMastery2(tokenIDs)));
         }
 
         const numLimited = await contract.numLimitedEditions(series, puzzle);
@@ -251,9 +225,9 @@ describe("PuzzleMastery2", () => {
         expect(isClaimed).to.equal(true);
 
         // Discard the first half of the cards.
-        for (let i = 1; i <= 100; i += 2) {
-          const tokenID1 = batchSize * i;
-          const tokenID2 = batchSize * (i + 1);
+        for (let i = 0; i < 100; i += 2) {
+          const tokenID1 = mintedTokenIDs[i];
+          const tokenID2 = mintedTokenIDs[i + 1];
 
           await contract.discard2Pickup1([tokenID1, tokenID2]);
         }
@@ -266,14 +240,11 @@ describe("PuzzleMastery2", () => {
 
         // Mint another 100 cards.
         for (let i = 0; i < 100; i += 1) {
-          for (const card of pristineCards) {
-            await contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
+            contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address)
+          ));
 
-          const batchOffset = (200 + i) * batchSize + 50; // 50 were picked up
-          const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
-
-          await contract.puzzleMastery2(batchTokenIDs);
+          await contract.puzzleMastery2(tokenIDs);
         }
 
         const numLimitedAfterReMint = await contract.numLimitedEditions(series, puzzle);
@@ -289,15 +260,11 @@ describe("PuzzleMastery2", () => {
         const conditionNames = new Set();
 
         for (let i = 0; i < 100; i += 1) {
-          for (const card of validCards) {
-            await contract.mintExactByNames(card, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
+            contract.mintExactByNames(card, owner.address)
+          ));
 
-          const batchOffset = i * batchSize;
-          const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
-
-          await contract.puzzleMastery2(batchTokenIDs);
-          const mintedTokenID = batchOffset + batchSize;
+          const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
 
           conditionNames.add(await contract.conditionName(mintedTokenID));
         }
@@ -307,15 +274,11 @@ describe("PuzzleMastery2", () => {
 
       it("always mints a signed edition", async () => {
         for (let i = 0; i < 100; i += 1) {
-          for (const card of validCards) {
-            await contract.mintExactByNames(card, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
+            contract.mintExactByNames(card, owner.address)
+          ));
 
-          const batchOffset = i * batchSize;
-          const batchTokenIDs = [1, 2, 3, 4, 5, 6, 7].map(t => t + batchOffset);
-
-          await contract.puzzleMastery2(batchTokenIDs);
-          const mintedTokenID = batchOffset + batchSize;
+          const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
 
           expect(await contract.editionName(mintedTokenID)).to.equal("Signed");
         }

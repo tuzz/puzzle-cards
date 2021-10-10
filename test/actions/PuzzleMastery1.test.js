@@ -2,6 +2,7 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
+const tokenID = TestUtils.tokenID;
 
 describe("PuzzleMastery1", () => {
   const artworkCard1 = { series: "Teamwork", puzzle: "2", tier: "Master", type: "Artwork", color1: "None", color2: "None", variant: "Art1", condition: "Excellent", edition: "Standard" };
@@ -23,31 +24,31 @@ describe("PuzzleMastery1", () => {
     });
 
     it("cannot be performed if the puzzles don't match", async () => {
-      await contract.mintExactByNames(artworkCard1, owner.address);
-      await contract.mintExactByNames({ ...artworkCard2, puzzle: "1" }, owner.address);
+      const tokenID1 =await tokenID(contract.mintExactByNames(artworkCard1, owner.address));
+      const tokenID2 =await tokenID(contract.mintExactByNames({ ...artworkCard2, puzzle: "1" }, owner.address));
 
-      const [isAllowed, reasons] = await contract.canPuzzleMastery1([1, 2]);
+      const [isAllowed, reasons] = await contract.canPuzzleMastery1([tokenID1, tokenID2]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the puzzles don't match]", reasons);
     });
 
     it("cannot be performed if the same card is used twice", async () => {
-      await contract.mintExactByNames(artworkCard1, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(artworkCard1, owner.address));
 
-      const [isAllowed, reasons] = await contract.canPuzzleMastery1([1, 1]);
+      const [isAllowed, reasons] = await contract.canPuzzleMastery1([tokenID1, tokenID1]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the same card was used twice]", reasons);
     });
 
     it("cannot be performed if the artwork is already signed", async () => {
-      await contract.mintExactByNames(artworkCard1, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(artworkCard1, owner.address));
 
       for (const edition of ["Signed", "Limited", "Master Copy"]) {
-        await contract.mintExactByNames({ ...artworkCard2, edition }, owner.address);
+        const tokenID2 = await tokenID(contract.mintExactByNames({ ...artworkCard2, edition }, owner.address));
 
-        const [isAllowed, reasons] = await contract.canPuzzleMastery1([1, 2]);
+        const [isAllowed, reasons] = await contract.canPuzzleMastery1([tokenID1, tokenID2]);
 
         expect(isAllowed).to.equal(false);
         expect(reasons).to.deep.include("[the artwork is already signed]", reasons);
@@ -55,11 +56,10 @@ describe("PuzzleMastery1", () => {
     });
 
     it("mints a star card", async () => {
-      await contract.mintExactByNames(artworkCard1, owner.address);
-      await contract.mintExactByNames(artworkCard2, owner.address);
+      const tokenID1 =await tokenID(contract.mintExactByNames(artworkCard1, owner.address));
+      const tokenID2 =await tokenID(contract.mintExactByNames(artworkCard2, owner.address));
 
-      await contract.puzzleMastery1([1, 2]);
-      const mintedTokenID = 3;
+      const mintedTokenID = await tokenID(contract.puzzleMastery1([tokenID1, tokenID2]));
 
       const type = await contract.typeName(mintedTokenID);
       const color1 = await contract.color1Name(mintedTokenID);

@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
+const TestUtils = require("./test_utils/TestUtils");
 
 describe("Getters", () => {
   let factory, contract, owner;
@@ -32,18 +33,18 @@ describe("Getters", () => {
 
   describe("#slug", () => {
     it("lowercases the attribute names", async () => {
-      await contract.gift(10, owner.address);
+      const tokenIDs = await TestUtils.batchTokenIDs(contract.gift(10, owner.address));
 
-      for (let tokenID = 1; tokenID <= 10; tokenID += 1) {
+      for (const tokenID of tokenIDs) {
         const slug = await contract.slug(tokenID);
         expect(slug).to.equal(slug.toLowerCase());
       }
     });
 
     it("replaces spaces in attribute names with dashes", async () => {
-      await contract.gift(10, owner.address);
+      const tokenIDs = await TestUtils.batchTokenIDs(contract.gift(10, owner.address));
 
-      for (let tokenID = 1; tokenID <= 10; tokenID += 1) {
+      for (const tokenID of tokenIDs) {
         const slug = await contract.slug(tokenID);
         expect(slug).to.equal(slug.replaceAll(" ", "-"));
       }

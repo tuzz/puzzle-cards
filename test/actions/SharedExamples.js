@@ -1,15 +1,12 @@
 const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("../test_utils/TestUtils");
+const tokenID = TestUtils.tokenID;
 
 const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier, { skipSameTierTest, skipDegradeTest } = {}) => {
   const titleized = actionName[0].toUpperCase() + actionName.slice(1);
   const canAction = `can${titleized}`;
-
   const numCards = validCards.length;
-  const batchSize = numCards + 1; // Includes the newly minted card.
-
-  const tokenIDs = [...Array(numCards).keys()].map(i => i + 1);
 
   if (validCards.some(({ condition }) => condition !== "Excellent")) {
     throw new Error("Please set the condition of validCards to Excellent before running these tests.");
@@ -29,9 +26,9 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
     });
 
     it("can be performed if a valid set of cards are provided", async () => {
-      for (card of validCards) {
-        await contract.mintExactByNames(card, owner.address);
-      }
+      const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
+        contract.mintExactByNames(card, owner.address)
+      ));
 
       const [isAllowed, reasons] = await contract[canAction](tokenIDs);
 
@@ -40,9 +37,12 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
     });
 
     it("does not care in which order the cards are provided", async () => {
-      for (let i = validCards.length - 1; i >= 0; i -= 1) {
-        await contract.mintExactByNames(validCards[i], owner.address);
-      }
+      const reversedCards = [...validCards];
+      reversedCards.reverse();
+
+      const tokenIDs = await TestUtils.tokenIDs(reversedCards, card => (
+        contract.mintExactByNames(card, owner.address)
+      ));
 
       const [isAllowed, reasons] = await contract[canAction](tokenIDs);
 
@@ -59,19 +59,12 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
 
     it("cannot be performed if the user doesn't own all the cards", async () => {
       for (let i = 0; i < validCards.length; i += 1) {
-        const thisCard = validCards[i];
-        const otherCards = validCards.filter((_, j) => i !== j);
+        const tokenIDs = await TestUtils.tokenIDs(validCards, (card, i) => {
+          const address = i === 0 ? user1.address : owner.address;
+          return contract.mintExactByNames(card, address);
+        });
 
-        await contract.mintExactByNames(thisCard, user1.address);
-
-        for (card of otherCards) {
-          await contract.mintExactByNames(card, owner.address);
-        }
-
-        const batchOffset = i * numCards;
-        const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-
-        const [isAllowed, reasons] = await contract[canAction](batchTokenIDs);
+        const [isAllowed, reasons] = await contract[canAction](tokenIDs);
 
         expect(isAllowed).to.equal(false);
         expect(reasons).to.deep.include("[user doesn't own all the cards]", reasons);
@@ -81,15 +74,12 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
     if (!skipSameTierTest) {
       it("cannot be performed if the tiers don't match", async () => {
         for (let i = 0; i < numCards; i += 1) {
-          const batchOffset = i * numCards;
-          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-
-          for (let j = 0; j < numCards; j += 1) {
+          const tokenIDs = await TestUtils.tokenIDs(validCards, (card, j) => {
             const tier = i === j ? "Mortal" : "Immortal";
-            await contract.mintExactByNames({ ...validCards[j], tier }, owner.address);
-          }
+            return contract.mintExactByNames({ ...card, tier }, owner.address);
+          });
 
-          const [isAllowed, reasons] = await contract[canAction](batchTokenIDs);
+          const [isAllowed, reasons] = await contract[canAction](tokenIDs);
 
           expect(isAllowed).to.equal(false);
           expect(reasons).to.deep.include("[the tiers of the cards don't match]", reasons);
@@ -99,26 +89,18 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
 
     for (let i = 0; i < numCards; i += 1) {
       it(`cannot be performed if card ${i} has the wrong type`, async () => {
-        const thisCard = validCards[i];
-        const otherCards = validCards.filter((_, j) => i !== j);
-
         const wrongTypes = TestUtils.typeNames.filter(t => !validTypes[i].includes(t));
 
-        for (let j = 0; j < wrongTypes.length; j += 1) {
-          const type = wrongTypes[j];
-          await contract.mintExactByNames({ ...thisCard, type, puzzle: 0, variant: 0 }, owner.address);
+        for (wrongType of wrongTypes) {
+          const tokenIDs = await TestUtils.tokenIDs(validCards, (card, j) => {
+            const type = i === j ? wrongType : card.type;
+            return contract.mintExactByNames({ ...card, type, puzzle: 0, variant: 0 }, owner.address);
+          });
 
-          for (card of otherCards) {
-              await contract.mintExactByNames(card, owner.address);
-          }
-
-          const batchOffset = j * numCards;
-          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-
-          const [isAllowed, reasons] = await contract[canAction](batchTokenIDs);
+          const [isAllowed, reasons] = await contract[canAction](tokenIDs);
           const typeSpecificReasons = reasons.filter(s => s.match(/.*? cards? .*? required/));
 
-          expect(isAllowed).to.equal(false, `card ${i} shouldn't be allowed to have type ${type}`);
+          expect(isAllowed).to.equal(false, `card ${i} shouldn't be allowed to have type ${wrongType}`);
           expect(typeSpecificReasons.length).to.be.above(0, reasons);
         }
       });
@@ -126,23 +108,13 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
 
     for (let i = 0; i < numCards; i += 1) {
       it(`can be performed if card ${i} has the right type`, async () => {
-        const thisCard = validCards[i];
-        const otherCards = validCards.filter((_, j) => i !== j);
+        for (rightType of validTypes[i]) {
+          const tokenIDs = await TestUtils.tokenIDs(validCards, (card, j) => {
+            const type = i === j ? rightType : card.type;
+            return contract.mintExactByNames({ ...card, type, puzzle: 0, variant: 0 }, owner.address);
+          });
 
-        const rightTypes = validTypes[i];
-
-        for (let j = 0; j < rightTypes.length; j += 1) {
-          const type = rightTypes[j];
-          await contract.mintExactByNames({ ...thisCard, type, puzzle: 0, variant: 0 }, owner.address);
-
-          for (card of otherCards) {
-              await contract.mintExactByNames(card, owner.address);
-          }
-
-          const batchOffset = j * numCards;
-          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-
-          const [_isAllowed, reasons] = await contract[canAction](batchTokenIDs);
+          const [_isAllowed, reasons] = await contract[canAction](tokenIDs);
           const typeSpecificReasons = reasons.filter(s => s.match(/an? .*? card is required/));
 
           // The action might still not be allowed because one of our cards is
@@ -155,23 +127,23 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
     }
 
     it("discards the provided cards and mints a new one", async () => {
-      for (card of validCards) {
-        await contract.mintExactByNames(card, owner.address);
+      const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
+        contract.mintExactByNames(card, owner.address)
+      ));
+
+      const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
+
+      for (const id of tokenIDs) {
+        expect(await contract.isDiscarded(id)).to.equal(true, `card ${id} wasn't discarded`);
       }
 
-      await contract[actionName](tokenIDs);
-
-      for (tokenID of tokenIDs) {
-        expect(await contract.isDiscarded(tokenID)).to.equal(true, `card ${tokenID} wasn't discarded`);
-      }
-
-      expect(await contract.isDiscarded(numCards + 1)).to.equal(false, `a new card wasn't minted`);
+      expect(await contract.isDiscarded(mintedTokenID)).to.equal(false, `a new card wasn't minted`);
     });
 
     it("does not allow the cards to be used again once discarded", async () => {
-      for (card of validCards) {
-        await contract.mintExactByNames(card, owner.address);
-      }
+      const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
+        contract.mintExactByNames(card, owner.address)
+      ));
 
       await contract[actionName](tokenIDs);
 
@@ -187,16 +159,12 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
       const puzzleNames = [];
 
       for (let i = 0; i < 20; i += 1) {
-        const batchOffset = i * batchSize;
+        const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
+          contract.mintExactByNames(card, owner.address)
+        ));
 
-        for (card of validCards) {
-          await contract.mintExactByNames(card, owner.address);
-        }
+        const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
 
-        const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-        await contract[actionName](batchTokenIDs);
-
-        const mintedTokenID = batchTokenIDs[batchTokenIDs.length - 1];
         puzzleNames.push(await contract.puzzleName(mintedTokenID));
       }
 
@@ -204,14 +172,13 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
     });
 
     it(`sets the tier of the minted card to ${expectedTier}`, async () => {
-        for (card of validCards) {
-          await contract.mintExactByNames(card, owner.address);
-        }
+      const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
+        contract.mintExactByNames(card, owner.address)
+      ));
 
-        await contract[actionName](tokenIDs);
-        const mintedTokenID = numCards + 1;
+      const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
 
-        expect(await contract.tierName(mintedTokenID)).to.equal(expectedTier);
+      expect(await contract.tierName(mintedTokenID)).to.equal(expectedTier);
     });
 
     if (!skipDegradeTest) {
@@ -219,16 +186,12 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
         const conditionNames = [];
 
         for (let i = 0; i < 100; i += 1) {
-          const batchOffset = i * batchSize;
+          const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
+            contract.mintExactByNames(card, owner.address)
+          ));
 
-          for (card of validCards) {
-            await contract.mintExactByNames(card, owner.address);
-          }
+          const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
 
-          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-          await contract[actionName](batchTokenIDs);
-
-          const mintedTokenID = batchOffset + batchSize;
           conditionNames.push(await contract.conditionName(mintedTokenID));
         }
 
@@ -249,16 +212,12 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
       const conditionNames = new Set();
 
       for (let i = 0; i < 20; i += 1) {
-        const batchOffset = i * batchSize;
+        const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
+          contract.mintExactByNames({ ...card, condition: "Dire" }, owner.address)
+        ));
 
-        for (card of validCards) {
-          await contract.mintExactByNames({ ...card, condition: "Dire" }, owner.address);
-        }
+        const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
 
-        const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-        await contract[actionName](batchTokenIDs);
-
-        const mintedTokenID = batchOffset + batchSize;
         conditionNames.add(await contract.conditionName(mintedTokenID));
       }
 
@@ -270,16 +229,12 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
         const conditionNames = new Set();
 
         for (let i = 0; i < 20; i += 1) {
-          const batchOffset = i * batchSize;
+          const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
+            contract.mintExactByNames({ ...card, tier }, owner.address)
+          ));
 
-          for (card of validCards) {
-            await contract.mintExactByNames({ ...card, tier }, owner.address);
-          }
+          const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
 
-          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-          await contract[actionName](batchTokenIDs);
-
-          const mintedTokenID = batchOffset + batchSize;
           conditionNames.add(await contract.conditionName(mintedTokenID));
         }
 
@@ -291,9 +246,6 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
 
 const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
   const numCards = validCards.length;
-  const batchSize = numCards + 1; // Includes the newly minted card.
-
-  const tokenIDs = [...Array(numCards).keys()].map(i => i + 1);
 
   if (validCards.some(({ condition }) => condition !== "Excellent")) {
     throw new Error("Please set the condition of validCards to Excellent before running these tests.");
@@ -330,15 +282,11 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         for (let i = 0; i < allTiers.length; i += 1) {
           const [before, after] = allTiers[i];
 
-          for (card of validCards) {
-            await contract.mintExactByNames({ ...card, tier: before }, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
+            contract.mintExactByNames({ ...card, tier: before }, owner.address)
+          ));
 
-          const batchOffset = i * batchSize;
-          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-
-          await contract[actionName](batchTokenIDs);
-          const mintedTokenID = batchOffset + batchSize;
+          const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
 
           expect(await contract.tierName(mintedTokenID)).to.equal(before);
         }
@@ -354,15 +302,11 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         for (let i = 0; i < allTiers.length; i += 1) {
           const [before, after] = allTiers[i];
 
-          for (card of validCards) {
-            await contract.mintExactByNames({ ...card, tier: before }, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
+            contract.mintExactByNames({ ...card, tier: before }, owner.address)
+          ));
 
-          const batchOffset = i * batchSize;
-          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-
-          await contract[actionName](batchTokenIDs);
-          const mintedTokenID = batchOffset + batchSize;
+          const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
 
           expect(await contract.tierName(mintedTokenID)).to.equal(after);
         }
@@ -380,15 +324,11 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         const typeNames = [];
 
         for (let i = 0; i < 1000; i += 1) {
-          for (card of validCards) {
-            await contract.mintExactByNames({ ...card, tier }, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
+            contract.mintExactByNames({ ...card, tier }, owner.address)
+          ));
 
-          const batchOffset = i * batchSize;
-          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-
-          await contract[actionName](batchTokenIDs);
-          const mintedTokenID = batchOffset + batchSize;
+          const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
 
           typeNames.push(await contract.typeName(mintedTokenID));
         }
@@ -410,15 +350,11 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         const typeNames = [];
 
         for (let i = 0; i < 1000; i += 1) {
-          for (card of validCards) {
-            await contract.mintExactByNames({ ...card, tier }, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
+            contract.mintExactByNames({ ...card, tier }, owner.address)
+          ));
 
-          const batchOffset = i * batchSize;
-          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-
-          await contract[actionName](batchTokenIDs);
-          const mintedTokenID = batchOffset + batchSize;
+          const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
 
           const type = await contract.typeName(mintedTokenID);
           const color1 = await contract.color1Name(mintedTokenID);
@@ -454,15 +390,11 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         const variantNames = [];
 
         for (let i = 0; i < 1000; i += 1) {
-          for (card of validCards) {
-            await contract.mintExactByNames({ ...card, tier }, owner.address);
-          }
+          const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
+            contract.mintExactByNames({ ...card, tier }, owner.address)
+          ));
 
-          const batchOffset = i * batchSize;
-          const batchTokenIDs = tokenIDs.map(t => t + batchOffset);
-
-          await contract[actionName](batchTokenIDs);
-          const mintedTokenID = batchOffset + batchSize;
+          const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
 
           const type = await contract.typeName(mintedTokenID);
           const color1 = await contract.color1Name(mintedTokenID);

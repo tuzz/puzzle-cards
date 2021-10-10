@@ -2,6 +2,7 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
+const tokenID = TestUtils.tokenID;
 
 describe("LookThroughTelescope", () => {
   const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
@@ -24,33 +25,33 @@ describe("LookThroughTelescope", () => {
     });
 
     it("cannot be performed if a sun is used on a telescope with a moon", async () => {
-      await contract.mintExactByNames(playerCard, owner.address);
-      await contract.mintExactByNames({ ...telescopeCard, variant: "Moon" }, owner.address);
-      await contract.mintExactByNames({ ...activeCard, variant: "Sun" }, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames({ ...telescopeCard, variant: "Moon" }, owner.address));
+      const tokenID3 = await tokenID(contract.mintExactByNames({ ...activeCard, variant: "Sun" }, owner.address));
 
-      const [isAllowed, reasons] = await contract.canLookThroughTelescope([1, 2, 3]);
+      const [isAllowed, reasons] = await contract.canLookThroughTelescope([tokenID1, tokenID2, tokenID3]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the sun or moon card does not match the telescope]", reasons);
     });
 
     it("cannot be performed if a moon is used on a telescope with a sun", async () => {
-      await contract.mintExactByNames(playerCard, owner.address);
-      await contract.mintExactByNames({ ...telescopeCard, variant: "Sun" }, owner.address);
-      await contract.mintExactByNames({ ...activeCard, variant: "Moon" }, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames({ ...telescopeCard, variant: "Sun" }, owner.address));
+      const tokenID3 = await tokenID(contract.mintExactByNames({ ...activeCard, variant: "Moon" }, owner.address));
 
-      const [isAllowed, reasons] = await contract.canLookThroughTelescope([1, 2, 3]);
+      const [isAllowed, reasons] = await contract.canLookThroughTelescope([tokenID1, tokenID2, tokenID3]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the sun or moon card does not match the telescope]", reasons);
     });
 
     it("cannot be performed if the sun or moon's color does not match the telescope", async () => {
-      await contract.mintExactByNames(playerCard, owner.address);
-      await contract.mintExactByNames({ ...telescopeCard, color1: "Red" }, owner.address);
-      await contract.mintExactByNames({ ...activeCard, color1: "Blue" }, owner.address);
+      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames({ ...telescopeCard, color1: "Red" }, owner.address));
+      const tokenID3 = await tokenID(contract.mintExactByNames({ ...activeCard, color1: "Blue" }, owner.address));
 
-      const [isAllowed, reasons] = await contract.canLookThroughTelescope([1, 2, 3]);
+      const [isAllowed, reasons] = await contract.canLookThroughTelescope([tokenID1, tokenID2, tokenID3]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the sun or moon card does not match the telescope]", reasons);
@@ -60,16 +61,12 @@ describe("LookThroughTelescope", () => {
       const typeNames = [];
       const colorMatches = [];
 
-      for (let i = 0; i < 500; i += 1) {
-        await contract.mintExactByNames(playerCard, owner.address);
-        await contract.mintExactByNames(telescopeCard, owner.address);
-        await contract.mintExactByNames(activeCard, owner.address);
+      for (let i = 0; i < 1000; i += 1) {
+        const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+        const tokenID2 = await tokenID(contract.mintExactByNames(telescopeCard, owner.address));
+        const tokenID3 = await tokenID(contract.mintExactByNames(activeCard, owner.address));
 
-        const batchOffset = i * 4;
-        const batchTokenIDs = [1, 2, 3].map(t => t + batchOffset);
-
-        await contract.lookThroughTelescope(batchTokenIDs);
-        const mintedTokenID = batchOffset + 4;
+        const mintedTokenID = await tokenID(contract.lookThroughTelescope([tokenID1, tokenID2, tokenID3]));
 
         const type = await contract.typeName(mintedTokenID);
         const color1 = await contract.color1Name(mintedTokenID);
@@ -115,15 +112,11 @@ describe("LookThroughTelescope", () => {
         let sampleSize = 0;
 
         for (let i = 0; i < 100; i += 1) {
-          await contract.mintExactByNames({ ...playerCard, tier }, owner.address);
-          await contract.mintExactByNames({ ...telescopeCard, tier }, owner.address);
-          await contract.mintExactByNames({ ...activeCard, tier }, owner.address);
+          const tokenID1 = await tokenID(contract.mintExactByNames({ ...playerCard, tier }, owner.address));
+          const tokenID2 = await tokenID(contract.mintExactByNames({ ...telescopeCard, tier }, owner.address));
+          const tokenID3 = await tokenID(contract.mintExactByNames({ ...activeCard, tier }, owner.address));
 
-          const batchOffset = i * 4;
-          const batchTokenIDs = [1, 2, 3].map(t => t + batchOffset);
-
-          await contract.lookThroughTelescope(batchTokenIDs);
-          const mintedTokenID = batchOffset + 4;
+          const mintedTokenID = await tokenID(contract.lookThroughTelescope([tokenID1, tokenID2, tokenID3]));
 
           const type = await contract.typeName(mintedTokenID);
           if (type !== "Helix") { continue; }

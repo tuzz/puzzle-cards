@@ -24,9 +24,9 @@ describe("MintingRandomly", () => {
 
   describe("series", () => {
     it(0)("picks randomly", async () => {
-      await mintInBatches(1000);
+      const tokenIDs = await mintInBatches(1000);
 
-      const seriesNames = await mapTokenIDs(1, 1000, contract.seriesName);
+      const seriesNames = await mapTokenIDs(tokenIDs, contract.seriesName);
       const frequencies = TestUtils.tallyFrequencies(seriesNames);
 
       expect(frequencies["None"]).to.be.within(0.47, 0.53);     // 50%
@@ -36,9 +36,9 @@ describe("MintingRandomly", () => {
 
   describe("puzzle", () => {
     it(1)("picks randomly within the series", async () => {
-      await mintInBatches(2500);
+      const tokenIDs = await mintInBatches(2500);
 
-      const puzzleNames = await mapTokenIDsBySeries(1, 2500, contract.puzzleName);
+      const puzzleNames = await mapTokenIDsBySeries(tokenIDs, contract.puzzleName);
       const frequencies = TestUtils.tallyFrequenciesInGroups(puzzleNames);
 
       expect(frequencies["None"]["Trial of Skill"]).to.be.within(0.47, 0.53); // 50%
@@ -52,9 +52,9 @@ describe("MintingRandomly", () => {
 
   describe("tier", () => {
     it(2)("picks according to the probability distribution", async () => {
-      await mintInBatches(1000);
+      const tokenIDs = await mintInBatches(1000);
 
-      const tierNames = await mapTokenIDs(1, 1000, contract.tierName);
+      const tierNames = await mapTokenIDs(tokenIDs, contract.tierName);
       const frequencies = TestUtils.tallyFrequencies(tierNames);
 
       expect(frequencies["Mortal"]).to.be.within(0.87, 0.93);   // 90%
@@ -69,9 +69,9 @@ describe("MintingRandomly", () => {
 
   describe("type", () => {
     it(3)("picks according to the probability distribution", async () => {
-      await mintInBatches(1000);
+      const tokenIDs = await mintInBatches(1000);
 
-      const typeNames = await mapTokenIDs(1, 1000, contract.typeName);
+      const typeNames = await mapTokenIDs(tokenIDs, contract.typeName);
       const frequencies = TestUtils.tallyFrequencies(typeNames);
 
       expect(frequencies["Player"]).to.be.within(0.27, 0.33);    // 30%
@@ -96,9 +96,9 @@ describe("MintingRandomly", () => {
 
   describe("color1", () => {
     it(4)("picks according to the probability distribution for types with one or more colors", async () => {
-      await mintInBatches(2000);
+      const tokenIDs = await mintInBatches(2000);
 
-      const pairs = await mapTokenIDsByType(1, 2000, contract.color1Name);
+      const pairs = await mapTokenIDsByType(tokenIDs, contract.color1Name);
 
       const uncolored = ["Player", "Crab", "Map", "Teleport", "Eclipse", "Door", "Hidden", "Artwork"];
       const colored = ["Inactive", "Active", "Cloak", "Telescope", "Helix", "Torch", "Beacon", "Glasses", "Star"];
@@ -124,9 +124,9 @@ describe("MintingRandomly", () => {
 
   describe("color2", () => {
     it(5)("picks according to the probability distribution for types with two colors", async () => {
-      await mintInBatches(15000);
+      const tokenIDs = await mintInBatches(15000);
 
-      const pairs = await mapTokenIDsByType(1, 15000, contract.color2Name);
+      const pairs = await mapTokenIDsByType(tokenIDs, contract.color2Name);
 
       const uncolored = ["Player", "Crab", "Map", "Teleport", "Inactive", "Active", "Cloak", "Telescope", "Beacon", "Eclipse", "Door", "Hidden", "Artwork", "Star"];
       const colored = ["Helix", "Torch", "Glasses"];
@@ -152,9 +152,9 @@ describe("MintingRandomly", () => {
 
   describe("variant", () => {
     it(6)("picks according to the probability distribution for types with variants", async () => {
-      await mintInBatches(2500);
+      const tokenIDs = await mintInBatches(2500);
 
-      const pairs = await mapTokenIDsByType(1, 2500, contract.variantName);
+      const pairs = await mapTokenIDsByType(tokenIDs, contract.variantName);
 
       const dontVary = ["Player", "Crab", "Cloak", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Hidden", "Artwork", "Star"];
       const vary = ["Inactive", "Active", "Telescope", "Door"];
@@ -179,9 +179,9 @@ describe("MintingRandomly", () => {
 
   describe("condition", () => {
     it(7)("picks according to the probability distribution", async () => {
-      await mintInBatches(1000);
+      const tokenIDs = await mintInBatches(1000);
 
-      const conditionNames = await mapTokenIDs(1, 1000, contract.conditionName);
+      const conditionNames = await mapTokenIDs(tokenIDs, contract.conditionName);
       const frequencies = TestUtils.tallyFrequencies(conditionNames);
 
       expect(frequencies["Dire"]).to.be.undefined;                // 0%
@@ -194,32 +194,35 @@ describe("MintingRandomly", () => {
 
   // utility functions
 
-  const mintInBatches = (numberToMint) => {
-    const promises = [];
+  const mintInBatches = async (numberToMint) => {
+    let tokenIDs = [];
 
     for (let i = 0; i < Math.floor(numberToMint / 100); i += 1) {
-      promises.push(contract.gift(100, owner.address));
+      const batch = await TestUtils.batchTokenIDs(contract.gift(100, owner.address));
+      tokenIDs = tokenIDs.concat(batch);
     }
-    promises.push(contract.gift(numberToMint % 100, owner.address));
 
-    return Promise.all(promises);
+    const batch = await TestUtils.batchTokenIDs(contract.gift(numberToMint % 100, owner.address));
+    tokenIDs = tokenIDs.concat(batch);
+
+    return tokenIDs;
   };
 
-  const mapTokenIDs = (from, to, fn) => {
+  const mapTokenIDs = (tokenIDs, fn) => {
     const promises = [];
 
-    for (let tokenID = from; tokenID < to; tokenID += 1) {
+    for (const tokenID of tokenIDs) {
       promises.push(fn(tokenID));
     }
 
     return Promise.all(promises);
   };
 
-  const mapTokenIDsBySeries = (from, to, fn) => (
-    mapTokenIDs(from, to, (id) => Promise.all([contract.seriesName(id), fn(id)]))
+  const mapTokenIDsBySeries = (tokenIDs, fn) => (
+    mapTokenIDs(tokenIDs, (id) => Promise.all([contract.seriesName(id), fn(id)]))
   );
 
-  const mapTokenIDsByType = (from, to, fn) => (
-    mapTokenIDs(from, to, (id) => Promise.all([contract.typeName(id), fn(id)]))
+  const mapTokenIDsByType = (tokenIDs, fn) => (
+    mapTokenIDs(tokenIDs, (id) => Promise.all([contract.typeName(id), fn(id)]))
   );
 });
