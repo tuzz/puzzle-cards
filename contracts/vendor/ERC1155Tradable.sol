@@ -162,7 +162,7 @@ contract ERC1155Tradable is ContextMixin, ERC1155, NativeMetaTransaction, Ownabl
     uint256 _id,
     uint256 _quantity,
     bytes memory _data
-  ) virtual public creatorOnly(_id) {
+  ) virtual internal {
     _mint(_to, _id, _quantity, _data);
     tokenSupply[_id] = tokenSupply[_id].add(_quantity);
   }
@@ -179,10 +179,9 @@ contract ERC1155Tradable is ContextMixin, ERC1155, NativeMetaTransaction, Ownabl
     uint256[] memory _ids,
     uint256[] memory _quantities,
     bytes memory _data
-  ) public {
+  ) internal {
     for (uint256 i = 0; i < _ids.length; i++) {
       uint256 _id = _ids[i];
-      require(creators[_id] == _msgSender(), "ERC1155Tradable#batchMint: ONLY_CREATOR_ALLOWED");
       uint256 quantity = _quantities[i];
       tokenSupply[_id] = tokenSupply[_id].add(quantity);
     }
