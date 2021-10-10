@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import "./vendor/ERC1155Tradable.sol";
 //import "hardhat/console.sol";
 
-contract PuzzleCard is ERC721Tradable {
+contract PuzzleCard is ERC1155Tradable {
     struct Instance {
         uint8 series;
         uint8 puzzle;
@@ -51,7 +51,7 @@ contract PuzzleCard is ERC721Tradable {
     string public currentBaseTokenURI;
     uint256 public randomCallCount = 0;
 
-    constructor(address proxyAddress) ERC721Tradable("PuzzleCard", "WSUN", proxyAddress) {
+    constructor(address proxyAddress) ERC1155Tradable("PuzzleCard", "WSUN", "", proxyAddress) {
         setPriceToMint(uint256(0.1 * 0.7883 * 1000000000000000000)); // $0.10 in Polygon Wei.
         setBaseTokenURI("https://4cc8-2a02-6b6c-60-0-cdb2-1b9f-aa0f-454f.ngrok.io/api/");
     }
