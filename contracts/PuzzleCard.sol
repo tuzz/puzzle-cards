@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "./vendor/ERC1155Tradable.sol";
+import "./Conversion.sol";
 //import "hardhat/console.sol";
 
 contract PuzzleCard is ERC1155Tradable {
@@ -75,8 +76,8 @@ contract PuzzleCard is ERC1155Tradable {
     function masterCopyClaimedForAllPuzzles() public view returns (bool[] memory) { return _masterCopyClaimedForAllPuzzles(); }
 
     function priceToMint(uint256 numberOfCards) public view returns (uint256) { return currentPriceToMint * numberOfCards; }
-    function baseTokenURI() override public view returns (string memory) { return currentBaseTokenURI; }
-    function tokenURI(uint256 tokenID) override public view returns (string memory) { return string(abi.encodePacked(baseTokenURI(), slug(tokenID), ".json")); }
+    function baseTokenURI() public view returns (string memory) { return currentBaseTokenURI; }
+    function tokenURI(uint256 tokenID) public view returns (string memory) { return string(abi.encodePacked(baseTokenURI(), slug(tokenID), ".json")); }
     function isDiscarded(uint256 tokenID) public view returns (bool) { return !_exists(tokenID); }
 
     function slug(uint256 tokenID) public view returns (string memory) {
@@ -144,15 +145,13 @@ contract PuzzleCard is ERC1155Tradable {
         payable(owner()).transfer(price);
 
         for (uint8 i = 0; i < numberToMint; i += 1) {
-            cards[getNextTokenId()] = starterCard();
-            mintTo(to);
+            mint(to, Conversion.tokenID(starterCard()), 1, "");
         }
     }
 
     function gift(uint256 numberToGift, address to) public onlyOwner {
         for (uint8 i = 0; i < numberToGift; i += 1) {
-            cards[getNextTokenId()] = starterCard();
-            mintTo(to);
+            mint(to, Conversion.tokenID(starterCard()), 1, "");
         }
     }
 
@@ -261,7 +260,6 @@ contract PuzzleCard is ERC1155Tradable {
             block.difficulty,
             proxyRegistryAddress,
             currentBaseTokenURI,
-            getNextTokenId(),
             randomCallCount++
         )));
     }
@@ -870,7 +868,7 @@ contract PuzzleCard is ERC1155Tradable {
 
     function ownsAll(uint256[] memory tokenIDs) private view returns (bool) {
         for (uint8 i = 0; i < tokenIDs.length; i += 1) {
-            if (ownerOf(tokenIDs[i]) != msg.sender) { return false; }
+            if (balanceOf(msg.sender, tokenIDs[i]) == 0) { return false; }
         }
 
         return true;
@@ -928,12 +926,14 @@ contract PuzzleCard is ERC1155Tradable {
     }
 
     function replace(uint256[] memory tokenIDs, Instance memory newCard) private {
-        cards[getNextTokenId()] = newCard;
-        mintTo(ownerOf(tokenIDs[0]));
-
         for (uint8 i = 0; i < tokenIDs.length; i += 1) {
-          _burn(tokenIDs[i]);
+          uint256 tokenID = tokenIDs[i];
+
+          _burn(msg.sender, tokenID, 1);
+          tokenSupply[tokenID] -= 1;
         }
+
+        mint(msg.sender, Conversion.tokenID(newCard), 1, "");
     }
 
     function dasherize(string memory string_) private pure returns (string memory) {

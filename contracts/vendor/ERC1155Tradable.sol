@@ -27,7 +27,7 @@ contract ERC1155Tradable is ContextMixin, ERC1155, NativeMetaTransaction, Ownabl
 
   address proxyRegistryAddress;
   mapping (uint256 => address) public creators;
-  mapping (uint256 => uint256) public tokenSupply;
+  mapping (uint256 => uint256) internal tokenSupply;
   mapping (uint256 => string) customUri;
   // Contract name
   string public name;
