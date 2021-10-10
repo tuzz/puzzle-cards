@@ -6,7 +6,7 @@ import "./vendor/ERC1155Tradable.sol";
 //import "hardhat/console.sol";
 
 contract PuzzleCard is ERC721Tradable {
-    struct Attributes {
+    struct Instance {
         uint8 series;
         uint8 puzzle;
         uint8 tier;
@@ -18,7 +18,7 @@ contract PuzzleCard is ERC721Tradable {
         uint8 edition;
     }
 
-    mapping(uint256 => Attributes) public cards;
+    mapping(uint256 => Instance) public cards;
 
     mapping(uint256 => uint256) public limitedEditions;
     mapping(uint256 => bool) public masterCopiesClaimed;
@@ -156,14 +156,14 @@ contract PuzzleCard is ERC721Tradable {
         }
     }
 
-    function starterCard() private returns (Attributes memory) {
+    function starterCard() private returns (Instance memory) {
         uint8 tier = pickRandom(tierProbabilities);
         uint8 condition = PRISTINE_CONDITION - pickRandom(conditionProbabilities);
 
         return randomCard(tier, condition, standardTypeProbabilities);
     }
 
-    function starterCardForTier(uint8 tier, uint8 condition) private returns (Attributes memory) {
+    function starterCardForTier(uint8 tier, uint8 condition) private returns (Instance memory) {
         uint256[] memory typeProbabilities =
           tier == MASTER_TIER                        ? masterTypeProbabilities :
           tier == VIRTUAL_TIER || tier == GODLY_TIER ? virtualTypeProbabilities :
@@ -172,8 +172,8 @@ contract PuzzleCard is ERC721Tradable {
         return randomCard(tier, condition, typeProbabilities);
     }
 
-    function promotedCard(CardSlot[] memory slots) private returns (Attributes memory) {
-        Attributes memory card = slots[0].card;
+    function promotedCard(CardSlot[] memory slots) private returns (Instance memory) {
+        Instance memory card = slots[0].card;
 
         uint8 tier = card.tier + 1;
         uint8 condition = randomlyDegrade(slots, card.tier);
@@ -181,14 +181,14 @@ contract PuzzleCard is ERC721Tradable {
         return starterCardForTier(tier, condition);
     }
 
-    function randomCard(uint8 tier, uint8 condition, uint256[] memory typeProbabilities) private returns (Attributes memory) {
+    function randomCard(uint8 tier, uint8 condition, uint256[] memory typeProbabilities) private returns (Instance memory) {
         (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 type_ = pickRandom(typeProbabilities);
         (uint8 color1, uint8 color2) = randomColors(tier, type_);
         uint8 variant = randomVariant(type_);
         uint8 edition = STANDARD_EDITION;
 
-        return Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition);
+        return Instance(series, puzzle, tier, type_, color1, color2, variant, condition, edition);
     }
 
     // randomness
@@ -271,7 +271,7 @@ contract PuzzleCard is ERC721Tradable {
     function activateSunOrMoon(uint256[] memory tokenIDs) public {
         (bool ok, string[] memory r, CardSlot[] memory slots) = _canActivateSunOrMoon(tokenIDs); require(ok, string(abi.encode(r)));
 
-        Attributes memory inactive = slots[2].card;
+        Instance memory inactive = slots[2].card;
 
         (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 tier = inactive.tier;
@@ -282,7 +282,7 @@ contract PuzzleCard is ERC721Tradable {
         uint8 condition = randomlyDegrade(slots, inactive.tier);
         uint8 edition = STANDARD_EDITION;
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
+        replace(tokenIDs, Instance(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
     function canActivateSunOrMoon(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -307,7 +307,7 @@ contract PuzzleCard is ERC721Tradable {
     function lookThroughTelescope(uint256[] memory tokenIDs) public {
         (bool ok, string[] memory r, CardSlot[] memory slots) = _canLookThroughTelescope(tokenIDs); require(ok, string(abi.encode(r)));
 
-        Attributes memory telescope = slots[1].card;
+        Instance memory telescope = slots[1].card;
 
         (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 tier = telescope.tier;
@@ -317,7 +317,7 @@ contract PuzzleCard is ERC721Tradable {
         uint8 condition = randomlyDegrade(slots, telescope.tier);
         uint8 edition = STANDARD_EDITION;
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
+        replace(tokenIDs, Instance(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
     function canLookThroughTelescope(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -333,8 +333,8 @@ contract PuzzleCard is ERC721Tradable {
         if (!hasType(slots[2], ACTIVE_TYPE))    { ok = false; r[5] = "[an active sun or moon card is required]"; }
         if (!ok)                                { return (ok, r, slots); } // Type checks failed.
 
-        Attributes memory telescope = slots[1].card;
-        Attributes memory active = slots[2].card;
+        Instance memory telescope = slots[1].card;
+        Instance memory active = slots[2].card;
 
         bool sameVariant = telescope.variant == active.variant;
         bool sameColor = telescope.color1 == active.color1;
@@ -349,7 +349,7 @@ contract PuzzleCard is ERC721Tradable {
     function lookThroughGlasses(uint256[] memory tokenIDs) public {
         (bool ok, string[] memory r, CardSlot[] memory slots) = _canLookThroughGlasses(tokenIDs); require(ok, string(abi.encode(r)));
 
-        Attributes memory glasses = slots[1].card;
+        Instance memory glasses = slots[1].card;
 
         uint8 tier = glasses.tier;
         uint8 condition = randomlyDegrade(slots, glasses.tier);
@@ -378,8 +378,8 @@ contract PuzzleCard is ERC721Tradable {
     function changeLensColor(uint256[] memory tokenIDs) public {
         (bool ok, string[] memory r, CardSlot[] memory slots) = _canChangeLensColor(tokenIDs); require(ok, string(abi.encode(r)));
 
-        Attributes memory torchOrGlasses = slots[1].card;
-        Attributes memory inactive = slots[2].card;
+        Instance memory torchOrGlasses = slots[1].card;
+        Instance memory inactive = slots[2].card;
 
         (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 tier = torchOrGlasses.tier;
@@ -398,7 +398,7 @@ contract PuzzleCard is ERC721Tradable {
             }
         }
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
+        replace(tokenIDs, Instance(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
     function canChangeLensColor(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -426,7 +426,7 @@ contract PuzzleCard is ERC721Tradable {
     function shineTorchOnBasePair(uint256[] memory tokenIDs) public {
         (bool ok, string[] memory r, CardSlot[] memory slots) = _canShineTorchOnBasePair(tokenIDs); require(ok, string(abi.encode(r)));
 
-        Attributes memory helix = slots[1].card;
+        Instance memory helix = slots[1].card;
 
         (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 tier = helix.tier;
@@ -437,7 +437,7 @@ contract PuzzleCard is ERC721Tradable {
         uint8 condition = randomlyDegrade(slots, helix.tier);
         uint8 edition = STANDARD_EDITION;
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
+        replace(tokenIDs, Instance(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
     function canShineTorchOnBasePair(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -453,8 +453,8 @@ contract PuzzleCard is ERC721Tradable {
         if (!hasType(slots[2], HELIX_TYPE))     { ok = false; r[5] = "[an helix card is required]"; }
         if (!ok)                                { return (ok, r, slots); } // Type checks failed.
 
-        Attributes memory torch = slots[1].card;
-        Attributes memory helix = slots[2].card;
+        Instance memory torch = slots[1].card;
+        Instance memory helix = slots[2].card;
 
         bool colorsMatch = torch.color1 == helix.color1 && torch.color2 == helix.color2;
 
@@ -504,7 +504,7 @@ contract PuzzleCard is ERC721Tradable {
         if (!hasType(slots[1], DOOR_TYPE))   { ok = false; r[4] = "[a door card is required]"; }
         if (!ok)                             { return (ok, r, slots); } // Type checks failed.
 
-        Attributes memory door = slots[1].card;
+        Instance memory door = slots[1].card;
 
         if (door.variant != OPEN_VARIANT)    { ok = false; r[6] = "[the door hasn't been opened]"; }
 
@@ -516,8 +516,8 @@ contract PuzzleCard is ERC721Tradable {
     function jumpIntoBeacon(uint256[] memory tokenIDs) public {
         (bool ok, string[] memory r, CardSlot[] memory slots) = _canJumpIntoBeacon(tokenIDs); require(ok, string(abi.encode(r)));
 
-        Attributes memory torchOrGlasses = slots[1].card;
-        Attributes memory beacon = slots[2].card;
+        Instance memory torchOrGlasses = slots[1].card;
+        Instance memory beacon = slots[2].card;
 
         (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 tier = torchOrGlasses.tier;
@@ -528,7 +528,7 @@ contract PuzzleCard is ERC721Tradable {
         uint8 condition = randomlyDegrade(slots, torchOrGlasses.tier);
         uint8 edition = STANDARD_EDITION;
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
+        replace(tokenIDs, Instance(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
     function canJumpIntoBeacon(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -554,7 +554,7 @@ contract PuzzleCard is ERC721Tradable {
     function jumpIntoEclipse(uint256[] memory tokenIDs) public {
         (bool ok, string[] memory r, CardSlot[] memory slots) = _canJumpIntoEclipse(tokenIDs); require(ok, string(abi.encode(r)));
 
-        Attributes memory door = slots[1].card;
+        Instance memory door = slots[1].card;
 
         (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 tier = door.tier;
@@ -565,7 +565,7 @@ contract PuzzleCard is ERC721Tradable {
         uint8 condition = randomlyDegrade(slots, door.tier);
         uint8 edition = STANDARD_EDITION;
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
+        replace(tokenIDs, Instance(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
     function canJumpIntoEclipse(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -581,7 +581,7 @@ contract PuzzleCard is ERC721Tradable {
         if (!hasType(slots[2], ECLIPSE_TYPE)) { ok = false; r[5] = "[an eclipse card is required]"; }
         if (!ok)                              { return (ok, r, slots); } // Type checks failed.
 
-        Attributes memory door = slots[1].card;
+        Instance memory door = slots[1].card;
 
         if (door.variant == OPEN_VARIANT)    { ok = false; r[6] = "[the door has already been opened]"; }
 
@@ -593,7 +593,7 @@ contract PuzzleCard is ERC721Tradable {
     function puzzleMastery1(uint256[] memory tokenIDs) public {
         (bool ok, string[] memory r, CardSlot[] memory slots) = _canPuzzleMastery1(tokenIDs); require(ok, string(abi.encode(r)));
 
-        Attributes memory artwork0 = slots[0].card;
+        Instance memory artwork0 = slots[0].card;
 
         uint8 series = artwork0.series;
         uint8 puzzle = artwork0.puzzle;
@@ -606,7 +606,7 @@ contract PuzzleCard is ERC721Tradable {
         uint8 condition = randomlyDegrade(slots, artwork0.tier);
         uint8 edition = STANDARD_EDITION;
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
+        replace(tokenIDs, Instance(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
     function canPuzzleMastery1(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -625,8 +625,8 @@ contract PuzzleCard is ERC721Tradable {
         if (!ownsAll(tokenIDs))   { ok = false; r[1] = "[user doesn't own all the cards]"; }
         if (!ok)                  { return (ok, r, slots); } // Basic checks failed.
 
-        Attributes memory card0 = cards[tokenIDs[0]];
-        Attributes memory card1 = cards[tokenIDs[1]];
+        Instance memory card0 = cards[tokenIDs[0]];
+        Instance memory card1 = cards[tokenIDs[1]];
 
         bool artworkType = card0.type_ == ARTWORK_TYPE && card1.type_ == ARTWORK_TYPE;
         bool sameCardUsedTwice = tokenIDs[0] == tokenIDs[1];
@@ -652,7 +652,7 @@ contract PuzzleCard is ERC721Tradable {
     function puzzleMastery2(uint256[] memory tokenIDs) public {
         (bool ok, string[] memory r, CardSlot[] memory slots) = _canPuzzleMastery2(tokenIDs); require(ok, string(abi.encode(r)));
 
-        Attributes memory star = slots[randomNumber() % 7].card;
+        Instance memory star = slots[randomNumber() % 7].card;
 
         uint8 series = star.series;
         uint8 puzzle = star.puzzle;
@@ -685,7 +685,7 @@ contract PuzzleCard is ERC721Tradable {
             }
         }
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
+        replace(tokenIDs, Instance(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
     function canPuzzleMastery2(uint256[] memory tokenIDs) public view returns (bool isAllowed, string[] memory reasonsForBeingUnable) {
@@ -707,7 +707,7 @@ contract PuzzleCard is ERC721Tradable {
         bool allStarType = true;
 
         for (uint8 i = 0; i < 7; i += 1) {
-          Attributes memory card = cards[tokenIDs[i]];
+          Instance memory card = cards[tokenIDs[i]];
           slots[i] = CardSlot(card, true);
 
           allStarType = allStarType && card.type_ == STAR_TYPE;
@@ -733,8 +733,8 @@ contract PuzzleCard is ERC721Tradable {
     function discard2Pickup1(uint256[] memory tokenIDs) public {
         (bool ok, string[] memory r, CardSlot[] memory slots) = _canDiscard2Pickup1(tokenIDs); require(ok, string(abi.encode(r)));
 
-        Attributes memory card0 = slots[0].card;
-        Attributes memory card1 = slots[1].card;
+        Instance memory card0 = slots[0].card;
+        Instance memory card1 = slots[1].card;
 
         (uint8 highestTier, uint8 lowestTier) = high_low(card0.tier, card1.tier);
         (uint8 highestCond, uint8 lowestCond) = high_low(card0.condition, card1.condition);
@@ -754,7 +754,7 @@ contract PuzzleCard is ERC721Tradable {
         }
 
         for (uint8 i = 0; i < 2; i += 1) {
-          Attributes memory card = slots[i].card;
+          Instance memory card = slots[i].card;
 
           if (card.edition >= LIMITED_EDITION) {
             uint256 editionsKey_ = editionsKey(card.series, card.puzzle);
@@ -797,7 +797,7 @@ contract PuzzleCard is ERC721Tradable {
 
     // utilities
 
-    struct CardSlot { Attributes card; bool occupied; }
+    struct CardSlot { Instance card; bool occupied; }
 
     function _puzzleForIndex(uint16 puzzleIndex) private view returns (uint8, uint8) {
         uint16 cumulative = 0;
@@ -861,7 +861,7 @@ contract PuzzleCard is ERC721Tradable {
         CardSlot[] memory slots = new CardSlot[](3);
 
         for (uint8 i = 0; i < tokenIDs.length; i += 1) {
-          Attributes memory card = cards[tokenIDs[i]];
+          Instance memory card = cards[tokenIDs[i]];
           slots[cardSlotPerType[card.type_]] = CardSlot(card, true);
         }
 
@@ -900,8 +900,8 @@ contract PuzzleCard is ERC721Tradable {
     function cloakCanActivateSunOrMoon(CardSlot[] memory slots, string[] memory r) private pure returns (bool) {
         bool ok = true;
 
-        Attributes memory activator = slots[0].card;
-        Attributes memory inactive = slots[2].card;
+        Instance memory activator = slots[0].card;
+        Instance memory inactive = slots[2].card;
 
         bool cloakUsed = activator.type_ == CLOAK_TYPE;
         bool colorsMatch = activator.color1 == inactive.color1;
@@ -927,7 +927,7 @@ contract PuzzleCard is ERC721Tradable {
       return (option1 > option2) ? (option1, option2) : (option2, option1);
     }
 
-    function replace(uint256[] memory tokenIDs, Attributes memory newCard) private {
+    function replace(uint256[] memory tokenIDs, Instance memory newCard) private {
         cards[getNextTokenId()] = newCard;
         mintTo(ownerOf(tokenIDs[0]));
 
