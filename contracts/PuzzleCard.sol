@@ -941,11 +941,10 @@ contract PuzzleCard is ERC1155Tradable {
         uint256[] memory quantities = new uint256[](tokenIDs.length);
 
         for (uint8 i = 0; i < tokenIDs.length; i += 1) {
-          tokenSupply[tokenIDs[i]] -= 1;
           quantities[i] = 1;
         }
 
-        _burnBatch(msg.sender, tokenIDs, quantities);
+        batchBurn(msg.sender, tokenIDs, quantities);
 
         mint(msg.sender, Conversion.tokenID(newCard), 1, "");
     }

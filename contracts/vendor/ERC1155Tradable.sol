@@ -188,6 +188,19 @@ contract ERC1155Tradable is ContextMixin, ERC1155, NativeMetaTransaction, Ownabl
     _mintBatch(_to, _ids, _quantities, _data);
   }
 
+  function batchBurn(
+    address _to,
+    uint256[] memory _ids,
+    uint256[] memory _quantities
+  ) internal {
+    for (uint256 i = 0; i < _ids.length; i++) {
+      uint256 _id = _ids[i];
+      uint256 quantity = _quantities[i];
+      tokenSupply[_id] = tokenSupply[_id].sub(quantity);
+    }
+    _burnBatch(_to, _ids, _quantities);
+  }
+
   /**
     * @dev Change the creator address for given tokens
     * @param _to   Address of the new creator
