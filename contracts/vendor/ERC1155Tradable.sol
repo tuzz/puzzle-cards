@@ -27,7 +27,6 @@ contract ERC1155Tradable is ContextMixin, ERC1155, NativeMetaTransaction, Ownabl
 
   address proxyRegistryAddress;
   mapping (uint256 => uint256) internal tokenSupply;
-  mapping (uint256 => string) customUri;
   // Contract name
   string public name;
   // Contract symbol
@@ -44,26 +43,12 @@ contract ERC1155Tradable is ContextMixin, ERC1155, NativeMetaTransaction, Ownabl
   constructor(
     string memory _name,
     string memory _symbol,
-    string memory _uri,
     address _proxyRegistryAddress
-  ) ERC1155(_uri) {
+  ) ERC1155("") {
     name = _name;
     symbol = _symbol;
     proxyRegistryAddress = _proxyRegistryAddress;
     _initializeEIP712(name);
-  }
-
-  function uri(
-    uint256 _id
-  ) override public view returns (string memory) {
-    require(_exists(_id), "ERC1155Tradable#uri: NONEXISTENT_TOKEN");
-    // We have to convert string to bytes to check for existence
-    bytes memory customUriBytes = bytes(customUri[_id]);
-    if (customUriBytes.length > 0) {
-        return customUri[_id];
-    } else {
-        return super.uri(_id);
-    }
   }
 
   /**
@@ -75,31 +60,6 @@ contract ERC1155Tradable is ContextMixin, ERC1155, NativeMetaTransaction, Ownabl
     uint256 _id
   ) public view returns (uint256) {
     return tokenSupply[_id];
-  }
-
-  /**
-   * @dev Sets a new URI for all token types, by relying on the token type ID
-    * substitution mechanism
-    * https://eips.ethereum.org/EIPS/eip-1155#metadata[defined in the EIP].
-   * @param _newURI New URI for all tokens
-   */
-  function setURI(
-    string memory _newURI
-  ) public onlyOwner {
-    _setURI(_newURI);
-  }
-
-  /**
-   * @dev Will update the base URI for the token
-   * @param _tokenId The token to update. _msgSender() must be its creator.
-   * @param _newURI New URI for the token.
-   */
-  function setCustomURI(
-    uint256 _tokenId,
-    string memory _newURI
-  ) public onlyOwner {
-    customUri[_tokenId] = _newURI;
-    emit URI(_newURI, _tokenId);
   }
 
   /**
