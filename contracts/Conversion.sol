@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import "./PuzzleCard.sol";
 
 library Conversion {
-    function tokenID(PuzzleCard.Instance memory card) internal returns (uint256) {
+    function tokenID(PuzzleCard.Instance memory card) internal pure returns (uint256) {
         return (
             uint256(card.series)    << 64 |
             uint256(card.puzzle)    << 56 |
@@ -19,7 +19,7 @@ library Conversion {
         );
     }
 
-    function card(uint256 tokenID) internal returns (PuzzleCard.Instance memory) {
+    function card(uint256 tokenID) internal pure returns (PuzzleCard.Instance memory) {
         uint8 series    = uint8(tokenID >> 64);
         uint8 puzzle    = uint8(tokenID >> 56);
         uint8 tier      = uint8(tokenID >> 48);

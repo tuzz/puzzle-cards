@@ -7,6 +7,9 @@ import "./Conversion.sol";
 //import "hardhat/console.sol";
 
 contract PuzzleCard is ERC1155Tradable {
+    using Conversion for uint256;
+    using Conversion for Instance;
+
     struct Instance {
         uint8 series;
         uint8 puzzle;
@@ -59,15 +62,15 @@ contract PuzzleCard is ERC1155Tradable {
 
     // getters
 
-    function seriesName(uint256 tokenID) public view returns (string memory) { return seriesNames[cards[tokenID].series]; }
-    function puzzleName(uint256 tokenID) public view returns (string memory) { return puzzleNames[puzzleOffsetPerSeries[cards[tokenID].series] + cards[tokenID].puzzle]; }
-    function tierName(uint256 tokenID) public view returns (string memory) { return tierNames[cards[tokenID].tier]; }
-    function typeName(uint256 tokenID) public view returns (string memory) { return typeNames[cards[tokenID].type_]; }
-    function color1Name(uint256 tokenID) public view returns (string memory) { return colorNames[cards[tokenID].color1]; }
-    function color2Name(uint256 tokenID) public view returns (string memory) { return colorNames[cards[tokenID].color2]; }
-    function variantName(uint256 tokenID) public view returns (string memory) { return variantNames[variantOffsetPerType[cards[tokenID].type_] + cards[tokenID].variant]; }
-    function conditionName(uint256 tokenID) public view returns (string memory) { return conditionNames[cards[tokenID].condition]; }
-    function editionName(uint256 tokenID) public view returns (string memory) { return editionNames[cards[tokenID].edition]; }
+    function seriesName(uint256 tokenID) public view returns (string memory) { return seriesNames[tokenID.card().series]; }
+    function puzzleName(uint256 tokenID) public view returns (string memory) { return puzzleNames[puzzleOffsetPerSeries[tokenID.card().series] + tokenID.card().puzzle]; }
+    function tierName(uint256 tokenID) public view returns (string memory) { return tierNames[tokenID.card().tier]; }
+    function typeName(uint256 tokenID) public view returns (string memory) { return typeNames[tokenID.card().type_]; }
+    function color1Name(uint256 tokenID) public view returns (string memory) { return colorNames[tokenID.card().color1]; }
+    function color2Name(uint256 tokenID) public view returns (string memory) { return colorNames[tokenID.card().color2]; }
+    function variantName(uint256 tokenID) public view returns (string memory) { return variantNames[variantOffsetPerType[tokenID.card().type_] + tokenID.card().variant]; }
+    function conditionName(uint256 tokenID) public view returns (string memory) { return conditionNames[tokenID.card().condition]; }
+    function editionName(uint256 tokenID) public view returns (string memory) { return editionNames[tokenID.card().edition]; }
 
     function puzzleForIndex(uint16 puzzleIndex) public view returns (uint8, uint8) { return _puzzleForIndex(puzzleIndex); }
     function numLimitedEditions(uint8 series, uint8 puzzle) public view returns (uint256) { return limitedEditions[editionsKey(series, puzzle)]; }
