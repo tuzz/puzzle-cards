@@ -128,26 +128,22 @@ contract PuzzleCard is ERC1155Tradable {
         payable(owner()).transfer(price);
 
         uint256[] memory tokenIDs = new uint256[](numberToMint);
-        uint256[] memory quantities = new uint256[](numberToMint);
 
         for (uint8 i = 0; i < numberToMint; i += 1) {
-            tokenIDs[i] = Conversion.tokenID(starterCard());
-            quantities[i] = 1;
+            tokenIDs[i] = starterCard().tokenID();
         }
 
-        batchMint(to, tokenIDs, quantities, "");
+        mintOneOfEach(tokenIDs, to);
     }
 
     function gift(uint256 numberToGift, address to) public onlyOwner {
         uint256[] memory tokenIDs = new uint256[](numberToGift);
-        uint256[] memory quantities = new uint256[](numberToGift);
 
         for (uint8 i = 0; i < numberToGift; i += 1) {
-            tokenIDs[i] = Conversion.tokenID(starterCard());
-            quantities[i] = 1;
+            tokenIDs[i] = starterCard().tokenID();
         }
 
-        batchMint(to, tokenIDs, quantities, "");
+        mintOneOfEach(tokenIDs, to);
     }
 
     function starterCard() private returns (Instance memory) {
@@ -923,15 +919,8 @@ contract PuzzleCard is ERC1155Tradable {
     }
 
     function replace(uint256[] memory tokenIDs, Instance memory newCard) private {
-        uint256[] memory quantities = new uint256[](tokenIDs.length);
-
-        for (uint8 i = 0; i < tokenIDs.length; i += 1) {
-          quantities[i] = 1;
-        }
-
-        batchBurn(_msgSender(), tokenIDs, quantities);
-
-        mint(_msgSender(), Conversion.tokenID(newCard), 1, "");
+        burnOneOfEach(tokenIDs, _msgSender());
+        mintOne(newCard.tokenID(), _msgSender());
     }
 
     bytes1 constant ASCII_SPACE = 0x20;

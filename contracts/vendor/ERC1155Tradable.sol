@@ -15,10 +15,11 @@ contract ProxyRegistry {
 }
 
 contract ERC1155Tradable is ContextMixin, ERC1155, NativeMetaTransaction, Ownable {
-  address proxyRegistryAddress;
-  mapping (uint256 => uint256) internal tokenSupply;
   string public name;
   string public symbol;
+  address proxyRegistryAddress;
+
+  mapping (uint256 => uint256) internal tokenSupply;
 
   constructor(string memory _name, string memory _symbol, address _proxyRegistryAddress) ERC1155("") {
       name = _name;
@@ -27,33 +28,35 @@ contract ERC1155Tradable is ContextMixin, ERC1155, NativeMetaTransaction, Ownabl
       _initializeEIP712(name);
   }
 
-  function totalSupply(uint256 _id) public view returns (uint256) {
-      return tokenSupply[_id];
+  function totalSupply(uint256 tokenID) public view returns (uint256) {
+      return tokenSupply[tokenID];
   }
 
-  function mint(address _to, uint256 _id, uint256 _quantity, bytes memory _data) virtual internal {
-      _mint(_to, _id, _quantity, _data);
-      tokenSupply[_id] += _quantity;
+  function mintOne(uint256 tokenID, address _to) virtual internal {
+      tokenSupply[tokenID] += 1;
+      _mint(_to, tokenID, 1, "");
   }
 
-  function batchMint(address _to, uint256[] memory _ids, uint256[] memory _quantities, bytes memory _data) internal {
-      for (uint256 i = 0; i < _ids.length; i++) {
-        uint256 _id = _ids[i];
-        uint256 quantity = _quantities[i];
-        tokenSupply[_id] += quantity;
+  function mintOneOfEach(uint256[] memory tokenIDs, address _to) internal {
+      uint256[] memory quantities = new uint256[](tokenIDs.length);
+
+      for (uint256 i = 0; i < tokenIDs.length; i += 1) {
+          quantities[i] = 1;
+          tokenSupply[tokenIDs[i]] += 1;
       }
 
-      _mintBatch(_to, _ids, _quantities, _data);
+      _mintBatch(_to, tokenIDs, quantities, "");
   }
 
-  function batchBurn(address _to, uint256[] memory _ids, uint256[] memory _quantities) internal {
-      for (uint256 i = 0; i < _ids.length; i++) {
-        uint256 _id = _ids[i];
-        uint256 quantity = _quantities[i];
-        tokenSupply[_id] -= quantity;
+  function burnOneOfEach(uint256[] memory tokenIDs, address _from) internal {
+      uint256[] memory quantities = new uint256[](tokenIDs.length);
+
+      for (uint256 i = 0; i < tokenIDs.length; i += 1) {
+          quantities[i] = 1;
+          tokenSupply[tokenIDs[i]] -= 1;
       }
 
-      _burnBatch(_to, _ids, _quantities);
+      _burnBatch(_from, tokenIDs, quantities);
   }
 
   // Override isApprovedForAll to whitelist user's OpenSea proxy accounts to enable gas-free listings.
