@@ -22,8 +22,6 @@ contract PuzzleCard is ERC1155Tradable {
         uint8 edition;
     }
 
-    mapping(uint256 => Instance) public cards;
-
     mapping(uint256 => uint256) public limitedEditions;
     mapping(uint256 => bool) public masterCopiesClaimed;
 
@@ -638,8 +636,8 @@ contract PuzzleCard is ERC1155Tradable {
         if (!ownsAll(tokenIDs))   { ok = false; r[1] = "[user doesn't own all the cards]"; }
         if (!ok)                  { return (ok, r, slots); } // Basic checks failed.
 
-        Instance memory card0 = cards[tokenIDs[0]];
-        Instance memory card1 = cards[tokenIDs[1]];
+        Instance memory card0 = tokenIDs[0].card();
+        Instance memory card1 = tokenIDs[1].card();
 
         bool artworkType = card0.type_ == ARTWORK_TYPE && card1.type_ == ARTWORK_TYPE;
         bool sameCardUsedTwice = tokenIDs[0] == tokenIDs[1];
@@ -720,7 +718,7 @@ contract PuzzleCard is ERC1155Tradable {
         bool allStarType = true;
 
         for (uint8 i = 0; i < 7; i += 1) {
-          Instance memory card = cards[tokenIDs[i]];
+          Instance memory card = tokenIDs[i].card();
           slots[i] = CardSlot(card, true);
 
           allStarType = allStarType && card.type_ == STAR_TYPE;
@@ -802,8 +800,8 @@ contract PuzzleCard is ERC1155Tradable {
         if (sameCardUsedTwice)            { ok = false; r[2] = "[the same card was used twice]"; }
         if (!ok)                          { return (ok, r, slots); } // Basic checks failed.
 
-        slots[0] = CardSlot(cards[tokenIDs[0]], true);
-        slots[1] = CardSlot(cards[tokenIDs[1]], true);
+        slots[0] = CardSlot(tokenIDs[0].card(), true);
+        slots[1] = CardSlot(tokenIDs[1].card(), true);
 
         return (ok, r, slots);
     }
@@ -874,7 +872,7 @@ contract PuzzleCard is ERC1155Tradable {
         CardSlot[] memory slots = new CardSlot[](3);
 
         for (uint8 i = 0; i < tokenIDs.length; i += 1) {
-          Instance memory card = cards[tokenIDs[i]];
+          Instance memory card = tokenIDs[i].card();
           slots[cardSlotPerType[card.type_]] = CardSlot(card, true);
         }
 
