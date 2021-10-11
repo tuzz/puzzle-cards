@@ -631,19 +631,18 @@ contract PuzzleCard is ERC1155Tradable {
 
         CardSlot[] memory slots = new CardSlot[](2);
 
-        if (tokenIDs.length != 2) { ok = false; r[0] = "[2 cards are required]"; }
-        if (!ownsAll(tokenIDs))   { ok = false; r[1] = "[user doesn't own all the cards]"; }
-        if (!ok)                  { return (ok, r, slots); } // Basic checks failed.
+        if (tokenIDs.length != 2)  { ok = false; r[0] = "[2 cards are required]"; }
+        if (!ownsAll(tokenIDs))    { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!ok)                   { return (ok, r, slots); } // Basic checks failed.
 
         Instance memory card0 = tokenIDs[0].card();
         Instance memory card1 = tokenIDs[1].card();
 
         bool artworkType = card0.type_ == ARTWORK_TYPE && card1.type_ == ARTWORK_TYPE;
-        bool sameCardUsedTwice = tokenIDs[0] == tokenIDs[1];
 
-        if (!artworkType)         { ok = false; r[2] = "[two artwork cards are required]"; }
-        if (sameCardUsedTwice)    { ok = false; r[3] = "[the same card was used twice]"; }
-        if (!ok)                  { return (ok, r, slots); } // Type checks failed.
+        if (!artworkType)          { ok = false; r[2] = "[two artwork cards are required]"; }
+        if (doubleSpent(tokenIDs)) { ok = false; r[3] = "[the same card was used twice]"; }
+        if (!ok)                   { return (ok, r, slots); } // Type checks failed.
 
         bool samePuzzle = card0.series == card1.series && card0.puzzle == card1.puzzle;
         bool standardEdition = card0.edition == STANDARD_EDITION && card1.edition == STANDARD_EDITION;
@@ -792,12 +791,12 @@ contract PuzzleCard is ERC1155Tradable {
         CardSlot[] memory slots = new CardSlot[](2);
 
         bool twoCards = tokenIDs.length == 2;
-        bool sameCardUsedTwice = twoCards && tokenIDs[0] == tokenIDs[1];
 
-        if (!twoCards)                    { ok = false; r[0] = "[2 cards are required]"; }
-        if (!ownsAll(tokenIDs))           { ok = false; r[1] = "[user doesn't own all the cards]"; }
-        if (sameCardUsedTwice)            { ok = false; r[2] = "[the same card was used twice]"; }
-        if (!ok)                          { return (ok, r, slots); } // Basic checks failed.
+        if (!twoCards)             { ok = false; r[0] = "[2 cards are required]"; }
+        if (!ownsAll(tokenIDs))    { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!ok)                   { return (ok, r, slots); } // Basic checks failed.
+
+        if (doubleSpent(tokenIDs)) { ok = false; r[2] = "[the same card was used twice]"; }
 
         slots[0] = CardSlot(tokenIDs[0].card(), true);
         slots[1] = CardSlot(tokenIDs[1].card(), true);
@@ -884,6 +883,10 @@ contract PuzzleCard is ERC1155Tradable {
         }
 
         return true;
+    }
+
+    function doubleSpent(uint256[] memory tokenIDs) private view returns (bool) {
+      return tokenIDs[0] == tokenIDs[1] && balanceOf(msg.sender, tokenIDs[0]) < 2;
     }
 
     function sameTier(CardSlot[] memory slots) private pure returns (bool) {

@@ -26,7 +26,17 @@ describe("Discard2Pickup1", () => {
       TestUtils.addHelpfulMethodsTo(contract);
     });
 
-    it("cannot be performed if the same card is used twice", async () => {
+    it("can be performed if two copies of the same card are used", async () => {
+      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+
+      const [isAllowed, reasons] = await contract.canDiscard2Pickup1([tokenID1, tokenID2]);
+
+      expect(isAllowed).to.equal(true);
+      expect(tokenID1).to.equal(tokenID2);
+    });
+
+    it("cannot be performed if the same card is used twice (double spent)", async () => {
       const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
 
       const [isAllowed, reasons] = await contract.canDiscard2Pickup1([tokenID1, tokenID1]);
