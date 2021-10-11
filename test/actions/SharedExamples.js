@@ -126,18 +126,25 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
       });
     }
 
-    it("discards the provided cards and mints a new one", async () => {
+    it("decrements the balance by 1 for the provided cards and mints a new card", async () => {
       const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
         contract.mintExactByNames(card, owner.address)
       ));
 
-      const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
-
-      for (const id of tokenIDs) {
-        expect(await contract.isDiscarded(id)).to.equal(true, `card ${id} wasn't discarded`);
+      for (const tokenID of tokenIDs) {
+        const balance = await contract.balanceOf(owner.address, tokenID);
+        expect(balance.toNumber()).to.equal(1);
       }
 
-      expect(await contract.isDiscarded(mintedTokenID)).to.equal(false, `a new card wasn't minted`);
+      const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
+
+      for (const tokenID of tokenIDs) {
+        const balance = await contract.balanceOf(owner.address, tokenID);
+        expect(balance.toNumber()).to.equal(0, `card ${tokenID} wasn't discarded`);
+      }
+
+      const balance = await contract.balanceOf(owner.address, mintedTokenID);
+      expect(balance.toNumber()).to.equal(1);
     });
 
     it("does not allow the cards to be used again once discarded", async () => {

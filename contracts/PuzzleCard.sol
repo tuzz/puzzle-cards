@@ -79,7 +79,6 @@ contract PuzzleCard is ERC1155Tradable {
     function priceToMint(uint256 numberOfCards) public view returns (uint256) { return currentPriceToMint * numberOfCards; }
     function baseTokenURI() public view returns (string memory) { return currentBaseTokenURI; }
     function tokenURI(uint256 tokenID) public view returns (string memory) { return string(abi.encodePacked(baseTokenURI(), slug(tokenID), ".json")); }
-    function isDiscarded(uint256 tokenID) public view returns (bool) { return !_exists(tokenID); }
 
     function slug(uint256 tokenID) public view returns (string memory) {
         return string(abi.encodePacked(
