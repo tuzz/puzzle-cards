@@ -861,14 +861,14 @@ contract PuzzleCard is ERC1155Tradable {
 
     function ownsAll(uint256[] memory tokenIDs) private view returns (bool) {
         for (uint8 i = 0; i < tokenIDs.length; i += 1) {
-            if (balanceOf(msg.sender, tokenIDs[i]) == 0) { return false; }
+            if (balanceOf(_msgSender(), tokenIDs[i]) == 0) { return false; }
         }
 
         return true;
     }
 
     function doubleSpent(uint256[] memory tokenIDs) private view returns (bool) {
-      return tokenIDs[0] == tokenIDs[1] && balanceOf(msg.sender, tokenIDs[0]) < 2;
+      return tokenIDs[0] == tokenIDs[1] && balanceOf(_msgSender(), tokenIDs[0]) < 2;
     }
 
     function sameTier(CardSlot[] memory slots) private pure returns (bool) {
@@ -929,9 +929,9 @@ contract PuzzleCard is ERC1155Tradable {
           quantities[i] = 1;
         }
 
-        batchBurn(msg.sender, tokenIDs, quantities);
+        batchBurn(_msgSender(), tokenIDs, quantities);
 
-        mint(msg.sender, Conversion.tokenID(newCard), 1, "");
+        mint(_msgSender(), Conversion.tokenID(newCard), 1, "");
     }
 
     bytes1 constant ASCII_SPACE = 0x20;
