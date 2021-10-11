@@ -2,14 +2,14 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
-const tokenID = TestUtils.tokenID;
+const { tokenID, baseCard } = TestUtils;
 
 describe("ChangeLensColor", () => {
-  const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const cloakCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Cloak", color1: "Red", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const torchCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Torch", color1: "Blue", color2: "Green", variant: "None", condition: "Excellent", edition: "Standard" };
-  const glassesCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Glasses", color1: "Blue", color2: "Green", variant: "None", condition: "Excellent", edition: "Standard" };
-  const inactiveCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Inactive", color1: "Red", color2: "None", variant: "Sun", condition: "Excellent", edition: "Standard" };
+  const playerCard = { ...baseCard, type: "Player" };
+  const cloakCard = { ...baseCard, type: "Cloak", color1: "Red" };
+  const torchCard = { ...baseCard, type: "Torch", color1: "Blue", color2: "Green" };
+  const glassesCard = { ...baseCard, type: "Glasses", color1: "Blue", color2: "Green" };
+  const inactiveCard = { ...baseCard, type: "Inactive", color1: "Red", variant: "Sun" };
 
   itBehavesLikeAnAction("changeLensColor", [cloakCard, torchCard, inactiveCard], [["Player", "Crab", "Cloak"], ["Torch", "Glasses"], ["Inactive"]], "Mortal");
 

@@ -2,12 +2,12 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
-const tokenID = TestUtils.tokenID;
+const { tokenID, baseCard } = TestUtils;
 
 describe("ActivateSunOrMoon", () => {
-  const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const cloakCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Cloak", color1: "Black", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const inactiveCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Inactive", color1: "Black", color2: "None", variant: "Sun", condition: "Excellent", edition: "Standard" };
+  const playerCard = { ...baseCard, type: "Player" };
+  const cloakCard = { ...baseCard, type: "Cloak", color1: "Black" };
+  const inactiveCard = { ...baseCard, type: "Inactive", color1: "Black", variant: "Sun" };
 
   itBehavesLikeAnAction("activateSunOrMoon", [cloakCard, inactiveCard], [["Player", "Crab", "Cloak"], ["Inactive"]], "Mortal");
 

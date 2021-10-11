@@ -29,8 +29,8 @@ describe("MintingRandomly", () => {
       const seriesNames = await mapTokenIDs(tokenIDs, contract.seriesName);
       const frequencies = TestUtils.tallyFrequencies(seriesNames);
 
-      expect(frequencies["None"]).to.be.within(0.47, 0.53);     // 50%
-      expect(frequencies["Teamwork"]).to.be.within(0.47, 0.53); // 50%
+      expect(frequencies["Series 0"]).to.be.within(0.47, 0.53); // 50%
+      expect(frequencies["Series 1"]).to.be.within(0.47, 0.53); // 50%
     });
   });
 
@@ -41,12 +41,12 @@ describe("MintingRandomly", () => {
       const puzzleNames = await mapTokenIDsBySeries(tokenIDs, contract.puzzleName);
       const frequencies = TestUtils.tallyFrequenciesInGroups(puzzleNames);
 
-      expect(frequencies["None"]["Trial of Skill"]).to.be.within(0.47, 0.53); // 50%
-      expect(frequencies["None"]["Trial of Reign"]).to.be.within(0.47, 0.53); // 50%
+      expect(frequencies["Series 0"]["Puzzle 0-0"]).to.be.within(0.47, 0.53); // 50%
+      expect(frequencies["Series 0"]["Puzzle 0-1"]).to.be.within(0.47, 0.53); // 50%
 
-      expect(frequencies["Teamwork"]["1"]).to.be.within(0.303, 0.366); // 33.3%
-      expect(frequencies["Teamwork"]["2"]).to.be.within(0.303, 0.366); // 33.3%
-      expect(frequencies["Teamwork"]["3"]).to.be.within(0.303, 0.366); // 33.3%
+      expect(frequencies["Series 1"]["Puzzle 1-0"]).to.be.within(0.303, 0.366); // 33.3%
+      expect(frequencies["Series 1"]["Puzzle 1-1"]).to.be.within(0.303, 0.366); // 33.3%
+      expect(frequencies["Series 1"]["Puzzle 1-2"]).to.be.within(0.303, 0.366); // 33.3%
     });
   });
 

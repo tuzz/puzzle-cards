@@ -1,27 +1,27 @@
 const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("./test_utils/TestUtils");
-const tokenID = TestUtils.tokenID;
+const { tokenID, baseCard } = TestUtils;
 
 describe("Actions", () => {
-  const playerCard     = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const crabCard       = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Crab", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const inactiveCard   = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Inactive", color1: "Red", color2: "None", variant: "Sun", condition: "Excellent", edition: "Standard" };
-  const activeCard     = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Active", color1: "Red", color2: "None", variant: "Sun", condition: "Excellent", edition: "Standard" };
-  const cloakCard      = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Cloak", color1: "Red", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const telescopeCard  = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Telescope", color1: "Red", color2: "None", variant: "Sun", condition: "Excellent", edition: "Standard" };
-  const helixCard      = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Helix", color1: "Red", color2: "Green", variant: "None", condition: "Excellent", edition: "Standard" };
-  const torchCard      = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Torch", color1: "Red", color2: "Green", variant: "None", condition: "Excellent", edition: "Standard" };
-  const beaconCard     = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Beacon", color1: "Green", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const mapCard        = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Map", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const teleportCard   = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Teleport", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const glassesCard    = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Glasses", color1: "Red", color2: "Green", variant: "None", condition: "Excellent", edition: "Standard" };
-  const eclipseCard    = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Eclipse", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const openDoorCard   = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Door", color1: "None", color2: "None", variant: "Open", condition: "Excellent", edition: "Standard" };
-  const closedDoorCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Door", color1: "None", color2: "None", variant: "Closed", condition: "Excellent", edition: "Standard" };
-  const hiddenCard     = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Hidden", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const starCard       = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Star", color1: "Red", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const artworkCard    = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Artwork", color1: "None", color2: "None", variant: "Art1", condition: "Excellent", edition: "Standard" };
+  const playerCard     = { ...baseCard, type: "Player" };
+  const crabCard       = { ...baseCard, type: "Crab" };
+  const inactiveCard   = { ...baseCard, type: "Inactive", color1: "Red", variant: "Sun" };
+  const activeCard     = { ...baseCard, type: "Active", color1: "Red", variant: "Sun" };
+  const cloakCard      = { ...baseCard, type: "Cloak", color1: "Red" };
+  const telescopeCard  = { ...baseCard, type: "Telescope", color1: "Red", variant: "Sun" };
+  const helixCard      = { ...baseCard, type: "Helix", color1: "Red", color2: "Green" };
+  const torchCard      = { ...baseCard, type: "Torch", color1: "Red", color2: "Green" };
+  const beaconCard     = { ...baseCard, type: "Beacon", color1: "Green" };
+  const mapCard        = { ...baseCard, type: "Map" };
+  const teleportCard   = { ...baseCard, type: "Teleport" };
+  const glassesCard    = { ...baseCard, type: "Glasses", color1: "Red", color2: "Green" };
+  const eclipseCard    = { ...baseCard, type: "Eclipse" };
+  const openDoorCard   = { ...baseCard, type: "Door", variant: "Open" };
+  const closedDoorCard = { ...baseCard, type: "Door", variant: "Closed" };
+  const hiddenCard     = { ...baseCard, type: "Hidden" };
+  const starCard       = { ...baseCard, type: "Star", color1: "Red" };
+  const artworkCard    = { ...baseCard, type: "Artwork", variant: "Art 1" };
 
   const allCards = [playerCard, crabCard, inactiveCard, activeCard, cloakCard, telescopeCard, helixCard, torchCard, beaconCard, mapCard, teleportCard, glassesCard, eclipseCard, openDoorCard, closedDoorCard, hiddenCard, starCard, artworkCard];
 

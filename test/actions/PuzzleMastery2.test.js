@@ -2,16 +2,16 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
-const tokenID = TestUtils.tokenID;
+const { tokenID, baseCard } = TestUtils;
 
 describe("PuzzleMastery2", () => {
-  const starCard1 = { series: "Teamwork", puzzle: "1", tier: "Master", type: "Star", color1: "Red", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const starCard2 = { series: "Teamwork", puzzle: "1", tier: "Master", type: "Star", color1: "Green", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const starCard3 = { series: "Teamwork", puzzle: "1", tier: "Master", type: "Star", color1: "Blue", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const starCard4 = { series: "Teamwork", puzzle: "1", tier: "Master", type: "Star", color1: "Yellow", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const starCard5 = { series: "Teamwork", puzzle: "2", tier: "Master", type: "Star", color1: "Pink", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const starCard6 = { series: "Teamwork", puzzle: "2", tier: "Master", type: "Star", color1: "White", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const starCard7 = { series: "None", puzzle: "Trial of Skill", tier: "Master", type: "Star", color1: "Black", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
+  const starCard1 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Red" };
+  const starCard2 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Green" };
+  const starCard3 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Blue" };
+  const starCard4 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Yellow" };
+  const starCard5 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-1", tier: "Master", color1: "Pink" };
+  const starCard6 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-1", tier: "Master", color1: "White" };
+  const starCard7 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-2", tier: "Master", color1: "Black" };
 
   const validCards = [starCard1, starCard2, starCard3, starCard4, starCard5, starCard6, starCard7];
   const validTypes = [["Star"], ["Star"], ["Star"], ["Star"], ["Star"], ["Star"], ["Star"]];
@@ -63,7 +63,7 @@ describe("PuzzleMastery2", () => {
       expect(type).to.equal("Artwork");
       expect(color1).to.equal("None");
       expect(color2).to.equal("None");
-      expect(["Art1", "Art2"]).to.include(variant);
+      expect(["Art 0", "Art 1"]).to.include(variant);
     });
 
     it("randomly chooses the puzzle from one of the star cards", async () => {
@@ -84,9 +84,9 @@ describe("PuzzleMastery2", () => {
 
       const frequencies = TestUtils.tallyFrequencies(puzzleNames);
 
-      expect(frequencies[["Teamwork", "1"]]).to.be.within(0.5, 0.65);          // 57.1%
-      expect(frequencies[["Teamwork", "2"]]).to.be.within(0.2, 0.35);          // 28.6%
-      expect(frequencies[["None", "Trial of Skill"]]).to.be.within(0.08, 0.2); // 14.3%
+      expect(frequencies[["Series 1", "Puzzle 1-0"]]).to.be.within(0.5, 0.65); // 57.1%
+      expect(frequencies[["Series 1", "Puzzle 1-1"]]).to.be.within(0.2, 0.35); // 28.6%
+      expect(frequencies[["Series 1", "Puzzle 1-2"]]).to.be.within(0.08, 0.2); // 14.3%
     });
 
     context("when all star cards are pristine", () => {
@@ -131,7 +131,7 @@ describe("PuzzleMastery2", () => {
 
         for (let i = 0; i < 200; i += 1) {
           const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address)
+            contract.mintExactByNames({ ...card, puzzle: "Puzzle 1-1" }, owner.address)
           ));
 
           const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
@@ -150,7 +150,7 @@ describe("PuzzleMastery2", () => {
 
         for (let i = 0; i < 100; i += 1) {
           const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address)
+            contract.mintExactByNames({ ...card, puzzle: "Puzzle 1-1" }, owner.address)
           ));
 
           const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
@@ -169,50 +169,50 @@ describe("PuzzleMastery2", () => {
       it("provides methods to get the number of limited edition cards per puzzle", async () => {
         for (let i = 0; i < 200; i += 1) {
           const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address)
+            contract.mintExactByNames({ ...card, puzzle: "Puzzle 1-1" }, owner.address)
           ));
 
           await contract.puzzleMastery2(tokenIDs);
         }
 
-        const puzzleIndex = TestUtils.puzzleNames.indexOf("1");
+        const puzzleIndex = TestUtils.puzzleNames.indexOf("Puzzle 1-1");
 
         const [series, puzzle] = await contract.puzzleForIndex(puzzleIndex);
         const numLimited = await contract.numLimitedEditions(series, puzzle);
         const allLimited = await contract.numLimitedEditionsForAllPuzzles();
 
         expect(numLimited.toString()).to.equal("10");
-        expect(allLimited.map(n => n.toString())).to.deep.equal(["0", "0", "10", "0", "0"]);
+        expect(allLimited.map(n => n.toString())).to.deep.equal(["0", "0", "0", "10", "0"]);
       });
 
       it("provides methods to get whether the master copy has been claimed per puzzle", async () => {
         for (let i = 0; i < 50; i += 1) {
           const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address)
+            contract.mintExactByNames({ ...card, puzzle: "Puzzle 1-1" }, owner.address)
           ));
 
           await contract.puzzleMastery2(tokenIDs);
         }
 
-        const puzzleIndex = TestUtils.puzzleNames.indexOf("1");
+        const puzzleIndex = TestUtils.puzzleNames.indexOf("Puzzle 1-1");
 
         const [series, puzzle] = await contract.puzzleForIndex(puzzleIndex);
         const isClaimed = await contract.masterCopyClaimed(series, puzzle);
         const allClaimed = await contract.masterCopyClaimedForAllPuzzles();
 
         expect(isClaimed).to.equal(true);
-        expect(allClaimed).to.deep.equal([false, false, true, false, false]);
+        expect(allClaimed).to.deep.equal([false, false, false, true, false]);
       });
 
       it("can mint limited editions and the master copy again if others are discarded", async () => {
-        const puzzleIndex = TestUtils.puzzleNames.indexOf("1");
+        const puzzleIndex = TestUtils.puzzleNames.indexOf("Puzzle 1-1");
         const [series, puzzle] = await contract.puzzleForIndex(puzzleIndex);
 
         const mintedTokenIDs = [];
 
         for (let i = 0; i < 200; i += 1) {
           const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address)
+            contract.mintExactByNames({ ...card, puzzle: "Puzzle 1-1" }, owner.address)
           ));
 
           mintedTokenIDs.push(await tokenID(contract.puzzleMastery2(tokenIDs)));
@@ -241,7 +241,7 @@ describe("PuzzleMastery2", () => {
         // Mint another 100 cards.
         for (let i = 0; i < 100; i += 1) {
           const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, series: "Teamwork", puzzle: "1" }, owner.address)
+            contract.mintExactByNames({ ...card, puzzle: "Puzzle 1-1" }, owner.address)
           ));
 
           await contract.puzzleMastery2(tokenIDs);

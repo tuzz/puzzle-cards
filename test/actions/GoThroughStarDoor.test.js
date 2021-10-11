@@ -2,11 +2,11 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
-const tokenID = TestUtils.tokenID;
+const { tokenID, baseCard } = TestUtils;
 
 describe("GoThroughStarDoor", () => {
-  const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const doorCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Door", color1: "None", color2: "None", variant: "Open", condition: "Excellent", edition: "Standard" };
+  const playerCard = { ...baseCard, type: "Player" };
+  const doorCard = { ...baseCard, type: "Door", variant: "Open" };
 
   itBehavesLikeAnAction("goThroughStarDoor", [playerCard, doorCard], [["Player"], ["Door"]], "Immortal");
   itMintsATierStarterCard("goThroughStarDoor", [playerCard, doorCard], true);

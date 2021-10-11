@@ -2,13 +2,13 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
-const tokenID = TestUtils.tokenID;
+const { tokenID, baseCard } = TestUtils;
 
 describe("JumpIntoBeacon", () => {
-  const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const torchCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Torch", color1: "Red", color2: "Green", variant: "None", condition: "Excellent", edition: "Standard" };
-  const glassesCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Glasses", color1: "Red", color2: "Green", variant: "None", condition: "Excellent", edition: "Standard" };
-  const beaconCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Beacon", color1: "Blue", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
+  const playerCard = { ...baseCard, type: "Player" };
+  const torchCard = { ...baseCard, type: "Torch", color1: "Red", color2: "Green" };
+  const glassesCard = { ...baseCard, type: "Glasses", color1: "Red", color2: "Green" };
+  const beaconCard = { ...baseCard, type: "Beacon", color1: "Blue" };
 
   itBehavesLikeAnAction("jumpIntoBeacon", [playerCard, torchCard, beaconCard], [["Player"], ["Torch", "Glasses"], ["Beacon"]], "Mortal");
 

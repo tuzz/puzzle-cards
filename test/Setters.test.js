@@ -44,10 +44,10 @@ describe("Setters", () => {
 
   describe("#setPuzzleNames", () => {
     it("allows the contract owner to update puzzle names, e.g. when new puzzles are added", async () => {
-      const seriesNames = ["None", "Teamwork", "Mutual Exclusion"];
-      const puzzleNames = ["Trial of Skill", "Trial of Reign", "1", "2", "3", "4", "1"];
-      const numPuzzlesPerSeries = [2, 4, 1];
-      const puzzleOffsetPerSeries = [0, 2, 6];
+      const seriesNames = ["Series 0", "Series 1", "Series 2"];
+      const puzzleNames = ["Puzzle 0-0", "Puzzle 0-1", "Puzzle 1-0", "Puzzle 1-1", "Puzzle 1-2", "Puzzle 1-3", "Puzzle 2-0"];
+      const numPuzzlesPerSeries = [2, 4, 1];                                                 //       ^             ^
+      const puzzleOffsetPerSeries = [0, 2, 6];                                               //   These puzzles were added.
 
       await contract.setPuzzleNames(seriesNames, puzzleNames, numPuzzlesPerSeries, puzzleOffsetPerSeries);
       const tokenIDs = await TestUtils.batchTokenIDs(contract.gift(100, owner.address));
@@ -61,8 +61,8 @@ describe("Setters", () => {
         names.push([seriesName, puzzleName]);
       }
 
-      expect(names).to.deep.include(["Teamwork", "4"]);
-      expect(names).to.deep.include(["Mutual Exclusion", "1"]);
+      expect(names).to.deep.include(["Series 1", "Puzzle 1-3"]);
+      expect(names).to.deep.include(["Series 2", "Puzzle 2-0"]);
     });
 
     it("does not allow other users to update puzzle names", async () => {

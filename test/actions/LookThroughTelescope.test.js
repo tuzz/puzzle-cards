@@ -2,12 +2,12 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
-const tokenID = TestUtils.tokenID;
+const { tokenID, baseCard } = TestUtils;
 
 describe("LookThroughTelescope", () => {
-  const playerCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Player", color1: "None", color2: "None", variant: "None", condition: "Excellent", edition: "Standard" };
-  const telescopeCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Telescope", color1: "Black", color2: "None", variant: "Sun", condition: "Excellent", edition: "Standard" };
-  const activeCard = { series: "Teamwork", puzzle: "2", tier: "Mortal", type: "Active", color1: "Black", color2: "None", variant: "Sun", condition: "Excellent", edition: "Standard" };
+  const playerCard = { ...baseCard, type: "Player" };
+  const telescopeCard = { ...baseCard, type: "Telescope", color1: "Black", variant: "Sun" };
+  const activeCard = { ...baseCard, type: "Active", color1: "Black", variant: "Sun" };
 
   itBehavesLikeAnAction("lookThroughTelescope", [playerCard, telescopeCard, activeCard], [["Player"], ["Telescope"], ["Active"]], "Mortal");
 

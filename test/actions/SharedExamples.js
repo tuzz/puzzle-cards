@@ -419,8 +419,8 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
 
         const frequencies = TestUtils.tallyFrequencies(variantNames);
 
-        expect(frequencies["Art1"]).to.be.within(0.45, 0.55); // 50%
-        expect(frequencies["Art2"]).to.be.within(0.45, 0.55); // 50%
+        expect(frequencies["Art 0"]).to.be.within(0.45, 0.55); // 50%
+        expect(frequencies["Art 1"]).to.be.within(0.45, 0.55); // 50%
       });
     }
   });

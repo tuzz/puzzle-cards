@@ -4,6 +4,17 @@ TestUtils.addHelpfulMethodsTo = (contract) => {
   contract.mintExactByNames = TestUtils.mintExactByNames(contract);
 };
 
+TestUtils.baseCard = {
+  series: "Series 1",
+  puzzle: "Puzzle 1-2",
+  tier: "Mortal",
+  color1: "None",
+  color2: "None",
+  variant: "None",
+  condition: "Excellent",
+  edition: "Standard",
+};
+
 TestUtils.mintExactByNames = (contract) => async ({ series, puzzle, tier, type, type_, color1, color2, variant, condition, edition }, toAddress) => {
   if (!TestUtils.arraysRead) { await TestUtils.readArrays(contract); }
 

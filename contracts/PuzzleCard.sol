@@ -25,12 +25,12 @@ contract PuzzleCard is ERC1155Tradable {
     mapping(uint256 => uint256) public limitedEditions;
     mapping(uint256 => bool) public masterCopiesClaimed;
 
-    string[] public seriesNames = ["None", "Teamwork"];
-    string[] public puzzleNames = ["Trial of Skill", "Trial of Reign", "1", "2", "3"];
+    string[] public seriesNames = ["Series 0", "Series 1"];
+    string[] public puzzleNames = ["Puzzle 0-0", "Puzzle 0-1", "Puzzle 1-0", "Puzzle 1-1", "Puzzle 1-2"];
     string[] public tierNames = ["Mortal", "Immortal", "Ethereal", "Virtual", "Celestial", "Godly", "Master"];
     string[] public typeNames = ["Player", "Crab", "Inactive", "Active", "Cloak", "Telescope", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Door", "Hidden", "Star", "Artwork"];
     string[] public colorNames = ["None", "Yellow", "Black", "Green", "White", "Blue", "Red", "Pink"];
-    string[] public variantNames = ["None", "Sun", "Moon", "Open", "Closed", "Art1", "Art2"];
+    string[] public variantNames = ["None", "Sun", "Moon", "Open", "Closed", "Art 0", "Art 1"];
     string[] public conditionNames = ["Dire", "Poor", "Reasonable", "Excellent", "Pristine"];
     string[] public editionNames = ["Standard", "Signed", "Limited", "Master Copy"];
     string[] public actionNames = ["activateSunOrMoon", "changeLensColor", "discard2Pickup1", "goThroughStarDoor", "jumpIntoBeacon", "jumpIntoEclipse", "lookThroughGlasses", "lookThroughTelescope", "puzzleMastery1", "puzzleMastery2", "shineTorchOnBasePair", "teleportToNextArea"];

@@ -2,11 +2,11 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
-const tokenID = TestUtils.tokenID;
+const { tokenID, baseCard } = TestUtils;
 
 describe("PuzzleMastery1", () => {
-  const artworkCard1 = { series: "Teamwork", puzzle: "2", tier: "Master", type: "Artwork", color1: "None", color2: "None", variant: "Art1", condition: "Excellent", edition: "Standard" };
-  const artworkCard2 = { series: "Teamwork", puzzle: "2", tier: "Master", type: "Artwork", color1: "None", color2: "None", variant: "Art2", condition: "Excellent", edition: "Standard" };
+  const artworkCard1 = { ...baseCard, type: "Artwork", variant: "Art 0" };
+  const artworkCard2 = { ...baseCard, type: "Artwork", variant: "Art 1" };
 
   itBehavesLikeAnAction("puzzleMastery1", [artworkCard1, artworkCard2], [["Artwork"], ["Artwork"]], "Master", { skipSameTierTest: true });
 
@@ -24,8 +24,8 @@ describe("PuzzleMastery1", () => {
     });
 
     it("cannot be performed if the puzzles don't match", async () => {
-      const tokenID1 = await tokenID(contract.mintExactByNames(artworkCard1, owner.address));
-      const tokenID2 = await tokenID(contract.mintExactByNames({ ...artworkCard2, puzzle: "1" }, owner.address));
+      const tokenID1 = await tokenID(contract.mintExactByNames({ ...artworkCard1, puzzle: "Puzzle 1-0" }, owner.address));
+      const tokenID2 = await tokenID(contract.mintExactByNames({ ...artworkCard2, puzzle: "Puzzle 1-1" }, owner.address));
 
       const [isAllowed, reasons] = await contract.canPuzzleMastery1([tokenID1, tokenID2]);
 
