@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "./PuzzleCard.sol";
+import "../PuzzleCard.sol";
 
 library Conversion {
     function tokenID(PuzzleCard.Instance memory card) internal pure returns (uint256) {
