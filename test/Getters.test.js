@@ -24,30 +24,10 @@ describe("Getters", () => {
     });
   });
 
-  describe("#baseTokenURI", () => {
+  describe("#uri", () => {
     it("returns the URL of the off-chain API for the puzzle cards", async () => {
-      const baseTokenURI = await contract.baseTokenURI();
-      expect(baseTokenURI).to.equal("https://example.com/api/");
-    });
-  });
-
-  describe("#slug", () => {
-    it("lowercases the attribute names", async () => {
-      const tokenIDs = await TestUtils.batchTokenIDs(contract.gift(10, owner.address));
-
-      for (const tokenID of tokenIDs) {
-        const slug = await contract.slug(tokenID);
-        expect(slug).to.equal(slug.toLowerCase());
-      }
-    });
-
-    it("replaces spaces in attribute names with dashes", async () => {
-      const tokenIDs = await TestUtils.batchTokenIDs(contract.gift(10, owner.address));
-
-      for (const tokenID of tokenIDs) {
-        const slug = await contract.slug(tokenID);
-        expect(slug).to.equal(slug.replaceAll(" ", "-"));
-      }
+      const metadataURI = await contract.uri(0);
+      expect(metadataURI).to.equal("https://example.com/api/{}.json");
     });
   });
 });

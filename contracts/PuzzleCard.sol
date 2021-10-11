@@ -50,12 +50,11 @@ contract PuzzleCard is ERC1155Tradable {
     uint256[] public masterTypeProbabilities = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
     uint256 public currentPriceToMint;
-    string public currentBaseTokenURI;
     uint256 public randomCallCount = 0;
 
     constructor(address proxyAddress) ERC1155Tradable("PuzzleCard", "WSUN", proxyAddress) {
         setPriceToMint(uint256(0.1 * 0.7883 * 1000000000000000000)); // $0.10 in Polygon Wei.
-        setBaseTokenURI("https://4cc8-2a02-6b6c-60-0-cdb2-1b9f-aa0f-454f.ngrok.io/api/");
+        setMetadataURI("https://worship-the-sun-puzzle-cards.github.io/api/{id}.json");
     }
 
     // getters
@@ -77,22 +76,6 @@ contract PuzzleCard is ERC1155Tradable {
     function masterCopyClaimedForAllPuzzles() public view returns (bool[] memory) { return _masterCopyClaimedForAllPuzzles(); }
 
     function priceToMint(uint256 numberOfCards) public view returns (uint256) { return currentPriceToMint * numberOfCards; }
-    function baseTokenURI() public view returns (string memory) { return currentBaseTokenURI; }
-    function tokenURI(uint256 tokenID) public view returns (string memory) { return string(abi.encodePacked(baseTokenURI(), slug(tokenID), ".json")); }
-
-    function slug(uint256 tokenID) public view returns (string memory) {
-        return string(abi.encodePacked(
-          dasherize(lowercase(seriesName(tokenID))), "-",
-          dasherize(lowercase(puzzleName(tokenID))), "-",
-          dasherize(lowercase(tierName(tokenID))), "-",
-          dasherize(lowercase(typeName(tokenID))), "-",
-          dasherize(lowercase(color1Name(tokenID))), "-",
-          dasherize(lowercase(color2Name(tokenID))), "-",
-          dasherize(lowercase(variantName(tokenID))), "-",
-          dasherize(lowercase(conditionName(tokenID))), "-",
-          dasherize(lowercase(editionName(tokenID)))
-        ));
-    }
 
     function actionsThatCanBeTaken(uint256[] memory tokenIDs) public view returns (string[] memory) {
         string[] memory names = new string[](actionNames.length);
@@ -116,7 +99,7 @@ contract PuzzleCard is ERC1155Tradable {
     // setters
 
     function setPriceToMint(uint256 newPrice) public onlyOwner { currentPriceToMint = newPrice; }
-    function setBaseTokenURI(string memory newURI) public onlyOwner { currentBaseTokenURI = newURI; }
+    function setMetadataURI(string memory newURI) public onlyOwner { _setURI(newURI); }
 
     // Be very careful not to invalidate existing cards when calling these methods.
     // The arrays must be append only and not reorder or remove puzzles.
@@ -271,7 +254,6 @@ contract PuzzleCard is ERC1155Tradable {
             block.timestamp,
             block.difficulty,
             proxyRegistryAddress,
-            currentBaseTokenURI,
             randomCallCount++
         )));
     }
@@ -950,32 +932,6 @@ contract PuzzleCard is ERC1155Tradable {
         batchBurn(msg.sender, tokenIDs, quantities);
 
         mint(msg.sender, Conversion.tokenID(newCard), 1, "");
-    }
-
-    function dasherize(string memory string_) private pure returns (string memory) {
-        bytes memory bytes_ = bytes(string_);
-
-        for (uint256 i = 0; i < bytes_.length; i += 1) {
-            if (bytes_[i] == ASCII_SPACE) {
-                bytes_[i] = ASCII_DASH;
-            }
-        }
-
-        return string(bytes_);
-    }
-
-    function lowercase(string memory string_) private pure returns (string memory) {
-        bytes memory bytes_ = bytes(string_);
-
-        for (uint256 i = 0; i < bytes_.length; i += 1) {
-            bytes1 b = bytes_[i];
-
-            if (b >= ASCII_CAPITAL_A && b <= ASCII_CAPITAL_Z) {
-                bytes_[i] = bytes1(uint8(bytes_[i]) + ASCII_TO_LOWERCASE);
-            }
-        }
-
-        return string(bytes_);
     }
 
     bytes1 constant ASCII_SPACE = 0x20;

@@ -28,17 +28,17 @@ describe("Setters", () => {
     });
   });
 
-  describe("#setBaseTokenURI", () => {
+  describe("#setMetadataURI", () => {
     it("allows the contract owner to set the URL of the off-chain API", async () => {
-      await contract.setBaseTokenURI("https://foo.com/api/");
+      await contract.setMetadataURI("https://foo.com/api/{}.json");
 
-      const baseTokenURI = await contract.baseTokenURI();
-      expect(baseTokenURI).to.equal("https://foo.com/api/");
+      const metadataURI = await contract.uri(0);
+      expect(metadataURI).to.equal("https://foo.com/api/{}.json");
     });
 
     it("does not allow other users to set the price", async () => {
       const contractAsUser1 = contract.connect(user1);
-      await expectRevert.unspecified(contractAsUser1.setBaseTokenURI("https://foo.com/api"));
+      await expectRevert.unspecified(contractAsUser1.setMetadataURI("https://foo.com/api/{}.json"));
     });
   });
 
