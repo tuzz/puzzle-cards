@@ -2,26 +2,27 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("./test_utils/TestUtils");
 const { tokenID, baseCard } = TestUtils;
+const PuzzleCard = require("../contracts/PuzzleCard");
 
 describe("Actions", () => {
-  const playerCard     = { ...baseCard, type: "Player" };
-  const crabCard       = { ...baseCard, type: "Crab" };
-  const inactiveCard   = { ...baseCard, type: "Inactive", color1: "Red", variant: "Sun" };
-  const activeCard     = { ...baseCard, type: "Active", color1: "Red", variant: "Sun" };
-  const cloakCard      = { ...baseCard, type: "Cloak", color1: "Red" };
-  const telescopeCard  = { ...baseCard, type: "Telescope", color1: "Red", variant: "Sun" };
-  const helixCard      = { ...baseCard, type: "Helix", color1: "Red", color2: "Green" };
-  const torchCard      = { ...baseCard, type: "Torch", color1: "Red", color2: "Green" };
-  const beaconCard     = { ...baseCard, type: "Beacon", color1: "Green" };
-  const mapCard        = { ...baseCard, type: "Map" };
-  const teleportCard   = { ...baseCard, type: "Teleport" };
-  const glassesCard    = { ...baseCard, type: "Glasses", color1: "Red", color2: "Green" };
-  const eclipseCard    = { ...baseCard, type: "Eclipse" };
-  const openDoorCard   = { ...baseCard, type: "Door", variant: "Open" };
-  const closedDoorCard = { ...baseCard, type: "Door", variant: "Closed" };
-  const hiddenCard     = { ...baseCard, type: "Hidden" };
-  const starCard       = { ...baseCard, type: "Star", color1: "Red" };
-  const artworkCard    = { ...baseCard, type: "Artwork", variant: "Art 1" };
+  const playerCard     = new PuzzleCard({ ...baseCard, type: "Player" });
+  const crabCard       = new PuzzleCard({ ...baseCard, type: "Crab" });
+  const inactiveCard   = new PuzzleCard({ ...baseCard, type: "Inactive", color1: "Red", variant: "Sun" });
+  const activeCard     = new PuzzleCard({ ...baseCard, type: "Active", color1: "Red", variant: "Sun" });
+  const cloakCard      = new PuzzleCard({ ...baseCard, type: "Cloak", color1: "Red" });
+  const telescopeCard  = new PuzzleCard({ ...baseCard, type: "Telescope", color1: "Red", variant: "Sun" });
+  const helixCard      = new PuzzleCard({ ...baseCard, type: "Helix", color1: "Red", color2: "Green" });
+  const torchCard      = new PuzzleCard({ ...baseCard, type: "Torch", color1: "Red", color2: "Green" });
+  const beaconCard     = new PuzzleCard({ ...baseCard, type: "Beacon", color1: "Green" });
+  const mapCard        = new PuzzleCard({ ...baseCard, type: "Map" });
+  const teleportCard   = new PuzzleCard({ ...baseCard, type: "Teleport" });
+  const glassesCard    = new PuzzleCard({ ...baseCard, type: "Glasses", color1: "Red", color2: "Green" });
+  const eclipseCard    = new PuzzleCard({ ...baseCard, type: "Eclipse" });
+  const openDoorCard   = new PuzzleCard({ ...baseCard, type: "Door", variant: "Open" });
+  const closedDoorCard = new PuzzleCard({ ...baseCard, type: "Door", variant: "Closed" });
+  const hiddenCard     = new PuzzleCard({ ...baseCard, type: "Hidden" });
+  const starCard       = new PuzzleCard({ ...baseCard, type: "Star", color1: "Red" });
+  const artworkCard    = new PuzzleCard({ ...baseCard, type: "Artwork", variant: "Art 1" });
 
   const allCards = [playerCard, crabCard, inactiveCard, activeCard, cloakCard, telescopeCard, helixCard, torchCard, beaconCard, mapCard, teleportCard, glassesCard, eclipseCard, openDoorCard, closedDoorCard, hiddenCard, starCard, artworkCard];
 
@@ -34,7 +35,7 @@ describe("Actions", () => {
 
   beforeEach(async () => {
     contract = await factory.deploy(constants.ZERO_ADDRESS);
-    TestUtils.addHelpfulMethodsTo(contract);
+    PuzzleCard.setContract(contract);
   });
 
   it("can get a list of all actions that can be taken for a given card combination", async () => {
@@ -43,10 +44,10 @@ describe("Actions", () => {
     // Find all actions that can be taken with two-card combinations.
     for (let i = 0; i < allCards.length; i += 1) {
       for (let j = i; j < allCards.length; j += 1) {
-        const tokenID1 = await tokenID(contract.mintExactByNames(allCards[i], owner.address));
-        const tokenID2 = await tokenID(contract.mintExactByNames(allCards[j], owner.address));
+        await PuzzleCard.mintExact(allCards[i], owner.address);
+        await PuzzleCard.mintExact(allCards[j], owner.address);
 
-        const actionNames = await contract.actionsThatCanBeTaken([tokenID1, tokenID2]);
+        const actionNames = await PuzzleCard.actionsThatCanBeTaken([allCards[i], allCards[j]]);
 
         for (const actionName of actionNames) {
           if (actionName === "") { continue; }
@@ -61,11 +62,11 @@ describe("Actions", () => {
     for (let i = 0; i < allCards.length; i += 1) {
       for (let j = i; j < allCards.length; j += 1) {
         for (let k = j; k < allCards.length; k += 1) {
-          const tokenID1 = await tokenID(contract.mintExactByNames(allCards[i], owner.address));
-          const tokenID2 = await tokenID(contract.mintExactByNames(allCards[j], owner.address));
-          const tokenID3 = await tokenID(contract.mintExactByNames(allCards[k], owner.address));
+          await PuzzleCard.mintExact(allCards[i], owner.address);
+          await PuzzleCard.mintExact(allCards[j], owner.address);
+          await PuzzleCard.mintExact(allCards[k], owner.address);
 
-          const actionNames = await contract.actionsThatCanBeTaken([tokenID1, tokenID2, tokenID3]);
+          const actionNames = await PuzzleCard.actionsThatCanBeTaken([allCards[i], allCards[j], allCards[k]]);
 
           for (const actionName of actionNames) {
             if (actionName === "") { continue; }
@@ -130,12 +131,13 @@ describe("Actions", () => {
     expect(Object.keys(cardCombinations).length).to.equal(11);
 
     const colors = ["Red", "Green", "Blue", "Yellow", "Pink", "White", "Black"];
+    const starCards = colors.map(color1 => new PuzzleCard({ ...starCard, color1 }));
 
-    const tokenIDs = await TestUtils.tokenIDs(colors, color1 => (
-      contract.mintExactByNames({ ...starCard, color1 }, owner.address)
-    ));
+    for (const card of starCards) {
+      await PuzzleCard.mintExact(card, owner.address);
+    }
 
-    const actionNames = await contract.actionsThatCanBeTaken(tokenIDs);
+    const actionNames = await PuzzleCard.actionsThatCanBeTaken(starCards);
 
     expect(actionNames.filter(s => s !== "")).to.deep.equal(["puzzleMastery2"]);
   });

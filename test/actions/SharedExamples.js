@@ -1,7 +1,8 @@
 const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("../test_utils/TestUtils");
-const tokenID = TestUtils.tokenID;
+const card = TestUtils.card;
+const PuzzleCard = require("../../contracts/PuzzleCard");
 
 const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier, { skipSameTierTest, skipDegradeTest } = {}) => {
   const titleized = actionName[0].toUpperCase() + actionName.slice(1);
@@ -22,82 +23,86 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
 
     beforeEach(async () => {
       contract = await factory.deploy(constants.ZERO_ADDRESS);
-      TestUtils.addHelpfulMethodsTo(contract);
+      PuzzleCard.setContract(contract);
     });
 
     it("can be performed if a valid set of cards are provided", async () => {
-      const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
-        contract.mintExactByNames(card, owner.address)
-      ));
+      for (const card of validCards) {
+        await PuzzleCard.mintExact(card, owner.address);
+      }
 
-      const [isAllowed, reasons] = await contract[canAction](tokenIDs);
+      const [isAllowed, reasons] = await PuzzleCard[canAction](validCards);
 
       expect(isAllowed).to.equal(true);
       expect(reasons.filter(s => s !== "")).to.be.empty;
     });
 
     it("does not care in which order the cards are provided", async () => {
-      const reversedCards = [...validCards];
-      reversedCards.reverse();
+      const reversed = [...validCards].reverse();
 
-      const tokenIDs = await TestUtils.tokenIDs(reversedCards, card => (
-        contract.mintExactByNames(card, owner.address)
-      ));
+      for (const card of reversed) {
+        await PuzzleCard.mintExact(card, owner.address);
+      }
 
-      const [isAllowed, reasons] = await contract[canAction](tokenIDs);
+      const [isAllowed, reasons] = await PuzzleCard[canAction](reversed);
 
       expect(isAllowed).to.equal(true);
-      expect(reasons.filter(s => s !== "")).to.be.empty;
+      expect(reasons).to.be.empty;
     });
 
     it("cannot be performed if the wrong number of cards is provided", async () => {
-      const [isAllowed, reasons] = await contract[canAction]([]);
+      const [isAllowed, reasons] = await PuzzleCard[canAction]([]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include(`[${numCards} cards are required]`, reasons);
     });
 
     it("cannot be performed if the user doesn't own all the cards", async () => {
-      for (let i = 0; i < validCards.length; i += 1) {
-        const tokenIDs = await TestUtils.tokenIDs(validCards, (card, i) => {
-          const address = i === 0 ? user1.address : owner.address;
-          return contract.mintExactByNames(card, address);
-        });
-
-        const [isAllowed, reasons] = await contract[canAction](tokenIDs);
-
-        expect(isAllowed).to.equal(false);
-        expect(reasons).to.deep.include("[user doesn't own all the cards]", reasons);
+      for (let i = 0; i < numCards; i += 1) {
+        const address = i === 0 ? user1.address : owner.address;
+        PuzzleCard.mintExact(validCards[i], address);
       }
+
+      const [isAllowed, reasons] = await PuzzleCard[canAction](validCards);
+
+      expect(isAllowed).to.equal(false);
+      expect(reasons).to.deep.include("[user doesn't own all the cards]", reasons);
     });
 
     if (!skipSameTierTest) {
       it("cannot be performed if the tiers don't match", async () => {
+        const cards = [];
+
         for (let i = 0; i < numCards; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(validCards, (card, j) => {
-            const tier = i === j ? "Mortal" : "Immortal";
-            return contract.mintExactByNames({ ...card, tier }, owner.address);
-          });
-
-          const [isAllowed, reasons] = await contract[canAction](tokenIDs);
-
-          expect(isAllowed).to.equal(false);
-          expect(reasons).to.deep.include("[the tiers of the cards don't match]", reasons);
+          const tier = i === 0 ? "Mortal" : "Immortal";
+          cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...validCards[i], tier }), owner.address));
         }
+
+        const [isAllowed, reasons] = await PuzzleCard[canAction](cards);
+
+        expect(isAllowed).to.equal(false);
+        expect(reasons).to.deep.include("[the tiers of the cards don't match]", reasons);
       });
     }
 
     for (let i = 0; i < numCards; i += 1) {
       it(`cannot be performed if card ${i} has the wrong type`, async () => {
-        const wrongTypes = TestUtils.typeNames.filter(t => !validTypes[i].includes(t));
+        const wrongTypes = PuzzleCard.TYPE_NAMES.filter(t => !validTypes[i].includes(t));
 
         for (wrongType of wrongTypes) {
-          const tokenIDs = await TestUtils.tokenIDs(validCards, (card, j) => {
-            const type = i === j ? wrongType : card.type;
-            return contract.mintExactByNames({ ...card, type, puzzle: 0, variant: 0 }, owner.address);
-          });
+          const cards = [];
 
-          const [isAllowed, reasons] = await contract[canAction](tokenIDs);
+          for (let j = 0; j < numCards; j += 1) {
+            const type = i === j ? wrongType : validCards[j].type;
+
+            const typeIndex = PuzzleCard.TYPE_NAMES.indexOf(type);
+            const variantIndex = PuzzleCard.VARIANT_OFFSET_PER_TYPE[typeIndex];
+            const variant = PuzzleCard.VARIANT_NAMES[variantIndex];
+
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...validCards[j], type, variant }), owner.address));
+          }
+
+          const [isAllowed, reasons] = await PuzzleCard[canAction](cards);
           const typeSpecificReasons = reasons.filter(s => s.match(/.*? cards? .*? required/));
 
           expect(isAllowed).to.equal(false, `card ${i} shouldn't be allowed to have type ${wrongType}`);
@@ -109,12 +114,19 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
     for (let i = 0; i < numCards; i += 1) {
       it(`can be performed if card ${i} has the right type`, async () => {
         for (rightType of validTypes[i]) {
-          const tokenIDs = await TestUtils.tokenIDs(validCards, (card, j) => {
-            const type = i === j ? rightType : card.type;
-            return contract.mintExactByNames({ ...card, type, puzzle: 0, variant: 0 }, owner.address);
-          });
+          const cards = [];
 
-          const [_isAllowed, reasons] = await contract[canAction](tokenIDs);
+          for (let j = 0; j < numCards; j += 1) {
+            const type = i === j ? rightType : validCards[j].type;
+
+            const typeIndex = PuzzleCard.TYPE_NAMES.indexOf(type);
+            const variantIndex = PuzzleCard.VARIANT_OFFSET_PER_TYPE[typeIndex];
+            const variant = PuzzleCard.VARIANT_NAMES[variantIndex];
+
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...validCards[j], type, variant }), owner.address));
+          }
+
+          const [_isAllowed, reasons] = await PuzzleCard[canAction](cards);
           const typeSpecificReasons = reasons.filter(s => s.match(/an? .*? card is required/));
 
           // The action might still not be allowed because one of our cards is
@@ -127,65 +139,65 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
     }
 
     it("decrements the balance by 1 for the provided cards and mints a new card", async () => {
-      const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
-        contract.mintExactByNames(card, owner.address)
-      ));
+      for (const card of validCards) {
+        await PuzzleCard.mintExact(card, owner.address)
+      }
 
-      for (const tokenID of tokenIDs) {
-        const balance = await contract.balanceOf(owner.address, tokenID);
+      for (const card of validCards) {
+        const balance = await contract.balanceOf(owner.address, card.tokenID());
         expect(balance.toNumber()).to.equal(1);
       }
 
-      const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
+      const mintedCard = await PuzzleCard[actionName](validCards);
 
-      for (const tokenID of tokenIDs) {
-        const balance = await contract.balanceOf(owner.address, tokenID);
-        expect(balance.toNumber()).to.equal(0, `card ${tokenID} wasn't discarded`);
+      for (const card of validCards) {
+        const balance = await contract.balanceOf(owner.address, card.tokenID());
+        expect(balance.toNumber()).to.equal(0, `card ${card} wasn't discarded`);
       }
 
-      const balance = await contract.balanceOf(owner.address, mintedTokenID);
+      const balance = await contract.balanceOf(owner.address, mintedCard.tokenID());
       expect(balance.toNumber()).to.equal(1);
     });
 
     it("does not allow the cards to be used again once discarded", async () => {
-      const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
-        contract.mintExactByNames(card, owner.address)
-      ));
+      for (const card of validCards) {
+        await PuzzleCard.mintExact(card, owner.address);
+      }
 
-      await contract[actionName](tokenIDs);
+      await PuzzleCard[actionName](validCards);
 
       // Call the same action again.
-      await expectRevert.unspecified(contract[actionName](tokenIDs));
+      await expectRevert.unspecified(PuzzleCard[actionName](validCards));
     });
 
     it("reverts if the action cannot be performed", async () => {
-      await expectRevert.unspecified(contract[actionName]([]));
+      await expectRevert.unspecified(PuzzleCard[actionName](validCards));
     });
 
     it("randomly picks a new puzzle for the minted card", async () => {
       const puzzleNames = [];
 
       for (let i = 0; i < 20; i += 1) {
-        const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
-          contract.mintExactByNames(card, owner.address)
-        ));
+        for (const card of validCards) {
+          await PuzzleCard.mintExact(card, owner.address);
+        }
 
-        const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
+        const mintedCard = await PuzzleCard[actionName](validCards);
 
-        puzzleNames.push(await contract.puzzleName(mintedTokenID));
+        puzzleNames.push(mintedCard.puzzle);
       }
 
       expect(puzzleNames.length).to.be.above(1);
     });
 
     it(`sets the tier of the minted card to ${expectedTier}`, async () => {
-      const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
-        contract.mintExactByNames(card, owner.address)
-      ));
+      for (const card of validCards) {
+        await PuzzleCard.mintExact(card, owner.address);
+      }
 
-      const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
+      const mintedCard = await PuzzleCard[actionName](validCards);
 
-      expect(await contract.tierName(mintedTokenID)).to.equal(expectedTier);
+      expect(mintedCard.tier).to.equal(expectedTier);
     });
 
     if (!skipDegradeTest) {
@@ -193,13 +205,13 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
         const conditionNames = [];
 
         for (let i = 0; i < 100; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
-            contract.mintExactByNames(card, owner.address)
-          ));
+          for (const card of validCards) {
+            await PuzzleCard.mintExact(card, owner.address)
+          }
 
-          const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
+          const mintedCard = await PuzzleCard[actionName](validCards);
 
-          conditionNames.push(await contract.conditionName(mintedTokenID));
+          conditionNames.push(mintedCard.condition);
         }
 
         const set = new Set(conditionNames);
@@ -219,13 +231,15 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
       const conditionNames = new Set();
 
       for (let i = 0; i < 20; i += 1) {
-        const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
-          contract.mintExactByNames({ ...card, condition: "Dire" }, owner.address)
-        ));
+        const cards = [];
 
-        const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
+        for (const card of validCards) {
+          cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, condition: "Dire" }), owner.address));
+        }
 
-        conditionNames.add(await contract.conditionName(mintedTokenID));
+        const mintedCard = await PuzzleCard[actionName](cards);
+
+        conditionNames.add(mintedCard.condition);
       }
 
       expect(conditionNames.size).to.equal(1);
@@ -236,13 +250,15 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
         const conditionNames = new Set();
 
         for (let i = 0; i < 20; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(validCards, (card) => (
-            contract.mintExactByNames({ ...card, tier }, owner.address)
-          ));
+          const cards = [];
 
-          const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
+          for (const card of validCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier }), owner.address));
+          }
 
-          conditionNames.add(await contract.conditionName(mintedTokenID));
+          const mintedCard = await PuzzleCard[actionName](cards);
+
+          conditionNames.add(mintedCard.condition);
         }
 
         expect(conditionNames.size).to.equal(1);
@@ -270,7 +286,8 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
 
     beforeEach(async () => {
       contract = await factory.deploy(constants.ZERO_ADDRESS);
-      TestUtils.addHelpfulMethodsTo(contract);
+      PuzzleCard.setContract(contract);
+      TestUtils.readArrays();
     });
 
     const allTiers = [
@@ -288,14 +305,15 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
       it("has the same tier as the provided cards", async () => {
         for (let i = 0; i < allTiers.length; i += 1) {
           const [before, after] = allTiers[i];
+          const cards = [];
 
-          const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
-            contract.mintExactByNames({ ...card, tier: before }, owner.address)
-          ));
+          for (const card of validCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier: before }), owner.address));
+          }
 
-          const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
+          const mintedCard = await PuzzleCard[actionName](cards);
 
-          expect(await contract.tierName(mintedTokenID)).to.equal(before);
+          expect(mintedCard.tier).to.equal(before);
         }
       });
 
@@ -308,14 +326,15 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
       it("increases the tier by 1", async () => {
         for (let i = 0; i < allTiers.length; i += 1) {
           const [before, after] = allTiers[i];
+          const cards = [];
 
-          const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
-            contract.mintExactByNames({ ...card, tier: before }, owner.address)
-          ));
+          for (const card of validCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier: before }), owner.address));
+          }
 
-          const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
+          const mintedCard = await PuzzleCard[actionName](cards);
 
-          expect(await contract.tierName(mintedTokenID)).to.equal(after);
+          expect(mintedCard.tier).to.equal(after);
         }
       });
 
@@ -331,13 +350,15 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         const typeNames = [];
 
         for (let i = 0; i < 1000; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
-            contract.mintExactByNames({ ...card, tier }, owner.address)
-          ));
+          const cards = [];
 
-          const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
+          for (const card of validCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier }), owner.address));
+          }
 
-          typeNames.push(await contract.typeName(mintedTokenID));
+          const mintedCard = await PuzzleCard[actionName](cards);
+
+          typeNames.push(mintedCard.type);
         }
 
         const frequencies = TestUtils.tallyFrequencies(typeNames);
@@ -357,31 +378,28 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         const typeNames = [];
 
         for (let i = 0; i < 1000; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
-            contract.mintExactByNames({ ...card, tier }, owner.address)
-          ));
+          const cards = [];
 
-          const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
-
-          const type = await contract.typeName(mintedTokenID);
-          const color1 = await contract.color1Name(mintedTokenID);
-          const color2 = await contract.color2Name(mintedTokenID);
-          const variant = await contract.variantName(mintedTokenID);
-
-          expect(["Player", "Glasses", "Hidden"]).to.include(type);
-          expect(variant).to.equal("None");
-
-          const hasColor = type === "Glasses";
-
-          if (hasColor) {
-            expect(TestUtils.isRealColor(color1)).to.equal(true);
-            expect(TestUtils.isRealColor(color2)).to.equal(true);
-          } else {
-            expect(color1).to.equal("None");
-            expect(color2).to.equal("None");
+          for (const card of validCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier }), owner.address));
           }
 
-          typeNames.push(type);
+          const mintedCard = await PuzzleCard[actionName](cards);
+
+          expect(["Player", "Glasses", "Hidden"]).to.include(mintedCard.type);
+          expect(mintedCard.variant).to.equal("None");
+
+          const hasColor = mintedCard.type === "Glasses";
+
+          if (hasColor) {
+            expect(TestUtils.isRealColor(mintedCard.color1)).to.equal(true);
+            expect(TestUtils.isRealColor(mintedCard.color2)).to.equal(true);
+          } else {
+            expect(mintedCard.color1).to.equal("None");
+            expect(mintedCard.color2).to.equal("None");
+          }
+
+          typeNames.push(mintedCard.type);
         }
 
         const frequencies = TestUtils.tallyFrequencies(typeNames);
@@ -397,24 +415,20 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         const variantNames = [];
 
         for (let i = 0; i < 1000; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
-            contract.mintExactByNames({ ...card, tier }, owner.address)
-          ));
+          const cards = [];
 
-          const mintedTokenID = await tokenID(contract[actionName](tokenIDs));
+          for (const card of validCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier }), owner.address));
+          }
 
-          const type = await contract.typeName(mintedTokenID);
-          const color1 = await contract.color1Name(mintedTokenID);
-          const color2 = await contract.color2Name(mintedTokenID);
-          const variant = await contract.variantName(mintedTokenID);
-          const edition = await contract.editionName(mintedTokenID);
+          const mintedCard = await PuzzleCard[actionName](cards);
 
-          expect(type).to.equal("Artwork");
-          expect(color1).to.equal("None");
-          expect(color2).to.equal("None");
-          expect(edition).to.equal("Standard");
+          expect(mintedCard.type).to.equal("Artwork");
+          expect(mintedCard.color1).to.equal("None");
+          expect(mintedCard.color2).to.equal("None");
+          expect(mintedCard.edition).to.equal("Standard");
 
-          variantNames.push(variant);
+          variantNames.push(mintedCard.variant);
         }
 
         const frequencies = TestUtils.tallyFrequencies(variantNames);

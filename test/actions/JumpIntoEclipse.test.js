@@ -2,12 +2,13 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
-const { tokenID, baseCard } = TestUtils;
+const { card, baseCard } = TestUtils;
+const PuzzleCard = require("../../contracts/PuzzleCard");
 
 describe("JumpIntoEclipse", () => {
-  const playerCard = { ...baseCard, type: "Player" };
-  const doorCard = { ...baseCard, type: "Door", variant: "Closed" };
-  const eclipseCard = { ...baseCard, type: "Eclipse" };
+  const playerCard = new PuzzleCard({ ...baseCard, type: "Player" });
+  const doorCard = new PuzzleCard({ ...baseCard, type: "Door", variant: "Closed" });
+  const eclipseCard = new PuzzleCard({ ...baseCard, type: "Eclipse" });
 
   itBehavesLikeAnAction("jumpIntoEclipse", [playerCard, doorCard, eclipseCard], [["Player"], ["Door"], ["Eclipse"]], "Mortal");
 
@@ -21,36 +22,31 @@ describe("JumpIntoEclipse", () => {
 
     beforeEach(async () => {
       contract = await factory.deploy(constants.ZERO_ADDRESS);
-      TestUtils.addHelpfulMethodsTo(contract);
+      PuzzleCard.setContract(contract);
     });
 
     it("cannot be performed if the door has already been opened", async () => {
-      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
-      const tokenID2 = await tokenID(contract.mintExactByNames({ ...doorCard, variant: "Open" }, owner.address));
-      const tokenID3 = await tokenID(contract.mintExactByNames(eclipseCard, owner.address));
+      const card1 = await PuzzleCard.mintExact(playerCard, owner.address);
+      const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...doorCard, variant: "Open" }), owner.address);
+      const card3 = await PuzzleCard.mintExact(eclipseCard, owner.address);
 
-      const [isAllowed, reasons] = await contract.canJumpIntoEclipse([tokenID1, tokenID2, tokenID3]);
+      const [isAllowed, reasons] = await PuzzleCard.canJumpIntoEclipse([card1, card2, card3]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the door has already been opened]", reasons);
     });
 
     it("mints a door card that has been opened", async () => {
-      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
-      const tokenID2 = await tokenID(contract.mintExactByNames(doorCard, owner.address));
-      const tokenID3 = await tokenID(contract.mintExactByNames(eclipseCard, owner.address));
+      const card1 = await PuzzleCard.mintExact(playerCard, owner.address);
+      const card2 = await PuzzleCard.mintExact(doorCard, owner.address);
+      const card3 = await PuzzleCard.mintExact(eclipseCard, owner.address);
 
-      const mintedTokenID = await tokenID(contract.jumpIntoEclipse([tokenID1, tokenID2, tokenID3]));
+      const mintedCard = await PuzzleCard.jumpIntoEclipse([card1, card2, card3]);
 
-      const type = await contract.typeName(mintedTokenID);
-      const color1 = await contract.color1Name(mintedTokenID);
-      const color2 = await contract.color2Name(mintedTokenID);
-      const variant = await contract.variantName(mintedTokenID);
-
-      expect(type).to.equal("Door");
-      expect(color1).to.equal("None");
-      expect(color2).to.equal("None");
-      expect(variant).to.equal("Open");
+      expect(mintedCard.type).to.equal("Door");
+      expect(mintedCard.color1).to.equal("None");
+      expect(mintedCard.color2).to.equal("None");
+      expect(mintedCard.variant).to.equal("Open");
     });
   });
 });

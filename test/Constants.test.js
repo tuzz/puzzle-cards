@@ -13,6 +13,7 @@ describe("Constants", () => {
 
   beforeEach(async () => {
     contract = await factory.deploy(constants.ZERO_ADDRESS);
+    PuzzleCard.setContract(contract);
   });
 
   it("can get the price to mint the given number of cards", async () => {
@@ -27,14 +28,14 @@ describe("Constants", () => {
     const originalPrice = PuzzleCard.PRICE_PER_CARD;
 
     PuzzleCard.PRICE_PER_CARD *= BigInt(2);
-    await PuzzleCard.updateConstants(contract);
+    await PuzzleCard.updateConstants();
 
     await expectRevert.unspecified(contract.mint(1, owner.address, { value: originalPrice }));
   });
 
   it("allows the contract owner to update METADATA_URI", async () => {
     PuzzleCard.METADATA_URI = "https://foo.com/metadata/{}.json";
-    await PuzzleCard.updateConstants(contract);
+    await PuzzleCard.updateConstants();
 
     const metadataURI = await contract.uri(0);
     expect(metadataURI).to.equal("https://foo.com/metadata/{}.json");
@@ -46,7 +47,7 @@ describe("Constants", () => {
     PuzzleCard.NUM_PUZZLES_PER_SERIES = [2, 4, 1];                                                //       ^             ^
     PuzzleCard.PUZZLE_OFFSET_PER_SERIES = [0, 2, 6];                                              //   These puzzles were added.
 
-    await PuzzleCard.updateConstants(contract);
+    await PuzzleCard.updateConstants();
 
     const tokenIDs = await TestUtils.batchTokenIDs(contract.gift(100, owner.address));
     const names = [];
@@ -68,7 +69,7 @@ describe("Constants", () => {
                                     //    ^
                                     // the number of variants and the offset for the player type changed from 0
 
-    await PuzzleCard.updateConstants(contract);
+    await PuzzleCard.updateConstants();
 
     let tokenIDs = [];
 
@@ -90,7 +91,7 @@ describe("Constants", () => {
   });
 
   it("does not allow other users to update constants", async () => {
-    const contractAsUser1 = contract.connect(user1);
-    await expectRevert.unspecified(PuzzleCard.updateConstants(contractAsUser1));
+    PuzzleCard.setContract(contract.connect(user1));
+    await expectRevert.unspecified(PuzzleCard.updateConstants());
   });
 });

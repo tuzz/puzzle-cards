@@ -3,13 +3,14 @@ const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
 const { tokenID, baseCard } = TestUtils;
+const PuzzleCard = require("../../contracts/PuzzleCard");
 
 describe("ChangeLensColor", () => {
-  const playerCard = { ...baseCard, type: "Player" };
-  const cloakCard = { ...baseCard, type: "Cloak", color1: "Red" };
-  const torchCard = { ...baseCard, type: "Torch", color1: "Blue", color2: "Green" };
-  const glassesCard = { ...baseCard, type: "Glasses", color1: "Blue", color2: "Green" };
-  const inactiveCard = { ...baseCard, type: "Inactive", color1: "Red", variant: "Sun" };
+  const playerCard = new PuzzleCard({ ...baseCard, type: "Player" });
+  const cloakCard = new PuzzleCard({ ...baseCard, type: "Cloak", color1: "Red" });
+  const torchCard = new PuzzleCard({ ...baseCard, type: "Torch", color1: "Blue", color2: "Green" });
+  const glassesCard = new PuzzleCard({ ...baseCard, type: "Glasses", color1: "Blue", color2: "Green" });
+  const inactiveCard = new PuzzleCard({ ...baseCard, type: "Inactive", color1: "Red", variant: "Sun" });
 
   itBehavesLikeAnAction("changeLensColor", [cloakCard, torchCard, inactiveCard], [["Player", "Crab", "Cloak"], ["Torch", "Glasses"], ["Inactive"]], "Mortal");
 
@@ -23,15 +24,15 @@ describe("ChangeLensColor", () => {
 
     beforeEach(async () => {
       contract = await factory.deploy(constants.ZERO_ADDRESS);
-      TestUtils.addHelpfulMethodsTo(contract);
+      PuzzleCard.setContract(contract);
     });
 
     it("cannot be performed if the cloak's color does not match that of the sun or moon", async () => {
-      const tokenID1 = await tokenID(contract.mintExactByNames({ ...cloakCard, color1: "Red" }, owner.address));
-      const tokenID2 = await tokenID(contract.mintExactByNames(torchCard, owner.address));
-      const tokenID3 = await tokenID(contract.mintExactByNames({ ...inactiveCard, color1: "Blue" }, owner.address));
+      const card1 = await PuzzleCard.mintExact(new PuzzleCard({ ...cloakCard, color1: "Red" }), owner.address);
+      const card2 = await PuzzleCard.mintExact(torchCard, owner.address);
+      const card3 = await PuzzleCard.mintExact(new PuzzleCard({ ...inactiveCard, color1: "Blue" }), owner.address);
 
-      const [isAllowed, reasons] = await contract.canChangeLensColor([tokenID1, tokenID2, tokenID3]);
+      const [isAllowed, reasons] = await PuzzleCard.canChangeLensColor([card1, card2, card3]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the color of the cloak does not match]", reasons);
@@ -39,11 +40,11 @@ describe("ChangeLensColor", () => {
 
     for (const tier of ["Ethereal", "Godly"]) {
       it(`cannot be performed if a non-cloak card is provided at ${tier} tier`, async () => {
-        const tokenID1 = await tokenID(contract.mintExactByNames({ ...playerCard, tier }, owner.address));
-        const tokenID2 = await tokenID(contract.mintExactByNames({ ...torchCard, tier}, owner.address));
-        const tokenID3 = await tokenID(contract.mintExactByNames({ ...inactiveCard, tier }, owner.address));
+        const card1 = await PuzzleCard.mintExact(new PuzzleCard({ ...playerCard, tier }), owner.address);
+        const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...torchCard, tier}), owner.address);
+        const card3 = await PuzzleCard.mintExact(new PuzzleCard({ ...inactiveCard, tier }), owner.address);
 
-        const [isAllowed, reasons] = await contract.canChangeLensColor([tokenID1, tokenID2, tokenID3]);
+        const [isAllowed, reasons] = await PuzzleCard.canChangeLensColor([card1, card2, card3]);
 
         expect(isAllowed).to.equal(false);
         expect(reasons).to.deep.include("[only works with a cloak card at this tier]", reasons);
@@ -51,61 +52,49 @@ describe("ChangeLensColor", () => {
     }
 
     it("mints a torch card if a torch card was combined", async () => {
-      const tokenID1 = await tokenID(contract.mintExactByNames(cloakCard, owner.address));
-      const tokenID2 = await tokenID(contract.mintExactByNames(torchCard, owner.address));
-      const tokenID3 = await tokenID(contract.mintExactByNames(inactiveCard, owner.address));
+      await PuzzleCard.mintExact(cloakCard, owner.address);
+      await PuzzleCard.mintExact(torchCard, owner.address);
+      await PuzzleCard.mintExact(inactiveCard, owner.address);
 
-      const mintedTokenID = await tokenID(contract.changeLensColor([tokenID1, tokenID2, tokenID3]));
+      const mintedCard = await PuzzleCard.changeLensColor([cloakCard, torchCard, inactiveCard]);
 
-      const type = await contract.typeName(mintedTokenID);
-      const variant = await contract.variantName(mintedTokenID);
-
-      expect(type).to.equal("Torch");
-      expect(variant).to.equal("None");
+      expect(mintedCard.type).to.equal("Torch");
+      expect(mintedCard.variant).to.equal("None");
     });
 
     it("mints a glasses card if a glasses card was combined", async () => {
-      const tokenID1 = await tokenID(contract.mintExactByNames(cloakCard, owner.address));
-      const tokenID2 = await tokenID(contract.mintExactByNames(glassesCard, owner.address));
-      const tokenID3 = await tokenID(contract.mintExactByNames(inactiveCard, owner.address));
+      await PuzzleCard.mintExact(cloakCard, owner.address);
+      await PuzzleCard.mintExact(glassesCard, owner.address);
+      await PuzzleCard.mintExact(inactiveCard, owner.address);
 
-      const mintedTokenID = await tokenID(contract.changeLensColor([tokenID1, tokenID2, tokenID3]));
+      const mintedCard = await PuzzleCard.changeLensColor([cloakCard, glassesCard, inactiveCard]);
 
-      const type = await contract.typeName(mintedTokenID);
-      const variant = await contract.variantName(mintedTokenID);
-
-      expect(type).to.equal("Glasses");
-      expect(variant).to.equal("None");
+      expect(mintedCard.type).to.equal("Glasses");
+      expect(mintedCard.variant).to.equal("None");
     });
 
     it("only swaps the lens colors if the inactive color matches one of the lens colors", async () => {
-      const tokenID1 = await tokenID(contract.mintExactByNames(cloakCard, owner.address));
-      const tokenID2 = await tokenID(contract.mintExactByNames({ ...torchCard, color1: "Red", color2: "Green" }, owner.address));
-      const tokenID3 = await tokenID(contract.mintExactByNames({ ...inactiveCard, color1: "Red" }, owner.address));
+      const card1 = await PuzzleCard.mintExact(cloakCard, owner.address);
+      const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...torchCard, color1: "Red", color2: "Green" }), owner.address);
+      const card3 = await PuzzleCard.mintExact(new PuzzleCard({ ...inactiveCard, color1: "Red" }), owner.address);
 
-      const mintedTokenID = await tokenID(contract.changeLensColor([tokenID1, tokenID2, tokenID3]));
+      const mintedCard = await PuzzleCard.changeLensColor([card1, card2, card3]);
 
-      const color1 = await contract.color1Name(mintedTokenID);
-      const color2 = await contract.color2Name(mintedTokenID);
-
-      expect(color1).to.equal("Green");
-      expect(color2).to.equal("Red");
+      expect(mintedCard.color1).to.equal("Green");
+      expect(mintedCard.color2).to.equal("Red");
     });
 
     it("swaps the lens colors and sets a random lens to the inactive color if no color matches", async () => {
       const lensColors = [];
 
       for (let i = 0; i < 200; i += 1) {
-        const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
-        const tokenID2 = await tokenID(contract.mintExactByNames({ ...torchCard, color1: "Red", color2: "Green" }, owner.address));
-        const tokenID3 = await tokenID(contract.mintExactByNames({ ...inactiveCard, color1: "Blue" }, owner.address));
+        const card1 = await PuzzleCard.mintExact(playerCard, owner.address);
+        const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...torchCard, color1: "Red", color2: "Green" }), owner.address);
+        const card3 = await PuzzleCard.mintExact(new PuzzleCard({ ...inactiveCard, color1: "Blue" }), owner.address);
 
-        const mintedTokenID = await tokenID(contract.changeLensColor([tokenID1, tokenID2, tokenID3]));
+        const mintedCard = await PuzzleCard.changeLensColor([card1, card2, card3]);
 
-        const color1 = await contract.color1Name(mintedTokenID);
-        const color2 = await contract.color2Name(mintedTokenID);
-
-        lensColors.push([color1, color2]);
+        lensColors.push([mintedCard.color1, mintedCard.color2]);
       }
 
       const frequencies = TestUtils.tallyFrequencies(lensColors);

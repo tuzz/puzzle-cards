@@ -11,4 +11,8 @@ contract TestUtils is PuzzleCard {
         Attributes memory card = Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition);
         mintOne(tokenIDForCard(card), to);
     }
+
+    function mintExact_(uint256 tokenID, address to) public onlyOwner {
+        mintOne(tokenID, to);
+    }
 }

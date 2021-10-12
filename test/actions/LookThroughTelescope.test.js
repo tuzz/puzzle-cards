@@ -2,12 +2,13 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
-const { tokenID, baseCard } = TestUtils;
+const { card, baseCard } = TestUtils;
+const PuzzleCard = require("../../contracts/PuzzleCard");
 
 describe("LookThroughTelescope", () => {
-  const playerCard = { ...baseCard, type: "Player" };
-  const telescopeCard = { ...baseCard, type: "Telescope", color1: "Black", variant: "Sun" };
-  const activeCard = { ...baseCard, type: "Active", color1: "Black", variant: "Sun" };
+  const playerCard = new PuzzleCard({ ...baseCard, type: "Player" });
+  const telescopeCard = new PuzzleCard({ ...baseCard, type: "Telescope", color1: "Black", variant: "Sun" });
+  const activeCard = new PuzzleCard({ ...baseCard, type: "Active", color1: "Black", variant: "Sun" });
 
   itBehavesLikeAnAction("lookThroughTelescope", [playerCard, telescopeCard, activeCard], [["Player"], ["Telescope"], ["Active"]], "Mortal");
 
@@ -21,37 +22,38 @@ describe("LookThroughTelescope", () => {
 
     beforeEach(async () => {
       contract = await factory.deploy(constants.ZERO_ADDRESS);
-      TestUtils.addHelpfulMethodsTo(contract);
+      PuzzleCard.setContract(contract);
+      TestUtils.readArrays();
     });
 
     it("cannot be performed if a sun is used on a telescope with a moon", async () => {
-      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
-      const tokenID2 = await tokenID(contract.mintExactByNames({ ...telescopeCard, variant: "Moon" }, owner.address));
-      const tokenID3 = await tokenID(contract.mintExactByNames({ ...activeCard, variant: "Sun" }, owner.address));
+      const card1 = await PuzzleCard.mintExact(playerCard, owner.address);
+      const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...telescopeCard, variant: "Moon" }), owner.address);
+      const card3 = await PuzzleCard.mintExact(new PuzzleCard({ ...activeCard, variant: "Sun" }), owner.address);
 
-      const [isAllowed, reasons] = await contract.canLookThroughTelescope([tokenID1, tokenID2, tokenID3]);
+      const [isAllowed, reasons] = await PuzzleCard.canLookThroughTelescope([card1, card2, card3]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the sun or moon card does not match the telescope]", reasons);
     });
 
     it("cannot be performed if a moon is used on a telescope with a sun", async () => {
-      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
-      const tokenID2 = await tokenID(contract.mintExactByNames({ ...telescopeCard, variant: "Sun" }, owner.address));
-      const tokenID3 = await tokenID(contract.mintExactByNames({ ...activeCard, variant: "Moon" }, owner.address));
+      const card1 = await PuzzleCard.mintExact(playerCard, owner.address);
+      const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...telescopeCard, variant: "Sun" }), owner.address);
+      const card3 = await PuzzleCard.mintExact(new PuzzleCard({ ...activeCard, variant: "Moon" }), owner.address);
 
-      const [isAllowed, reasons] = await contract.canLookThroughTelescope([tokenID1, tokenID2, tokenID3]);
+      const [isAllowed, reasons] = await PuzzleCard.canLookThroughTelescope([card1, card2, card3]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the sun or moon card does not match the telescope]", reasons);
     });
 
     it("cannot be performed if the sun or moon's color does not match the telescope", async () => {
-      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
-      const tokenID2 = await tokenID(contract.mintExactByNames({ ...telescopeCard, color1: "Red" }, owner.address));
-      const tokenID3 = await tokenID(contract.mintExactByNames({ ...activeCard, color1: "Blue" }, owner.address));
+      const card1 = await PuzzleCard.mintExact(playerCard, owner.address);
+      const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...telescopeCard, color1: "Red" }), owner.address);
+      const card3 = await PuzzleCard.mintExact(new PuzzleCard({ ...activeCard, color1: "Blue" }), owner.address);
 
-      const [isAllowed, reasons] = await contract.canLookThroughTelescope([tokenID1, tokenID2, tokenID3]);
+      const [isAllowed, reasons] = await PuzzleCard.canLookThroughTelescope([card1, card2, card3]);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[the sun or moon card does not match the telescope]", reasons);
@@ -62,31 +64,27 @@ describe("LookThroughTelescope", () => {
       const colorMatches = [];
 
       for (let i = 0; i < 1000; i += 1) {
-        const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
-        const tokenID2 = await tokenID(contract.mintExactByNames(telescopeCard, owner.address));
-        const tokenID3 = await tokenID(contract.mintExactByNames(activeCard, owner.address));
+        const card1 = await PuzzleCard.mintExact(playerCard, owner.address);
+        const card2 = await PuzzleCard.mintExact(telescopeCard, owner.address);
+        const card3 = await PuzzleCard.mintExact(activeCard, owner.address);
 
-        const mintedTokenID = await tokenID(contract.lookThroughTelescope([tokenID1, tokenID2, tokenID3]));
-
-        const type = await contract.typeName(mintedTokenID);
-        const color1 = await contract.color1Name(mintedTokenID);
-        const color2 = await contract.color2Name(mintedTokenID);
-        const variant = await contract.variantName(mintedTokenID);
+        const mintedCard = await PuzzleCard.lookThroughTelescope([card1, card2, card3]);
+        const type = mintedCard.type;
 
         expect(["Helix", "Torch", "Beacon"]).to.include(type);
-        expect(TestUtils.isRealColor(color1)).to.equal(true);
-        expect(variant).to.equal("None");
+        expect(TestUtils.isRealColor(mintedCard.color1)).to.equal(true);
+        expect(mintedCard.variant).to.equal("None");
 
         if (type === "Helix") {
-          expect(TestUtils.isRealColor(color2)).to.equal(true);
+          expect(TestUtils.isRealColor(mintedCard.color2)).to.equal(true);
         } else if (type === "Torch") {
-          expect(TestUtils.isRealColor(color2)).to.equal(true);
+          expect(TestUtils.isRealColor(mintedCard.color2)).to.equal(true);
         } else if (type === "Beacon") {
-          expect(TestUtils.isRealColor(color2)).to.equal(false);
+          expect(TestUtils.isRealColor(mintedCard.color2)).to.equal(false);
         }
 
         typeNames.push(type);
-        colorMatches.push([type, color1 == color2]);
+        colorMatches.push([type, mintedCard.color1 == mintedCard.color2]);
       }
 
       const typeFrequencies = TestUtils.tallyFrequencies(typeNames)
@@ -112,19 +110,14 @@ describe("LookThroughTelescope", () => {
         let sampleSize = 0;
 
         for (let i = 0; i < 100; i += 1) {
-          const tokenID1 = await tokenID(contract.mintExactByNames({ ...playerCard, tier }, owner.address));
-          const tokenID2 = await tokenID(contract.mintExactByNames({ ...telescopeCard, tier }, owner.address));
-          const tokenID3 = await tokenID(contract.mintExactByNames({ ...activeCard, tier }, owner.address));
+          const card1 = await PuzzleCard.mintExact(new PuzzleCard({ ...playerCard, tier }), owner.address);
+          const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...telescopeCard, tier }), owner.address);
+          const card3 = await PuzzleCard.mintExact(new PuzzleCard({ ...activeCard, tier }), owner.address);
 
-          const mintedTokenID = await tokenID(contract.lookThroughTelescope([tokenID1, tokenID2, tokenID3]));
+          const mintedCard = await PuzzleCard.lookThroughTelescope([card1, card2, card3]);
+          if (mintedCard.type !== "Helix") { continue; }
 
-          const type = await contract.typeName(mintedTokenID);
-          if (type !== "Helix") { continue; }
-
-          const color1 = await contract.color1Name(mintedTokenID);
-          const color2 = await contract.color2Name(mintedTokenID);
-
-          expect(color1).to.equal(color2);
+          expect(mintedCard.color1).to.equal(mintedCard.color2);
           sampleSize += 1;
         };
 

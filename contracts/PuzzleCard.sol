@@ -189,8 +189,8 @@ contract PuzzleCard is ERC1155Tradable {
 
     // actions
 
-    function activateSunOrMoon(uint256[] memory tokenIDs) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canActivateSunOrMoon(tokenIDs); require(ok, string(abi.encode(r)));
+    function activateSunOrMoon(uint256 activatorID, uint256 inactiveID) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canActivateSunOrMoon(activatorID, inactiveID); require(ok, string(abi.encode(r)));
 
         Attributes memory inactive = slots[2].card;
 
@@ -203,11 +203,15 @@ contract PuzzleCard is ERC1155Tradable {
         uint8 condition = randomlyDegrade(slots, inactive.tier);
         uint8 edition = STANDARD_EDITION;
 
+        uint256[] memory tokenIDs = new uint256[](2); tokenIDs[0] = activatorID; tokenIDs[1] = inactiveID; // TMP
+
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canActivateSunOrMoon(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canActivateSunOrMoon(uint256 activatorID, uint256 inactiveID) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](8));
+
+        uint256[] memory tokenIDs = new uint256[](2); tokenIDs[0] = activatorID; tokenIDs[1] = inactiveID; // TMP
 
         CardSlot[] memory slots = cardsInSlots(tokenIDs);
 
@@ -225,24 +229,29 @@ contract PuzzleCard is ERC1155Tradable {
         return (ok, r, slots);
     }
 
-    function lookThroughTelescope(uint256[] memory tokenIDs) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canLookThroughTelescope(tokenIDs); require(ok, string(abi.encode(r)));
+    function lookThroughTelescope(uint256 playerID, uint256 activeID, uint256 telescopeID) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canLookThroughTelescope(playerID, activeID, telescopeID);
+        require(ok, string(abi.encode(r)));
 
         Attributes memory telescope = slots[1].card;
 
         (uint8 series, uint8 puzzle) = randomPuzzle();
-        uint8 tier = telescope.tier;
+        //uint8 tier = telescope.tier;
         uint8 type_ = HELIX_TYPE + uint8(randomNumber() % 3);
-        (uint8 color1, uint8 color2) = randomColors(tier, type_);
+        (uint8 color1, uint8 color2) = randomColors(telescope.tier, type_);
         uint8 variant = randomVariant(type_);
         uint8 condition = randomlyDegrade(slots, telescope.tier);
         uint8 edition = STANDARD_EDITION;
 
-        replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
+        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = activeID; tokenIDs[2] = telescopeID; // TMP
+
+        replace(tokenIDs, Attributes(series, puzzle, telescope.tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canLookThroughTelescope(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canLookThroughTelescope(uint256 playerID, uint256 activeID, uint256 telescopeID) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](7));
+
+        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = activeID; tokenIDs[2] = telescopeID; // TMP
 
         CardSlot[] memory slots = cardsInSlots(tokenIDs);
 
@@ -267,8 +276,11 @@ contract PuzzleCard is ERC1155Tradable {
         return (ok, r, slots);
     }
 
-    function lookThroughGlasses(uint256[] memory tokenIDs) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canLookThroughGlasses(tokenIDs); require(ok, string(abi.encode(r)));
+    function lookThroughGlasses(uint256 playerID, uint256 glassesID, uint256 hiddenID) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canLookThroughGlasses(playerID, glassesID, hiddenID);
+        require(ok, string(abi.encode(r)));
+
+        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = glassesID; tokenIDs[2] = hiddenID; // TMP
 
         Attributes memory glasses = slots[1].card;
 
@@ -278,8 +290,10 @@ contract PuzzleCard is ERC1155Tradable {
         replace(tokenIDs, starterCardForTier(tier, condition));
     }
 
-    function canLookThroughGlasses(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canLookThroughGlasses(uint256 playerID, uint256 glassesID, uint256 hiddenID) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](6));
+
+        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = glassesID; tokenIDs[2] = hiddenID; // TMP
 
         CardSlot[] memory slots = cardsInSlots(tokenIDs);
 
@@ -296,8 +310,11 @@ contract PuzzleCard is ERC1155Tradable {
         return (ok, r, slots);
     }
 
-    function changeLensColor(uint256[] memory tokenIDs) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canChangeLensColor(tokenIDs); require(ok, string(abi.encode(r)));
+    function changeLensColor(uint256 activatorID, uint256 lensID, uint256 inactiveID) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canChangeLensColor(activatorID, lensID, inactiveID);
+        require(ok, string(abi.encode(r)));
+
+        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = activatorID; tokenIDs[1] = lensID; tokenIDs[2] = inactiveID; // TMP
 
         Attributes memory torchOrGlasses = slots[1].card;
         Attributes memory inactive = slots[2].card;
@@ -322,8 +339,10 @@ contract PuzzleCard is ERC1155Tradable {
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canChangeLensColor(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canChangeLensColor(uint256 activatorID, uint256 lensID, uint256 inactiveID) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](8));
+
+        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = activatorID; tokenIDs[1] = lensID; tokenIDs[2] = inactiveID; // TMP
 
         CardSlot[] memory slots = cardsInSlots(tokenIDs);
 
@@ -344,8 +363,11 @@ contract PuzzleCard is ERC1155Tradable {
         return (ok, r, slots);
     }
 
-    function shineTorchOnBasePair(uint256[] memory tokenIDs) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canShineTorchOnBasePair(tokenIDs); require(ok, string(abi.encode(r)));
+    function shineTorchOnBasePair(uint256 playerID, uint256 torchID, uint256 helixID) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canShineTorchOnBasePair(playerID, torchID, helixID);
+        require(ok, string(abi.encode(r)));
+
+        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = torchID; tokenIDs[2] = helixID; // TMP
 
         Attributes memory helix = slots[1].card;
 
@@ -361,8 +383,10 @@ contract PuzzleCard is ERC1155Tradable {
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canShineTorchOnBasePair(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canShineTorchOnBasePair(uint256 playerID, uint256 torchID, uint256 helixID) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](7));
+
+        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = torchID; tokenIDs[2] = helixID; // TMP
 
         CardSlot[] memory slots = cardsInSlots(tokenIDs);
 
@@ -386,13 +410,19 @@ contract PuzzleCard is ERC1155Tradable {
         return (ok, r, slots);
     }
 
-    function teleportToNextArea(uint256[] memory tokenIDs) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canTeleportToNextArea(tokenIDs); require(ok, string(abi.encode(r)));
+    function teleportToNextArea(uint256 playerID, uint256 mapID, uint256 teleportID) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canTeleportToNextArea(playerID, mapID, teleportID);
+        require(ok, string(abi.encode(r)));
+
+        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = mapID; tokenIDs[2] = teleportID; // TMP
+
         replace(tokenIDs, promotedCard(slots));
     }
 
-    function canTeleportToNextArea(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canTeleportToNextArea(uint256 playerID, uint256 mapID, uint256 teleportID) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](6));
+
+        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = mapID; tokenIDs[2] = teleportID; // TMP
 
         CardSlot[] memory slots = cardsInSlots(tokenIDs);
 
@@ -408,13 +438,19 @@ contract PuzzleCard is ERC1155Tradable {
         return (ok, r, slots);
     }
 
-    function goThroughStarDoor(uint256[] memory tokenIDs) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canGoThroughStarDoor(tokenIDs); require(ok, string(abi.encode(r)));
+    function goThroughStarDoor(uint256 playerID, uint256 doorID) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canGoThroughStarDoor(playerID, doorID);
+        require(ok, string(abi.encode(r)));
+
+        uint256[] memory tokenIDs = new uint256[](2); tokenIDs[0] = playerID; tokenIDs[1] = doorID; // TMP
+
         replace(tokenIDs, promotedCard(slots));
     }
 
-    function canGoThroughStarDoor(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canGoThroughStarDoor(uint256 playerID, uint256 doorID) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](7));
+
+        uint256[] memory tokenIDs = new uint256[](2); tokenIDs[0] = playerID; tokenIDs[1] = doorID; // TMP
 
         CardSlot[] memory slots = cardsInSlots(tokenIDs);
 
@@ -434,8 +470,11 @@ contract PuzzleCard is ERC1155Tradable {
         return (ok, r, slots);
     }
 
-    function jumpIntoBeacon(uint256[] memory tokenIDs) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canJumpIntoBeacon(tokenIDs); require(ok, string(abi.encode(r)));
+    function jumpIntoBeacon(uint256 playerID, uint256 lensID, uint256 beaconID) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canJumpIntoBeacon(playerID, lensID, beaconID);
+        require(ok, string(abi.encode(r)));
+
+        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = lensID; tokenIDs[2] = beaconID; // TMP
 
         Attributes memory torchOrGlasses = slots[1].card;
         Attributes memory beacon = slots[2].card;
@@ -452,8 +491,10 @@ contract PuzzleCard is ERC1155Tradable {
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canJumpIntoBeacon(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canJumpIntoBeacon(uint256 playerID, uint256 lensID, uint256 beaconID) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](6));
+
+        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = lensID; tokenIDs[2] = beaconID; // TMP
 
         CardSlot[] memory slots = cardsInSlots(tokenIDs);
 
@@ -472,8 +513,11 @@ contract PuzzleCard is ERC1155Tradable {
         return (ok, r, slots);
     }
 
-    function jumpIntoEclipse(uint256[] memory tokenIDs) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canJumpIntoEclipse(tokenIDs); require(ok, string(abi.encode(r)));
+    function jumpIntoEclipse(uint256 playerID, uint256 eclipseID, uint256 doorID) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canJumpIntoEclipse(playerID, eclipseID, doorID);
+        require(ok, string(abi.encode(r)));
+
+        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = eclipseID; tokenIDs[2] = doorID; // TMP
 
         Attributes memory door = slots[1].card;
 
@@ -489,8 +533,10 @@ contract PuzzleCard is ERC1155Tradable {
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canJumpIntoEclipse(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canJumpIntoEclipse(uint256 playerID, uint256 eclipseID, uint256 doorID) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](7));
+
+        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = eclipseID; tokenIDs[2] = doorID; // TMP
 
         CardSlot[] memory slots = cardsInSlots(tokenIDs);
 
@@ -511,8 +557,11 @@ contract PuzzleCard is ERC1155Tradable {
         return (ok, r, slots);
     }
 
-    function puzzleMastery1(uint256[] memory tokenIDs) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canPuzzleMastery1(tokenIDs); require(ok, string(abi.encode(r)));
+    function puzzleMastery1(uint256 artworkID1, uint256 artworkID2) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canPuzzleMastery1(artworkID1, artworkID2);
+        require(ok, string(abi.encode(r)));
+
+        uint256[] memory tokenIDs = new uint256[](2); tokenIDs[0] = artworkID1; tokenIDs[1] = artworkID2;
 
         Attributes memory artwork0 = slots[0].card;
 
@@ -529,8 +578,10 @@ contract PuzzleCard is ERC1155Tradable {
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canPuzzleMastery1(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canPuzzleMastery1(uint256 artworkID1, uint256 artworkID2) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](6));
+
+        uint256[] memory tokenIDs = new uint256[](2); tokenIDs[0] = artworkID1; tokenIDs[1] = artworkID2;
 
         // We need to do this manually because both Artwork cards would be put into the same slot otherwise.
         // We can skip the sameTier check because Artwork cards only spawn at Master tier.
@@ -562,8 +613,11 @@ contract PuzzleCard is ERC1155Tradable {
         return (ok, r, slots);
     }
 
-    function puzzleMastery2(uint256[] memory tokenIDs) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canPuzzleMastery2(tokenIDs); require(ok, string(abi.encode(r)));
+    function puzzleMastery2(uint256 starID1, uint256 starID2, uint256 starID3, uint256 starID4, uint256 starID5, uint256 starID6, uint256 starID7) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canPuzzleMastery2(starID1, starID2, starID3, starID4, starID5, starID6, starID7);
+        require(ok, string(abi.encode(r)));
+
+        uint256[] memory tokenIDs = new uint256[](7); tokenIDs[0] = starID1; tokenIDs[1] = starID2; tokenIDs[2] = starID3; tokenIDs[3] = starID4; tokenIDs[4] = starID5; tokenIDs[5] = starID6; tokenIDs[6] = starID7;
 
         Attributes memory star = slots[randomNumber() % 7].card;
 
@@ -601,8 +655,10 @@ contract PuzzleCard is ERC1155Tradable {
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canPuzzleMastery2(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canPuzzleMastery2(uint256 starID1, uint256 starID2, uint256 starID3, uint256 starID4, uint256 starID5, uint256 starID6, uint256 starID7) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](4));
+
+        uint256[] memory tokenIDs = new uint256[](7); tokenIDs[0] = starID1; tokenIDs[1] = starID2; tokenIDs[2] = starID3; tokenIDs[3] = starID4; tokenIDs[4] = starID5; tokenIDs[5] = starID6; tokenIDs[6] = starID7;
 
         // We need to do this manually because all Star cards would be put into the same slot otherwise.
         // We can skip the sameTier check because Star cards only spawn at Master tier.
@@ -637,8 +693,11 @@ contract PuzzleCard is ERC1155Tradable {
         return (ok, r, slots);
     }
 
-    function discard2Pickup1(uint256[] memory tokenIDs) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canDiscard2Pickup1(tokenIDs); require(ok, string(abi.encode(r)));
+    function discard2Pickup1(uint256 tokenID1, uint256 tokenID2) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canDiscard2Pickup1(tokenID1, tokenID2);
+        require(ok, string(abi.encode(r)));
+
+        uint256[] memory tokenIDs = new uint256[](2); tokenIDs[0] = tokenID1; tokenIDs[1] = tokenID2;
 
         Attributes memory card0 = slots[0].card;
         Attributes memory card1 = slots[1].card;
@@ -676,8 +735,10 @@ contract PuzzleCard is ERC1155Tradable {
         replace(tokenIDs, starterCardForTier(tier, cond));
     }
 
-    function canDiscard2Pickup1(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canDiscard2Pickup1(uint256 tokenID1, uint256 tokenID2) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](4));
+
+        uint256[] memory tokenIDs = new uint256[](2); tokenIDs[0] = tokenID1; tokenIDs[1] = tokenID2;
 
         // We need to do this manually because the cards might be put into the same slot.
         // We can skip the sameTier check because you're allowed to discard cards from mixed tiers.

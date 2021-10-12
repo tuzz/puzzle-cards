@@ -2,17 +2,17 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
-const { tokenID, baseCard } = TestUtils;
+const { card, baseCard } = TestUtils;
 const PuzzleCard = require("../../contracts/PuzzleCard");
 
 describe("PuzzleMastery2", () => {
-  const starCard1 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Red" };
-  const starCard2 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Green" };
-  const starCard3 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Blue" };
-  const starCard4 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Yellow" };
-  const starCard5 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-1", tier: "Master", color1: "Pink" };
-  const starCard6 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-1", tier: "Master", color1: "White" };
-  const starCard7 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-2", tier: "Master", color1: "Black" };
+  const starCard1 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Red" });
+  const starCard2 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Green" });
+  const starCard3 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Blue" });
+  const starCard4 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Yellow" });
+  const starCard5 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "Puzzle 1-1", tier: "Master", color1: "Pink" });
+  const starCard6 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "Puzzle 1-1", tier: "Master", color1: "White" });
+  const starCard7 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "Puzzle 1-2", tier: "Master", color1: "Black" });
 
   const validCards = [starCard1, starCard2, starCard3, starCard4, starCard5, starCard6, starCard7];
   const validTypes = [["Star"], ["Star"], ["Star"], ["Star"], ["Star"], ["Star"], ["Star"]];
@@ -30,57 +30,49 @@ describe("PuzzleMastery2", () => {
 
     beforeEach(async () => {
       contract = await factory.deploy(constants.ZERO_ADDRESS);
-      TestUtils.addHelpfulMethodsTo(contract);
+      PuzzleCard.setContract(contract);
     });
 
     it("cannot be performed if a color was repeated", async () => {
-      const tokenID1 = await tokenID(contract.mintExactByNames(starCard1, owner.address));
-      const tokenID2 = await tokenID(contract.mintExactByNames(starCard2, owner.address));
-      const tokenID3 = await tokenID(contract.mintExactByNames(starCard3, owner.address));
-      const tokenID4 = await tokenID(contract.mintExactByNames(starCard4, owner.address));
-      const tokenID5 = await tokenID(contract.mintExactByNames(starCard5, owner.address));
-      const tokenID6 = await tokenID(contract.mintExactByNames(starCard6, owner.address));
-      const tokenID7 = await tokenID(contract.mintExactByNames({ ...starCard7, color1: "Red" }, owner.address));
+      const card1 = await PuzzleCard.mintExact(starCard1, owner.address);
+      const card2 = await PuzzleCard.mintExact(starCard2, owner.address);
+      const card3 = await PuzzleCard.mintExact(starCard3, owner.address);
+      const card4 = await PuzzleCard.mintExact(starCard4, owner.address);
+      const card5 = await PuzzleCard.mintExact(starCard5, owner.address);
+      const card6 = await PuzzleCard.mintExact(starCard6, owner.address);
+      const card7 = await PuzzleCard.mintExact(new PuzzleCard({ ...starCard7, color1: "Red" }), owner.address);
 
-      const tokenIDs = [tokenID1, tokenID2, tokenID3, tokenID4, tokenID5, tokenID6, tokenID7];
-      const [isAllowed, reasons] = await contract.canPuzzleMastery2(tokenIDs);
+      const cards = [card1, card2, card3, card4, card5, card6, card7];
+      const [isAllowed, reasons] = await PuzzleCard.canPuzzleMastery2(cards);
 
       expect(isAllowed).to.equal(false);
       expect(reasons).to.deep.include("[a color was repeated]", reasons);
     });
 
     it("mints an art card", async () => {
-      const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
-        contract.mintExactByNames(card, owner.address)
-      ));
+      for (const card of validCards) {
+        await PuzzleCard.mintExact(card, owner.address);
+      }
 
-      const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
+      const mintedCard = await PuzzleCard.puzzleMastery2(validCards);
 
-      const type = await contract.typeName(mintedTokenID);
-      const color1 = await contract.color1Name(mintedTokenID);
-      const color2 = await contract.color2Name(mintedTokenID);
-      const variant = await contract.variantName(mintedTokenID);
-
-      expect(type).to.equal("Artwork");
-      expect(color1).to.equal("None");
-      expect(color2).to.equal("None");
-      expect(["Art 0", "Art 1"]).to.include(variant);
+      expect(mintedCard.type).to.equal("Artwork");
+      expect(mintedCard.color1).to.equal("None");
+      expect(mintedCard.color2).to.equal("None");
+      expect(["Art 0", "Art 1"]).to.include(mintedCard.variant);
     });
 
     it("randomly chooses the puzzle from one of the star cards", async () => {
       const puzzleNames = [];
 
       for (let i = 0; i < 200; i += 1) {
-        const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
-          contract.mintExactByNames(card, owner.address)
-        ));
+        for (const card of validCards) {
+          await PuzzleCard.mintExact(card, owner.address);
+        }
 
-        const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
+        const mintedCard = await PuzzleCard.puzzleMastery2(validCards);
 
-        const series = await contract.seriesName(mintedTokenID);
-        const puzzle = await contract.puzzleName(mintedTokenID);
-
-        puzzleNames.push([series, puzzle]);
+        puzzleNames.push([mintedCard.series, mintedCard.puzzle]);
       }
 
       const frequencies = TestUtils.tallyFrequencies(puzzleNames);
@@ -91,17 +83,17 @@ describe("PuzzleMastery2", () => {
     });
 
     context("when all star cards are pristine", () => {
-      const pristineCards = validCards.map(c => ({ ...c, condition: "Pristine" }));
+      const pristineCards = validCards.map(c => new PuzzleCard({ ...c, condition: "Pristine" }));
 
       it("guarantees that the minted card is also pristine", async () => {
         for (let i = 0; i < 50; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames(card, owner.address)
-          ));
+          for (const card of pristineCards) {
+            await PuzzleCard.mintExact(card, owner.address);
+          }
 
-          const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
+          const mintedCard = await PuzzleCard.puzzleMastery2(pristineCards);
 
-          expect(await contract.conditionName(mintedTokenID)).to.equal("Pristine");
+          expect(mintedCard.condition).to.equal("Pristine");
         }
       });
 
@@ -109,13 +101,13 @@ describe("PuzzleMastery2", () => {
         const editionNames = [];
 
         for (let i = 0; i < 100; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames(card, owner.address)
-          ));
+          for (const card of pristineCards) {
+            await PuzzleCard.mintExact(card, owner.address);
+          }
 
-          const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
+          const mintedCard = await PuzzleCard.puzzleMastery2(pristineCards);
 
-          editionNames.push(await contract.editionName(mintedTokenID));
+          editionNames.push(mintedCard.edition);
         }
 
         // Master copies are limited edition cards (it's a containment hierarchy).
@@ -131,13 +123,15 @@ describe("PuzzleMastery2", () => {
         const editionNames = [];
 
         for (let i = 0; i < 200; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, puzzle: "Puzzle 1-1" }, owner.address)
-          ));
+          const cards = [];
 
-          const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
+          for (const card of pristineCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+          }
 
-          editionNames.push(await contract.editionName(mintedTokenID));
+          const mintedCard = await PuzzleCard.puzzleMastery2(cards);
+
+          editionNames.push(mintedCard.edition);
         }
 
         // Master copies are limited edition cards (it's a containment hierarchy).
@@ -150,15 +144,15 @@ describe("PuzzleMastery2", () => {
         let masterCopyMinted = false;
 
         for (let i = 0; i < 100; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, puzzle: "Puzzle 1-1" }, owner.address)
-          ));
+          const cards = [];
 
-          const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
+          for (const card of pristineCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+          }
 
-          const edition = await contract.editionName(mintedTokenID);
+          const mintedCard = await PuzzleCard.puzzleMastery2(cards);
 
-          if (edition === "Master Copy") {
+          if (mintedCard.edition === "Master Copy") {
             expect(masterCopyMinted).to.equal(false);
             masterCopyMinted = true;
           }
@@ -169,11 +163,13 @@ describe("PuzzleMastery2", () => {
 
       it("provides a method to get the number of limited edition cards for a puzzle", async () => {
         for (let i = 0; i < 200; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, series: "Series 1", puzzle: "Puzzle 1-1" }, owner.address)
-          ));
+          const cards = [];
 
-          await contract.puzzleMastery2(tokenIDs);
+          for (const card of pristineCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+          }
+
+          await PuzzleCard.puzzleMastery2(cards);
         }
 
         const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
@@ -184,11 +180,13 @@ describe("PuzzleMastery2", () => {
 
       it("provides a method to get whether the master copy has been claimed for a puzzle", async () => {
         for (let i = 0; i < 50; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, series: "Series 1", puzzle: "Puzzle 1-1" }, owner.address)
-          ));
+          const cards = [];
 
-          await contract.puzzleMastery2(tokenIDs);
+          for (const card of pristineCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+          }
+
+          await PuzzleCard.puzzleMastery2(cards);
         }
 
         const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
@@ -199,14 +197,16 @@ describe("PuzzleMastery2", () => {
 
       it("can mint limited editions and the master copy again if others are discarded", async () => {
         const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
-        const mintedTokenIDs = [];
+        const mintedCards = [];
 
         for (let i = 0; i < 300; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, series: "Series 1", puzzle: "Puzzle 1-1" }, owner.address)
-          ));
+          const cards = [];
 
-          mintedTokenIDs.push(await tokenID(contract.puzzleMastery2(tokenIDs)));
+          for (const card of pristineCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+          }
+
+          mintedCards.push(await PuzzleCard.puzzleMastery2(cards));
         }
 
         const numLimited = await card.numLimitedEditions(contract);
@@ -217,10 +217,10 @@ describe("PuzzleMastery2", () => {
 
         // Discard the first half of the cards.
         for (let i = 0; i < 150; i += 2) {
-          const tokenID1 = mintedTokenIDs[i];
-          const tokenID2 = mintedTokenIDs[i + 1];
+          const card1 = mintedCards[i];
+          const card2 = mintedCards[i + 1];
 
-          await contract.discard2Pickup1([tokenID1, tokenID2]);
+          await PuzzleCard.discard2Pickup1([card1, card2]);
         }
 
         const numLimitedAfterDiscard = await card.numLimitedEditions(contract);
@@ -231,11 +231,13 @@ describe("PuzzleMastery2", () => {
 
         // Mint another 150 cards.
         for (let i = 0; i < 150; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, series: "Series 1", puzzle: "Puzzle 1-1" }, owner.address)
-          ));
+          const cards = [];
 
-          await contract.puzzleMastery2(tokenIDs);
+          for (const card of pristineCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+          }
+
+          await PuzzleCard.puzzleMastery2(cards);
         }
 
         const numLimitedAfterReMint = await card.numLimitedEditions(contract);
@@ -251,13 +253,13 @@ describe("PuzzleMastery2", () => {
         const conditionNames = new Set();
 
         for (let i = 0; i < 100; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
-            contract.mintExactByNames(card, owner.address)
-          ));
+          for (const card of validCards) {
+            await PuzzleCard.mintExact(card, owner.address);
+          }
 
-          const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
+          const mintedCard = await PuzzleCard.puzzleMastery2(validCards);
 
-          conditionNames.add(await contract.conditionName(mintedTokenID));
+          conditionNames.add(mintedCard.condition);
         }
 
         expect(conditionNames.size).to.be.above(1);
@@ -265,13 +267,13 @@ describe("PuzzleMastery2", () => {
 
       it("always mints a signed edition", async () => {
         for (let i = 0; i < 100; i += 1) {
-          const tokenIDs = await TestUtils.tokenIDs(validCards, card => (
-            contract.mintExactByNames(card, owner.address)
-          ));
+          for (const card of validCards) {
+            await PuzzleCard.mintExact(card, owner.address);
+          }
 
-          const mintedTokenID = await tokenID(contract.puzzleMastery2(tokenIDs));
+          const mintedCard = await PuzzleCard.puzzleMastery2(validCards);
 
-          expect(await contract.editionName(mintedTokenID)).to.equal("Signed");
+          expect(mintedCard.edition).to.equal("Signed");
         }
       });
     });

@@ -2,11 +2,12 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
-const { tokenID, baseCard } = TestUtils;
+const { card, baseCard } = TestUtils;
+const PuzzleCard = require("../../contracts/PuzzleCard");
 
 describe("Discard2Pickup1", () => {
-  const playerCard = { ...baseCard, type: "Player" };
-  const doorCard = { ...baseCard, type: "Door", variant: "Open" };
+  const playerCard = new PuzzleCard({ ...baseCard, type: "Player" });
+  const doorCard = new PuzzleCard({ ...baseCard, type: "Door", variant: "Open" });
 
   const anyType = ["Player", "Crab", "Inactive", "Active", "Cloak", "Telescope", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Door", "Hidden", "Star", "Artwork"];
 
@@ -23,41 +24,36 @@ describe("Discard2Pickup1", () => {
 
     beforeEach(async () => {
       contract = await factory.deploy(constants.ZERO_ADDRESS);
-      TestUtils.addHelpfulMethodsTo(contract);
+      PuzzleCard.setContract(contract);
     });
 
     it("can be performed if two copies of the same card are used", async () => {
-      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
-      const tokenID2 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+      await PuzzleCard.mintExact(playerCard, owner.address);
+      await PuzzleCard.mintExact(playerCard, owner.address);
 
-      const [isAllowed, reasons] = await contract.canDiscard2Pickup1([tokenID1, tokenID2]);
+      const [isAllowed, reasons] = await PuzzleCard.canDiscard2Pickup1([playerCard, playerCard]);
 
       expect(isAllowed).to.equal(true);
-      expect(tokenID1).to.equal(tokenID2);
     });
 
     it("cannot be performed if the same card is used twice (double spent)", async () => {
-      const tokenID1 = await tokenID(contract.mintExactByNames(playerCard, owner.address));
+      await PuzzleCard.mintExact(playerCard, owner.address);
 
-      const [isAllowed, reasons] = await contract.canDiscard2Pickup1([tokenID1, tokenID1]);
+      const [isAllowed, reasons] = await PuzzleCard.canDiscard2Pickup1([playerCard, playerCard]);
 
       expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[the same card was used twice]", reasons);
     });
 
     it("inherits the tier and condition from the discarded cards", async () => {
       const tierConditionPairs = [];
 
       for (let i = 0; i < 200; i += 1) {
-        const tokenID1 = await tokenID(contract.mintExactByNames({ ...playerCard, tier: "Immortal", condition: "Pristine" }, owner.address));
-        const tokenID2 = await tokenID(contract.mintExactByNames({ ...doorCard, tier: "Master", condition: "Dire" }, owner.address));
+        const card1 = await PuzzleCard.mintExact(new PuzzleCard({ ...playerCard, tier: "Immortal", condition: "Pristine" }), owner.address);
+        const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...doorCard, tier: "Master", condition: "Dire" }), owner.address);
 
-        const mintedTokenID = await tokenID(contract.discard2Pickup1([tokenID1, tokenID2]));
+        const mintedCard = await PuzzleCard.discard2Pickup1([card1, card2]);
 
-        const tier = await contract.tierName(mintedTokenID);
-        const condition = await contract.conditionName(mintedTokenID);
-
-        tierConditionPairs.push([tier, condition]);
+        tierConditionPairs.push([mintedCard.tier, mintedCard.condition]);
       }
 
       const frequencies = TestUtils.tallyFrequencies(tierConditionPairs);

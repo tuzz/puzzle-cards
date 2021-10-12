@@ -11,6 +11,162 @@ class PuzzleCard {
     this.edition = edition;
   }
 
+  static setContract(contract) {
+    PuzzleCard.CONTRACT = contract;
+  }
+
+  static actionsThatCanBeTaken(puzzleCards) {
+    return Promise.all([
+      PuzzleCard.canActivateSunOrMoon(puzzleCards).then(([can])    => can ? "activateSunOrMoon" : null),
+      PuzzleCard.canLookThroughTelescope(puzzleCards).then(([can]) => can ? "lookThroughTelescope" : null),
+      PuzzleCard.canLookThroughGlasses(puzzleCards).then(([can])   => can ? "lookThroughGlasses" : null),
+      PuzzleCard.canChangeLensColor(puzzleCards).then(([can])      => can ? "changeLensColor" : null),
+      PuzzleCard.canShineTorchOnBasePair(puzzleCards).then(([can]) => can ? "shineTorchOnBasePair" : null),
+      PuzzleCard.canTeleportToNextArea(puzzleCards).then(([can])   => can ? "teleportToNextArea" : null),
+      PuzzleCard.canGoThroughStarDoor(puzzleCards).then(([can])    => can ? "goThroughStarDoor" : null),
+      PuzzleCard.canJumpIntoBeacon(puzzleCards).then(([can])       => can ? "jumpIntoBeacon" : null),
+      PuzzleCard.canJumpIntoEclipse(puzzleCards).then(([can])      => can ? "jumpIntoEclipse" : null),
+      PuzzleCard.canPuzzleMastery1(puzzleCards).then(([can])       => can ? "puzzleMastery1" : null),
+      PuzzleCard.canPuzzleMastery2(puzzleCards).then(([can])       => can ? "puzzleMastery2" : null),
+      PuzzleCard.canDiscard2Pickup1(puzzleCards).then(([can])      => can ? "discard2Pickup1" : null),
+    ]).then(actionNames => actionNames.filter(n => n));
+  }
+
+  static activateSunOrMoon(puzzleCards) {
+    return PuzzleCard.performAction("activateSunOrMoon", puzzleCards, 2);
+  }
+
+  static canActivateSunOrMoon(puzzleCards) {
+    return PuzzleCard.canPerformAction("canActivateSunOrMoon", puzzleCards, 2);
+  }
+
+  static lookThroughTelescope(puzzleCards) {
+    return PuzzleCard.performAction("lookThroughTelescope", puzzleCards, 3);
+  }
+
+  static canLookThroughTelescope(puzzleCards) {
+    return PuzzleCard.canPerformAction("canLookThroughTelescope", puzzleCards, 3);
+  }
+
+  static lookThroughGlasses(puzzleCards) {
+    return PuzzleCard.performAction("lookThroughGlasses", puzzleCards, 3);
+  }
+
+  static canLookThroughGlasses(puzzleCards) {
+    return PuzzleCard.canPerformAction("canLookThroughGlasses", puzzleCards, 3);
+  }
+
+  static changeLensColor(puzzleCards) {
+    return PuzzleCard.performAction("changeLensColor", puzzleCards, 3);
+  }
+
+  static canChangeLensColor(puzzleCards) {
+    return PuzzleCard.canPerformAction("canChangeLensColor", puzzleCards, 3);
+  }
+
+  static shineTorchOnBasePair(puzzleCards) {
+    return PuzzleCard.performAction("shineTorchOnBasePair", puzzleCards, 3);
+  }
+
+  static canShineTorchOnBasePair(puzzleCards) {
+    return PuzzleCard.canPerformAction("canShineTorchOnBasePair", puzzleCards, 3);
+  }
+
+  static teleportToNextArea(puzzleCards) {
+    return PuzzleCard.performAction("teleportToNextArea", puzzleCards, 3);
+  }
+
+  static canTeleportToNextArea(puzzleCards) {
+    return PuzzleCard.canPerformAction("canTeleportToNextArea", puzzleCards, 3);
+  }
+
+  static goThroughStarDoor(puzzleCards) {
+    return PuzzleCard.performAction("goThroughStarDoor", puzzleCards, 2);
+  }
+
+  static canGoThroughStarDoor(puzzleCards) {
+    return PuzzleCard.canPerformAction("canGoThroughStarDoor", puzzleCards, 2);
+  }
+
+  static jumpIntoBeacon(puzzleCards) {
+    return PuzzleCard.performAction("jumpIntoBeacon", puzzleCards, 3);
+  }
+
+  static canJumpIntoBeacon(puzzleCards) {
+    return PuzzleCard.canPerformAction("canJumpIntoBeacon", puzzleCards, 3);
+  }
+
+  static jumpIntoEclipse(puzzleCards) {
+    return PuzzleCard.performAction("jumpIntoEclipse", puzzleCards, 3);
+  }
+
+  static canJumpIntoEclipse(puzzleCards) {
+    return PuzzleCard.canPerformAction("canJumpIntoEclipse", puzzleCards, 3);
+  }
+
+  static puzzleMastery1(puzzleCards) {
+    return PuzzleCard.performAction("puzzleMastery1", puzzleCards, 2);
+  }
+
+  static canPuzzleMastery1(puzzleCards) {
+    return PuzzleCard.canPerformAction("canPuzzleMastery1", puzzleCards, 2);
+  }
+
+  static puzzleMastery2(puzzleCards) {
+    return PuzzleCard.performAction("puzzleMastery2", puzzleCards, 7);
+  }
+
+  static canPuzzleMastery2(puzzleCards) {
+    return PuzzleCard.canPerformAction("canPuzzleMastery2", puzzleCards, 7);
+  }
+
+  static discard2Pickup1(puzzleCards) {
+    return PuzzleCard.performAction("discard2Pickup1", puzzleCards, 2);
+  }
+
+  static canDiscard2Pickup1(puzzleCards) {
+    return PuzzleCard.canPerformAction("canDiscard2Pickup1", puzzleCards, 2);
+  }
+
+  static mintExact(puzzleCard, to) {
+    return PuzzleCard.CONTRACT.mintExact_(puzzleCard.tokenID(), to).then(() => puzzleCard);
+  }
+
+  static updateConstants() {
+    return PuzzleCard.CONTRACT.updateConstants(
+      PuzzleCard.NUM_PUZZLES_PER_SERIES,
+      PuzzleCard.PUZZLE_OFFSET_PER_SERIES,
+      PuzzleCard.NUM_VARIANTS_PER_TYPE,
+      PuzzleCard.VARIANT_OFFSET_PER_TYPE,
+      PuzzleCard.METADATA_URI,
+      PuzzleCard.PRICE_PER_CARD,
+    );
+  }
+
+  static performAction(actionName, puzzleCards, expectedNumArgs) {
+    if (puzzleCards.length != expectedNumArgs) {
+      throw new Error(`[${expectedNumArgs} cards are required]`);
+    }
+
+    return PuzzleCard.call(actionName, puzzleCards).then(PuzzleCard.fromTransaction);
+  }
+
+  static canPerformAction(actionName, puzzleCards, expectedNumArgs) {
+    if (puzzleCards.length != expectedNumArgs) {
+      return Promise.resolve([false, `[${expectedNumArgs} cards are required]`]);
+    }
+
+    return PuzzleCard.call(actionName, puzzleCards).then(([b, r]) => [b, r.filter(s => s)]);
+  }
+
+  static call(functionName, puzzleCards) {
+    const args = [...puzzleCards]
+      .sort((a, b) => a.typeIndex() - b.typeIndex())
+      .map(card => card.tokenID());
+
+    return PuzzleCard.CONTRACT[functionName](...args);
+  }
+
   static allCards() {
     // TODO
   }
@@ -28,42 +184,27 @@ class PuzzleCard {
     ));
   }
 
+  static fromTransaction(transaction) {
+    return transaction.wait().then(receiver => {
+      const event = receiver.events.filter(e => e.event === "TransferSingle")[0];
+      const tokenID = event.args.id.toBigInt();
+
+      return PuzzleCard.fromTokenID(tokenID);
+    });
+  }
+
   static fromTokenID(tokenID) {
-    return this.fromHexString(tokenID.toString(16));
+    return PuzzleCard.fromHexString(tokenID.toString(16));
   }
 
   tokenID() {
     return BigInt(this.hexString());
   }
 
-  static actionsThatCanBeTaken(contract, tokenIDs) {
-    return Promise.all(
-      PuzzleCard.CAN_ACTION_NAMES.map((canActionName, i) => (
-        contract[canActionName](tokenIDs).then(returnValue => (
-          returnValue[0] ? PuzzleCard.ACTION_NAMES[i] : null
-        ))
-      ))
-    ).then(actionNames => actionNames.filter(n => n));
-  }
-
   static priceToMint(numberToMint) {
     return BigInt(numberToMint) * PuzzleCard.PRICE_PER_CARD;
   }
 
-  static updateConstants(contract) {
-    return contract.updateConstants(
-      PuzzleCard.NUM_PUZZLES_PER_SERIES,
-      PuzzleCard.PUZZLE_OFFSET_PER_SERIES,
-      PuzzleCard.NUM_VARIANTS_PER_TYPE,
-      PuzzleCard.VARIANT_OFFSET_PER_TYPE,
-      PuzzleCard.METADATA_URI,
-      PuzzleCard.PRICE_PER_CARD,
-    );
-  }
-
-  static updateVariants(contract) {
-    return contract.setVariants(PuzzleCard.NUM_VARIANTS_PER_TYPE, PuzzleCard.VARIANT_OFFSET_PER_TYPE);
-  }
 
   numLimitedEditions(contract) {
     return contract.limitedEditions(BigInt(this.editionsHexString()));
