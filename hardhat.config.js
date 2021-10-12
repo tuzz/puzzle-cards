@@ -15,6 +15,10 @@ module.exports = {
       },
     },
   },
+  paths: {
+    artifacts: "./.artifacts",
+    cache: "./.cache",
+  },
   networks: {
     hardhat: {
       allowUnlimitedContractSize: true,
