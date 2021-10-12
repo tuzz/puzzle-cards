@@ -20,6 +20,7 @@ describe("MintingRandomly", () => {
 
   beforeEach(async () => {
     contract = await factory.deploy(constants.ZERO_ADDRESS);
+    TestUtils.addHelpfulMethodsTo(contract);
   });
 
   describe("series", () => {

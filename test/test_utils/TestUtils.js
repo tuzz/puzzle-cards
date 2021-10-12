@@ -1,7 +1,22 @@
+const PuzzleCard = require("../../contracts/PuzzleCard");
+
 const TestUtils = {};
 
 TestUtils.addHelpfulMethodsTo = (contract) => {
   contract.mintExactByNames = TestUtils.mintExactByNames(contract);
+
+  contract.seriesName = (tokenID) => PuzzleCard.fromTokenID(tokenID).series;
+  contract.puzzleName = (tokenID) => PuzzleCard.fromTokenID(tokenID).puzzle;
+  contract.tierName = (tokenID) => PuzzleCard.fromTokenID(tokenID).tier;
+  contract.typeName = (tokenID) => PuzzleCard.fromTokenID(tokenID).type;
+  contract.color1Name = (tokenID) => PuzzleCard.fromTokenID(tokenID).color1;
+  contract.color2Name = (tokenID) => PuzzleCard.fromTokenID(tokenID).color2;
+  contract.variantName = (tokenID) => PuzzleCard.fromTokenID(tokenID).variant;
+  contract.conditionName = (tokenID) => PuzzleCard.fromTokenID(tokenID).condition;
+  contract.editionName = (tokenID) => PuzzleCard.fromTokenID(tokenID).edition;
+
+  contract.actionsThatCanBeTaken = (tokenIDs) => PuzzleCard.actionsThatCanBeTaken(contract, tokenIDs);
+  contract.priceToMint = (numberToMint) => PuzzleCard.priceToMint(numberToMint);
 };
 
 TestUtils.baseCard = {
@@ -115,24 +130,20 @@ TestUtils.tallyFrequenciesInGroups = (pairs) => {
 };
 
 TestUtils.readArrays = async (contract) => {
-  await TestUtils.readArray(contract, "seriesNames");
-  await TestUtils.readArray(contract, "puzzleNames");
-  await TestUtils.readArray(contract, "tierNames");
-  await TestUtils.readArray(contract, "typeNames");
-  await TestUtils.readArray(contract, "colorNames");
-  await TestUtils.readArray(contract, "variantNames");
-  await TestUtils.readArray(contract, "conditionNames");
-  await TestUtils.readArray(contract, "editionNames");
+  TestUtils.seriesNames = PuzzleCard.SERIES_NAMES;
+  TestUtils.puzzleNames = PuzzleCard.PUZZLE_NAMES;
+  TestUtils.tierNames = PuzzleCard.TIER_NAMES;
+  TestUtils.typeNames = PuzzleCard.TYPE_NAMES;
+  TestUtils.colorNames = PuzzleCard.COLOR_NAMES;
+  TestUtils.variantNames = PuzzleCard.VARIANT_NAMES;
+  TestUtils.conditionNames = PuzzleCard.CONDITION_NAMES;
+  TestUtils.editionNames = PuzzleCard.EDITION_NAMES;
 
-  await TestUtils.readArray(contract, "numPuzzlesPerSeries");
-  await TestUtils.readArray(contract, "puzzleOffsetPerSeries");
-  await TestUtils.readArray(contract, "numColorSlotsPerType");
-  await TestUtils.readArray(contract, "numVariantsPerType");
-  await TestUtils.readArray(contract, "variantOffsetPerType");
-
-  await TestUtils.readArray(contract, "tierProbabilities");
-  await TestUtils.readArray(contract, "typeProbabilities");
-  await TestUtils.readArray(contract, "conditionProbabilities");
+  TestUtils.numPuzzlesPerSeries = PuzzleCard.NUM_PUZZLES_PER_SERIES;
+  TestUtils.puzzleOffsetPerSeries = PuzzleCard.PUZZLE_OFFSET_PER_SERIES;
+  TestUtils.numColorSlotsPerType = PuzzleCard.NUM_COLOR_SLOTS_PER_TYPE;
+  TestUtils.numVariantsPerType = PuzzleCard.NUM_VARIANTS_PER_TYPE;
+  TestUtils.variantOffsetPerType = PuzzleCard.VARIANT_OFFSET_PER_TYPE;
 
   TestUtils.arraysRead = true;
 };

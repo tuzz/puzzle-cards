@@ -12,11 +12,13 @@ describe("Minting", () => {
 
   beforeEach(async () => {
     contract = await factory.deploy(constants.ZERO_ADDRESS);
+    TestUtils.addHelpfulMethodsTo(contract);
   });
 
   describe("#mint", () => {
     it("allows a user to mint cards in exchange for payment", async () => {
       const contractAsUser1 = contract.connect(user1);
+      TestUtils.addHelpfulMethodsTo(contractAsUser1);
 
       const price = await contractAsUser1.priceToMint(3);
 
@@ -31,13 +33,15 @@ describe("Minting", () => {
       const balanceBefore = await ethers.provider.getBalance(owner.address);
 
       const contractAsUser1 = contract.connect(user1);
+      TestUtils.addHelpfulMethodsTo(contractAsUser1);
+
       const price = await contractAsUser1.priceToMint(3);
       await contractAsUser1.mint(3, user2.address, { value: price });
 
       const balanceAfter = await ethers.provider.getBalance(owner.address);
       const delta = balanceAfter.toBigInt() - balanceBefore.toBigInt();
 
-      expect(delta).to.equal(price.toBigInt());
+      expect(delta).to.equal(price);
     });
 
     it("reverts if no payment is provided", async () => {
@@ -46,7 +50,9 @@ describe("Minting", () => {
 
     it("reverts if insufficient payment is provided", async () => {
       const price = contract.priceToMint(3);
-      await expectRevert.unspecified(contract.mint(3, user2.address, { value: price - 1 }));
+      const notEnough = price - BigInt(1);
+
+      await expectRevert.unspecified(contract.mint(3, user2.address, { value: notEnough }));
     });
 
     it("reverts if the number to mint is 0", async () => {

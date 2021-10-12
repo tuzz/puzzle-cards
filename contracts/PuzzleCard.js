@@ -1,5 +1,5 @@
 class PuzzleCard {
-  constructor({ series, puzzle, tier, type, color1 = "None", color2 = "None", variant = "None", condition, edition }) {
+  constructor({ series, puzzle, tier, type, color1, color2, variant, condition, edition }) {
     this.series = series;
     this.puzzle = puzzle;
     this.tier = tier;
@@ -11,12 +11,66 @@ class PuzzleCard {
     this.edition = edition;
   }
 
+  static allCards() {
+    // TODO
+  }
+
+  static allPuzzles() {
+    return PuzzleCard.NUM_PUZZLES_PER_SERIES.flatMap((numPuzzles, seriesIndex) => (
+      [...Array(numPuzzles).keys()].map(relativePuzzleIndex => {
+        const puzzleOffset = PuzzleCard.PUZZLE_OFFSET_PER_SERIES[seriesIndex];
+
+        return new PuzzleCard({
+          series: PuzzleCard.SERIES_NAMES[seriesIndex],
+          puzzle: PuzzleCard.PUZZLE_NAMES[puzzleOffset + relativePuzzleIndex],
+        });
+      })
+    ));
+  }
+
   static fromTokenID(tokenID) {
     return this.fromHexString(tokenID.toString(16));
   }
 
   tokenID() {
     return BigInt(this.hexString());
+  }
+
+  static actionsThatCanBeTaken(contract, tokenIDs) {
+    return Promise.all(
+      PuzzleCard.CAN_ACTION_NAMES.map((canActionName, i) => (
+        contract[canActionName](tokenIDs).then(returnValue => (
+          returnValue[0] ? PuzzleCard.ACTION_NAMES[i] : null
+        ))
+      ))
+    ).then(actionNames => actionNames.filter(n => n));
+  }
+
+  static priceToMint(numberToMint) {
+    return BigInt(numberToMint) * PuzzleCard.PRICE_PER_CARD;
+  }
+
+  static updateConstants(contract) {
+    return contract.updateConstants(
+      PuzzleCard.NUM_PUZZLES_PER_SERIES,
+      PuzzleCard.PUZZLE_OFFSET_PER_SERIES,
+      PuzzleCard.NUM_VARIANTS_PER_TYPE,
+      PuzzleCard.VARIANT_OFFSET_PER_TYPE,
+      PuzzleCard.METADATA_URI,
+      PuzzleCard.PRICE_PER_CARD,
+    );
+  }
+
+  static updateVariants(contract) {
+    return contract.setVariants(PuzzleCard.NUM_VARIANTS_PER_TYPE, PuzzleCard.VARIANT_OFFSET_PER_TYPE);
+  }
+
+  numLimitedEditions(contract) {
+    return contract.limitedEditions(BigInt(this.editionsHexString()));
+  }
+
+  masterCopyClaimed(contract) {
+    return contract.masterCopiesClaimed(BigInt(this.editionsHexString()));
   }
 
   seriesIndex() {
@@ -63,8 +117,6 @@ class PuzzleCard {
     return PuzzleCard.EDITION_NAMES.indexOf(this.edition);
   }
 
-  // private
-
   static fromHexString(hex) {
     const startFrom = hex.length - 18;
     const indexes = [];
@@ -72,7 +124,7 @@ class PuzzleCard {
     for (let i = 0; i < 9; i += 1) {
       const offset = startFrom + i * 2;
       const digits = hex.substring(offset, offset + 2);
-      const index = parseInt(digits || "", 16);
+      const index = parseInt(digits || "0", 16);
 
       indexes.push(index);
     }
@@ -110,6 +162,13 @@ class PuzzleCard {
       this.editionIndex(),
     ].map(i => i.toString(16).padStart(2, "0")).join("");
   }
+
+  editionsHexString() {
+    return "0x" + [
+      this.seriesIndex(),
+      this.relativePuzzleIndex(),
+    ].map(i => i.toString(16).padStart(2, "0")).join("");
+  }
 }
 
 PuzzleCard.SERIES_NAMES = ["Series 0", "Series 1"];
@@ -121,6 +180,7 @@ PuzzleCard.VARIANT_NAMES = ["None", "Sun", "Moon", "Open", "Closed", "Art 0", "A
 PuzzleCard.CONDITION_NAMES = ["Dire", "Poor", "Reasonable", "Excellent", "Pristine"];
 PuzzleCard.EDITION_NAMES = ["Standard", "Signed", "Limited", "Master Copy"];
 PuzzleCard.ACTION_NAMES = ["activateSunOrMoon", "changeLensColor", "discard2Pickup1", "goThroughStarDoor", "jumpIntoBeacon", "jumpIntoEclipse", "lookThroughGlasses", "lookThroughTelescope", "puzzleMastery1", "puzzleMastery2", "shineTorchOnBasePair", "teleportToNextArea"];
+PuzzleCard.CAN_ACTION_NAMES = PuzzleCard.ACTION_NAMES.map(s => "can" + s[0].toUpperCase() + s.slice(1));
 
 PuzzleCard.NUM_PUZZLES_PER_SERIES = [2, 3];
 PuzzleCard.PUZZLE_OFFSET_PER_SERIES = [0, 2];
@@ -134,5 +194,8 @@ PuzzleCard.CONDITION_PROBABILITIES = [80, 20];
 PuzzleCard.STANDARD_TYPE_PROBABILITIES = [300, 100, 200, 100, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
 PuzzleCard.VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
 PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
+
+PuzzleCard.PRICE_PER_CARD = 78830000000000000n; // $0.10 in Polygon Wei.
+PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
 
 module.exports = PuzzleCard;

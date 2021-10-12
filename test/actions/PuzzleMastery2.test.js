@@ -3,6 +3,7 @@ const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
 const { tokenID, baseCard } = TestUtils;
+const PuzzleCard = require("../../contracts/PuzzleCard");
 
 describe("PuzzleMastery2", () => {
   const starCard1 = { ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Red" };
@@ -166,91 +167,81 @@ describe("PuzzleMastery2", () => {
         expect(masterCopyMinted).to.equal(true);
       });
 
-      it("provides methods to get the number of limited edition cards per puzzle", async () => {
+      it("provides a method to get the number of limited edition cards for a puzzle", async () => {
         for (let i = 0; i < 200; i += 1) {
           const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, puzzle: "Puzzle 1-1" }, owner.address)
+            contract.mintExactByNames({ ...card, series: "Series 1", puzzle: "Puzzle 1-1" }, owner.address)
           ));
 
           await contract.puzzleMastery2(tokenIDs);
         }
 
-        const puzzleIndex = TestUtils.puzzleNames.indexOf("Puzzle 1-1");
+        const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
+        const numLimited = await card.numLimitedEditions(contract);
 
-        const [series, puzzle] = await contract.puzzleForIndex(puzzleIndex);
-        const numLimited = await contract.numLimitedEditions(series, puzzle);
-        const allLimited = await contract.numLimitedEditionsForAllPuzzles();
-
-        expect(numLimited.toString()).to.equal("10");
-        expect(allLimited.map(n => n.toString())).to.deep.equal(["0", "0", "0", "10", "0"]);
+        expect(numLimited.toNumber()).to.equal(10);
       });
 
-      it("provides methods to get whether the master copy has been claimed per puzzle", async () => {
+      it("provides a method to get whether the master copy has been claimed for a puzzle", async () => {
         for (let i = 0; i < 50; i += 1) {
           const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, puzzle: "Puzzle 1-1" }, owner.address)
+            contract.mintExactByNames({ ...card, series: "Series 1", puzzle: "Puzzle 1-1" }, owner.address)
           ));
 
           await contract.puzzleMastery2(tokenIDs);
         }
 
-        const puzzleIndex = TestUtils.puzzleNames.indexOf("Puzzle 1-1");
-
-        const [series, puzzle] = await contract.puzzleForIndex(puzzleIndex);
-        const isClaimed = await contract.masterCopyClaimed(series, puzzle);
-        const allClaimed = await contract.masterCopyClaimedForAllPuzzles();
+        const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
+        const isClaimed = await card.masterCopyClaimed(contract);
 
         expect(isClaimed).to.equal(true);
-        expect(allClaimed).to.deep.equal([false, false, false, true, false]);
       });
 
       it("can mint limited editions and the master copy again if others are discarded", async () => {
-        const puzzleIndex = TestUtils.puzzleNames.indexOf("Puzzle 1-1");
-        const [series, puzzle] = await contract.puzzleForIndex(puzzleIndex);
-
+        const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
         const mintedTokenIDs = [];
 
-        for (let i = 0; i < 200; i += 1) {
+        for (let i = 0; i < 300; i += 1) {
           const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, puzzle: "Puzzle 1-1" }, owner.address)
+            contract.mintExactByNames({ ...card, series: "Series 1", puzzle: "Puzzle 1-1" }, owner.address)
           ));
 
           mintedTokenIDs.push(await tokenID(contract.puzzleMastery2(tokenIDs)));
         }
 
-        const numLimited = await contract.numLimitedEditions(series, puzzle);
-        const isClaimed = await contract.masterCopyClaimed(series, puzzle);
+        const numLimited = await card.numLimitedEditions(contract);
+        const isClaimed = await card.masterCopyClaimed(contract);
 
-        expect(numLimited.toString()).to.equal("10");
+        expect(numLimited.toNumber()).to.equal(10);
         expect(isClaimed).to.equal(true);
 
         // Discard the first half of the cards.
-        for (let i = 0; i < 100; i += 2) {
+        for (let i = 0; i < 150; i += 2) {
           const tokenID1 = mintedTokenIDs[i];
           const tokenID2 = mintedTokenIDs[i + 1];
 
           await contract.discard2Pickup1([tokenID1, tokenID2]);
         }
 
-        const numLimitedAfterDiscard = await contract.numLimitedEditions(series, puzzle);
-        const isClaimedAfterDiscard = await contract.masterCopyClaimed(series, puzzle);
+        const numLimitedAfterDiscard = await card.numLimitedEditions(contract);
+        const isClaimedAfterDiscard = await card.masterCopyClaimed(contract);
 
-        expect(numLimitedAfterDiscard.toString()).not.to.equal("10");
+        expect(numLimitedAfterDiscard.toNumber()).not.to.equal(10);
         expect(isClaimedAfterDiscard).to.equal(false)
 
-        // Mint another 100 cards.
-        for (let i = 0; i < 100; i += 1) {
+        // Mint another 150 cards.
+        for (let i = 0; i < 150; i += 1) {
           const tokenIDs = await TestUtils.tokenIDs(pristineCards, card => (
-            contract.mintExactByNames({ ...card, puzzle: "Puzzle 1-1" }, owner.address)
+            contract.mintExactByNames({ ...card, series: "Series 1", puzzle: "Puzzle 1-1" }, owner.address)
           ));
 
           await contract.puzzleMastery2(tokenIDs);
         }
 
-        const numLimitedAfterReMint = await contract.numLimitedEditions(series, puzzle);
-        const isClaimedAfterReMint = await contract.masterCopyClaimed(series, puzzle);
+        const numLimitedAfterReMint = await card.numLimitedEditions(contract);
+        const isClaimedAfterReMint = await card.masterCopyClaimed(contract);
 
-        expect(numLimitedAfterReMint.toString()).to.equal("10");
+        expect(numLimitedAfterReMint.toNumber()).to.equal(10);
         expect(isClaimedAfterReMint).to.equal(true)
       });
     });

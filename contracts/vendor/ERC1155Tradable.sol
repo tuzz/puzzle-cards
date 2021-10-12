@@ -17,7 +17,7 @@ contract ProxyRegistry {
 contract ERC1155Tradable is ContextMixin, ERC1155, NativeMetaTransaction, Ownable {
   string public name;
   string public symbol;
-  address proxyRegistryAddress;
+  address private proxyRegistryAddress;
 
   mapping (uint256 => uint256) internal tokenSupply;
 
@@ -28,11 +28,11 @@ contract ERC1155Tradable is ContextMixin, ERC1155, NativeMetaTransaction, Ownabl
       _initializeEIP712(name);
   }
 
-  function totalSupply(uint256 tokenID) public view returns (uint256) {
+  function totalSupply(uint256 tokenID) external view returns (uint256) {
       return tokenSupply[tokenID];
   }
 
-  function mintOne(uint256 tokenID, address _to) virtual internal {
+  function mintOne(uint256 tokenID, address _to) internal {
       tokenSupply[tokenID] += 1;
       _mint(_to, tokenID, 1, "");
   }
@@ -68,12 +68,8 @@ contract ERC1155Tradable is ContextMixin, ERC1155, NativeMetaTransaction, Ownabl
       return ERC1155.isApprovedForAll(_owner, _operator);
   }
 
-  function _exists(uint256 _id) internal view returns (bool) {
-      return tokenSupply[_id] != 0;
-  }
-
   function exists(uint256 _id) external view returns (bool) {
-      return _exists(_id);
+      return tokenSupply[_id] != 0;
   }
 
   function _msgSender() internal override view returns (address sender) {
