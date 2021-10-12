@@ -44,7 +44,6 @@ contract PuzzleCard is ERC1155Tradable {
 
     uint256[] public tierProbabilities = [90, 10];
     uint256[] public conditionProbabilities = [80, 20];
-
     uint256[] public standardTypeProbabilities = [300, 100, 200, 100, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
     uint256[] public virtualTypeProbabilities = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
     uint256[] public masterTypeProbabilities = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
