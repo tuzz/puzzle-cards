@@ -207,9 +207,15 @@ contract PuzzleCard is ERC1155Tradable {
     }
 
     function canActivateSunOrMoon(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 2);
+        (bool ok, string[] memory r) = (true, new string[](8));
 
+        CardSlot[] memory slots = cardsInSlots(tokenIDs);
+
+        if (tokenIDs.length != 2)              { ok = false; r[0] = "[2 cards are required]"; }
+        if (!ownsAll(tokenIDs))                { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!sameTier(slots))                  { ok = false; r[2] = "[the tiers of the cards don't match]"; }
         if (!ok)                               { return (ok, r, slots); } // Basic checks failed.
+
         if (!slots[0].occupied)                { ok = false; r[3] = "[a player, crab or cloak card is required]"; }
         if (!hasType(slots[2], INACTIVE_TYPE)) { ok = false; r[4] = "[an inactive sun or moon card is required]"; }
         if (!ok)                               { return (ok, r, slots); } // Type checks failed.
@@ -236,9 +242,15 @@ contract PuzzleCard is ERC1155Tradable {
     }
 
     function canLookThroughTelescope(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 3);
+        (bool ok, string[] memory r) = (true, new string[](7));
 
+        CardSlot[] memory slots = cardsInSlots(tokenIDs);
+
+        if (tokenIDs.length != 3)               { ok = false; r[0] = "[3 cards are required]"; }
+        if (!ownsAll(tokenIDs))                 { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!sameTier(slots))                   { ok = false; r[2] = "[the tiers of the cards don't match]"; }
         if (!ok)                                { return (ok, r, slots); } // Basic checks failed.
+
         if (!hasType(slots[0], PLAYER_TYPE))    { ok = false; r[3] = "[a player card is required]"; }
         if (!hasType(slots[1], TELESCOPE_TYPE)) { ok = false; r[4] = "[a telescope card is required]"; }
         if (!hasType(slots[2], ACTIVE_TYPE))    { ok = false; r[5] = "[an active sun or moon card is required]"; }
@@ -267,9 +279,15 @@ contract PuzzleCard is ERC1155Tradable {
     }
 
     function canLookThroughGlasses(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 3);
+        (bool ok, string[] memory r) = (true, new string[](6));
 
+        CardSlot[] memory slots = cardsInSlots(tokenIDs);
+
+        if (tokenIDs.length != 3)             { ok = false; r[0] = "[3 cards are required]"; }
+        if (!ownsAll(tokenIDs))               { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!sameTier(slots))                 { ok = false; r[2] = "[the tiers of the cards don't match]"; }
         if (!ok)                              { return (ok, r, slots); } // Basic checks failed.
+
         if (!hasType(slots[0], PLAYER_TYPE))  { ok = false; r[3] = "[a player card is required]"; }
         if (!hasType(slots[1], GLASSES_TYPE)) { ok = false; r[4] = "[a glasses card is required]"; }
         if (!hasType(slots[2], HIDDEN_TYPE))  { ok = false; r[5] = "[a hidden card is required]"; }
@@ -305,11 +323,17 @@ contract PuzzleCard is ERC1155Tradable {
     }
 
     function canChangeLensColor(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 3);
+        (bool ok, string[] memory r) = (true, new string[](8));
+
+        CardSlot[] memory slots = cardsInSlots(tokenIDs);
+
+        if (tokenIDs.length != 3)              { ok = false; r[0] = "[3 cards are required]"; }
+        if (!ownsAll(tokenIDs))                { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!sameTier(slots))                  { ok = false; r[2] = "[the tiers of the cards don't match]"; }
+        if (!ok)                               { return (ok, r, slots); } // Basic checks failed.
 
         bool torchOrGlassesType = hasType(slots[1], TORCH_TYPE) || hasType(slots[1], GLASSES_TYPE);
 
-        if (!ok)                               { return (ok, r, slots); } // Basic checks failed.
         if (!slots[0].occupied)                { ok = false; r[3] = "[a player, crab or cloak card is required]"; }
         if (!torchOrGlassesType)               { ok = false; r[4] = "[a torch or glasses card is required]"; }
         if (!hasType(slots[2], INACTIVE_TYPE)) { ok = false; r[5] = "[an inactive sun or moon card is required]"; }
@@ -338,9 +362,15 @@ contract PuzzleCard is ERC1155Tradable {
     }
 
     function canShineTorchOnBasePair(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 3);
+        (bool ok, string[] memory r) = (true, new string[](7));
 
+        CardSlot[] memory slots = cardsInSlots(tokenIDs);
+
+        if (tokenIDs.length != 3)               { ok = false; r[0] = "[3 cards are required]"; }
+        if (!ownsAll(tokenIDs))                 { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!sameTier(slots))                   { ok = false; r[2] = "[the tiers of the cards don't match]"; }
         if (!ok)                                { return (ok, r, slots); } // Basic checks failed.
+
         if (!hasType(slots[0], PLAYER_TYPE))    { ok = false; r[3] = "[a player card is required]"; }
         if (!hasType(slots[1], TORCH_TYPE))     { ok = false; r[4] = "[a torch card is required]"; }
         if (!hasType(slots[2], HELIX_TYPE))     { ok = false; r[5] = "[an helix card is required]"; }
@@ -362,9 +392,15 @@ contract PuzzleCard is ERC1155Tradable {
     }
 
     function canTeleportToNextArea(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 3);
+        (bool ok, string[] memory r) = (true, new string[](6));
 
+        CardSlot[] memory slots = cardsInSlots(tokenIDs);
+
+        if (tokenIDs.length != 3)               { ok = false; r[0] = "[3 cards are required]"; }
+        if (!ownsAll(tokenIDs))                 { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!sameTier(slots))                   { ok = false; r[2] = "[the tiers of the cards don't match]"; }
         if (!ok)                                { return (ok, r, slots); } // Basic checks failed.
+
         if (!hasType(slots[0], PLAYER_TYPE))    { ok = false; r[3] = "[a player card is required]"; }
         if (!hasType(slots[1], TELEPORT_TYPE))  { ok = false; r[4] = "[a teleport card is required]"; }
         if (!hasType(slots[2], MAP_TYPE))       { ok = false; r[5] = "[a map card is required]"; }
@@ -378,9 +414,15 @@ contract PuzzleCard is ERC1155Tradable {
     }
 
     function canGoThroughStarDoor(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 2);
+        (bool ok, string[] memory r) = (true, new string[](7));
 
+        CardSlot[] memory slots = cardsInSlots(tokenIDs);
+
+        if (tokenIDs.length != 2)            { ok = false; r[0] = "[2 cards are required]"; }
+        if (!ownsAll(tokenIDs))              { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!sameTier(slots))                { ok = false; r[2] = "[the tiers of the cards don't match]"; }
         if (!ok)                             { return (ok, r, slots); } // Basic checks failed.
+
         if (!hasType(slots[0], PLAYER_TYPE)) { ok = false; r[3] = "[a player card is required]"; }
         if (!hasType(slots[1], DOOR_TYPE))   { ok = false; r[4] = "[a door card is required]"; }
         if (!ok)                             { return (ok, r, slots); } // Type checks failed.
@@ -411,11 +453,17 @@ contract PuzzleCard is ERC1155Tradable {
     }
 
     function canJumpIntoBeacon(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 3);
+        (bool ok, string[] memory r) = (true, new string[](6));
+
+        CardSlot[] memory slots = cardsInSlots(tokenIDs);
+
+        if (tokenIDs.length != 3)             { ok = false; r[0] = "[3 cards are required]"; }
+        if (!ownsAll(tokenIDs))               { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!sameTier(slots))                 { ok = false; r[2] = "[the tiers of the cards don't match]"; }
+        if (!ok)                              { return (ok, r, slots); } // Basic checks failed.
 
         bool torchOrGlassesType = hasType(slots[1], TORCH_TYPE) || hasType(slots[1], GLASSES_TYPE);
 
-        if (!ok)                              { return (ok, r, slots); } // Basic checks failed.
         if (!hasType(slots[0], PLAYER_TYPE))  { ok = false; r[3] = "[a player card is required]"; }
         if (!torchOrGlassesType)              { ok = false; r[4] = "[a torch or glasses card is required]"; }
         if (!hasType(slots[2], BEACON_TYPE))  { ok = false; r[5] = "[a beacon card is required]"; }
@@ -442,9 +490,15 @@ contract PuzzleCard is ERC1155Tradable {
     }
 
     function canJumpIntoEclipse(uint256[] memory tokenIDs) public view returns (bool, string[] memory, CardSlot[] memory) {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = performBasicChecks(tokenIDs, 3);
+        (bool ok, string[] memory r) = (true, new string[](7));
 
+        CardSlot[] memory slots = cardsInSlots(tokenIDs);
+
+        if (tokenIDs.length != 3)             { ok = false; r[0] = "[3 cards are required]"; }
+        if (!ownsAll(tokenIDs))               { ok = false; r[1] = "[user doesn't own all the cards]"; }
+        if (!sameTier(slots))                 { ok = false; r[2] = "[the tiers of the cards don't match]"; }
         if (!ok)                              { return (ok, r, slots); } // Basic checks failed.
+
         if (!hasType(slots[0], PLAYER_TYPE))  { ok = false; r[3] = "[a player card is required]"; }
         if (!hasType(slots[1], DOOR_TYPE))    { ok = false; r[4] = "[a door card is required]"; }
         if (!hasType(slots[2], ECLIPSE_TYPE)) { ok = false; r[5] = "[an eclipse card is required]"; }
@@ -650,20 +704,6 @@ contract PuzzleCard is ERC1155Tradable {
 
     function editionsKey(uint8 series, uint8 puzzle) private pure returns (uint16) {
       return (uint16(series) << 8) | puzzle;
-    }
-
-    function performBasicChecks(uint256[] memory tokenIDs, uint8 numCards) private view returns (bool, string[] memory, CardSlot[] memory) {
-        (bool ok, string[] memory r) = (true, new string[](10));
-
-        CardSlot[] memory slots = cardsInSlots(tokenIDs);
-
-        if (numCards == 2 && tokenIDs.length != 2) { ok = false; r[0] = "[2 cards are required]"; }
-        if (numCards == 3 && tokenIDs.length != 3) { ok = false; r[0] = "[3 cards are required]"; }
-
-        if (!ownsAll(tokenIDs))                    { ok = false; r[1] = "[user doesn't own all the cards]"; }
-        if (!sameTier(slots))                      { ok = false; r[2] = "[the tiers of the cards don't match]"; }
-
-        return (ok, r, slots);
     }
 
     function cardsInSlots(uint256[] memory tokenIDs) private view returns (CardSlot[] memory) {
