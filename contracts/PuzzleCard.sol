@@ -83,7 +83,7 @@ contract PuzzleCard is ERC1155Tradable {
 
     // conversions
 
-    function tokenIDForCard(PuzzleCard.Attributes memory card) internal pure returns (uint256) {
+    function tokenIDForCard(Attributes memory card) internal pure returns (uint256) {
         return (
             uint256(card.series)    << 64 |
             uint256(card.puzzle)    << 56 |
@@ -97,7 +97,7 @@ contract PuzzleCard is ERC1155Tradable {
         );
     }
 
-    function cardForTokenID(uint256 tokenID) private pure returns (PuzzleCard.Attributes memory) {
+    function cardForTokenID(uint256 tokenID) private pure returns (Attributes memory) {
         uint8 series    = uint8(tokenID >> 64);
         uint8 puzzle    = uint8(tokenID >> 56);
         uint8 tier      = uint8(tokenID >> 48);
@@ -108,7 +108,17 @@ contract PuzzleCard is ERC1155Tradable {
         uint8 condition = uint8(tokenID >> 8);
         uint8 edition   = uint8(tokenID);
 
-        return PuzzleCard.Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition);
+        return Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition);
+    }
+
+    function cardsForTokenIDs(uint256[] memory tokenIDs) private pure returns (Attributes[] memory) {
+        Attributes[] memory cards = new Attributes[](tokenIDs.length);
+
+        for (uint8 i = 0; i < tokenIDs.length; i += 1) {
+          cards[i] = cardForTokenID(tokenIDs[i]);
+        }
+
+        return cards;
     }
 
     // randomness
@@ -181,8 +191,10 @@ contract PuzzleCard is ERC1155Tradable {
 
     // actions
 
-    function activateSunOrMoon(uint256 activatorID, uint256 inactiveID) external {
-        (bool ok, string[] memory r, Attributes[] memory cards) = canActivateSunOrMoon(activatorID, inactiveID); require(ok, string(abi.encode(r)));
+    function activateSunOrMoon(uint256[] memory tokenIDs) external {
+        (bool ok, string[] memory r) = canActivateSunOrMoon(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 tier = cards[0].tier;
@@ -193,18 +205,15 @@ contract PuzzleCard is ERC1155Tradable {
         uint8 condition = randomlyDegrade(cards);
         uint8 edition = STANDARD_EDITION;
 
-        uint256[] memory tokenIDs = new uint256[](2); tokenIDs[0] = activatorID; tokenIDs[1] = inactiveID; // TMP
-
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canActivateSunOrMoon(uint256 activatorID, uint256 inactiveID) public view returns (bool, string[] memory, Attributes[] memory) {
-        if (!ownsAll(activatorID, inactiveID)) { return (false, DOES_NOT_OWN_ERROR, new Attributes[](0)); }
+    function canActivateSunOrMoon(uint256[] memory tokenIDs) public view returns (bool, string[] memory) {
+        if (!ownsAll(tokenIDs)) { return (false, DOES_NOT_OWN_ERROR); }
 
-        (bool ok, string[] memory r, Attributes[] memory cards) = (true, new string[](8), new Attributes[](2));
+        (bool ok, string[] memory r) = (true, new string[](8));
 
-        cards[0] = cardForTokenID(activatorID);
-        cards[1] = cardForTokenID(inactiveID);
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         if (cards[0].tier != cards[1].tier)    { ok = false; r[0] = "[the tiers of the cards don't match]"; }
         if (cards[0].type_ > CLOAK_TYPE)       { ok = false; r[1] = "[a player, crab or cloak card is required]"; }
@@ -212,11 +221,13 @@ contract PuzzleCard is ERC1155Tradable {
 
         ok = ok && cloakCanActivateSunOrMoon(cards, r);
 
-        return (ok, r, cards);
+        return (ok, r);
     }
 
-    function lookThroughTelescope(uint256 playerID, uint256 activeID, uint256 telescopeID) external {
-        (bool ok, string[] memory r, Attributes[] memory cards) = canLookThroughTelescope(playerID, activeID, telescopeID); require(ok, string(abi.encode(r)));
+    function lookThroughTelescope(uint256[] memory tokenIDs) external {
+        (bool ok, string[] memory r) = canLookThroughTelescope(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 type_ = HELIX_TYPE + uint8(randomNumber() % 3);
@@ -225,21 +236,15 @@ contract PuzzleCard is ERC1155Tradable {
         uint8 condition = randomlyDegrade(cards);
         uint8 edition = STANDARD_EDITION;
 
-        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = activeID; tokenIDs[2] = telescopeID; // TMP
-
         replace(tokenIDs, Attributes(series, puzzle, cards[0].tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canLookThroughTelescope(uint256 playerID, uint256 activeID, uint256 telescopeID) public view returns (bool, string[] memory, Attributes[] memory) {
-        if (!ownsAll(playerID, activeID, telescopeID)) { return (false, DOES_NOT_OWN_ERROR, new Attributes[](0)); }
+    function canLookThroughTelescope(uint256[] memory tokenIDs) public view returns (bool, string[] memory) {
+        if (!ownsAll(tokenIDs)) { return (false, DOES_NOT_OWN_ERROR); }
 
         (bool ok, string[] memory r) = (true, new string[](7));
 
-        Attributes[] memory cards = new Attributes[](3);
-
-        cards[0] = cardForTokenID(playerID);
-        cards[1] = cardForTokenID(activeID);
-        cards[2] = cardForTokenID(telescopeID);
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         bool sameTier = cards[0].tier == cards[1].tier && cards[0].tier == cards[2].tier;
         bool sameVariant = cards[1].variant == cards[2].variant;
@@ -251,27 +256,23 @@ contract PuzzleCard is ERC1155Tradable {
         if (cards[2].type_ != TELESCOPE_TYPE) { ok = false; r[3] = "[a telescope card is required]"; }
         if (!sameVariant || !sameColor)       { ok = false; r[4] = "[the sun or moon card does not match the telescope]"; }
 
-        return (ok, r, cards);
+        return (ok, r);
     }
 
-    function lookThroughGlasses(uint256 playerID, uint256 glassesID, uint256 hiddenID) external {
-        (bool ok, string[] memory r, Attributes[] memory cards) = canLookThroughGlasses(playerID, glassesID, hiddenID); require(ok, string(abi.encode(r)));
+    function lookThroughGlasses(uint256[] memory tokenIDs) external {
+        (bool ok, string[] memory r) = canLookThroughGlasses(tokenIDs); require(ok, string(abi.encode(r)));
 
-        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = glassesID; tokenIDs[2] = hiddenID; // TMP
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         replace(tokenIDs, starterCardForTier(cards[0].tier, randomlyDegrade(cards)));
     }
 
-    function canLookThroughGlasses(uint256 playerID, uint256 glassesID, uint256 hiddenID) public view returns (bool, string[] memory, Attributes[] memory) {
-        if (!ownsAll(playerID, glassesID, hiddenID)) { return (false, DOES_NOT_OWN_ERROR, new Attributes[](0)); }
+    function canLookThroughGlasses(uint256[] memory tokenIDs) public view returns (bool, string[] memory) {
+        if (!ownsAll(tokenIDs)) { return (false, DOES_NOT_OWN_ERROR); }
 
         (bool ok, string[] memory r) = (true, new string[](6));
 
-        Attributes[] memory cards = new Attributes[](3);
-
-        cards[0] = cardForTokenID(playerID);
-        cards[1] = cardForTokenID(glassesID);
-        cards[2] = cardForTokenID(hiddenID);
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         bool sameTier = cards[0].tier == cards[1].tier && cards[0].tier == cards[2].tier;
 
@@ -280,11 +281,13 @@ contract PuzzleCard is ERC1155Tradable {
         if (cards[1].type_ != GLASSES_TYPE) { ok = false; r[2] = "[a glasses card is required]"; }
         if (cards[2].type_ != HIDDEN_TYPE)  { ok = false; r[3] = "[a hidden card is required]"; }
 
-        return (ok, r, cards);
+        return (ok, r);
     }
 
-    function changeLensColor(uint256 activatorID, uint256 inactiveID, uint256 lensID) external {
-        (bool ok, string[] memory r, Attributes[] memory cards) = canChangeLensColor(activatorID, inactiveID, lensID); require(ok, string(abi.encode(r)));
+    function changeLensColor(uint256[] memory tokenIDs) external {
+        (bool ok, string[] memory r) = canChangeLensColor(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 tier = cards[2].tier;
@@ -303,19 +306,15 @@ contract PuzzleCard is ERC1155Tradable {
             }
         }
 
-        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = activatorID; tokenIDs[1] = lensID; tokenIDs[2] = inactiveID; // TMP
-
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canChangeLensColor(uint256 activatorID, uint256 inactiveID, uint256 lensID) public view returns (bool, string[] memory, Attributes[] memory) {
-        if (!ownsAll(activatorID, inactiveID, lensID)) { return (false, DOES_NOT_OWN_ERROR, new Attributes[](0)); }
+    function canChangeLensColor(uint256[] memory tokenIDs) public view returns (bool, string[] memory) {
+        if (!ownsAll(tokenIDs)) { return (false, DOES_NOT_OWN_ERROR); }
 
-        (bool ok, string[] memory r, Attributes[] memory cards) = (true, new string[](8), new Attributes[](3));
+        (bool ok, string[] memory r) = (true, new string[](8));
 
-        cards[0] = cardForTokenID(activatorID);
-        cards[1] = cardForTokenID(inactiveID);
-        cards[2] = cardForTokenID(lensID);
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         bool sameTier = cards[0].tier == cards[1].tier && cards[0].tier == cards[2].tier;
         bool lensType = cards[2].type_ == TORCH_TYPE || cards[2].type_ == GLASSES_TYPE;
@@ -327,11 +326,13 @@ contract PuzzleCard is ERC1155Tradable {
 
         ok = ok && cloakCanActivateSunOrMoon(cards, r);
 
-        return (ok, r, cards);
+        return (ok, r);
     }
 
-    function shineTorchOnBasePair(uint256 playerID, uint256 helixID, uint256 torchID) external {
-        (bool ok, string[] memory r, Attributes[] memory cards) = canShineTorchOnBasePair(playerID, helixID, torchID); require(ok, string(abi.encode(r)));
+    function shineTorchOnBasePair(uint256[] memory tokenIDs) external {
+        (bool ok, string[] memory r) = canShineTorchOnBasePair(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 tier = cards[1].tier;
@@ -342,21 +343,15 @@ contract PuzzleCard is ERC1155Tradable {
         uint8 condition = randomlyDegrade(cards);
         uint8 edition = STANDARD_EDITION;
 
-        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = torchID; tokenIDs[2] = helixID; // TMP
-
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canShineTorchOnBasePair(uint256 playerID, uint256 helixID, uint256 torchID) public view returns (bool, string[] memory, Attributes[] memory) {
-        if (!ownsAll(playerID, helixID, torchID)) { return (false, DOES_NOT_OWN_ERROR, new Attributes[](0)); }
+    function canShineTorchOnBasePair(uint256[] memory tokenIDs) public view returns (bool, string[] memory) {
+        if (!ownsAll(tokenIDs)) { return (false, DOES_NOT_OWN_ERROR); }
 
         (bool ok, string[] memory r) = (true, new string[](7));
 
-        Attributes[] memory cards = new Attributes[](3);
-
-        cards[0] = cardForTokenID(playerID);
-        cards[1] = cardForTokenID(helixID);
-        cards[2] = cardForTokenID(torchID);
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         bool sameTier = cards[0].tier == cards[1].tier && cards[0].tier == cards[2].tier;
         bool colorsMatch = cards[1].color1 == cards[2].color1 && cards[1].color2 == cards[2].color2;
@@ -367,27 +362,23 @@ contract PuzzleCard is ERC1155Tradable {
         if (cards[2].type_ != TORCH_TYPE)  { ok = false; r[3] = "[a torch card is required]"; }
         if (!colorsMatch)                  { ok = false; r[4] = "[the torch colors don't match the base pair]"; }
 
-        return (ok, r, cards);
+        return (ok, r);
     }
 
-    function teleportToNextArea(uint256 playerID, uint256 mapID, uint256 teleportID) external {
-        (bool ok, string[] memory r, Attributes[] memory cards) = canTeleportToNextArea(playerID, mapID, teleportID); require(ok, string(abi.encode(r)));
+    function teleportToNextArea(uint256[] memory tokenIDs) external {
+        (bool ok, string[] memory r) = canTeleportToNextArea(tokenIDs); require(ok, string(abi.encode(r)));
 
-        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = mapID; tokenIDs[2] = teleportID; // TMP
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         replace(tokenIDs, starterCardForTier(cards[0].tier + 1, randomlyDegrade(cards)));
     }
 
-    function canTeleportToNextArea(uint256 playerID, uint256 mapID, uint256 teleportID) public view returns (bool, string[] memory, Attributes[] memory) {
-        if (!ownsAll(playerID, mapID, teleportID)) { return (false, DOES_NOT_OWN_ERROR, new Attributes[](0)); }
+    function canTeleportToNextArea(uint256[] memory tokenIDs) public view returns (bool, string[] memory) {
+        if (!ownsAll(tokenIDs)) { return (false, DOES_NOT_OWN_ERROR); }
 
         (bool ok, string[] memory r) = (true, new string[](6));
 
-        Attributes[] memory cards = new Attributes[](3);
-
-        cards[0] = cardForTokenID(playerID);
-        cards[1] = cardForTokenID(mapID);
-        cards[2] = cardForTokenID(teleportID);
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         bool sameTier = cards[0].tier == cards[1].tier && cards[0].tier == cards[2].tier;
 
@@ -396,39 +387,36 @@ contract PuzzleCard is ERC1155Tradable {
         if (cards[1].type_ != MAP_TYPE)       { ok = false; r[3] = "[a map card is required]"; }
         if (cards[2].type_ != TELEPORT_TYPE)  { ok = false; r[2] = "[a teleport card is required]"; }
 
-        return (ok, r, cards);
+        return (ok, r);
     }
 
-    function goThroughStarDoor(uint256 playerID, uint256 doorID) external {
-        (bool ok, string[] memory r, Attributes[] memory cards) = canGoThroughStarDoor(playerID, doorID); require(ok, string(abi.encode(r)));
+    function goThroughStarDoor(uint256[] memory tokenIDs) external {
+        (bool ok, string[] memory r) = canGoThroughStarDoor(tokenIDs); require(ok, string(abi.encode(r)));
 
-        uint256[] memory tokenIDs = new uint256[](2); tokenIDs[0] = playerID; tokenIDs[1] = doorID; // TMP
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         replace(tokenIDs, starterCardForTier(cards[0].tier + 1, randomlyDegrade(cards)));
     }
 
-    function canGoThroughStarDoor(uint256 playerID, uint256 doorID) public view returns (bool, string[] memory, Attributes[] memory) {
-        if (!ownsAll(playerID, doorID)) { return (false, DOES_NOT_OWN_ERROR, new Attributes[](0)); }
+    function canGoThroughStarDoor(uint256[] memory tokenIDs) public view returns (bool, string[] memory) {
+        if (!ownsAll(tokenIDs)) { return (false, DOES_NOT_OWN_ERROR); }
 
         (bool ok, string[] memory r) = (true, new string[](7));
 
-        Attributes[] memory cards = new Attributes[](2);
-
-        cards[0] = cardForTokenID(playerID);
-        cards[1] = cardForTokenID(doorID);
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         if (cards[0].tier != cards[1].tier)   { ok = false; r[0] = "[the tiers of the cards don't match]"; }
         if (cards[0].type_ != PLAYER_TYPE)    { ok = false; r[1] = "[a player card is required]"; }
         if (cards[1].type_ != DOOR_TYPE)      { ok = false; r[2] = "[a door card is required]"; }
         if (cards[1].variant != OPEN_VARIANT) { ok = false; r[4] = "[the door hasn't been opened]"; }
 
-        return (ok, r, cards);
+        return (ok, r);
     }
 
-    function jumpIntoBeacon(uint256 playerID, uint256 beaconID, uint256 lensID) external {
-        (bool ok, string[] memory r, Attributes[] memory cards) = canJumpIntoBeacon(playerID, beaconID, lensID); require(ok, string(abi.encode(r)));
+    function jumpIntoBeacon(uint256[] memory tokenIDs) external {
+        (bool ok, string[] memory r) = canJumpIntoBeacon(tokenIDs); require(ok, string(abi.encode(r)));
 
-        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = lensID; tokenIDs[2] = beaconID; // TMP
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 tier = cards[0].tier;
@@ -442,16 +430,12 @@ contract PuzzleCard is ERC1155Tradable {
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canJumpIntoBeacon(uint256 playerID, uint256 beaconID, uint256 lensID) public view returns (bool, string[] memory, Attributes[] memory) {
-        if (!ownsAll(playerID, beaconID, lensID)) { return (false, DOES_NOT_OWN_ERROR, new Attributes[](0)); }
+    function canJumpIntoBeacon(uint256[] memory tokenIDs) public view returns (bool, string[] memory) {
+        if (!ownsAll(tokenIDs)) { return (false, DOES_NOT_OWN_ERROR); }
 
         (bool ok, string[] memory r) = (true, new string[](4));
 
-        Attributes[] memory cards = new Attributes[](3);
-
-        cards[0] = cardForTokenID(playerID);
-        cards[1] = cardForTokenID(beaconID);
-        cards[2] = cardForTokenID(lensID);
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         bool sameTier = cards[0].tier == cards[1].tier && cards[0].tier == cards[2].tier;
         bool lensType = cards[2].type_ == TORCH_TYPE || cards[2].type_ == GLASSES_TYPE;
@@ -461,11 +445,13 @@ contract PuzzleCard is ERC1155Tradable {
         if (cards[1].type_ != BEACON_TYPE)    { ok = false; r[2] = "[a beacon card is required]"; }
         if (!lensType)                        { ok = false; r[3] = "[a torch or glasses card is required]"; }
 
-        return (ok, r, cards);
+        return (ok, r);
     }
 
-    function jumpIntoEclipse(uint256 playerID, uint256 eclipseID, uint256 doorID) external {
-        (bool ok, string[] memory r, Attributes[] memory cards) = canJumpIntoEclipse(playerID, eclipseID, doorID); require(ok, string(abi.encode(r)));
+    function jumpIntoEclipse(uint256[] memory tokenIDs) external {
+        (bool ok, string[] memory r) = canJumpIntoEclipse(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         (uint8 series, uint8 puzzle) = randomPuzzle();
         uint8 tier = cards[0].tier;
@@ -476,21 +462,15 @@ contract PuzzleCard is ERC1155Tradable {
         uint8 condition = randomlyDegrade(cards);
         uint8 edition = STANDARD_EDITION;
 
-        uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = eclipseID; tokenIDs[2] = doorID; // TMP
-
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canJumpIntoEclipse(uint256 playerID, uint256 eclipseID, uint256 doorID) public view returns (bool, string[] memory, Attributes[] memory) {
-        if (!ownsAll(playerID, eclipseID, doorID)) { return (false, DOES_NOT_OWN_ERROR, new Attributes[](0)); }
+    function canJumpIntoEclipse(uint256[] memory tokenIDs) public view returns (bool, string[] memory) {
+        if (!ownsAll(tokenIDs)) { return (false, DOES_NOT_OWN_ERROR); }
 
         (bool ok, string[] memory r) = (true, new string[](5));
 
-        Attributes[] memory cards = new Attributes[](3);
-
-        cards[0] = cardForTokenID(playerID);
-        cards[1] = cardForTokenID(eclipseID);
-        cards[2] = cardForTokenID(doorID);
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         bool sameTier = cards[0].tier == cards[1].tier && cards[0].tier == cards[2].tier;
 
@@ -500,13 +480,13 @@ contract PuzzleCard is ERC1155Tradable {
         if (cards[2].type_ != DOOR_TYPE)      { ok = false; r[3] = "[a door card is required]"; }
         if (cards[2].variant == OPEN_VARIANT) { ok = false; r[4] = "[the door has already been opened]"; }
 
-        return (ok, r, cards);
+        return (ok, r);
     }
 
-    function puzzleMastery1(uint256 artworkID1, uint256 artworkID2) external {
-        (bool ok, string[] memory r, Attributes[] memory cards) = canPuzzleMastery1(artworkID1, artworkID2); require(ok, string(abi.encode(r)));
+    function puzzleMastery1(uint256[] memory tokenIDs) external {
+        (bool ok, string[] memory r) = canPuzzleMastery1(tokenIDs); require(ok, string(abi.encode(r)));
 
-        uint256[] memory tokenIDs = new uint256[](2); tokenIDs[0] = artworkID1; tokenIDs[1] = artworkID2;
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         uint8 series = cards[0].series;
         uint8 puzzle = cards[0].puzzle;
@@ -521,16 +501,13 @@ contract PuzzleCard is ERC1155Tradable {
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canPuzzleMastery1(uint256 artworkID1, uint256 artworkID2) public view returns (bool, string[] memory, Attributes[] memory) {
-        if (!ownsAll(artworkID1, artworkID2)) { return (false, DOES_NOT_OWN_ERROR, new Attributes[](0)); }
-        if (doubleSpend(artworkID1, artworkID2)) { return (false, DOUBLE_SPEND_ERROR, new Attributes[](0)); }
+    function canPuzzleMastery1(uint256[] memory tokenIDs) public view returns (bool, string[] memory) {
+        if (!ownsAll(tokenIDs)) { return (false, DOES_NOT_OWN_ERROR); }
+        if (doubleSpend(tokenIDs)) { return (false, DOUBLE_SPEND_ERROR); }
 
         (bool ok, string[] memory r) = (true, new string[](6));
 
-        Attributes[] memory cards = new Attributes[](2);
-
-        cards[0] = cardForTokenID(artworkID1);
-        cards[1] = cardForTokenID(artworkID2);
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         bool artworkType = cards[0].type_ == ARTWORK_TYPE && cards[1].type_ == ARTWORK_TYPE;
         bool samePuzzle = cards[0].series == cards[1].series && cards[0].puzzle == cards[1].puzzle;
@@ -540,14 +517,13 @@ contract PuzzleCard is ERC1155Tradable {
         if (!samePuzzle)      { ok = false; r[1] = "[the puzzles don't match]"; }
         if (!standardEdition) { ok = false; r[2] = "[the artwork is already signed]"; }
 
-        return (ok, r, cards);
+        return (ok, r);
     }
 
-    function puzzleMastery2(uint256 starID1, uint256 starID2, uint256 starID3, uint256 starID4, uint256 starID5, uint256 starID6, uint256 starID7) external {
-        (bool ok, string[] memory r, Attributes[] memory cards) = canPuzzleMastery2(starID1, starID2, starID3, starID4, starID5, starID6, starID7); require(ok, string(abi.encode(r)));
+    function puzzleMastery2(uint256[] memory tokenIDs) external {
+        (bool ok, string[] memory r) = canPuzzleMastery2(tokenIDs); require(ok, string(abi.encode(r)));
 
-        uint256[] memory tokenIDs = new uint256[](7); tokenIDs[0] = starID1; tokenIDs[1] = starID2; tokenIDs[2] = starID3; tokenIDs[3] = starID4; tokenIDs[4] = starID5; tokenIDs[5] = starID6; tokenIDs[6] = starID7;
-
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
         Attributes memory star = cards[randomNumber() % 7];
 
         uint8 series = star.series;
@@ -584,20 +560,12 @@ contract PuzzleCard is ERC1155Tradable {
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canPuzzleMastery2(uint256 starID1, uint256 starID2, uint256 starID3, uint256 starID4, uint256 starID5, uint256 starID6, uint256 starID7) public view returns (bool, string[] memory, Attributes[] memory) {
-        if (!ownsAll(starID1, starID2, starID3) || !ownsAll(starID4, starID5) || !ownsAll(starID6, starID7)) { return (false, DOES_NOT_OWN_ERROR, new Attributes[](0)); }
+    function canPuzzleMastery2(uint256[] memory tokenIDs) public view returns (bool, string[] memory) {
+        if (!ownsAll(tokenIDs)) { return (false, DOES_NOT_OWN_ERROR); }
 
         (bool ok, string[] memory r) = (true, new string[](2));
 
-        Attributes[] memory cards = new Attributes[](7);
-
-        cards[0] = cardForTokenID(starID1);
-        cards[1] = cardForTokenID(starID2);
-        cards[2] = cardForTokenID(starID3);
-        cards[3] = cardForTokenID(starID4);
-        cards[4] = cardForTokenID(starID5);
-        cards[5] = cardForTokenID(starID6);
-        cards[6] = cardForTokenID(starID7);
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         bool[8] memory colorsUsed = [false, false, false, false, false, false, false, false];
 
@@ -608,11 +576,13 @@ contract PuzzleCard is ERC1155Tradable {
             colorsUsed[cards[i].color1] = true;
         }
 
-        return (ok, r, cards);
+        return (ok, r);
     }
 
-    function discard2Pickup1(uint256 tokenID1, uint256 tokenID2) external {
-        (bool ok, string[] memory r, Attributes[] memory cards) = canDiscard2Pickup1(tokenID1, tokenID2); require(ok, string(abi.encode(r)));
+    function discard2Pickup1(uint256[] memory tokenIDs) external {
+        (bool ok, string[] memory r) = canDiscard2Pickup1(tokenIDs); require(ok, string(abi.encode(r)));
+
+        Attributes[] memory cards = cardsForTokenIDs(tokenIDs);
 
         (uint8 highestTier, uint8 lowestTier) = high_low(cards[0].tier, cards[1].tier);
         (uint8 highestCond, uint8 lowestCond) = high_low(cards[0].condition, cards[1].condition);
@@ -642,21 +612,14 @@ contract PuzzleCard is ERC1155Tradable {
           }
         }
 
-        uint256[] memory tokenIDs = new uint256[](2); tokenIDs[0] = tokenID1; tokenIDs[1] = tokenID2;
-
         replace(tokenIDs, starterCardForTier(tier, cond));
     }
 
-    function canDiscard2Pickup1(uint256 tokenID1, uint256 tokenID2) public view returns (bool, string[] memory, Attributes[] memory) {
-        if (!ownsAll(tokenID1, tokenID2)) { return (false, DOES_NOT_OWN_ERROR, new Attributes[](0)); }
-        if (doubleSpend(tokenID1, tokenID2)) { return (false, DOUBLE_SPEND_ERROR, new Attributes[](0)); }
+    function canDiscard2Pickup1(uint256[] memory tokenIDs) public view returns (bool, string[] memory) {
+        if (!ownsAll(tokenIDs)) { return (false, DOES_NOT_OWN_ERROR); }
+        if (doubleSpend(tokenIDs)) { return (false, DOUBLE_SPEND_ERROR); }
 
-        Attributes[] memory cards = new Attributes[](2);
-
-        cards[0] = cardForTokenID(tokenID1);
-        cards[1] = cardForTokenID(tokenID2);
-
-        return (true, new string[](0), cards);
+        return (true, new string[](0));
     }
 
     // utilities
@@ -673,19 +636,8 @@ contract PuzzleCard is ERC1155Tradable {
         return true;
     }
 
-    function ownsAll(uint256 tokenID1, uint256 tokenID2) private view returns (bool) {
-        return balanceOf(_msgSender(), tokenID1) > 0
-            && balanceOf(_msgSender(), tokenID2) > 0;
-    }
-
-    function ownsAll(uint256 tokenID1, uint256 tokenID2, uint256 tokenID3) private view returns (bool) {
-        return balanceOf(_msgSender(), tokenID1) > 0
-            && balanceOf(_msgSender(), tokenID2) > 0
-            && balanceOf(_msgSender(), tokenID3) > 0;
-    }
-
-    function doubleSpend(uint256 tokenID1, uint256 tokenID2) private view returns (bool) {
-        return tokenID1 == tokenID2 && balanceOf(_msgSender(), tokenID1) < 2;
+    function doubleSpend(uint256[] memory tokenIDs) private view returns (bool) {
+        return tokenIDs[0] == tokenIDs[1] && balanceOf(_msgSender(), tokenIDs[0]) < 2;
     }
 
     function cloakCanActivateSunOrMoon(Attributes[] memory cards, string[] memory r) private pure returns (bool) {
