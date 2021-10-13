@@ -328,7 +328,6 @@ PuzzleCard.PUZZLE_OFFSET_PER_SERIES = [0, 2];
 PuzzleCard.NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 1, 2, 0, 0, 2, 0, 0, 0, 1, 0];
 PuzzleCard.NUM_VARIANTS_PER_TYPE = [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2];
 PuzzleCard.VARIANT_OFFSET_PER_TYPE = [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 5];
-PuzzleCard.CARD_SLOT_PER_TYPE = [0, 0, 0, 2, 2, 1, 2, 2, 1, 2, 1, 1, 2, 1, 2, 2, 2];
 
 PuzzleCard.TIER_PROBABILITIES = [90, 10];
 PuzzleCard.CONDITION_PROBABILITIES = [80, 20];
