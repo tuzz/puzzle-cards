@@ -35,7 +35,7 @@ describe("ChangeLensColor", () => {
       const [isAllowed, reasons] = await PuzzleCard.canChangeLensColor([card1, card2, card3]);
 
       expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[the color of the cloak does not match]", reasons);
+      expect(reasons).to.deep.include("[the color of the cloak doesn't match]", reasons);
     });
 
     for (const tier of ["Ethereal", "Godly"]) {

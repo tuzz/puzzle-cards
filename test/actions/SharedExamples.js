@@ -4,7 +4,7 @@ const TestUtils = require("../test_utils/TestUtils");
 const card = TestUtils.card;
 const PuzzleCard = require("../../contracts/PuzzleCard");
 
-const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier, { skipSameTierTest, skipDegradeTest } = {}) => {
+const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier, { skipSameTierTest, skipDegradeTest, skipNoDegradeTest } = {}) => {
   const titleized = actionName[0].toUpperCase() + actionName.slice(1);
   const canAction = `can${titleized}`;
   const numCards = validCards.length;
@@ -245,24 +245,26 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
       expect(conditionNames.size).to.equal(1);
     });
 
-    for (const tier of ["Immortal", "Godly"]) {
-      it(`doesn't degrade cards at ${tier} tier`, async () => {
-        const conditionNames = new Set();
+    if (!skipNoDegradeTest) {
+      for (const tier of ["Immortal", "Godly"]) {
+        it(`doesn't degrade cards at ${tier} tier`, async () => {
+          const conditionNames = new Set();
 
-        for (let i = 0; i < 20; i += 1) {
-          const cards = [];
+          for (let i = 0; i < 20; i += 1) {
+            const cards = [];
 
-          for (const card of validCards) {
-            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier }), owner.address));
+            for (const card of validCards) {
+              cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier }), owner.address));
+            }
+
+            const mintedCard = await PuzzleCard[actionName](cards);
+
+            conditionNames.add(mintedCard.condition);
           }
 
-          const mintedCard = await PuzzleCard[actionName](cards);
-
-          conditionNames.add(mintedCard.condition);
-        }
-
-        expect(conditionNames.size).to.equal(1);
-      });
+          expect(conditionNames.size).to.equal(1);
+        });
+      }
     }
   });
 };

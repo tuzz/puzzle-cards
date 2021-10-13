@@ -9,7 +9,7 @@ describe("PuzzleMastery1", () => {
   const artworkCard1 = new PuzzleCard({ ...baseCard, type: "Artwork", variant: "Art 0" });
   const artworkCard2 = new PuzzleCard({ ...baseCard, type: "Artwork", variant: "Art 1" });
 
-  itBehavesLikeAnAction("puzzleMastery1", [artworkCard1, artworkCard2], [["Artwork"], ["Artwork"]], "Master", { skipSameTierTest: true });
+  itBehavesLikeAnAction("puzzleMastery1", [artworkCard1, artworkCard2], [["Artwork"], ["Artwork"]], "Master", { skipSameTierTest: true, skipNoDegradeTest: true });
 
   describe("action specific behaviour", () => {
     let factory, contract, owner, user1;

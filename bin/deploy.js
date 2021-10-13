@@ -10,7 +10,7 @@ const main = async () => {
   const contract = await factory.deploy(proxyAddress || owner.address);
   console.log(`Contract address: ${contract.address}`);
 
-  const transaction = await contract.gift(100, owner.address, { gasLimit: 20000000 });
+  const transaction = await contract.gift(400, owner.address, { gasLimit: 20000000 });
   console.log(`Gift transaction: ${transaction.hash}`);
 }
 

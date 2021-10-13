@@ -1,6 +1,10 @@
-const { expect } = require("chai");
+const chai = require("chai");
+const expect = chai.expect;
+const chaiAsPromised = require("chai-as-promised");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("./test_utils/TestUtils");
+
+chai.use(chaiAsPromised);
 
 describe("Minting", () => {
   let factory, contract, owner, user1, user2;
@@ -55,13 +59,14 @@ describe("Minting", () => {
       await expectRevert.unspecified(contract.mint(3, user2.address, { value: notEnough }));
     });
 
-    it("reverts if the number to mint is 0", async () => {
-      await expectRevert.unspecified(contract.mint(0, user2.address));
-    });
+    it("reverts if the purchaser doesn't have enough funds", async () => {
+      await user2.sendTransaction({ to: owner.address, value: 999999999960000000000000n });
+      const contractAsUser2 = contract.connect(user2);
 
-    it("reverts if the number to mint is greater than one hundred", async () => {
-      const price = contract.priceToMint(101);
-      await expectRevert.unspecified(contract.mint(101, user2.address, { value: price }));
+      const price = contract.priceToMint(3);
+      const promise = contractAsUser2.mint(3, user2.address, { value: price });
+
+      expect(promise).to.eventually.be.rejectedWith(/doesn't have enough funds/);
     });
   });
 

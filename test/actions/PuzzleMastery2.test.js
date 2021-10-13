@@ -18,7 +18,7 @@ describe("PuzzleMastery2", () => {
   const validTypes = [["Star"], ["Star"], ["Star"], ["Star"], ["Star"], ["Star"], ["Star"]];
   const batchSize = validCards.length + 1;
 
-  itBehavesLikeAnAction("puzzleMastery2", validCards, validTypes, "Master", { skipSameTierTest: true });
+  itBehavesLikeAnAction("puzzleMastery2", validCards, validTypes, "Master", { skipSameTierTest: true, skipNoDegradeTest: true });
 
   describe("action specific behaviour", () => {
     let factory, contract, owner, user1;

@@ -34,7 +34,7 @@ describe("LookThroughTelescope", () => {
       const [isAllowed, reasons] = await PuzzleCard.canLookThroughTelescope([card1, card2, card3]);
 
       expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[the sun or moon card does not match the telescope]", reasons);
+      expect(reasons).to.deep.include("[the sun or moon card doesn't match the telescope]", reasons);
     });
 
     it("cannot be performed if a moon is used on a telescope with a sun", async () => {
@@ -45,10 +45,10 @@ describe("LookThroughTelescope", () => {
       const [isAllowed, reasons] = await PuzzleCard.canLookThroughTelescope([card1, card2, card3]);
 
       expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[the sun or moon card does not match the telescope]", reasons);
+      expect(reasons).to.deep.include("[the sun or moon card doesn't match the telescope]", reasons);
     });
 
-    it("cannot be performed if the sun or moon's color does not match the telescope", async () => {
+    it("cannot be performed if the sun or moon's color doesn't match the telescope", async () => {
       const card1 = await PuzzleCard.mintExact(playerCard, owner.address);
       const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...telescopeCard, color1: "Red" }), owner.address);
       const card3 = await PuzzleCard.mintExact(new PuzzleCard({ ...activeCard, color1: "Blue" }), owner.address);
@@ -56,7 +56,7 @@ describe("LookThroughTelescope", () => {
       const [isAllowed, reasons] = await PuzzleCard.canLookThroughTelescope([card1, card2, card3]);
 
       expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[the sun or moon card does not match the telescope]", reasons);
+      expect(reasons).to.deep.include("[the sun or moon card doesn't match the telescope]", reasons);
     });
 
     it("mints either a Helix, Torch or Beacon card with equal probability", async () => {

@@ -7,12 +7,8 @@ import "../contracts/PuzzleCard.sol";
 contract TestUtils is PuzzleCard {
     constructor(address proxyAddress) PuzzleCard(proxyAddress) {}
 
-    function mintExact(uint8 series, uint8 puzzle, uint8 tier, uint8 type_, uint8 color1, uint8 color2, uint8 variant, uint8 condition, uint8 edition, address to) public onlyOwner {
-        Attributes memory card = Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition);
-        mintOne(tokenIDForCard(card), to);
-    }
-
-    function mintExact_(uint256 tokenID, address to) public onlyOwner {
-        mintOne(tokenID, to);
+    function mintExact(uint256 tokenID, address to) public onlyOwner {
+        _mint(to, tokenID, 1, "");
+        totalSupply[tokenID] += 1;
     }
 }

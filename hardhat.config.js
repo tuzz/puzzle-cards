@@ -1,13 +1,16 @@
 require("@nomiclabs/hardhat-ethers");
 require("hardhat-contract-sizer");
 
+const PuzzleCard = require("./contracts/PuzzleCard");
+const liveProxyAddress = PuzzleCard.PROXY_REGISTRY_ADDRESS;
+
 const system = (command) => require("child_process").execSync(command).toString().trim();
 const privateKey = system("gpg --decrypt ~/Dropbox/Secrets/metamask/private-key.gpg 2>/dev/null");
 const u32MaxValue = Math.pow(2, 32) - 1;
 
 module.exports = {
   solidity: {
-    version: "0.8.4",
+    version: "0.8.9",
     settings: {
       optimizer: {
         enabled: true,
@@ -33,7 +36,7 @@ module.exports = {
     },
     live: {
       url: "https://rpc-mainnet.maticvigil.com",
-      openseaProxyAddress: "0x58807bad0b376efc12f5ad86aac70e78ed67deae",
+      openseaProxyAddress: liveProxyAddress,
       accounts: [`0x${privateKey}`],
     },
   },

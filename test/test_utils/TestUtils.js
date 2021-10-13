@@ -3,8 +3,6 @@ const PuzzleCard = require("../../contracts/PuzzleCard");
 const TestUtils = {};
 
 TestUtils.addHelpfulMethodsTo = (contract) => {
-  contract.mintExactByNames = TestUtils.mintExactByNames(contract);
-
   contract.seriesName = (tokenID) => PuzzleCard.fromTokenID(tokenID).series;
   contract.puzzleName = (tokenID) => PuzzleCard.fromTokenID(tokenID).puzzle;
   contract.tierName = (tokenID) => PuzzleCard.fromTokenID(tokenID).tier;
@@ -28,34 +26,6 @@ TestUtils.baseCard = {
   variant: "None",
   condition: "Excellent",
   edition: "Standard",
-};
-
-TestUtils.mintExactByNames = (contract) => async ({ series, puzzle, tier, type, type_, color1, color2, variant, condition, edition }, toAddress) => {
-  if (!TestUtils.arraysRead) { await TestUtils.readArrays(contract); }
-
-  // If puzzle or variant are set to 0 rather than a name, just set them to 0
-  // rather than looking up the name and using relative indexing.
-
-  const seriesIndex = TestUtils.seriesNames.indexOf(series);
-  const relPuzzleIndex = TestUtils.puzzleNames.indexOf(puzzle) - TestUtils.puzzleOffsetPerSeries[seriesIndex];
-  const puzzleIndex = puzzle === 0 ? 0 : relPuzzleIndex;
-
-  const typeIndex = TestUtils.typeNames.indexOf(type || type_);
-  const relVariantIndex = TestUtils.variantNames.indexOf(variant) - TestUtils.variantOffsetPerType[typeIndex];
-  const variantIndex = variant === 0 ? 0 : relVariantIndex;
-
-  return contract.mintExact(
-    seriesIndex,
-    puzzleIndex,
-    TestUtils.tierNames.indexOf(tier),
-    typeIndex,
-    TestUtils.colorNames.indexOf(color1),
-    TestUtils.colorNames.indexOf(color2),
-    variantIndex,
-    TestUtils.conditionNames.indexOf(condition),
-    TestUtils.editionNames.indexOf(edition),
-    toAddress,
-  );
 };
 
 TestUtils.tokenID = async (promise) => {
@@ -146,19 +116,6 @@ TestUtils.readArrays = async (contract) => {
   TestUtils.variantOffsetPerType = PuzzleCard.VARIANT_OFFSET_PER_TYPE;
 
   TestUtils.arraysRead = true;
-};
-
-TestUtils.readArray = async (contract, getter) => {
-  TestUtils[getter] = [];
-
-  for (let i = 0; true; i += 1) {
-    try {
-      const name = await contract[getter](i);
-      TestUtils[getter].push(name);
-    } catch {
-      break;
-    }
-  }
 };
 
 module.exports = TestUtils;

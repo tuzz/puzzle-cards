@@ -32,7 +32,7 @@ describe("ActivateSunOrMoon", () => {
       const [isAllowed, reasons] = await PuzzleCard.canActivateSunOrMoon([card1, card2]);
 
       expect(isAllowed).to.equal(false);
-      expect(reasons).to.deep.include("[the color of the cloak does not match]", reasons);
+      expect(reasons).to.deep.include("[the color of the cloak doesn't match]", reasons);
     });
 
     for (const tier of ["Ethereal", "Godly"]) {

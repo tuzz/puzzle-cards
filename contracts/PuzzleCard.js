@@ -129,7 +129,7 @@ class PuzzleCard {
   }
 
   static mintExact(puzzleCard, to) {
-    return PuzzleCard.CONTRACT.mintExact_(puzzleCard.tokenID(), to).then(() => puzzleCard);
+    return PuzzleCard.CONTRACT.mintExact(puzzleCard.tokenID(), to).then(() => puzzleCard);
   }
 
   static updateConstants() {
@@ -139,6 +139,7 @@ class PuzzleCard {
       PuzzleCard.NUM_VARIANTS_PER_TYPE,
       PuzzleCard.VARIANT_OFFSET_PER_TYPE,
       PuzzleCard.METADATA_URI,
+      PuzzleCard.PROXY_REGISTRY_ADDRESS,
       PuzzleCard.PRICE_PER_CARD,
     );
   }
@@ -156,7 +157,7 @@ class PuzzleCard {
       return Promise.resolve([false, `[${expectedNumArgs} cards are required]`]);
     }
 
-    return PuzzleCard.call(actionName, puzzleCards).then(([b, r]) => [b, r.filter(s => s)]);
+    return PuzzleCard.call(actionName, puzzleCards).then(PuzzleCard.decodeErrors);
   }
 
   static call(functionName, puzzleCards) {
@@ -182,6 +183,11 @@ class PuzzleCard {
         });
       })
     ));
+  }
+
+  static decodeErrors([isAllowed, errorCodes]) {
+    const strings = errorCodes.map((bool, i) => bool ? PuzzleCard.ERROR_STRINGS[i] : null);
+    return [isAllowed, strings.filter(s => s)];
   }
 
   static fromTransaction(transaction) {
@@ -335,7 +341,45 @@ PuzzleCard.STANDARD_TYPE_PROBABILITIES = [300, 100, 100, 200, 100, 100, 20, 20, 
 PuzzleCard.VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
 PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
+PuzzleCard.PROXY_REGISTRY_ADDRESS = "0x58807bad0b376efc12f5ad86aac70e78ed67deae";
 PuzzleCard.PRICE_PER_CARD = 78830000000000000n; // $0.10 in Polygon Wei.
 PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
+
+PuzzleCard.ERROR_STRINGS = [
+  "[a player card is required]",
+  "[a crab card is required]",
+  "[a cloak card is required]",
+  "[an inactive sun or moon card is required]",
+  "[an active sun or moon card is required]",
+  "[a telescope card is required]",
+  "[a helix card is required]",
+  "[a beacon card is required]",
+  "[a torch card is required]",
+  "[a map card is required]",
+  "[a teleport card is required]",
+  "[a glasses card is required]",
+  "[an eclipse card is required]",
+  "[a door card is required]",
+  "[a hidden card is required]",
+  "[seven star cards are required]",
+  "[two artwork cards are required]",
+  "[a player, crab or cloak card is required]",
+  "[a torch or glasses card is required]",
+  "[two cards are required]",
+  "[three cards are required]",
+  "[seven star cards are required]",
+  "[the tiers of the cards don't match]",
+  "[user doesn't own all the cards]",
+  "[only works with a cloak card at this tier]",
+  "[the color of the cloak doesn't match]",
+  "[the sun or moon card doesn't match the telescope]",
+  "[the torch colors don't match the base pair]",
+  "[the puzzles don't match]",
+  "[the door has already been opened]",
+  "[the door hasn't been opened]",
+  "[the artwork is already signed]",
+  "[the same card was used twice]",
+  "[a color was repeated]",
+];
 
 module.exports = PuzzleCard;
