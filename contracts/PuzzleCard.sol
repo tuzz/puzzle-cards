@@ -310,8 +310,8 @@ contract PuzzleCard is ERC1155Tradable {
         return (ok, r, slots);
     }
 
-    function changeLensColor(uint256 activatorID, uint256 lensID, uint256 inactiveID) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canChangeLensColor(activatorID, lensID, inactiveID);
+    function changeLensColor(uint256 activatorID, uint256 inactiveID, uint256 lensID) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canChangeLensColor(activatorID, inactiveID, lensID);
         require(ok, string(abi.encode(r)));
 
         uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = activatorID; tokenIDs[1] = lensID; tokenIDs[2] = inactiveID; // TMP
@@ -339,7 +339,7 @@ contract PuzzleCard is ERC1155Tradable {
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canChangeLensColor(uint256 activatorID, uint256 lensID, uint256 inactiveID) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canChangeLensColor(uint256 activatorID, uint256 inactiveID, uint256 lensID) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](8));
 
         uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = activatorID; tokenIDs[1] = lensID; tokenIDs[2] = inactiveID; // TMP
@@ -363,8 +363,8 @@ contract PuzzleCard is ERC1155Tradable {
         return (ok, r, slots);
     }
 
-    function shineTorchOnBasePair(uint256 playerID, uint256 torchID, uint256 helixID) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canShineTorchOnBasePair(playerID, torchID, helixID);
+    function shineTorchOnBasePair(uint256 playerID, uint256 helixID, uint256 torchID) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canShineTorchOnBasePair(playerID, helixID, torchID);
         require(ok, string(abi.encode(r)));
 
         uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = torchID; tokenIDs[2] = helixID; // TMP
@@ -383,7 +383,7 @@ contract PuzzleCard is ERC1155Tradable {
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canShineTorchOnBasePair(uint256 playerID, uint256 torchID, uint256 helixID) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canShineTorchOnBasePair(uint256 playerID, uint256 helixID, uint256 torchID) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](7));
 
         uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = torchID; tokenIDs[2] = helixID; // TMP
@@ -470,8 +470,8 @@ contract PuzzleCard is ERC1155Tradable {
         return (ok, r, slots);
     }
 
-    function jumpIntoBeacon(uint256 playerID, uint256 lensID, uint256 beaconID) external {
-        (bool ok, string[] memory r, CardSlot[] memory slots) = canJumpIntoBeacon(playerID, lensID, beaconID);
+    function jumpIntoBeacon(uint256 playerID, uint256 beaconID, uint256 lensID) external {
+        (bool ok, string[] memory r, CardSlot[] memory slots) = canJumpIntoBeacon(playerID, beaconID, lensID);
         require(ok, string(abi.encode(r)));
 
         uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = lensID; tokenIDs[2] = beaconID; // TMP
@@ -491,7 +491,7 @@ contract PuzzleCard is ERC1155Tradable {
         replace(tokenIDs, Attributes(series, puzzle, tier, type_, color1, color2, variant, condition, edition));
     }
 
-    function canJumpIntoBeacon(uint256 playerID, uint256 lensID, uint256 beaconID) public view returns (bool, string[] memory, CardSlot[] memory) {
+    function canJumpIntoBeacon(uint256 playerID, uint256 beaconID, uint256 lensID) public view returns (bool, string[] memory, CardSlot[] memory) {
         (bool ok, string[] memory r) = (true, new string[](6));
 
         uint256[] memory tokenIDs = new uint256[](3); tokenIDs[0] = playerID; tokenIDs[1] = lensID; tokenIDs[2] = beaconID; // TMP
@@ -858,13 +858,13 @@ contract PuzzleCard is ERC1155Tradable {
 
     uint8 private constant PLAYER_TYPE = 0;
     uint8 private constant CRAB_TYPE = 1;
-    uint8 private constant INACTIVE_TYPE = 2;
-    uint8 private constant ACTIVE_TYPE = 3;
-    uint8 private constant CLOAK_TYPE = 4;
+    uint8 private constant CLOAK_TYPE = 2;
+    uint8 private constant INACTIVE_TYPE = 3;
+    uint8 private constant ACTIVE_TYPE = 4;
     uint8 private constant TELESCOPE_TYPE = 5;
     uint8 private constant HELIX_TYPE = 6;
-    uint8 private constant TORCH_TYPE = 7;
-    uint8 private constant BEACON_TYPE = 8;
+    uint8 private constant BEACON_TYPE = 7;
+    uint8 private constant TORCH_TYPE = 8;
     uint8 private constant MAP_TYPE = 9;
     uint8 private constant TELEPORT_TYPE = 10;
     uint8 private constant GLASSES_TYPE = 11;
@@ -890,14 +890,14 @@ contract PuzzleCard is ERC1155Tradable {
 
     uint8[] private NUM_PUZZLES_PER_SERIES = [2, 3];
     uint16[] private PUZZLE_OFFSET_PER_SERIES = [0, 2];
-    uint8[] private NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 2, 1, 0, 0, 2, 0, 0, 0, 1, 0];
-    uint8[] private NUM_VARIANTS_PER_TYPE = [0, 0, 2, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2];
-    uint16[] private VARIANT_OFFSET_PER_TYPE = [0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 5];
-    uint16[] private CARD_SLOT_PER_TYPE = [0, 0, 2, 2, 0, 1, 2, 1, 2, 2, 1, 1, 2, 1, 2, 2, 2];
+    uint8[] private NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 1, 2, 0, 0, 2, 0, 0, 0, 1, 0];
+    uint8[] private NUM_VARIANTS_PER_TYPE = [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2];
+    uint16[] private VARIANT_OFFSET_PER_TYPE = [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 5];
+    uint16[] private CARD_SLOT_PER_TYPE = [0, 0, 0, 2, 2, 1, 2, 2, 1, 2, 1, 1, 2, 1, 2, 2, 2];
 
     uint256[] private TIER_PROBABILITIES = [90, 10];
     uint256[] private CONDITION_PROBABILITIES = [80, 20];
-    uint256[] private STANDARD_TYPE_PROBABILITIES = [300, 100, 200, 100, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
+    uint256[] private STANDARD_TYPE_PROBABILITIES = [300, 100, 100, 200, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
     uint256[] private VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
     uint256[] private MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 

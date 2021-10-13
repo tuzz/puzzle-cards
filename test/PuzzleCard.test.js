@@ -19,7 +19,7 @@ describe("PuzzleCard", () => {
     expect(puzzleCard.puzzleIndex()).to.equal(4);
     expect(puzzleCard.relativePuzzleIndex()).to.equal(2);
     expect(puzzleCard.tierIndex()).to.equal(4);
-    expect(puzzleCard.typeIndex()).to.equal(3);
+    expect(puzzleCard.typeIndex()).to.equal(4);
     expect(puzzleCard.color1Index()).to.equal(6);
     expect(puzzleCard.color2Index()).to.equal(0);
     expect(puzzleCard.variantIndex()).to.equal(2);
@@ -41,11 +41,11 @@ describe("PuzzleCard", () => {
       edition: "Standard",
     });
 
-    expect(puzzleCard.tokenID()).to.equal(18591988485997003520n);
+    expect(puzzleCard.tokenID()).to.equal(18591989585508631296n);
   });
 
   it("can build a puzzle card from a tokenID", () => {
-    const puzzleCard = PuzzleCard.fromTokenID(18591988485997003520n);
+    const puzzleCard = PuzzleCard.fromTokenID(18591989585508631296n);
 
     expect(puzzleCard.series).to.equal("Series 1");
     expect(puzzleCard.puzzle).to.equal("Puzzle 1-2");
