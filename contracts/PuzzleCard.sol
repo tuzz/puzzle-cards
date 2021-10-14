@@ -60,11 +60,11 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         mintStarterCards(numberToGift, to);
     }
 
-    function mintStarterCards(uint256 numberToGift, address to) private {
-        uint256[] memory tokenIDs = new uint256[](numberToGift);
-        uint256[] memory oneOfEach = new uint256[](numberToGift);
+    function mintStarterCards(uint256 numberToMint, address to) private {
+        uint256[] memory tokenIDs = new uint256[](numberToMint);
+        uint256[] memory oneOfEach = new uint256[](numberToMint);
 
-        for (uint256 i = 0; i < numberToGift; i += 1) {
+        for (uint256 i = 0; i < numberToMint; i += 1) {
             uint256 newCardID = tokenIDForCard(starterCard());
 
             tokenIDs[i] = newCardID;

@@ -15,6 +15,18 @@ class PuzzleCard {
     PuzzleCard.CONTRACT = contract;
   }
 
+  static mint(to, numberToMint) {
+    return PuzzleCard.inBatches(numberToMint, (batchSize) => (
+      PuzzleCard.CONTRACT.mint(batchSize, to, PuzzleCard.GAS_OPTIONS).then(PuzzleCard.fromBatchEvent)
+    ));
+  }
+
+  static gift(to, numberToGift) { // Only callable by the contract owner.
+    return PuzzleCard.inBatches(numberToGift, (batchSize) => (
+      PuzzleCard.CONTRACT.gift(batchSize, to, PuzzleCard.GAS_OPTIONS).then(PuzzleCard.fromBatchEvent)
+    ));
+  }
+
   static actionsThatCanBeTaken(puzzleCards) {
     return Promise.all([
       PuzzleCard.canActivateSunOrMoon(puzzleCards).then(([can])    => can ? "activateSunOrMoon" : null),
@@ -149,7 +161,7 @@ class PuzzleCard {
       throw new Error(`[${expectedNumArgs} cards are required]`);
     }
 
-    return PuzzleCard.call(actionName, puzzleCards).then(PuzzleCard.fromTransaction);
+    return PuzzleCard.call(actionName, puzzleCards).then(PuzzleCard.fromTransferEvent);
   }
 
   static canPerformAction(actionName, puzzleCards, expectedNumArgs) {
@@ -190,12 +202,17 @@ class PuzzleCard {
     return [isAllowed, strings.filter(s => s)];
   }
 
-  static fromTransaction(transaction) {
+  static fromTransferEvent(transaction) {
     return transaction.wait().then(receiver => {
       const event = receiver.events.filter(e => e.event === "TransferSingle")[0];
-      const tokenID = event.args.id.toBigInt();
+      return PuzzleCard.fromTokenID(event.args.id.toBigInt());
+    });
+  }
 
-      return PuzzleCard.fromTokenID(tokenID);
+  static fromBatchEvent(transaction) {
+    return transaction.wait().then(receiver => {
+      const event = receiver.events.filter(e => e.event === "TransferBatch")[0];
+      return event.args.ids.map(id => PuzzleCard.fromTokenID(id.toBigInt()));
     });
   }
 
@@ -210,7 +227,6 @@ class PuzzleCard {
   static priceToMint(numberToMint) {
     return BigInt(numberToMint) * PuzzleCard.PRICE_PER_CARD;
   }
-
 
   numLimitedEditions(contract) {
     return contract.limitedEditions(BigInt(this.editionsHexString()));
@@ -316,6 +332,20 @@ class PuzzleCard {
       this.relativePuzzleIndex(),
     ].map(i => i.toString(16).padStart(2, "0")).join("");
   }
+
+  static inBatches(numberToMint, fn) {
+    const batchSize = PuzzleCard.MAX_BATCH_SIZE;
+    const promises = [];
+
+    for (let i = 0; i < Math.floor(numberToMint / batchSize); i += 1) {
+      promises.push(fn(batchSize));
+    }
+
+    const remainder = numberToMint % PuzzleCard.MAX_BATCH_SIZE;
+    if (remainder > 0) { promises.push(fn(remainder)); }
+
+    return Promise.all(promises).then(arrays => [].concat(...arrays));
+  }
 }
 
 PuzzleCard.SERIES_NAMES = ["Series 0", "Series 1"];
@@ -343,6 +373,8 @@ PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0x58807bad0b376efc12f5ad86aac70e78ed67deae";
 PuzzleCard.PRICE_PER_CARD = 78830000000000000n; // $0.10 in Polygon Wei.
+PuzzleCard.GAS_OPTIONS = { gasLimit: 20000000 }; // The maximum for the polygon network.
+PuzzleCard.MAX_BATCH_SIZE = 390; // Otherwise, we're likely to run out of gas.
 PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
 
 PuzzleCard.ERROR_STRINGS = [
