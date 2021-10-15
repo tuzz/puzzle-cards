@@ -466,14 +466,14 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
 
     function ownsAll(uint256[] memory tokenIDs) private view returns (bool) {
         for (uint8 i = 0; i < tokenIDs.length; i += 1) {
-            if (balanceOf(_msgSender(), tokenIDs[i]) == 0) { return false; }
+            if (balanceOf(msg.sender, tokenIDs[i]) == 0) { return false; }
         }
 
         return true;
     }
 
     function doubleSpent(uint256[] memory tokenIDs) private view returns (bool) {
-        return tokenIDs[0] == tokenIDs[1] && balanceOf(_msgSender(), tokenIDs[0]) < 2;
+        return tokenIDs[0] == tokenIDs[1] && balanceOf(msg.sender, tokenIDs[0]) < 2;
     }
 
     function cloakCanActivateSunOrMoon(uint256[] memory tokenIDs, bool[34] memory errors) private pure returns (bool ok) {
@@ -514,10 +514,10 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     function replace(uint256[] memory tokenIDs, Attributes memory newCard) private {
         uint256[] memory oneOfEach = new uint256[](tokenIDs.length);
         for (uint8 i = 0; i < tokenIDs.length; i += 1) { oneOfEach[i] = 1; totalSupply[tokenIDs[i]] -= 1; }
-        _burnBatch(_msgSender(), tokenIDs, oneOfEach);
+        _burnBatch(msg.sender, tokenIDs, oneOfEach);
 
         uint256 newCardID = tokenIDForCard(newCard);
-        _mint(_msgSender(), newCardID, 1, "");
+        _mint(msg.sender, newCardID, 1, "");
         totalSupply[newCardID] += 1;
     }
 
