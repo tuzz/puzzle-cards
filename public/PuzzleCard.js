@@ -432,6 +432,7 @@ PuzzleCard.ERROR_STRINGS = [
 ];
 
 PuzzleCard.CONTRACT_ADDRESS = "0xb324983fB5BA6c4421e1f004dEf1767765782Fde";
+PuzzleCard.CONTRACT_BLOCK = 20209157;
 
 PuzzleCard.CONTRACT_ABI = [
   "event ApprovalForAll(address indexed account, address indexed operator, bool approved)",
