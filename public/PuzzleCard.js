@@ -11,12 +11,16 @@ class PuzzleCard {
     this.edition = edition;
   }
 
-  static setContract(contract) {
-    PuzzleCard.CONTRACT = contract;
+  static attach(ethers, provider) { // Enables reading from the contract.
+    PuzzleCard.CONTRACT = new ethers.Contract(PuzzleCard.CONTRACT_ADDRESS, PuzzleCard.CONTRACT_ABI, provider);
   }
 
-  static attach(ethers, provider) {
-    PuzzleCard.CONTRACT = new ethers.Contract(PuzzleCard.CONTRACT_ADDRESS, PuzzleCard.CONTRACT_ABI, provider);
+  static connect(signer) { // Enables writing to the contract (e.g. minting).
+    PuzzleCard.CONTRACT = PuzzleCard.CONTRACT.connect(signer);
+  }
+
+  static setContract(contract) { // If you'd rather set things up manually.
+    PuzzleCard.CONTRACT = contract;
   }
 
   static async mint(numberToMint, to) {
