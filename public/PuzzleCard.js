@@ -195,7 +195,7 @@ class PuzzleCard {
       .sort((a, b) => a.typeIndex() - b.typeIndex())
       .map(card => card.tokenID());
 
-    return PuzzleCard.CONTRACT[functionName](args);
+    return PuzzleCard.CONTRACT[functionName](args, PuzzleCard.GAS_OPTIONS);
   }
 
   static allCards() {

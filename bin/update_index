@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Writes a file to public/decks/ for each user that has purchased puzzle cards.
+# Each file lists all the cards in their deck as of public/decks/_last_indexed.
+#
+# The task must run to completion to ensure the balances remain correct. If the
+# task is killed, a git checkout followed by re-running the task is fine. The
+# entire index can be rebuilt by removing public/decks and running the task.
+
+if [ "$#" -ne 1 ]; then
+  echo "Usage: ./bin/update_index network"
+fi
+
+yarn hardhat run bin/update_index.js --network $1

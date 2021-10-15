@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require("fs")
 const config = require("../hardhat.config.js");
 const network = hardhatArguments.network;
 const metadata = config.networks[network];
