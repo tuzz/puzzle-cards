@@ -423,6 +423,8 @@ PuzzleCard.ERROR_STRINGS = [
   "[a color was repeated]",
 ];
 
+PuzzleCard.CONTRACT_ADDRESS = "0xb324983fB5BA6c4421e1f004dEf1767765782Fde";
+
 PuzzleCard.CONTRACT_ABI = [
   "event ApprovalForAll(address indexed account, address indexed operator, bool approved)",
   "event MetaTransactionExecuted(address userAddress, address relayerAddress, bytes functionSignature)",
