@@ -24,7 +24,7 @@ module.exports = {
     cache: "./.cache",
   },
   abiExporter: {
-    path: './public',
+    path: './.abi',
     only: ["PuzzleCard"],
     flat: true,
     pretty: true,
@@ -52,3 +52,18 @@ module.exports = {
     color: true,
   }
 };
+
+const config = require("hardhat/config")
+const names = require("hardhat/builtin-tasks/task-names");
+const fs = require('fs')
+
+// After compile, copy the exported ABI into a constant in the PuzzleCard.js library.
+config.task(names.TASK_COMPILE, async (_taskArguments, _hre, runSuper) => {
+  await runSuper();
+
+  const json = fs.readFileSync(".abi/PuzzleCard.json", "utf8").trim();
+  const js = fs.readFileSync("contracts/PuzzleCard.js", "utf8");
+
+  const replaced = js.replaceAll(/CONTRACT_ABI = \[[\s\S]*\]/g, `CONTRACT_ABI = ${json}`);
+  fs.writeFileSync("contracts/PuzzleCard.js", replaced);
+});
