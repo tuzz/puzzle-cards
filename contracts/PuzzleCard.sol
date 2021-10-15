@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./vendor/ContextMixin.sol";
 import "./vendor/NativeMetaTransaction.sol";
+import "./vendor/ProxyRegistry.sol";
 
 //import "hardhat/console.sol";
 
@@ -709,10 +710,4 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     function updatePrice(uint256 price) external onlyOwner {
         pricePerCard = price;
     }
-}
-
-contract OwnableDelegateProxy {}
-
-contract ProxyRegistry {
-  mapping(address => OwnableDelegateProxy) public proxies;
 }

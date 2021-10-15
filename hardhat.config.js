@@ -1,5 +1,6 @@
 require("@nomiclabs/hardhat-ethers");
 require("hardhat-contract-sizer");
+require("hardhat-abi-exporter");
 
 const PuzzleCard = require("./contracts/PuzzleCard");
 const liveProxyAddress = PuzzleCard.PROXY_REGISTRY_ADDRESS;
@@ -21,6 +22,12 @@ module.exports = {
   paths: {
     artifacts: "./.artifacts",
     cache: "./.cache",
+  },
+  abiExporter: {
+    path: './public',
+    only: ["PuzzleCard"],
+    flat: true,
+    pretty: true,
   },
   networks: {
     hardhat: {

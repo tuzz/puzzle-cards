@@ -7,6 +7,7 @@
     "chai-as-promised": "^7.1.1",
     "ethers": "^5.0.0",
     "hardhat": "^2.6.4",
+    "hardhat-abi-exporter": "^2.3.0",
     "hardhat-contract-sizer": "^2.1.1"
   }
 }
