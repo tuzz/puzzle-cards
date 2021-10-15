@@ -16,21 +16,20 @@ describe("Constants", () => {
     PuzzleCard.setContract(contract);
   });
 
-  it("can get the price to mint the given number of cards", async () => {
-    const priceForOne = await PuzzleCard.priceToMint(1);
-    expect(priceForOne).to.equal(78830000000000000n);
-
-    const priceForOneThousand = await PuzzleCard.priceToMint(100);
-    expect(priceForOneThousand).to.equal(7883000000000000000n);
+  it("can get the price per card", async () => {
+    const pricePerCard = await PuzzleCard.pricePerCard();
+    expect(pricePerCard).to.equal(70000000000000000n);
   });
 
-  it("allows the contract owner to update PRICE_PER_CARD", async () => {
-    const originalPrice = PuzzleCard.PRICE_PER_CARD;
+  it("allows the contract owner to update the price when the exchange rate changes", async () => {
+    await PuzzleCard.updatePrice(60000000000000000n);
 
-    PuzzleCard.PRICE_PER_CARD *= BigInt(2);
-    await PuzzleCard.updateConstants();
+    const pricePerCard = await PuzzleCard.pricePerCard();
+    expect(pricePerCard).to.equal(60000000000000000n);
 
-    await expectRevert.unspecified(contract.mint(1, owner.address, { value: originalPrice }));
+    // Verify that the price for minting has actually been taken into account.
+    await contract.mint(1, owner.address, { value: 60000000000000000n });
+    await expectRevert.unspecified(contract.mint(1, owner.address, { value: 59999999999999999n }));
   });
 
   it("allows the contract owner to update METADATA_URI", async () => {

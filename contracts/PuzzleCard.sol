@@ -29,6 +29,8 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     mapping(uint256 => uint256) public limitedEditions;
     mapping(uint16 => bool) public masterCopiesClaimed;
 
+    uint256 public pricePerCard = 70000000000000000; // $0.10 in Polygon Wei.
+
     constructor(address proxyRegistryAddress) ERC1155("") {
         PROXY_REGISTRY_ADDRESS = proxyRegistryAddress;
 
@@ -52,7 +54,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     // minting
 
     function mint(uint256 numberToMint, address to) external payable {
-        payable(owner()).transfer(numberToMint * PRICE_PER_CARD);
+        payable(owner()).transfer(numberToMint * pricePerCard);
         mintStarterCards(numberToMint, to);
     }
 
@@ -683,7 +685,6 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     uint256[] private MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
     address private PROXY_REGISTRY_ADDRESS;
-    uint256 private PRICE_PER_CARD = 78830000000000000; // $0.10 in Polygon Wei.
     uint256 private NUM_RANDOM_CALLS = 0;
 
     // Be very careful not to invalidate existing cards when calling this method.
@@ -694,17 +695,19 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         uint8[] memory numVariantsPerType,
         uint16[] memory variantOffsetPerType,
         string memory metadataURI,
-        address proxyRegistryAddress,
-        uint256 pricePerCard
+        address proxyRegistryAddress
     ) external onlyOwner {
         NUM_PUZZLES_PER_SERIES = numPuzzlesPerSeries;
         PUZZLE_OFFSET_PER_SERIES = puzzleOffsetPerSeries;
         NUM_VARIANTS_PER_TYPE = numVariantsPerType;
         VARIANT_OFFSET_PER_TYPE = variantOffsetPerType;
         PROXY_REGISTRY_ADDRESS = proxyRegistryAddress;
-        PRICE_PER_CARD = pricePerCard;
 
         _setURI(metadataURI);
+    }
+
+    function updatePrice(uint256 price) external onlyOwner {
+        pricePerCard = price;
     }
 }
 

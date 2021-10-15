@@ -152,8 +152,11 @@ class PuzzleCard {
       PuzzleCard.VARIANT_OFFSET_PER_TYPE,
       PuzzleCard.METADATA_URI,
       PuzzleCard.PROXY_REGISTRY_ADDRESS,
-      PuzzleCard.PRICE_PER_CARD,
     );
+  }
+
+  static updatePrice(newPrice) {
+    return PuzzleCard.CONTRACT.updatePrice(newPrice);
   }
 
   static performAction(actionName, puzzleCards, expectedNumArgs) {
@@ -224,8 +227,8 @@ class PuzzleCard {
     return BigInt(this.hexString());
   }
 
-  static priceToMint(numberToMint) {
-    return BigInt(numberToMint) * PuzzleCard.PRICE_PER_CARD;
+  static pricePerCard() {
+    return PuzzleCard.CONTRACT.pricePerCard().then(p => p.toBigInt());
   }
 
   numLimitedEditions(contract) {
@@ -372,7 +375,6 @@ PuzzleCard.VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 
 PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0x58807bad0b376efc12f5ad86aac70e78ed67deae";
-PuzzleCard.PRICE_PER_CARD = 78830000000000000n; // $0.10 in Polygon Wei.
 PuzzleCard.GAS_OPTIONS = { gasLimit: 20000000 }; // The maximum for the polygon network.
 PuzzleCard.MAX_BATCH_SIZE = 390; // Otherwise, we're likely to run out of gas.
 PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
