@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("./test_utils/TestUtils");
-const PuzzleCard = require("../contracts/PuzzleCard");
+const PuzzleCard = require("../public/PuzzleCard");
 
 describe("Constants", () => {
   let factory, contract, owner, user1;

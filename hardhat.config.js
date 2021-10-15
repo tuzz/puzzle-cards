@@ -2,7 +2,7 @@ require("@nomiclabs/hardhat-ethers");
 require("hardhat-contract-sizer");
 require("hardhat-abi-exporter");
 
-const PuzzleCard = require("./contracts/PuzzleCard");
+const PuzzleCard = require("./public/PuzzleCard");
 const liveProxyAddress = PuzzleCard.PROXY_REGISTRY_ADDRESS;
 
 const system = (command) => require("child_process").execSync(command).toString().trim();
@@ -62,8 +62,8 @@ config.task(names.TASK_COMPILE, async (_taskArguments, _hre, runSuper) => {
   await runSuper();
 
   const json = fs.readFileSync(".abi/PuzzleCard.json", "utf8").trim();
-  const js = fs.readFileSync("contracts/PuzzleCard.js", "utf8");
+  const js = fs.readFileSync("public/PuzzleCard.js", "utf8");
 
   const replaced = js.replaceAll(/CONTRACT_ABI = \[[\s\S]*\]/g, `CONTRACT_ABI = ${json}`);
-  fs.writeFileSync("contracts/PuzzleCard.js", replaced);
+  fs.writeFileSync("public/PuzzleCard.js", replaced);
 });

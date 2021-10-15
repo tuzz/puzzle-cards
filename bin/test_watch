@@ -1,4 +1,4 @@
 #!/bin/bash
 
 which -s watchexec || brew install watchexec
-watchexec -c -r "./bin/test"
+watchexec -c -r -i public "./bin/test"

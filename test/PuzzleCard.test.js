@@ -1,5 +1,5 @@
 const { expect } = require("chai");
-const PuzzleCard = require("../contracts/PuzzleCard");
+const PuzzleCard = require("../public/PuzzleCard");
 
 describe("PuzzleCard", () => {
   it("can get the contract struct's index values for each field", () => {

@@ -3,7 +3,7 @@ const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const { itBehavesLikeAnAction, itMintsATierStarterCard } = require("./SharedExamples");
 const TestUtils = require("../test_utils/TestUtils");
 const { card, baseCard } = TestUtils;
-const PuzzleCard = require("../../contracts/PuzzleCard");
+const PuzzleCard = require("../../public/PuzzleCard");
 
 describe("PuzzleMastery1", () => {
   const artworkCard1 = new PuzzleCard({ ...baseCard, type: "Artwork", variant: "Art 0" });

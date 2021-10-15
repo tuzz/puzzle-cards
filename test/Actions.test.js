@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("./test_utils/TestUtils");
 const { tokenID, baseCard } = TestUtils;
-const PuzzleCard = require("../contracts/PuzzleCard");
+const PuzzleCard = require("../public/PuzzleCard");
 
 describe("Actions", () => {
   const playerCard     = new PuzzleCard({ ...baseCard, type: "Player" });

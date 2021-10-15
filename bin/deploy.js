@@ -11,7 +11,7 @@ const main = async () => {
   const contract = await factory.deploy(proxyAddress || owner.address);
   console.log(`Contract address: ${contract.address}`);
 
-  updateConstant("contracts/PuzzleCard.js", contract.address);
+  updateConstant("public/PuzzleCard.js", contract.address);
 
   const transaction = await contract.gift(400, owner.address, { gasLimit: 20000000 });
   console.log(`Gift transaction: ${transaction.hash}`);

@@ -1,4 +1,4 @@
-const PuzzleCard = require("../../contracts/PuzzleCard");
+const PuzzleCard = require("../../public/PuzzleCard");
 
 const TestUtils = {};
 

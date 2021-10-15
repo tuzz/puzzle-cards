@@ -3,7 +3,7 @@ const expect = chai.expect;
 const chaiAsPromised = require("chai-as-promised");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("./test_utils/TestUtils");
-const PuzzleCard = require("../contracts/PuzzleCard");
+const PuzzleCard = require("../public/PuzzleCard");
 
 chai.use(chaiAsPromised);
 

@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("../test_utils/TestUtils");
 const card = TestUtils.card;
-const PuzzleCard = require("../../contracts/PuzzleCard");
+const PuzzleCard = require("../../public/PuzzleCard");
 
 const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier, { skipSameTierTest, skipDegradeTest, skipNoDegradeTest } = {}) => {
   const titleized = actionName[0].toUpperCase() + actionName.slice(1);

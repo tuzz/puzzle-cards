@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { it: _it } = require("mocha");
 const { constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("./test_utils/TestUtils");
-const PuzzleCard = require("../contracts/PuzzleCard");
+const PuzzleCard = require("../public/PuzzleCard");
 
 const it = (n) => {
   if (typeof n !== "number") { throw new Error(`No test number for '${n}'`); }
