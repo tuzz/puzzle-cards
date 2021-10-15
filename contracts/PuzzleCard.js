@@ -15,6 +15,10 @@ class PuzzleCard {
     PuzzleCard.CONTRACT = contract;
   }
 
+  static attach(ethers, provider) {
+    PuzzleCard.CONTRACT = new ethers.Contract(PuzzleCard.CONTRACT_ADDRESS, PuzzleCard.CONTRACT_ABI, provider);
+  }
+
   static async mint(numberToMint, to) {
     return PuzzleCard.pricePerCard().then(price => (
       PuzzleCard.inBatches(numberToMint, (batchSize) => {
