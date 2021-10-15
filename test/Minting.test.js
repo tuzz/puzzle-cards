@@ -3,6 +3,7 @@ const expect = chai.expect;
 const chaiAsPromised = require("chai-as-promised");
 const { expectRevert, constants } = require("@openzeppelin/test-helpers");
 const TestUtils = require("./test_utils/TestUtils");
+const PuzzleCard = require("../contracts/PuzzleCard");
 
 chai.use(chaiAsPromised);
 
@@ -16,55 +17,54 @@ describe("Minting", () => {
 
   beforeEach(async () => {
     contract = await factory.deploy(constants.ZERO_ADDRESS);
-    TestUtils.addHelpfulMethodsTo(contract);
+    PuzzleCard.setContract(contract);
   });
 
   describe("#mint", () => {
-    it("allows a user to mint cards in exchange for payment", async () => {
-      const contractAsUser1 = contract.connect(user1);
-      TestUtils.addHelpfulMethodsTo(contractAsUser1);
+    it("allows a user to mint cards", async () => {
+      PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
 
-      const price = await contractAsUser1.priceToMint(3);
+      const cards = await PuzzleCard.mint(1, user2.address);
+      expect(cards.length).to.equal(1);
 
-      const tokenIDs = await TestUtils.batchTokenIDs(
-        contractAsUser1.mint(3, user2.address, { value: price })
-      );
-
-      expect(tokenIDs.length).to.equal(3);
+      const numOwned = await PuzzleCard.numberOwned(cards[0], user2.address);
+      expect(numOwned).to.equal(1);
     });
 
     it("sends payment to the contract owner", async () => {
       const balanceBefore = await ethers.provider.getBalance(owner.address);
 
-      const contractAsUser1 = contract.connect(user1);
-      TestUtils.addHelpfulMethodsTo(contractAsUser1);
-
-      const price = await contractAsUser1.priceToMint(3);
-      await contractAsUser1.mint(3, user2.address, { value: price });
+      PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
+      await PuzzleCard.mint(3, user2.address);
 
       const balanceAfter = await ethers.provider.getBalance(owner.address);
       const delta = balanceAfter.toBigInt() - balanceBefore.toBigInt();
 
-      expect(delta).to.equal(price);
+      const pricePerCard = await PuzzleCard.pricePerCard();
+      const expectedPayment = BigInt(3) * pricePerCard;
+
+      expect(delta).to.equal(expectedPayment);
     });
 
     it("reverts if no payment is provided", async () => {
-      await expectRevert.unspecified(contract.mint(3, user2.address));
+      const promise = PuzzleCard.CONTRACT.mint(3, user2.address, { ...PuzzleCard.GAS_OPTIONS });
+      await expectRevert.unspecified(promise);
     });
 
     it("reverts if insufficient payment is provided", async () => {
-      const price = contract.priceToMint(3);
-      const notEnough = price - BigInt(1);
+      const pricePerCard = await PuzzleCard.pricePerCard();
+      const notEnough = BigInt(3) * pricePerCard - BigInt(1);
 
-      await expectRevert.unspecified(contract.mint(3, user2.address, { value: notEnough }));
+      const promise = PuzzleCard.CONTRACT.mint(3, user2.address, { ...PuzzleCard.GAS_OPTIONS, value: notEnough });
+      await expectRevert.unspecified(promise);
     });
 
     it("reverts if the purchaser doesn't have enough funds", async () => {
       await user2.sendTransaction({ to: owner.address, value: 999999999960000000000000n });
-      const contractAsUser2 = contract.connect(user2);
+      PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user2));
 
-      const price = contract.priceToMint(3);
-      const promise = contractAsUser2.mint(3, user2.address, { value: price });
+      const pricePerCard = await PuzzleCard.pricePerCard();
+      const promise = PuzzleCard.mint(3, user2.address);
 
       expect(promise).to.eventually.be.rejectedWith(/doesn't have enough funds/);
     });
@@ -72,14 +72,16 @@ describe("Minting", () => {
 
   describe("#gift", () => {
     it("allows the contract owner to mint cards as a gift to a user", async () => {
-      const tokenIDs = await TestUtils.batchTokenIDs(contract.gift(3, user1.address));
+      const cards = await PuzzleCard.gift(1, user1.address);
+      expect(cards.length).to.equal(1);
 
-      expect(tokenIDs.length).to.equal(3);
+      const balance = await PuzzleCard.numberOwned(cards[0], user1.address);
+      expect(balance).to.equal(1);
     });
 
     it("does not allow other users to gift cards", async () => {
-      const contractAsUser1 = contract.connect(user1);
-      await expectRevert.unspecified(contractAsUser1.gift(3, user1.address));
+      PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
+      await expectRevert.unspecified(PuzzleCard.gift(3, user1.address));
     });
   });
 });

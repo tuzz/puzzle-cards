@@ -15,16 +15,23 @@ class PuzzleCard {
     PuzzleCard.CONTRACT = contract;
   }
 
-  static mint(to, numberToMint) {
-    return PuzzleCard.inBatches(numberToMint, (batchSize) => (
-      PuzzleCard.CONTRACT.mint(batchSize, to, PuzzleCard.GAS_OPTIONS).then(PuzzleCard.fromBatchEvent)
+  static async mint(numberToMint, to) {
+    return PuzzleCard.pricePerCard().then(price => (
+      PuzzleCard.inBatches(numberToMint, (batchSize) => {
+        const options = { ...PuzzleCard.GAS_OPTIONS, value: BigInt(batchSize) * price };
+        return PuzzleCard.CONTRACT.mint(batchSize, to, options).then(PuzzleCard.fromBatchEvent);
+      })
     ));
   }
 
-  static gift(to, numberToGift) { // Only callable by the contract owner.
+  static gift(numberToGift, to) { // Only callable by the contract owner.
     return PuzzleCard.inBatches(numberToGift, (batchSize) => (
       PuzzleCard.CONTRACT.gift(batchSize, to, PuzzleCard.GAS_OPTIONS).then(PuzzleCard.fromBatchEvent)
     ));
+  }
+
+  static numberOwned(card, address) {
+    return PuzzleCard.CONTRACT.balanceOf(address, card.tokenID()).then(n => n.toNumber());
   }
 
   static actionsThatCanBeTaken(puzzleCards) {

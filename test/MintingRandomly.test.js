@@ -26,7 +26,7 @@ describe("MintingRandomly", () => {
 
   describe("series", () => {
     it(0)("picks randomly", async () => {
-      const cards = await PuzzleCard.gift(owner.address, 1000);
+      const cards = await PuzzleCard.gift(100, owner.address);
       const frequencies = TestUtils.tallyFrequencies(cards.map(c => c.series));
 
       expect(frequencies["Series 0"]).to.be.within(0.47, 0.53); // 50%
@@ -36,7 +36,7 @@ describe("MintingRandomly", () => {
 
   describe("puzzle", () => {
     it(1)("picks randomly within the series", async () => {
-      const cards = await PuzzleCard.gift(owner.address, 2500);
+      const cards = await PuzzleCard.gift(2500, owner.address);
       const frequencies = TestUtils.tallyFrequenciesInGroups(cards.map(c => [c.series, c.puzzle]));
 
       expect(frequencies["Series 0"]["Puzzle 0-0"]).to.be.within(0.47, 0.53); // 50%
@@ -50,7 +50,7 @@ describe("MintingRandomly", () => {
 
   describe("tier", () => {
     it(2)("picks according to the probability distribution", async () => {
-      const cards = await PuzzleCard.gift(owner.address, 1000);
+      const cards = await PuzzleCard.gift(1000, owner.address);
       const frequencies = TestUtils.tallyFrequencies(cards.map(c => c.tier));
 
       expect(frequencies["Mortal"]).to.be.within(0.87, 0.93);   // 90%
@@ -65,7 +65,7 @@ describe("MintingRandomly", () => {
 
   describe("type", () => {
     it(3)("picks according to the probability distribution", async () => {
-      const cards = await PuzzleCard.gift(owner.address, 1000);
+      const cards = await PuzzleCard.gift(1000, owner.address);
       const frequencies = TestUtils.tallyFrequencies(cards.map(c => c.type));
 
       expect(frequencies["Player"]).to.be.within(0.27, 0.33);    // 30%
@@ -90,7 +90,7 @@ describe("MintingRandomly", () => {
 
   describe("color1", () => {
     it(4)("picks according to the probability distribution for types with one or more colors", async () => {
-      const cards = await PuzzleCard.gift(owner.address, 2000);
+      const cards = await PuzzleCard.gift(2000, owner.address);
 
       const uncoloredTypes = ["Player", "Crab", "Map", "Teleport", "Eclipse", "Door", "Hidden", "Artwork"];
       const coloredTypes = ["Inactive", "Active", "Cloak", "Telescope", "Helix", "Torch", "Beacon", "Glasses", "Star"];
@@ -116,7 +116,7 @@ describe("MintingRandomly", () => {
 
   describe("color2", () => {
     it(5)("picks according to the probability distribution for types with two colors", async () => {
-      const cards = await PuzzleCard.gift(owner.address, 15000);
+      const cards = await PuzzleCard.gift(15000, owner.address);
 
       const uncoloredTypes = ["Player", "Crab", "Map", "Teleport", "Inactive", "Active", "Cloak", "Telescope", "Beacon", "Eclipse", "Door", "Hidden", "Artwork", "Star"];
       const coloredTypes = ["Helix", "Torch", "Glasses"];
@@ -142,7 +142,7 @@ describe("MintingRandomly", () => {
 
   describe("variant", () => {
     it(6)("picks according to the probability distribution for types with variants", async () => {
-      const cards = await PuzzleCard.gift(owner.address, 2500);
+      const cards = await PuzzleCard.gift(2500, owner.address);
 
       const nonVaryingTypes = ["Player", "Crab", "Cloak", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Hidden", "Artwork", "Star"];
       const varyingTypes = ["Inactive", "Active", "Telescope", "Door"];
@@ -166,7 +166,7 @@ describe("MintingRandomly", () => {
 
   describe("condition", () => {
     it(7)("picks according to the probability distribution", async () => {
-      const cards = await PuzzleCard.gift(owner.address, 1000);
+      const cards = await PuzzleCard.gift(1000, owner.address);
       const frequencies = TestUtils.tallyFrequencies(cards.map(c => c.condition));
 
       expect(frequencies["Dire"]).to.be.undefined;                // 0%
