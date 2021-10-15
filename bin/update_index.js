@@ -55,18 +55,28 @@ const main = async () => {
 const updateDeck = (address, tokenIDs, quantities, direction) => {
   if (address === "0x0000000000000000000000000000000000000000") { return; }
 
-  let deck = {};
+  let deck = { balanceByTokenID: {}, mostRecentFirst: [] };
 
   if (fs.existsSync(`public/decks/${address}.json`)) {
     deck = JSON.parse(fs.readFileSync(`public/decks/${address}.json`, "utf8"));
   }
 
   for (let i = 0; i < tokenIDs.length; i += 1) {
-    const tokenID = tokenIDs[i].toBigInt();
+    const tokenID = tokenIDs[i].toString();
     const quantity = quantities[i].toNumber();
 
-    deck[tokenID] = deck[tokenID] || 0;
-    deck[tokenID] += quantity * direction;
+    const position = deck.mostRecentFirst.indexOf(tokenID);
+    if (position !== -1) { deck.mostRecentFirst.splice(position, 1); }
+
+    const balance = deck.balanceByTokenID[tokenID] || 0;
+    const newBalance = balance + quantity * direction;
+
+    if (newBalance === 0) {
+      delete deck.balanceByTokenID[tokenID];
+    } else {
+      deck.balanceByTokenID[tokenID] = newBalance;
+      deck.mostRecentFirst.unshift(tokenID);
+    }
   }
 
   fs.writeFileSync(`public/decks/${address}.json`, JSON.stringify(deck));
