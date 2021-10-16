@@ -4,55 +4,23 @@ const batchSize = 1000;
 
 const main = async () => {
   fs.mkdirSync("public/decks", { recursive: true });
-
-  const lastBlock = (await ethers.provider.getBlock("latest")).number;
-  let lastIndexed = PuzzleCard.CONTRACT_BLOCK;
-
-  if (fs.existsSync("public/decks/_last_indexed")) {
-    lastIndexed = parseInt(fs.readFileSync("public/decks/_last_indexed", "utf8"), 10);
-  }
-
   PuzzleCard.attach(ethers, ethers.provider);
 
-  let [eventCount, cardCount] = [0, 0];
+  let minBlock = PuzzleCard.CONTRACT_BLOCK;
 
-  for (let block = lastIndexed + 1; block <= lastBlock; block += batchSize) {
-    const fromBlock = block;
-    const toBlock = Math.min(block + batchSize - 1, lastBlock);
-
-    const batchFilter = PuzzleCard.CONTRACT.filters.TransferBatch();
-    const batchLogs = await PuzzleCard.CONTRACT.provider.getLogs({ ...batchFilter, fromBlock, toBlock });
-
-    for (const log of batchLogs) {
-      const event = PuzzleCard.CONTRACT.interface.parseLog(log);
-      const [{ from, to, ids }, quantities] = [event.args, event.args[4]];
-
-      updateDeck(from, ids, quantities, -1);
-      updateDeck(to, ids, quantities, 1);
-
-      eventCount += 1; cardCount += ids.length;
-    }
-
-    const singleFilter = PuzzleCard.CONTRACT.filters.TransferSingle();
-    const singleLogs = await PuzzleCard.CONTRACT.provider.getLogs({ ...singleFilter, fromBlock, toBlock });
-
-    for (const log of singleLogs) {
-      const event = PuzzleCard.CONTRACT.interface.parseLog(log);
-      const { from, to, id, value: quantity } = event.args;
-
-      updateDeck(from, [id], [quantity], -1);
-      updateDeck(to, [id], [quantity], 1);
-
-      eventCount += 1; cardCount += 1;
-    }
-
-    console.log(`${eventCount} events :: ${cardCount} cards :: ${lastBlock - block} blocks remaining`);
+  if (fs.existsSync("public/decks/_last_indexed")) {
+    minBlock = parseInt(fs.readFileSync("public/decks/_last_indexed", "utf8"), 10) + 1;
   }
 
-  fs.writeFileSync("public/decks/_last_indexed", lastBlock.toString());
-}
+  const maxBlock = (await PuzzleCard.CONTRACT.provider.getBlock("latest")).number;
 
-const updateDeck = (address, tokenIDs, quantities, direction) => {
+  PuzzleCard.attach(ethers, ethers.provider);
+  await PuzzleCard.fetchBalanceChanges({ minBlock, maxBlock, onChange: updateDeck, onProgress: console.log });
+
+  fs.writeFileSync("public/decks/_last_indexed", maxBlock.toString());
+};
+
+const updateDeck = (address, tokenIDs, quantities) => {
   if (address === "0x0000000000000000000000000000000000000000") { return; }
 
   let deck = { balanceByTokenID: {}, mostRecentFirst: [] };
@@ -63,13 +31,13 @@ const updateDeck = (address, tokenIDs, quantities, direction) => {
 
   for (let i = 0; i < tokenIDs.length; i += 1) {
     const tokenID = tokenIDs[i].toString();
-    const quantity = quantities[i].toNumber();
+    const quantity = quantities[i];
 
     const position = deck.mostRecentFirst.indexOf(tokenID);
     if (position !== -1) { deck.mostRecentFirst.splice(position, 1); }
 
     const balance = deck.balanceByTokenID[tokenID] || 0;
-    const newBalance = balance + quantity * direction;
+    const newBalance = balance + quantity;
 
     if (newBalance === 0) {
       delete deck.balanceByTokenID[tokenID];
@@ -80,7 +48,7 @@ const updateDeck = (address, tokenIDs, quantities, direction) => {
   }
 
   fs.writeFileSync(`public/decks/${address}.json`, JSON.stringify(deck));
-}
+};
 
 main().then(() => process.exit(0)).catch(error => {
   console.error(error);
