@@ -1,0 +1,3 @@
+#!/bin/bash
+
+yarn run next build && yarn run next export -o .gh-pages
