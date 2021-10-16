@@ -97,12 +97,23 @@ class PuzzleCard {
 
   // class methods
 
-  static async fetchDeck(address, onProgress = () => {}) {
-    const deckIndex = await PuzzleCard.fetchDeckIndex(address, onProgress);
+  static async fetchDeck(address, onChange, onProgress = () => {}) {
+    let handleChange;
+
+    if (onChange) {
+      handleChange = (_, ids, deltas) => onChange(ids.map((id, i) => ({
+        card: PuzzleCard.fromTokenID(BigInt(id)),
+        delta: deltas[i],
+        tokenID: BigInt(id),
+      })));
+    }
+
+    const deckIndex = await PuzzleCard.fetchDeckIndex(address, handleChange, onProgress);
 
     return deckIndex.mostRecentFirst.map(id => ({
       card: PuzzleCard.fromTokenID(BigInt(id)),
       quantity: deckIndex.balanceByTokenID[id],
+      tokenID: BigInt(id),
     }));
   }
 
@@ -393,15 +404,19 @@ class PuzzleCard {
     });
   }
 
-  static async fetchDeckIndex(address, onProgress) {
-    const outdatedDeckIndex = await fetch(`${PuzzleCard.DECKS_URI}/${address}.json`).then(r => r.json());
-    const lastIndexedBlock = await fetch(`${PuzzleCard.DECKS_URI}/_last_indexed`).then(r => r.text());
+  static async fetchDeckIndex(address, onChange, onProgress) {
+    const outdatedDeckIndex = await fetch(`${PuzzleCard.DECKS_URI}/${address}.json`).then(r => r.json()).catch(() => ({}));;
+    const lastIndexedBlock = await fetch(`${PuzzleCard.DECKS_URI}/_last_indexed`).then(r => r.json()).catch(() => PuzzleCard.CONTRACT_BLOCK);
 
-    await PuzzleCard.fetchBalanceChanges({
+    outdatedDeckIndex.balanceByTokenID = outdatedDeckIndex.balanceByTokenID || {};
+    outdatedDeckIndex.mostRecentFirst = outdatedDeckIndex.mostRecentFirst || [];
+
+    await PuzzleCard.fetchBalances({
       address,
       minBlock: parseInt(lastIndexedBlock, 10) + 1,
       maxBlock: (await PuzzleCard.CONTRACT.provider.getBlock("latest")).number,
-      onChange: (_, ids, q) => PuzzleCard.updateDeckIndex(outdatedDeckIndex, ids, q),
+      onFetch: (_, ids, q) => PuzzleCard.updateDeckIndex(outdatedDeckIndex, ids, q),
+      onChange,
       onProgress,
     });
 
@@ -409,37 +424,54 @@ class PuzzleCard {
     return updatedDeckIndex;
   }
 
-  static async fetchBalanceChanges({ address = "any", minBlock, maxBlock, batchSize = 1000, onChange, onProgress = () => {} }) {
+  static async fetchBalances({ address = "any", minBlock, maxBlock, batchSize = 1000, onFetch, onChange, onProgress = () => {} }) {
     let cardsTransferred = 0;
     let eventsProcessed = 0;
 
-    const handleTransfer = ([from, to, ids, quantities]) => {
+    const batchFilter = PuzzleCard.CONTRACT.filters.TransferBatch();
+    const singleFilter = PuzzleCard.CONTRACT.filters.TransferSingle();
+
+    const handleTransfer = (from, to, ids, quantities) => {
       quantities = quantities.map(q => q.toNumber());
 
-      if (address === "any" || address === from) { onChange(from, ids, quantities.map(q => -q)); }
-      if (address === "any" || address === to) { onChange(to, ids, quantities); }
+      if (address === "any" || address === from) { onFetch(from, ids, quantities.map(q => -q)); }
+      if (address === "any" || address === to) { onFetch(to, ids, quantities); }
 
       cardsTransferred += quantities.reduce((a, b) => a + b);
-    }
+    };
+
+    const handleBatchLog = (log) => {
+      const { args } = PuzzleCard.CONTRACT.interface.parseLog(log);
+      const [{ from, to, ids }, quantities] = [args, args[4]];
+
+      handleTransfer(from, to, ids, quantities);
+      eventsProcessed += 1;
+    };
+
+    const handleSingleLog = (log) => {
+      const { args } = PuzzleCard.CONTRACT.interface.parseLog(log);
+      const [{ from, to, id }, quantity] = [args, args[4]];
+
+      handleTransfer(from, to, [id], [quantity]);
+      eventsProcessed += 1;
+    };
 
     for (let block = minBlock; block <= maxBlock; block += batchSize) {
       const fromBlock = block;
       const toBlock = Math.min(block + batchSize - 1, maxBlock);
 
-      const batchFilter = PuzzleCard.CONTRACT.filters.TransferBatch();
-      const batchLogs = await PuzzleCard.CONTRACT.provider.getLogs({ ...batchFilter, fromBlock, toBlock });
-      const batchEvents = batchLogs.map(log => PuzzleCard.CONTRACT.interface.parseLog(log));
-      const batchTransfers = batchEvents.map(({ args }) => [args.from, args.to, args.ids, args[4]]);
-      batchTransfers.forEach(handleTransfer);
+      (await PuzzleCard.CONTRACT.provider.getLogs({ ...batchFilter, fromBlock, toBlock })).forEach(handleBatchLog);
+      (await PuzzleCard.CONTRACT.provider.getLogs({ ...singleFilter, fromBlock, toBlock })).forEach(handleSingleLog);
 
-      const singleFilter = PuzzleCard.CONTRACT.filters.TransferSingle();
-      const singleLogs = await PuzzleCard.CONTRACT.provider.getLogs({ ...singleFilter, fromBlock, toBlock });
-      const singleEvents = singleLogs.map(log => PuzzleCard.CONTRACT.interface.parseLog(log));
-      const singleTransfers = singleEvents.map(({ args }) => [args.from, args.to, [args.id], [args[4]]]);
-      singleTransfers.forEach(handleTransfer);
-
-      eventsProcessed += batchEvents.length + singleEvents.length;
       onProgress({ blocksRemaining: maxBlock - toBlock, eventsProcessed, cardsTransferred });
+    }
+
+    // Register event listeners in case the deck changes after it has been fetched.
+    if (onChange) {
+      onFetch = onChange; // Make handleTransfer call onChange instead.
+
+      PuzzleCard.CONTRACT.provider.on(batchFilter, handleBatchLog);
+      PuzzleCard.CONTRACT.provider.on(singleFilter, handleSingleLog);
     }
   }
 

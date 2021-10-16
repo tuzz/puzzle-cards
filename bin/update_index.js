@@ -15,7 +15,7 @@ const main = async () => {
   const maxBlock = (await PuzzleCard.CONTRACT.provider.getBlock("latest")).number;
 
   PuzzleCard.attach(ethers, ethers.provider);
-  await PuzzleCard.fetchBalanceChanges({ minBlock, maxBlock, onChange: updateDeck, onProgress: console.log });
+  await PuzzleCard.fetchBalances({ minBlock, maxBlock, onFetch: updateDeck, onProgress: console.log });
 
   fs.writeFileSync("public/decks/_last_indexed", maxBlock.toString());
 };
