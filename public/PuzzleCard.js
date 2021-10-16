@@ -524,7 +524,7 @@ PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0x58807bad0b376efc12f5ad86aac70e78ed67deae";
 PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
 PuzzleCard.DECKS_URI = "https://puzzlecards.github.io/decks";
-PuzzleCard.DECKS_URI = "http://localhost:8000/decks";
+PuzzleCard.DECKS_URI = "http://localhost:3000/decks";
 
 PuzzleCard.GAS_OPTIONS = { gasLimit: 20000000 }; // The maximum for the polygon network.
 PuzzleCard.MAX_BATCH_SIZE = 390; // Otherwise, we're likely to run out of gas.
