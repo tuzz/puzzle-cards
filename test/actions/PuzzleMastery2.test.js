@@ -173,7 +173,7 @@ describe("PuzzleMastery2", () => {
         }
 
         const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
-        const numLimited = await card.numLimitedEditions(contract);
+        const numLimited = await PuzzleCard.numLimitedEditions(card);
 
         expect(numLimited.toNumber()).to.equal(10);
       });
@@ -190,7 +190,7 @@ describe("PuzzleMastery2", () => {
         }
 
         const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
-        const isClaimed = await card.masterCopyClaimed(contract);
+        const isClaimed = await PuzzleCard.masterCopyClaimed(card);
 
         expect(isClaimed).to.equal(true);
       });
@@ -209,8 +209,8 @@ describe("PuzzleMastery2", () => {
           mintedCards.push(await PuzzleCard.puzzleMastery2(cards));
         }
 
-        const numLimited = await card.numLimitedEditions(contract);
-        const isClaimed = await card.masterCopyClaimed(contract);
+        const numLimited = await PuzzleCard.numLimitedEditions(card);
+        const isClaimed = await PuzzleCard.masterCopyClaimed(card);
 
         expect(numLimited.toNumber()).to.equal(10);
         expect(isClaimed).to.equal(true);
@@ -223,8 +223,8 @@ describe("PuzzleMastery2", () => {
           await PuzzleCard.discard2Pickup1([card1, card2]);
         }
 
-        const numLimitedAfterDiscard = await card.numLimitedEditions(contract);
-        const isClaimedAfterDiscard = await card.masterCopyClaimed(contract);
+        const numLimitedAfterDiscard = await PuzzleCard.numLimitedEditions(card);
+        const isClaimedAfterDiscard = await PuzzleCard.masterCopyClaimed(card);
 
         expect(numLimitedAfterDiscard.toNumber()).not.to.equal(10);
         expect(isClaimedAfterDiscard).to.equal(false)
@@ -240,8 +240,8 @@ describe("PuzzleMastery2", () => {
           await PuzzleCard.puzzleMastery2(cards);
         }
 
-        const numLimitedAfterReMint = await card.numLimitedEditions(contract);
-        const isClaimedAfterReMint = await card.masterCopyClaimed(contract);
+        const numLimitedAfterReMint = await PuzzleCard.numLimitedEditions(card);
+        const isClaimedAfterReMint = await PuzzleCard.masterCopyClaimed(card);
 
         expect(numLimitedAfterReMint.toNumber()).to.equal(10);
         expect(isClaimedAfterReMint).to.equal(true)

@@ -21,7 +21,7 @@ const main = async () => {
     const toBlock = Math.min(block + batchSize - 1, lastBlock);
 
     const batchFilter = PuzzleCard.CONTRACT.filters.TransferBatch();
-    const batchLogs = await ethers.provider.getLogs({ ...batchFilter, fromBlock, toBlock });
+    const batchLogs = await PuzzleCard.CONTRACT.provider.getLogs({ ...batchFilter, fromBlock, toBlock });
 
     for (const log of batchLogs) {
       const event = PuzzleCard.CONTRACT.interface.parseLog(log);
@@ -34,7 +34,7 @@ const main = async () => {
     }
 
     const singleFilter = PuzzleCard.CONTRACT.filters.TransferSingle();
-    const singleLogs = await ethers.provider.getLogs({ ...singleFilter, fromBlock, toBlock });
+    const singleLogs = await PuzzleCard.CONTRACT.provider.getLogs({ ...singleFilter, fromBlock, toBlock });
 
     for (const log of singleLogs) {
       const event = PuzzleCard.CONTRACT.interface.parseLog(log);

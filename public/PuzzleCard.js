@@ -1,3 +1,12 @@
+// This class provides helpful methods for working with the PuzzleCard contract:
+//
+// - it works with objects, rather than raw token IDs
+// - it has utilities for fetching a user's deck and keeping it up to date
+// - it contains constants, such as the contract address, ABI, etc.
+// - it decodes reasons for why actions cannot be performed
+//
+// See https://puzzlecards.github.io/developers for example usage.
+
 class PuzzleCard {
   constructor({ series, puzzle, tier, type, color1, color2, variant, condition, edition }) {
     this.series = series;
@@ -10,6 +19,134 @@ class PuzzleCard {
     this.condition = condition;
     this.edition = edition;
   }
+
+  // instance methods
+
+  seriesIndex() {
+    return PuzzleCard.SERIES_NAMES.indexOf(this.series);
+  }
+
+  puzzleIndex() {
+    return PuzzleCard.PUZZLE_NAMES.indexOf(this.puzzle);
+  }
+
+  relativePuzzleIndex() {
+    return this.puzzleIndex() - PuzzleCard.PUZZLE_OFFSET_PER_SERIES[this.seriesIndex()]
+  }
+
+  tierIndex() {
+    return PuzzleCard.TIER_NAMES.indexOf(this.tier);
+  }
+
+  typeIndex() {
+    return PuzzleCard.TYPE_NAMES.indexOf(this.type);
+  }
+
+  color1Index() {
+    return PuzzleCard.COLOR_NAMES.indexOf(this.color1);
+  }
+
+  color2Index() {
+    return PuzzleCard.COLOR_NAMES.indexOf(this.color2);
+  }
+
+  variantIndex() {
+    return PuzzleCard.VARIANT_NAMES.indexOf(this.variant);
+  }
+
+  relativeVariantIndex() {
+    return this.variantIndex() - PuzzleCard.VARIANT_OFFSET_PER_TYPE[this.typeIndex()];
+  }
+
+  conditionIndex() {
+    return PuzzleCard.CONDITION_NAMES.indexOf(this.condition);
+  }
+
+  editionIndex() {
+    return PuzzleCard.EDITION_NAMES.indexOf(this.edition);
+  }
+
+  tokenID() {
+    return BigInt(this.tokenHexString());
+  }
+
+  tokenHexString() {
+    return "0x" + [
+      this.seriesIndex(),
+      this.relativePuzzleIndex(),
+      this.tierIndex(),
+      this.typeIndex(),
+      this.color1Index(),
+      this.color2Index(),
+      this.relativeVariantIndex(),
+      this.conditionIndex(),
+      this.editionIndex(),
+    ].map(i => i.toString(16).padStart(2, "0")).join("");
+  }
+
+  editionsKey() {
+    return BigInt(this.editionsHexString());
+  }
+
+  editionsHexString() {
+    return "0x" + [
+      this.seriesIndex(),
+      this.relativePuzzleIndex(),
+    ].map(i => i.toString(16).padStart(2, "0")).join("");
+  }
+
+  // class methods
+
+  static fromTokenID(tokenID) {
+    return PuzzleCard.fromHexString(tokenID.toString(16));
+  }
+
+  static fromHexString(hex) {
+    const startFrom = hex.length - 18;
+    const indexes = [];
+
+    for (let i = 0; i < 9; i += 1) {
+      const offset = startFrom + i * 2;
+      const digits = hex.substring(offset, offset + 2);
+      const index = parseInt(digits || "0", 16);
+
+      indexes.push(index);
+    }
+
+    return this.fromIndexes(indexes);
+  }
+
+  static fromIndexes(indexes) {
+    const puzzleOffset = PuzzleCard.PUZZLE_OFFSET_PER_SERIES[indexes[0]];
+    const variantOffset = PuzzleCard.VARIANT_OFFSET_PER_TYPE[indexes[3]];
+
+    return new PuzzleCard({
+      series: PuzzleCard.SERIES_NAMES[indexes[0]],
+      puzzle: PuzzleCard.PUZZLE_NAMES[puzzleOffset + indexes[1]],
+      tier: PuzzleCard.TIER_NAMES[indexes[2]],
+      type: PuzzleCard.TYPE_NAMES[indexes[3]],
+      color1: PuzzleCard.COLOR_NAMES[indexes[4]],
+      color2: PuzzleCard.COLOR_NAMES[indexes[5]],
+      variant: PuzzleCard.VARIANT_NAMES[variantOffset + indexes[6]],
+      condition: PuzzleCard.CONDITION_NAMES[indexes[7]],
+      edition: PuzzleCard.EDITION_NAMES[indexes[8]],
+    });
+  }
+
+  static allPuzzleCards() { // For use with numLimitedEditions and masterCopyClaimed.
+    return PuzzleCard.NUM_PUZZLES_PER_SERIES.flatMap((numPuzzles, seriesIndex) => (
+      [...Array(numPuzzles).keys()].map(relativePuzzleIndex => {
+        const puzzleOffset = PuzzleCard.PUZZLE_OFFSET_PER_SERIES[seriesIndex];
+
+        return new PuzzleCard({
+          series: PuzzleCard.SERIES_NAMES[seriesIndex],
+          puzzle: PuzzleCard.PUZZLE_NAMES[puzzleOffset + relativePuzzleIndex],
+        });
+      })
+    ));
+  }
+
+  // contract methods
 
   static attach(ethers, provider) { // Enables reading from the contract.
     PuzzleCard.CONTRACT = new ethers.Contract(PuzzleCard.CONTRACT_ADDRESS, PuzzleCard.CONTRACT_ABI, provider);
@@ -32,14 +169,20 @@ class PuzzleCard {
     ));
   }
 
-  static gift(numberToGift, to) { // Only callable by the contract owner.
-    return PuzzleCard.inBatches(numberToGift, (batchSize) => (
-      PuzzleCard.CONTRACT.gift(batchSize, to, PuzzleCard.GAS_OPTIONS).then(PuzzleCard.fromBatchEvent)
-    ));
+  static pricePerCard() {
+    return PuzzleCard.CONTRACT.pricePerCard().then(p => p.toBigInt());
   }
 
   static numberOwned(card, address) {
     return PuzzleCard.CONTRACT.balanceOf(address, card.tokenID()).then(n => n.toNumber());
+  }
+
+  static numLimitedEditions(card) { // The card only requires a series and puzzle.
+    return PuzzleCard.CONTRACT.limitedEditions(card.editionsKey());
+  }
+
+  static masterCopyClaimed(card) { // The card only requires a series and puzzle.
+    return PuzzleCard.CONTRACT.masterCopiesClaimed(card.editionsKey());
   }
 
   static actionsThatCanBeTaken(puzzleCards) {
@@ -159,6 +302,14 @@ class PuzzleCard {
     return PuzzleCard.CONTRACT.mintExact(puzzleCard.tokenID(), to).then(() => puzzleCard);
   }
 
+  // onlyOwner contract methods
+
+  static gift(numberToGift, to) { // Only callable by the contract owner.
+    return PuzzleCard.inBatches(numberToGift, (batchSize) => (
+      PuzzleCard.CONTRACT.gift(batchSize, to, PuzzleCard.GAS_OPTIONS).then(PuzzleCard.fromBatchEvent)
+    ));
+  }
+
   static updateConstants() {
     return PuzzleCard.CONTRACT.updateConstants(
       PuzzleCard.NUM_PUZZLES_PER_SERIES,
@@ -172,6 +323,22 @@ class PuzzleCard {
 
   static updatePrice(newPrice) {
     return PuzzleCard.CONTRACT.updatePrice(newPrice);
+  }
+
+  // private methods
+
+  static inBatches(numberToMint, fn) {
+    const batchSize = PuzzleCard.MAX_BATCH_SIZE;
+    const promises = [];
+
+    for (let i = 0; i < Math.floor(numberToMint / batchSize); i += 1) {
+      promises.push(fn(batchSize));
+    }
+
+    const remainder = numberToMint % PuzzleCard.MAX_BATCH_SIZE;
+    if (remainder > 0) { promises.push(fn(remainder)); }
+
+    return Promise.all(promises).then(arrays => [].concat(...arrays));
   }
 
   static performAction(actionName, puzzleCards, expectedNumArgs) {
@@ -198,23 +365,6 @@ class PuzzleCard {
     return PuzzleCard.CONTRACT[functionName](args, PuzzleCard.GAS_OPTIONS);
   }
 
-  static allCards() {
-    // TODO
-  }
-
-  static allPuzzles() {
-    return PuzzleCard.NUM_PUZZLES_PER_SERIES.flatMap((numPuzzles, seriesIndex) => (
-      [...Array(numPuzzles).keys()].map(relativePuzzleIndex => {
-        const puzzleOffset = PuzzleCard.PUZZLE_OFFSET_PER_SERIES[seriesIndex];
-
-        return new PuzzleCard({
-          series: PuzzleCard.SERIES_NAMES[seriesIndex],
-          puzzle: PuzzleCard.PUZZLE_NAMES[puzzleOffset + relativePuzzleIndex],
-        });
-      })
-    ));
-  }
-
   static decodeErrors([isAllowed, errorCodes]) {
     const strings = errorCodes.map((bool, i) => bool ? PuzzleCard.ERROR_STRINGS[i] : null);
     return [isAllowed, strings.filter(s => s)];
@@ -233,138 +383,9 @@ class PuzzleCard {
       return event.args.ids.map(id => PuzzleCard.fromTokenID(id.toBigInt()));
     });
   }
-
-  static fromTokenID(tokenID) {
-    return PuzzleCard.fromHexString(tokenID.toString(16));
-  }
-
-  tokenID() {
-    return BigInt(this.hexString());
-  }
-
-  static pricePerCard() {
-    return PuzzleCard.CONTRACT.pricePerCard().then(p => p.toBigInt());
-  }
-
-  numLimitedEditions(contract) {
-    return contract.limitedEditions(BigInt(this.editionsHexString()));
-  }
-
-  masterCopyClaimed(contract) {
-    return contract.masterCopiesClaimed(BigInt(this.editionsHexString()));
-  }
-
-  seriesIndex() {
-    return PuzzleCard.SERIES_NAMES.indexOf(this.series);
-  }
-
-  puzzleIndex() {
-    return PuzzleCard.PUZZLE_NAMES.indexOf(this.puzzle);
-  }
-
-  relativePuzzleIndex() {
-    return this.puzzleIndex() - PuzzleCard.PUZZLE_OFFSET_PER_SERIES[this.seriesIndex()]
-  }
-
-  tierIndex() {
-    return PuzzleCard.TIER_NAMES.indexOf(this.tier);
-  }
-
-  typeIndex() {
-    return PuzzleCard.TYPE_NAMES.indexOf(this.type);
-  }
-
-  color1Index() {
-    return PuzzleCard.COLOR_NAMES.indexOf(this.color1);
-  }
-
-  color2Index() {
-    return PuzzleCard.COLOR_NAMES.indexOf(this.color2);
-  }
-
-  variantIndex() {
-    return PuzzleCard.VARIANT_NAMES.indexOf(this.variant);
-  }
-
-  relativeVariantIndex() {
-    return this.variantIndex() - PuzzleCard.VARIANT_OFFSET_PER_TYPE[this.typeIndex()];
-  }
-
-  conditionIndex() {
-    return PuzzleCard.CONDITION_NAMES.indexOf(this.condition);
-  }
-
-  editionIndex() {
-    return PuzzleCard.EDITION_NAMES.indexOf(this.edition);
-  }
-
-  static fromHexString(hex) {
-    const startFrom = hex.length - 18;
-    const indexes = [];
-
-    for (let i = 0; i < 9; i += 1) {
-      const offset = startFrom + i * 2;
-      const digits = hex.substring(offset, offset + 2);
-      const index = parseInt(digits || "0", 16);
-
-      indexes.push(index);
-    }
-
-    return this.fromIndexes(indexes);
-  }
-
-  static fromIndexes(indexes) {
-    const puzzleOffset = PuzzleCard.PUZZLE_OFFSET_PER_SERIES[indexes[0]];
-    const variantOffset = PuzzleCard.VARIANT_OFFSET_PER_TYPE[indexes[3]];
-
-    return new PuzzleCard({
-      series: PuzzleCard.SERIES_NAMES[indexes[0]],
-      puzzle: PuzzleCard.PUZZLE_NAMES[puzzleOffset + indexes[1]],
-      tier: PuzzleCard.TIER_NAMES[indexes[2]],
-      type: PuzzleCard.TYPE_NAMES[indexes[3]],
-      color1: PuzzleCard.COLOR_NAMES[indexes[4]],
-      color2: PuzzleCard.COLOR_NAMES[indexes[5]],
-      variant: PuzzleCard.VARIANT_NAMES[variantOffset + indexes[6]],
-      condition: PuzzleCard.CONDITION_NAMES[indexes[7]],
-      edition: PuzzleCard.EDITION_NAMES[indexes[8]],
-    });
-  }
-
-  hexString() {
-    return "0x" + [
-      this.seriesIndex(),
-      this.relativePuzzleIndex(),
-      this.tierIndex(),
-      this.typeIndex(),
-      this.color1Index(),
-      this.color2Index(),
-      this.relativeVariantIndex(),
-      this.conditionIndex(),
-      this.editionIndex(),
-    ].map(i => i.toString(16).padStart(2, "0")).join("");
-  }
-
-  editionsHexString() {
-    return "0x" + [
-      this.seriesIndex(),
-      this.relativePuzzleIndex(),
-    ].map(i => i.toString(16).padStart(2, "0")).join("");
-  }
-
-  static inBatches(numberToMint, fn) {
-    const batchSize = PuzzleCard.MAX_BATCH_SIZE;
-    const promises = [];
-
-    for (let i = 0; i < Math.floor(numberToMint / batchSize); i += 1) {
-      promises.push(fn(batchSize));
-    }
-
-    const remainder = numberToMint % PuzzleCard.MAX_BATCH_SIZE;
-    if (remainder > 0) { promises.push(fn(remainder)); }
-
-    return Promise.all(promises).then(arrays => [].concat(...arrays));
-  }
 }
+
+// constants
 
 PuzzleCard.SERIES_NAMES = ["Series 0", "Series 1"];
 PuzzleCard.PUZZLE_NAMES = ["Puzzle 0-0", "Puzzle 0-1", "Puzzle 1-0", "Puzzle 1-1", "Puzzle 1-2"];
@@ -390,9 +411,11 @@ PuzzleCard.VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 
 PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0x58807bad0b376efc12f5ad86aac70e78ed67deae";
+PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
+PuzzleCard.DECKS_URI = "https://puzzlecards.github.io/decks";
+
 PuzzleCard.GAS_OPTIONS = { gasLimit: 20000000 }; // The maximum for the polygon network.
 PuzzleCard.MAX_BATCH_SIZE = 390; // Otherwise, we're likely to run out of gas.
-PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
 
 PuzzleCard.ERROR_STRINGS = [
   "[a player card is required]",
