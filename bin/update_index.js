@@ -20,7 +20,7 @@ const main = async () => {
   fs.writeFileSync("public/decks/_last_indexed", maxBlock.toString());
 };
 
-const updateDeck = (address, tokenIDs, quantities) => {
+const updateDeck = (address, tokenIDs, quantitiesChanged) => {
   if (address === "0x0000000000000000000000000000000000000000") { return; }
 
   let deck = { balanceByTokenID: {}, mostRecentFirst: [] };
@@ -29,23 +29,7 @@ const updateDeck = (address, tokenIDs, quantities) => {
     deck = JSON.parse(fs.readFileSync(`public/decks/${address}.json`, "utf8"));
   }
 
-  for (let i = 0; i < tokenIDs.length; i += 1) {
-    const tokenID = tokenIDs[i].toString();
-    const quantity = quantities[i];
-
-    const position = deck.mostRecentFirst.indexOf(tokenID);
-    if (position !== -1) { deck.mostRecentFirst.splice(position, 1); }
-
-    const balance = deck.balanceByTokenID[tokenID] || 0;
-    const newBalance = balance + quantity;
-
-    if (newBalance === 0) {
-      delete deck.balanceByTokenID[tokenID];
-    } else {
-      deck.balanceByTokenID[tokenID] = newBalance;
-      deck.mostRecentFirst.unshift(tokenID);
-    }
-  }
+  PuzzleCard.updateDeckIndex(deck, tokenIDs, quantitiesChanged);
 
   fs.writeFileSync(`public/decks/${address}.json`, JSON.stringify(deck));
 };

@@ -97,6 +97,15 @@ class PuzzleCard {
 
   // class methods
 
+  static async fetchDeck(address, onProgress = () => {}) {
+    const deckIndex = await PuzzleCard.fetchDeckIndex(address, onProgress);
+
+    return deckIndex.mostRecentFirst.map(id => ({
+      card: PuzzleCard.fromTokenID(BigInt(id)),
+      quantity: deckIndex.balanceByTokenID[id],
+    }));
+  }
+
   static fromTokenID(tokenID) {
     return PuzzleCard.fromHexString(tokenID.toString(16));
   }
@@ -384,6 +393,22 @@ class PuzzleCard {
     });
   }
 
+  static async fetchDeckIndex(address, onProgress) {
+    const outdatedDeckIndex = await fetch(`${PuzzleCard.DECKS_URI}/${address}.json`).then(r => r.json());
+    const lastIndexedBlock = await fetch(`${PuzzleCard.DECKS_URI}/_last_indexed`).then(r => r.text());
+
+    await PuzzleCard.fetchBalanceChanges({
+      address,
+      minBlock: parseInt(lastIndexedBlock, 10) + 1,
+      maxBlock: (await PuzzleCard.CONTRACT.provider.getBlock("latest")).number,
+      onChange: (_, ids, q) => PuzzleCard.updateDeckIndex(outdatedDeckIndex, ids, q),
+      onProgress,
+    });
+
+    const updatedDeckIndex = outdatedDeckIndex; // It is now up to date.
+    return updatedDeckIndex;
+  }
+
   static async fetchBalanceChanges({ address = "any", minBlock, maxBlock, batchSize = 1000, onChange, onProgress = () => {} }) {
     let cardsTransferred = 0;
     let eventsProcessed = 0;
@@ -417,6 +442,26 @@ class PuzzleCard {
       onProgress({ blocksRemaining: maxBlock - toBlock, eventsProcessed, cardsTransferred });
     }
   }
+
+  static updateDeckIndex({ balanceByTokenID, mostRecentFirst }, tokenIDs, quantitiesChanged) {
+    for (let i = 0; i < tokenIDs.length; i += 1) {
+      const tokenID = tokenIDs[i].toString();
+      const quantity = quantitiesChanged[i];
+
+      const position = mostRecentFirst.indexOf(tokenID);
+      if (position !== -1) { mostRecentFirst.splice(position, 1); }
+
+      const balance = balanceByTokenID[tokenID] || 0;
+      const newBalance = balance + quantity;
+
+      if (newBalance === 0) {
+        delete balanceByTokenID[tokenID];
+      } else {
+        balanceByTokenID[tokenID] = newBalance;
+        mostRecentFirst.unshift(tokenID);
+      }
+    }
+  };
 }
 
 // constants
@@ -447,6 +492,7 @@ PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0x58807bad0b376efc12f5ad86aac70e78ed67deae";
 PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
 PuzzleCard.DECKS_URI = "https://puzzlecards.github.io/decks";
+PuzzleCard.DECKS_URI = "http://localhost:8000/decks";
 
 PuzzleCard.GAS_OPTIONS = { gasLimit: 20000000 }; // The maximum for the polygon network.
 PuzzleCard.MAX_BATCH_SIZE = 390; // Otherwise, we're likely to run out of gas.
