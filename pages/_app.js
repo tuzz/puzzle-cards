@@ -4,7 +4,7 @@ import PuzzleCard from "../public/PuzzleCard";
 import AppContext from "../components/AppContext";
 
 const App = ({ Component, pageProps }) => {
-  const [appContext, setAppContext] = useState({ PuzzleCard });
+  const [appContext, setAppContext] = useState({ PuzzleCard, decks: {} });
 
   useEffect(async () => {
     if (typeof ethereum === "undefined") { return; }
@@ -16,12 +16,36 @@ const App = ({ Component, pageProps }) => {
     PuzzleCard.connect(signer);
 
     const address = await signer.getAddress().catch(() => {});
-    setAppContext(c => ({ ...c, address: address.toLowerCase() }));
+    if (address) { ensureDeck(address); }
 
-    ethereum.on("accountsChanged", ([address]) => {
-      setAppContext(c => ({ ...c, address: address.toLowerCase() }));
-    });
+    ethereum.on("accountsChanged", ([address]) => ensureDeck(address));
   }, []);
+
+  const ensureDeck = async (address) => {
+    address = address.toLowerCase();
+
+    setAppContext(c => {
+      if (c.decks[address]) {
+        return { ...c, address };
+      } else {
+        return { ...c, address, decks: { ...c.decks, [address]: [] } };
+      }
+    });
+  };
+
+  useEffect(() => {
+    for (let [address, deck] of Object.entries(appContext.decks)) {
+      if (!deck.fetching && !deck.fetched) {
+        deck.fetching = true;
+
+        PuzzleCard.fetchDeck(address, console.log, console.log).then(deck => {
+          deck.fetched = true;
+
+          setAppContext(c => ({ ...c, decks: { ...c.decks, [address]: deck } }));
+        });
+      }
+    }
+  }, [appContext.decks]);
 
   return (
     <AppContext.Provider value={appContext}>

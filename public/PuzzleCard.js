@@ -420,6 +420,8 @@ class PuzzleCard {
   }
 
   static async fetchDeckIndex(address, onChange, onProgress) {
+    address = address.toLowerCase();
+
     const outdatedDeckIndex = await fetch(`${PuzzleCard.DECKS_URI}/${address}.json`).then(r => r.json()).catch(() => ({}));;
     const lastIndexedBlock = await fetch(`${PuzzleCard.DECKS_URI}/_last_indexed`).then(r => r.json()).catch(() => PuzzleCard.CONTRACT_BLOCK);
 
@@ -439,18 +441,29 @@ class PuzzleCard {
     return updatedDeckIndex;
   }
 
-  static async fetchBalances({ address = "any", minBlock, maxBlock, batchSize = 1000, onFetch, onChange, onProgress = () => {} }) {
+  static async fetchBalances({ address = null, minBlock, maxBlock, batchSize = 1000, onFetch, onChange, onProgress = () => {} }) {
     let cardsTransferred = 0;
     let eventsProcessed = 0;
 
-    const batchFilter = PuzzleCard.CONTRACT.filters.TransferBatch();
-    const singleFilter = PuzzleCard.CONTRACT.filters.TransferSingle();
+    const batchFilters = [];
+    const singleFilters = [];
+
+    if (address) {
+      address = address.toLowerCase();
+
+      batchFilters.push(PuzzleCard.CONTRACT.filters.TransferBatch(null, address, null)); // Transfers from the address.
+      singleFilters.push(PuzzleCard.CONTRACT.filters.TransferSingle(null, address, null));
+    }
+
+    batchFilters.push(PuzzleCard.CONTRACT.filters.TransferBatch(null, null, address)); // Transfers to the address.
+    singleFilters.push(PuzzleCard.CONTRACT.filters.TransferSingle(null, null, address));
 
     const handleTransfer = (from, to, ids, quantities) => {
+      [from, to] = [from.toLowerCase(), to.toLowerCase()];
       quantities = quantities.map(q => q.toNumber());
 
-      if (address === "any" || address === from) { onFetch(from, ids, quantities.map(q => -q)); }
-      if (address === "any" || address === to) { onFetch(to, ids, quantities); }
+      if (!address || address === from) { onFetch(from, ids, quantities.map(q => -q)); }
+      if (!address || address === to) { onFetch(to, ids, quantities); }
 
       cardsTransferred += quantities.reduce((a, b) => a + b);
     };
@@ -475,8 +488,13 @@ class PuzzleCard {
       const fromBlock = block;
       const toBlock = Math.min(block + batchSize - 1, maxBlock);
 
-      (await PuzzleCard.CONTRACT.provider.getLogs({ ...batchFilter, fromBlock, toBlock })).forEach(handleBatchLog);
-      (await PuzzleCard.CONTRACT.provider.getLogs({ ...singleFilter, fromBlock, toBlock })).forEach(handleSingleLog);
+      await Promise.all(batchFilters.map(f => (
+        PuzzleCard.CONTRACT.provider.getLogs({ ...f, fromBlock, toBlock })).then(logs => logs.forEach(handleBatchLog))
+      ));
+
+      await Promise.all(singleFilters.map(f => (
+        PuzzleCard.CONTRACT.provider.getLogs({ ...f, fromBlock, toBlock })).then(logs => logs.forEach(handleSingleLog))
+      ));
 
       onProgress({ blocksRemaining: maxBlock - toBlock, eventsProcessed, cardsTransferred });
     }
@@ -485,8 +503,10 @@ class PuzzleCard {
     if (onChange) {
       onFetch = onChange; // Make handleTransfer call onChange instead.
 
-      PuzzleCard.CONTRACT.provider.on(batchFilter, handleBatchLog);
-      PuzzleCard.CONTRACT.provider.on(singleFilter, handleSingleLog);
+      for (let i in batchFilters) {
+        PuzzleCard.CONTRACT.provider.on(batchFilters[i], handleBatchLog);
+        PuzzleCard.CONTRACT.provider.on(singleFilters[i], handleSingleLog);
+      }
     }
   }
 
