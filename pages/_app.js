@@ -5,6 +5,7 @@ import AppContext from "../components/AppContext";
 
 const App = ({ Component, pageProps }) => {
   const [appContext, setAppContext] = useState({ PuzzleCard, decks: {} });
+  const [connectPoller, setConnectPoller] = useState();
 
   useEffect(async () => {
     if (typeof ethereum === "undefined") { return; }
@@ -16,10 +17,16 @@ const App = ({ Component, pageProps }) => {
     PuzzleCard.connect(signer);
 
     const address = await signer.getAddress().catch(() => {});
-    if (address) { ensureDeck(address); }
+    if (address) { ensureDeck(address); } else { pollForConnect(); }
 
-    ethereum.on("accountsChanged", ([address]) => ensureDeck(address));
+    ethereum.on("accountsChanged", ([address]) => address && ensureDeck(address));
   }, []);
+
+  const pollForConnect = () => {
+    setConnectPoller(setInterval(() => {
+      PuzzleCard.CONTRACT.signer.getAddress().then(ensureDeck).catch(() => {});
+    }, 1000));
+  };
 
   const ensureDeck = async (address) => {
     address = address.toLowerCase();
@@ -31,6 +38,8 @@ const App = ({ Component, pageProps }) => {
         return { ...c, address, decks: { ...c.decks, [address]: [] } };
       }
     });
+
+    setConnectPoller(poller => { poller && clearInterval(poller); });
   };
 
   useEffect(() => {
