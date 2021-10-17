@@ -83,5 +83,33 @@ describe("Minting", () => {
       PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
       await expectRevert.unspecified(PuzzleCard.gift(3, user1.address));
     });
+
+    it("estimates the gas limit reasonably well for different numbers of cards minted", async () => {
+      for (let numberToGift = 1; numberToGift <= PuzzleCard.MAX_BATCH_SIZE; numberToGift += 1) {
+        const gasLimit = PuzzleCard.gasLimitToMint(numberToGift);
+        let maxGas = -Infinity;
+
+        // Decrease the sample size being tested as gas usage certainty increases.
+        // Otherwise, the test would take too long.
+        const sampleSize = Math.max((100 - numberToGift / 2), 3);
+
+        for (let i = 0; i < sampleSize; i += 1) {
+          const transaction = await contract.gift(numberToGift, owner.address, { gasLimit: PuzzleCard.GAS_LIMIT_MAXIMUM });
+          const gasUsed = (await transaction.wait()).gasUsed.toNumber();
+
+          maxGas = Math.max(maxGas, gasUsed);
+        }
+
+        //console.log(numberToGift, maxGas, gasLimit, maxGas / gasLimit);
+        expect(maxGas / gasLimit).to.be.within(0.3, 0.85, `The gas limit prediction was poor for ${numberToGift} cards.`);
+
+        // Don't check every numberToGift as the number increases.
+        // Otherwise, the test would take too long.
+        if (numberToGift >= 10) { numberToGift += 1; }
+        if (numberToGift >= 20) { numberToGift += 3; }
+        if (numberToGift >= 70) { numberToGift += 10; }
+        if (numberToGift >= 120) { numberToGift += 20; }
+      }
+    });
   });
 });

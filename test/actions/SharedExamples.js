@@ -439,6 +439,23 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         expect(frequencies["Art 1"]).to.be.within(0.45, 0.55); // 50%
       });
     }
+
+    it("has enough headroom with PuzzleCard.GAS_LIMIT_MINIMUM", async () => {
+      let maxGas = 0;
+
+      for (let i = 0; i < 100; i += 1) {
+        for (const card of validCards) {
+          await PuzzleCard.mintExact(card, owner.address);
+        }
+
+        const transaction = await PuzzleCard.call(actionName, validCards);
+        const gasUsed = (await transaction.wait()).gasUsed.toNumber();
+
+        maxGas = Math.max(maxGas, gasUsed);
+      }
+
+      expect(maxGas / PuzzleCard.GAS_LIMIT_MINIMUM).to.be.within(0.3, 0.85);
+    });
   });
 };
 

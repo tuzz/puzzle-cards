@@ -180,13 +180,27 @@ class PuzzleCard {
     PuzzleCard.CONTRACT = contract;
   }
 
-  static async mint(numberToMint, to) {
+  static mint(numberToMint, to) {
     return PuzzleCard.pricePerCard().then(price => (
       PuzzleCard.inBatches(numberToMint, (batchSize) => {
-        const options = { ...PuzzleCard.GAS_OPTIONS, value: BigInt(batchSize) * price };
-        return PuzzleCard.CONTRACT.mint(batchSize, to, options).then(PuzzleCard.fromBatchEvent);
+        const gasLimit = PuzzleCard.gasLimitToMint(batchSize);
+        const value = price * BigInt(batchSize);
+
+        return PuzzleCard.CONTRACT.mint(batchSize, to, { gasLimit, value }).then(PuzzleCard.fromBatchEvent);
       })
     ));
+  }
+
+  static gasLimitToMint(numberToMint) {
+    const [taperFrom, taperTo, overNumber] = PuzzleCard.GAS_LIMIT_PER_CARD_TAPER;
+
+    const taperRatio = (numberToMint - 1) / (overNumber - 1); // Inverse lerp.
+    const clampedRatio = Math.min(taperRatio, 1);
+
+    const gasPerCard = taperFrom * (1 - clampedRatio) + taperTo * clampedRatio;
+    const totalGas = Math.ceil(gasPerCard * (numberToMint - 1)) + PuzzleCard.GAS_LIMIT_MINIMUM;
+
+    return Math.min(totalGas, PuzzleCard.GAS_LIMIT_MAXIMUM);
   }
 
   static pricePerCard() {
@@ -325,9 +339,10 @@ class PuzzleCard {
   // onlyOwner contract methods
 
   static gift(numberToGift, to) { // Only callable by the contract owner.
-    return PuzzleCard.inBatches(numberToGift, (batchSize) => (
-      PuzzleCard.CONTRACT.gift(batchSize, to, PuzzleCard.GAS_OPTIONS).then(PuzzleCard.fromBatchEvent)
-    ));
+    return PuzzleCard.inBatches(numberToGift, (batchSize) => {
+      const gasLimit = PuzzleCard.gasLimitToMint(batchSize);
+      return PuzzleCard.CONTRACT.gift(batchSize, to, { gasLimit }).then(PuzzleCard.fromBatchEvent);
+    });
   }
 
   static updateConstants() {
@@ -382,7 +397,7 @@ class PuzzleCard {
       .sort((a, b) => a.typeIndex() - b.typeIndex())
       .map(card => card.tokenID());
 
-    return PuzzleCard.CONTRACT[functionName](args, PuzzleCard.GAS_OPTIONS);
+    return PuzzleCard.CONTRACT[functionName](args, { gasLimit: PuzzleCard.GAS_LIMIT_MINIMUM });
   }
 
   static decodeErrors([isAllowed, errorCodes]) {
@@ -526,8 +541,17 @@ PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
 PuzzleCard.DECKS_URI = "https://puzzlecards.github.io/decks";
 PuzzleCard.DECKS_URI = "http://localhost:3000/decks";
 
-PuzzleCard.GAS_OPTIONS = { gasLimit: 20000000 }; // The maximum for the polygon network.
-PuzzleCard.MAX_BATCH_SIZE = 390; // Otherwise, we're likely to run out of gas.
+// Set a minimum gas limit that provides enough headroom for all actions.
+// Set a maximum gas limit that matches the limit for the polygon network.
+PuzzleCard.GAS_LIMIT_MINIMUM = 350000;
+PuzzleCard.GAS_LIMIT_MAXIMUM = 20000000;
+
+// Taper the gas limit per card from the {first number} down to the {second number}
+// over the first {third number} cards. Gas usage becomes more predictable for more cards.
+PuzzleCard.GAS_LIMIT_PER_CARD_TAPER = [80000, 40000, 100];
+
+// The maximum number of cards that could be minted without exceeding the gas limit.
+PuzzleCard.MAX_BATCH_SIZE = Math.floor(PuzzleCard.GAS_LIMIT_MAXIMUM / PuzzleCard.GAS_LIMIT_PER_CARD_TAPER[1]);
 
 PuzzleCard.ERROR_STRINGS = [
   "[a player card is required]",
