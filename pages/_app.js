@@ -47,7 +47,7 @@ const App = ({ Component, pageProps }) => {
       if (!deck.fetching && !deck.fetched) {
         deck.fetching = true;
 
-        PuzzleCard.fetchDeck(address, console.log, console.log).then(deck => {
+        PuzzleCard.fetchDeck(address, updateFetchedDeck(address), console.log).then(deck => {
           deck.fetched = true;
 
           setAppContext(c => ({ ...c, decks: { ...c.decks, [address]: deck } }));
@@ -55,6 +55,17 @@ const App = ({ Component, pageProps }) => {
       }
     }
   }, [appContext.decks]);
+
+  const updateFetchedDeck = (address) => (changes) => {
+    setAppContext(c => {
+      const deck = c.decks[address].slice(0);
+      deck.fetched = true;
+
+      PuzzleCard.updateFetchedDeck(deck, changes);
+
+      return { ...c, decks: { ...c.decks, [address]: deck } };
+    });
+  };
 
   return (
     <AppContext.Provider value={appContext}>

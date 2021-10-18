@@ -525,6 +525,22 @@ class PuzzleCard {
       }
     }
   };
+
+  static updateFetchedDeck(deck, changes) {
+    for (let { card, delta, tokenID } of changes) {
+      const position = deck.findIndex(({ tokenID: t }) => t === tokenID);
+      let quantity = delta;
+
+      if (position !== -1) {
+        quantity += deck[position].quantity;
+        deck.splice(position, 1);
+      }
+
+      if (quantity !== 0) {
+        deck.unshift({ card, quantity, tokenID });
+      }
+    }
+  }
 }
 
 // constants
