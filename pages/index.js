@@ -25,7 +25,7 @@ const Index = () => {
       <p>hi {address}</p>
       {!decks[address].fetched && <p>Loading deck...</p>}
       {decks[address].fetched && <p>{numCards} cards in deck</p>}
-      <button onClick={discard2Pickup1}>discard2Pickup1</button>
+      {decks[address].fetched && <button onClick={discard2Pickup1}>discard2Pickup1</button>}
     </>}
     {!address && <button onClick={() => ethereum.request({ method: "eth_requestAccounts" })}>connect</button>}
   </>;

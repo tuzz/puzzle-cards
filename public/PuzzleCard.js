@@ -483,6 +483,16 @@ class PuzzleCard {
     filters.push([PuzzleCard.CONTRACT.filters.TransferBatch(null, null, address), handleBatchLog]); // Transfers to the address.
     filters.push([PuzzleCard.CONTRACT.filters.TransferSingle(null, null, address), handleSingleLog]);
 
+    // If changes arrive while we are fetching the deck, queue them into an array.
+    const queuedChanges = [];
+
+    if (onChange) {
+      for (let [filter, handleLog] of filters) {
+        filter.onChange = (log) => queuedChanges.push([log, handleLog]);
+        PuzzleCard.CONTRACT.provider.on(filter, (log) => filter.onChange(log));
+      }
+    }
+
     for (let block = minBlock; block <= maxBlock; block += batchSize) {
       const fromBlock = block;
       const toBlock = Math.min(block + batchSize - 1, maxBlock);
@@ -496,14 +506,19 @@ class PuzzleCard {
       onProgress({ blocksRemaining: maxBlock - toBlock, eventsProcessed, cardsTransferred });
     }
 
-    // Register event listeners in case the deck changes after it has been fetched.
-    if (onChange) {
-      onFetch = onChange; // Make handleTransfer call onChange instead.
-
-      for (let [filter, handleLog] of filters) {
-        PuzzleCard.CONTRACT.provider.on(filter, handleLog);
-      }
+    for (let i = 0; i < queuedChanges.length; i += 1) { // Process the queue.
+      const [log, handleLog] = queuedChanges[i]; handleLog(log);
     }
+
+    // After the queue has been processed, remove the queueing mechanism.
+    // If changes arrived while the queue was being processed, that should
+    // have changed queuedChanges.length so they should now also be processed.
+    filters.forEach(([filter, handleLog]) => filter.onChange = handleLog);
+
+    // If changes arrive in the future after the deck has been fetched, call
+    // onChange. The client code is responsible for keeping the deck up to date
+    // by calling updateFetchedDeck with the change sets at an appopriate time.
+    onFetch = onChange;
   }
 
   static updateDeckIndex({ balanceByTokenID, mostRecentFirst }, tokenIDs, quantitiesChanged) {
