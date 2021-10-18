@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import AppContext from "../components/AppContext";
+import CardFrame from "../components/CardFrame";
 
 const Index = () => {
   const { address, decks, PuzzleCard } = useContext(AppContext);
@@ -31,7 +32,7 @@ const Index = () => {
       const [isAllowed, _] = await PuzzleCard.canDiscard2Pickup1([card1, card2]);
 
       if (isAllowed) {
-        await PuzzleCard.discard2Pickup1([card1, card2]).then(console.log);
+        await PuzzleCard.discard2Pickup1([card1, card2]);
         break;
       }
     }
@@ -43,6 +44,12 @@ const Index = () => {
       {!decks[address].fetched && <p>Loading deck...</p>}
       {decks[address].fetched && <p>{numCards} cards in deck</p>}
       {decks[address].fetched && <button onClick={discard2Pickup1}>discard2Pickup1</button>}
+      {decks[address].fetched && decks[address].slice(0, 15).map(({ card, quantity, tokenID }) => (
+        <span key={tokenID}>
+          <CardFrame card={card} key={tokenID} />
+          <span>{quantity}</span>
+        </span>
+      ))}
     </>}
     {!address && <button onClick={() => ethereum.request({ method: "eth_requestAccounts" })}>connect</button>}
   </>;
