@@ -10,7 +10,7 @@ const App = ({ Component, pageProps }) => {
   useEffect(async () => {
     if (typeof ethereum === "undefined") { return; }
 
-    const provider = new ethers.providers.Web3Provider(ethereum);
+    const provider = new ethers.providers.Web3Provider(ethereum, "any");
     const signer = provider.getSigner();
 
     PuzzleCard.attach(ethers, provider);

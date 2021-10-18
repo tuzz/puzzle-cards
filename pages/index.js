@@ -6,7 +6,24 @@ const Index = () => {
 
   const numCards = (decks[address] || []).map(({ quantity }) => quantity).reduce((a, b) => a + b, 0);
 
+  const ensureNetwork = async () => {
+    const expectedNetwork = await PuzzleCard.CONTRACT_NETWORK;
+    const actualNetwork = await PuzzleCard.CONTRACT.provider.getNetwork();
+
+    if (actualNetwork.chainId === expectedNetwork.chainId) { return true; }
+
+    await ethereum.request({ method: "wallet_addEthereumChain", params: [{
+      chainName: expectedNetwork.name,
+      chainId: "0x" + expectedNetwork.chainId.toString(16),
+      rpcUrls: [expectedNetwork.url],
+      nativeCurrency: { symbol: expectedNetwork.symbol, decimals: 18 },
+      blockExplorerUrls: [expectedNetwork.explorer],
+    }] });
+  };
+
   const discard2Pickup1 = async () => {
+    if (!await ensureNetwork()) { return; }
+
     for (let i = 0; i < 1000; i += 1) {
       const card1 = decks[address][i].card;
       const card2 = decks[address][i + 1].card;
