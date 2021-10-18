@@ -22,11 +22,17 @@ describe("MintingRandomly", () => {
   beforeEach(async () => {
     contract = await factory.deploy(constants.ZERO_ADDRESS);
     PuzzleCard.setContract(contract);
+
+    // Prevent these tests from running out of gas. For some reason the first
+    // few calls to the contract require more gas than they do in the long run.
+    // Gifting the maximum number of cards doesn't run out of gas in production.
+    PuzzleCard.GAS_LIMIT_MINIMUM = 30000000;
+    PuzzleCard.GAS_LIMIT_MAXIMUM = 30000000;
   });
 
   describe("series", () => {
     it(0)("picks randomly", async () => {
-      const cards = await PuzzleCard.gift(100, owner.address);
+      const cards = await PuzzleCard.gift(1000, owner.address);
       const frequencies = TestUtils.tallyFrequencies(cards.map(c => c.series));
 
       expect(frequencies["Series 0"]).to.be.within(0.47, 0.53); // 50%
