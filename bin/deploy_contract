@@ -7,4 +7,4 @@ if [ "$#" -ne 1 ]; then
 fi
 
 rm -f contracts/test_utils/TestUtils.sol && \
-yarn hardhat run bin/deploy.js --network $1
+yarn hardhat run bin/deploy_contract.js --network $1

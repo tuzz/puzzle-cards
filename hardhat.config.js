@@ -31,19 +31,28 @@ module.exports = {
   },
   networks: {
     hardhat: {
+      name: "hardhat",
       allowUnlimitedContractSize: true,
       accounts: {
         accountsBalance: "1000000000000000000000000", // 1 million ETH
       },
     },
     test: {
+      name: "Polygon Test Network",
       url: "https://rpc-mumbai.maticvigil.com",
+      chainId: 80001,
+      symbol: "MATIC",
+      explorer: "https://mumbai.polygonscan.com",
       openseaProxyAddress: "0xff7ca10af37178bdd056628ef42fd7f799fac77c",
       accounts: [`0x${privateKey}`],
     },
     live: {
+      name: "Polygon Mainnet",
       url: "https://rpc-mainnet.maticvigil.com",
-      openseaProxyAddress: liveProxyAddress,
+      chainId: 137,
+      symbol: "MATIC",
+      explorer: "https://polygonscan.com",
+      openseaProxyAddress: "0x58807bad0b376efc12f5ad86aac70e78ed67deae",
       accounts: [`0x${privateKey}`],
     },
   },

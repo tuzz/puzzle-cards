@@ -2,7 +2,6 @@ const fs = require("fs")
 const config = require("../hardhat.config.js");
 const network = hardhatArguments.network;
 const metadata = config.networks[network];
-const proxyAddress = metadata.openseaProxyAddress;
 
 const main = async () => {
   let blockNumber = (await ethers.provider.getBlock("latest")).number;
@@ -10,7 +9,7 @@ const main = async () => {
   const [owner] = await ethers.getSigners();
   const factory = await ethers.getContractFactory("PuzzleCard");
 
-  const contract = await factory.deploy(proxyAddress || owner.address);
+  const contract = await factory.deploy(metadata.openseaProxyAddress || owner.address);
   console.log(`Contract address: ${contract.address}`);
 
   const transaction = await contract.gift(400, owner.address, { gasLimit: 20000000 });
@@ -31,7 +30,16 @@ const main = async () => {
 }
 
 const updateConstants = (filename, contractAddress, blockNumber) => {
+  const network = {
+    name: metadata.name,
+    url: metadata.url,
+    chainId: metadata.chainId,
+    symbol: metadata.symbol,
+    explorer: metadata.explorer,
+  };
+
   const content = fs.readFileSync(filename, "utf8")
+    .replaceAll(/CONTRACT_NETWORK = .*;/g, `CONTRACT_NETWORK = ${JSON.stringify(network)};`)
     .replaceAll(/CONTRACT_ADDRESS = .*;/g, `CONTRACT_ADDRESS = "${contractAddress}";`)
     .replaceAll(/CONTRACT_BLOCK = .*;/g, `CONTRACT_BLOCK = ${blockNumber};`)
 
