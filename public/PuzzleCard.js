@@ -498,7 +498,9 @@ class PuzzleCard {
       const toBlock = Math.min(block + batchSize - 1, maxBlock);
 
       const logArrays = await Promise.all(filters.map(([filter, _]) => (
-        PuzzleCard.CONTRACT.provider.getLogs({ ...filter, fromBlock, toBlock })
+        PuzzleCard.keepRetrying(() => (
+          PuzzleCard.CONTRACT.provider.getLogs({ ...filter, fromBlock, toBlock })
+        ))
       )));
 
       filters.forEach(([_, handleLog], i) => logArrays[i].forEach(handleLog));
@@ -519,6 +521,21 @@ class PuzzleCard {
     // onChange. The client code is responsible for keeping the deck up to date
     // by calling updateFetchedDeck with the change sets at an appopriate time.
     onFetch = onChange;
+  }
+
+  static async keepRetrying(promiseFn, initialDelay = 2000) {
+    let returnValue;
+    let delay = initialDelay;
+
+    while (!returnValue) {
+      await promiseFn().then(r => returnValue = [r]).catch(() => PuzzleCard.wait(delay).then(() => delay *= (1.2 + Math.random())));
+    }
+
+    return returnValue[0];
+  }
+
+  static wait(milliseconds) {
+    return new Promise(r => setTimeout(r, milliseconds));
   }
 
   static updateDeckIndex({ balanceByTokenID, mostRecentFirst }, tokenIDs, quantitiesChanged) {
