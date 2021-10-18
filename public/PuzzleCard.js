@@ -392,12 +392,15 @@ class PuzzleCard {
     return PuzzleCard.call(actionName, puzzleCards).then(PuzzleCard.decodeErrors);
   }
 
-  static call(functionName, puzzleCards) {
+  static async call(functionName, puzzleCards) {
     const args = [...puzzleCards]
       .sort((a, b) => a.typeIndex() - b.typeIndex())
       .map(card => card.tokenID());
 
-    return PuzzleCard.CONTRACT[functionName](args, { gasLimit: PuzzleCard.GAS_LIMIT_MINIMUM });
+    const baseGasPrice = (await PuzzleCard.CONTRACT.provider.getGasPrice()).toNumber();
+    const gasPrice = baseGasPrice * PuzzleCard.GAS_PRICE_MULTIPLIER;
+
+    return PuzzleCard.CONTRACT[functionName](args, { gasLimit: PuzzleCard.GAS_LIMIT_MINIMUM, gasPrice });
   }
 
   static decodeErrors([isAllowed, errorCodes]) {
@@ -613,6 +616,9 @@ PuzzleCard.GAS_LIMIT_MAXIMUM = 20000000;
 // Taper the gas limit per card from the {first number} down to the {second number}
 // over the first {third number} cards. Gas usage becomes more predictable for more cards.
 PuzzleCard.GAS_LIMIT_PER_CARD_TAPER = [80000, 40000, 100];
+
+// Can be set to a higher/lower value to make all actions use a different gas price.
+PuzzleCard.GAS_PRICE_MULTIPLIER = 1;
 
 // The maximum number of cards that could be minted without exceeding the gas limit.
 PuzzleCard.MAX_BATCH_SIZE = Math.floor(PuzzleCard.GAS_LIMIT_MAXIMUM / PuzzleCard.GAS_LIMIT_PER_CARD_TAPER[1]);
