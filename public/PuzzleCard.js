@@ -445,19 +445,6 @@ class PuzzleCard {
     let cardsTransferred = 0;
     let eventsProcessed = 0;
 
-    const batchFilters = [];
-    const singleFilters = [];
-
-    if (address) {
-      address = address.toLowerCase();
-
-      batchFilters.push(PuzzleCard.CONTRACT.filters.TransferBatch(null, address, null)); // Transfers from the address.
-      singleFilters.push(PuzzleCard.CONTRACT.filters.TransferSingle(null, address, null));
-    }
-
-    batchFilters.push(PuzzleCard.CONTRACT.filters.TransferBatch(null, null, address)); // Transfers to the address.
-    singleFilters.push(PuzzleCard.CONTRACT.filters.TransferSingle(null, null, address));
-
     const handleTransfer = (from, to, ids, quantities) => {
       [from, to] = [from.toLowerCase(), to.toLowerCase()];
       quantities = quantities.map(q => q.toNumber());
@@ -484,17 +471,27 @@ class PuzzleCard {
       eventsProcessed += 1;
     };
 
+    const filters = [];
+
+    if (address) {
+      address = address.toLowerCase();
+
+      filters.push([PuzzleCard.CONTRACT.filters.TransferBatch(null, address, null), handleBatchLog]); // Transfers from the address.
+      filters.push([PuzzleCard.CONTRACT.filters.TransferSingle(null, address, null), handleSingleLog]);
+    }
+
+    filters.push([PuzzleCard.CONTRACT.filters.TransferBatch(null, null, address), handleBatchLog]); // Transfers to the address.
+    filters.push([PuzzleCard.CONTRACT.filters.TransferSingle(null, null, address), handleSingleLog]);
+
     for (let block = minBlock; block <= maxBlock; block += batchSize) {
       const fromBlock = block;
       const toBlock = Math.min(block + batchSize - 1, maxBlock);
 
-      await Promise.all(batchFilters.map(f => (
-        PuzzleCard.CONTRACT.provider.getLogs({ ...f, fromBlock, toBlock })).then(logs => logs.forEach(handleBatchLog))
-      ));
+      const logArrays = await Promise.all(filters.map(([filter, _]) => (
+        PuzzleCard.CONTRACT.provider.getLogs({ ...filter, fromBlock, toBlock })
+      )));
 
-      await Promise.all(singleFilters.map(f => (
-        PuzzleCard.CONTRACT.provider.getLogs({ ...f, fromBlock, toBlock })).then(logs => logs.forEach(handleSingleLog))
-      ));
+      filters.forEach(([_, handleLog], i) => logArrays[i].forEach(handleLog));
 
       onProgress({ blocksRemaining: maxBlock - toBlock, eventsProcessed, cardsTransferred });
     }
@@ -503,9 +500,8 @@ class PuzzleCard {
     if (onChange) {
       onFetch = onChange; // Make handleTransfer call onChange instead.
 
-      for (let i in batchFilters) {
-        PuzzleCard.CONTRACT.provider.on(batchFilters[i], handleBatchLog);
-        PuzzleCard.CONTRACT.provider.on(singleFilters[i], handleSingleLog);
+      for (let [filter, handleLog] of filters) {
+        PuzzleCard.CONTRACT.provider.on(filter, handleLog);
       }
     }
   }
