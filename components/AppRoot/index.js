@@ -1,5 +1,6 @@
 import { useState, useEffect, createContext } from "react";
 import { ethers } from "ethers";
+import Head from "next/head";
 import PuzzleCard from "../../public/PuzzleCard";
 import AppContext from "../AppContext";
 
@@ -67,11 +68,14 @@ const AppRoot = ({ Component, pageProps }) => {
     });
   };
 
-  return (
+  return <>
+    <Head>
+      <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+    </Head>
     <AppContext.Provider value={appContext}>
       <Component {...pageProps} />
     </AppContext.Provider>
-  );
+  </>;
 };
 
 export default AppRoot;
