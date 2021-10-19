@@ -1,38 +1,70 @@
 .worship_stick {
   width: 25rem;
   position: relative;
+}
 
-  .base {
-    width: 100%;
-    margin-top: 20%;
-    margin-left: 0.65%;
+.base {
+  width: 100%;
+  margin-top: 20%;
+  margin-left: 0.65%;
+}
+
+.sun {
+  width: 100%;
+  margin-left: 0.65%; // Center the stick on the rock.
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  animation-name: spin;
+  animation-duration: 7000ms;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+
+  &.paused {
+    animation-play-state: paused;
   }
+}
 
-  .sun {
-    width: 100%;
-    margin-left: 0.65%; // Center the stick on the rock.
+.rock {
+  position: relative; // Makes a new stacking context so the rock is on top.
+  width: 28.5%;
+  margin: auto;
+  margin-top: -5%; // Make the rock overlap the stick.
+
+  background-color: #5b534d;
+  background-image: url("/images/rock.png");
+  background-repeat: repeat;
+  background-size: 100%;
+}
+
+.rock_inner {
+  position: absolute;
+  top: 0;
+  margin-top: 13.65%;
+  padding-top: 72.7%;
+  left: 13.65%;
+  right: 13.65%;
+
+  button {
     position: absolute;
     top: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    cursor: pointer;
 
-    animation-name: spin;
-    animation-duration: 7000ms;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-
-    &.paused {
-      animation-play-state: paused;
-    }
-  }
-
-  .rock {
-    position: relative; // Makes a new stacking context so the rock is on top.
-    width: 28.5%;
-    margin: auto;
-    margin-top: -5%; // Make the rock overlap the stick.
-
-    background-image: url("/images/rock.png");
-    background-repeat: repeat;
+    background-color: #eee;
+    background-image: url("/images/metamask_logo.png");
+    background-repeat: no-repeat;
     background-size: 100%;
+    background-position: center;
+
+    &:hover {
+      border: 0.2rem solid #f08528;
+      background-color: white;
+      background-size: 109%;
+    }
   }
 }
 

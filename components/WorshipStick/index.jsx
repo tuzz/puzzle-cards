@@ -1,6 +1,6 @@
 import styles from "./styles.module.scss";
 
-const WorshipStick = ({ className, spinning = true, rockHeight = 1 }) => {
+const WorshipStick = ({ className, spinning = true, rockHeight = 1, onClick = () => {} }) => {
   const paddingTop = `${rockHeight * 100}%`;
 
   return (
@@ -8,7 +8,11 @@ const WorshipStick = ({ className, spinning = true, rockHeight = 1 }) => {
       <img src="/images/worship_stick_base.png" className={styles.base} />
       <img src="/images/worship_stick_sun.png" className={`${styles.sun} ${!spinning && styles.paused}`} />
 
-      {rockHeight > 0 && <div className={styles.rock} style={{ paddingTop }}></div>}
+      {rockHeight > 0 && <div className={styles.rock} style={{ paddingTop }}>
+        {onClick && <div className={styles.rock_inner}>
+          <button onClick={onClick}></button>
+        </div>}
+      </div>}
     </div>
   );
 };
