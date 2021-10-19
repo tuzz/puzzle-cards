@@ -1,0 +1,30 @@
+.worship_stick {
+  width: 30rem;
+  position: relative;
+
+  .base {
+    width: 100%;
+    margin-top: 20%;
+  }
+
+  .sun {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    animation-name: spin;
+    animation-duration: 7000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+
+    &.paused {
+      animation-play-state: paused;
+    }
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
