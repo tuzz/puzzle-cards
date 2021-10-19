@@ -22,7 +22,10 @@
     animation-duration: 21000ms;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
-    transform: rotate(360deg);
+
+    &.paused {
+      animation-play-state: paused;
+    }
   }
 }
 

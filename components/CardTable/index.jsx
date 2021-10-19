@@ -13,8 +13,9 @@ const CardTable = () => {
 
   return (
     <div className={styles.card_table}>
-      <YellowSun channel={channel} />
       <WorshipStick className={styles.worship_stick} rockHeight={0.8} raised={raised} channel={channel} />
+      <YellowSun channel={channel} />
+
       <div className={styles.floor}></div>
     </div>
   );

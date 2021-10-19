@@ -1,13 +1,18 @@
-import { useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import styles from "./styles.module.scss";
 
 const YellowSun = ({ className, channel = {} }) => {
+  const [spinning, setSpinning] = useState(false);
   const yellowSunRef = useRef();
 
   useEffect(() => {
     setInterval(() => {
-      console.log(rotationPhase(channel.worshipStickSunRef(), 8), rotationPhase(yellowSunRef, 24));
-    }, 100);
+      const worshipPhase = rotationPhase(channel.worshipStickSunRef(), 8);
+      const yellowPhase = rotationPhase(yellowSunRef, 24);
+
+      const alignment = (worshipPhase + yellowPhase) % 1;
+      setSpinning(alignment > 0.9);
+    }, 0);
   }, []);
 
   const rotationPhase = (ref, numberOfSpokes) => {
@@ -25,7 +30,7 @@ const YellowSun = ({ className, channel = {} }) => {
   return (
     <div className={styles.hide_overflow}>
       <div className={`${styles.yellow_sun} ${className}`}>
-        <img src="/images/yellow_sun.png" ref={yellowSunRef} />
+        <img src="/images/yellow_sun.png" className={spinning ? "" : styles.paused} ref={yellowSunRef}  />
       </div>
     </div>
   );
