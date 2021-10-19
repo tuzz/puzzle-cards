@@ -16,8 +16,11 @@ const CardTable = () => {
     <div className={styles.card_table}>
       <WorshipStick className={styles.worship_stick} rockHeight={0.8} raised={raised} channel={channel} />
       <YellowSun raised={raised} channel={channel} />
-      <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.1}>
 
+      <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.1}>
+        <div className={styles.felt_cloth}>
+
+        </div>
       </TableEdge>
     </div>
   );
