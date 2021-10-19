@@ -2,6 +2,7 @@
   width: 25rem;
   position: relative;
   font-size: 0; // Remove the 4px vertical space between consecutive block elements.
+  transition: transform 4s ease-in-out;
 }
 
 .base {

@@ -1,6 +1,6 @@
 import styles from "./styles.module.scss";
 
-const WorshipStick = ({ className, spinning = true, rockHeight = 1, onClick = () => {} }) => {
+const WorshipStick = ({ className, spinning = true, rockHeight = 1, raised = true, onClick = () => {} }) => {
   // Calculate the ratio we need to move the stick down by to submerge the rock
   // underground with only the metamask lock showing above the surface.
   const aspectRatio = 2598 / 4508;
@@ -8,9 +8,11 @@ const WorshipStick = ({ className, spinning = true, rockHeight = 1, onClick = ()
   const rockHeight_ = (rockHeight - 0.05) * aspectRatio;
   const totalHeight = stickHeight + rockHeight_;
   const belowGround = (rockHeight_ - 0.135) / totalHeight;
+  const aboveGround = 0;
+  const targetY = raised ? aboveGround : belowGround;
 
   return (
-    <div className={`${styles.worship_stick} ${className}`} style={{ transform: `translateY(${belowGround * 100}%` }}>
+    <div className={`${styles.worship_stick} ${className}`} style={{ transform: `translateY(${targetY * 100}%` }}>
       <img src="/images/worship_stick_base.png" className={styles.base} />
       <img src="/images/worship_stick_sun.png" className={`${styles.sun} ${!spinning && styles.paused}`} />
 
