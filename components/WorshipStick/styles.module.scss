@@ -2,7 +2,7 @@
   width: 25rem;
   position: relative;
   font-size: 0; // Remove the 4px vertical space between consecutive block elements.
-  transition: transform 4s ease-in-out;
+  transition: transform 2.5s ease-in-out;
   overflow: hidden;
 }
 
@@ -20,7 +20,7 @@
   left: 0;
 
   animation-name: spin;
-  animation-duration: 7000ms;
+  animation-duration: 6000ms;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
 

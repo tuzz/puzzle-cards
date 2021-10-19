@@ -19,20 +19,33 @@ const YellowSun = ({ className, raised, channel = {} }) => {
   }, [raised]);
 
   const meshCogs = () => {
+    const distance = distanceFromTop(channel.worshipStickRef());
+    const closeEnough = distance < 15;
+    if (!closeEnough) { return; }
+
     const worshipPhase = rotationPhase(channel.worshipStickSunRef(), 8);
     const yellowPhase = rotationPhase(yellowSunRef, 24);
     const alignment = (worshipPhase + yellowPhase) % 1;
+    if (alignment < 0.9) { return ;}
 
-    if (alignment > 0.9) { // && high enough
-      setSpinning(true);
-      setPoller(i => i && clearInterval(i));
-    }
+    setSpinning(true);
+    setPoller(i => i && clearInterval(i));
   };
 
-  const rotationPhase = (ref, numberOfSpokes) => {
-    if (!ref.current) { return 0; }
+  const distanceFromTop = (worshipStickRef) => {
+    if (!worshipStickRef.current) { return Infinity; }
 
-    const transform = getComputedStyle(ref.current).transform;
+    const transform = getComputedStyle(worshipStickRef.current).transform;
+    const parts = transform.split(/[(,]/).map(s => parseFloat(s));
+    const yOffset = parts[parts.length - 1];
+
+    return yOffset;
+  };
+
+  const rotationPhase = (cogRef, numberOfSpokes) => {
+    if (!cogRef.current) { return 0; }
+
+    const transform = getComputedStyle(cogRef.current).transform;
     const [_, a, b] = transform.split(/[(,]/).map(s => parseFloat(s));
     const radians = Math.atan2(b, a);
     const radiansPerSpoke = 2 * Math.PI / numberOfSpokes;
