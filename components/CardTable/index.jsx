@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import YellowSun from "../YellowSun";
 import WorshipStick from "../WorshipStick";
 import styles from "./styles.module.scss";
 
@@ -11,7 +12,8 @@ const CardTable = () => {
 
   return (
     <div className={styles.card_table}>
-      <WorshipStick className={styles.worship_stick} raised={raised} />
+      <YellowSun />
+      <WorshipStick className={styles.worship_stick} rockHeight={0.8} raised={raised} />
       <div className={styles.floor}></div>
     </div>
   );

@@ -1,0 +1,22 @@
+.yellow_sun {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  img {
+    width: 40rem;
+    margin-top: -77%;
+
+    animation-name: spin;
+    animation-duration: 21000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
