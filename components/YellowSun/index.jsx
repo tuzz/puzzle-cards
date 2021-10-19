@@ -1,19 +1,33 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./styles.module.scss";
 
-const YellowSun = ({ className, channel = {} }) => {
-  const [spinning, setSpinning] = useState(false);
+const YellowSun = ({ className, raised, channel = {} }) => {
   const yellowSunRef = useRef();
 
-  useEffect(() => {
-    setInterval(() => {
-      const worshipPhase = rotationPhase(channel.worshipStickSunRef(), 8);
-      const yellowPhase = rotationPhase(yellowSunRef, 24);
+  const [spinning, setSpinning] = useState(false);
+  const [poller, setPoller] = useState();
 
-      const alignment = (worshipPhase + yellowPhase) % 1;
-      setSpinning(alignment > 0.9);
-    }, 0);
-  }, []);
+  useEffect(() => {
+    if (raised) {
+      setPoller(setInterval(meshCogs, 0));
+    } else {
+      setTimeout(() => {
+        setSpinning(false);
+        setPoller(i => i && clearInterval(i));
+      }, 1200);
+    }
+  }, [raised]);
+
+  const meshCogs = () => {
+    const worshipPhase = rotationPhase(channel.worshipStickSunRef(), 8);
+    const yellowPhase = rotationPhase(yellowSunRef, 24);
+    const alignment = (worshipPhase + yellowPhase) % 1;
+
+    if (alignment > 0.9) { // && high enough
+      setSpinning(true);
+      setPoller(i => i && clearInterval(i));
+    }
+  };
 
   const rotationPhase = (ref, numberOfSpokes) => {
     if (!ref.current) { return 0; }
