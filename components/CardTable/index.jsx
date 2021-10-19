@@ -5,6 +5,7 @@ import styles from "./styles.module.scss";
 
 const CardTable = () => {
   const [raised, setRaised] = useState(true);
+  const channel = {};
 
   useEffect(() => {
     setInterval(() => setRaised(r => !r), 5000);
@@ -12,8 +13,8 @@ const CardTable = () => {
 
   return (
     <div className={styles.card_table}>
-      <YellowSun />
-      <WorshipStick className={styles.worship_stick} rockHeight={0.8} raised={raised} />
+      <YellowSun channel={channel} />
+      <WorshipStick className={styles.worship_stick} rockHeight={0.8} raised={raised} channel={channel} />
       <div className={styles.floor}></div>
     </div>
   );

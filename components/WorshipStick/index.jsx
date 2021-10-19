@@ -1,6 +1,12 @@
+import { useRef } from "react";
+import YellowSun from "../YellowSun";
 import styles from "./styles.module.scss";
 
-const WorshipStick = ({ className, spinning = true, rockHeight = 1, raised = true, onClick = () => {} }) => {
+const WorshipStick = ({ className, spinning = true, rockHeight = 1, raised = true, onClick = () => {}, channel = {} }) => {
+  const sun = useRef();
+
+  channel.worshipStickSunRef = () => sun;
+
   // Calculate the ratio we need to move the stick down by to submerge the rock
   // underground with only the metamask lock showing above the surface.
   const aspectRatio = 2598 / 4508;
@@ -14,7 +20,7 @@ const WorshipStick = ({ className, spinning = true, rockHeight = 1, raised = tru
   return (
     <div className={`${styles.worship_stick} ${className}`} style={{ transform: `translateY(${targetY * 100}%` }}>
       <img src="/images/worship_stick_base.png" className={styles.base} />
-      <img src="/images/worship_stick_sun.png" className={`${styles.sun} ${!spinning && styles.paused}`} />
+      <img src="/images/worship_stick_sun.png" className={`${styles.sun} ${!spinning && styles.paused}`} ref={sun} />
 
       {rockHeight > 0 && <div className={styles.rock} style={{ paddingTop: `${rockHeight * 100}%` }}>
         {onClick && <div className={styles.rock_inner}>
