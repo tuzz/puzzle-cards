@@ -1,0 +1,14 @@
+.flippable, .iframe, .back {
+  width: 15rem;
+  height: 21rem;
+  border-radius: 0.75rem;
+  pointer-events: none;
+}
+
+.iframe {
+  border: none;
+}
+
+.back {
+  background: yellow;
+}

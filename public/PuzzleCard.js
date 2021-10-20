@@ -71,7 +71,11 @@ class PuzzleCard {
   }
 
   embedUrl() {
-    return [PuzzleCard.EMBED_URI, new URLSearchParams(this).toString()].join("?");
+    return [PuzzleCard.EMBED_URI, this.embedQueryString()].join("?");
+  }
+
+  embedQueryString() {
+    return new URLSearchParams(this).toString();
   }
 
   tokenID() {

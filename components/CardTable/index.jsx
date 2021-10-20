@@ -1,11 +1,14 @@
-import { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
+import AppContext from "../AppContext";
 import YellowSun from "../YellowSun";
 import WorshipStick from "../WorshipStick";
 import TableEdge from "../TableEdge";
-import Draggable from "react-draggable";
+import PlayingCard from "../PlayingCard";
 import styles from "./styles.module.scss";
 
 const CardTable = () => {
+  const { decks, address } = useContext(AppContext);
+
   const [raised, setRaised] = useState(false);
   const [flipped, setFlipped] = useState(false);
   const [direction, setDirection] = useState(1);
@@ -24,10 +27,7 @@ const CardTable = () => {
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.1}>
         <div className={styles.felt_cloth}>
-          <Draggable bounds="parent">
-            <div style={{ display: "inline-block" }}>
-            </div>
-          </Draggable>
+          <PlayingCard  />
         </div>
       </TableEdge>
     </div>
