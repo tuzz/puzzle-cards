@@ -26,9 +26,11 @@ const CardTable = () => {
       <YellowSun raised={raised} channel={channel} />
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.1}>
-        <div className={styles.felt_cloth}>
+        <div className={styles.draggable_area}>
           <PlayingCard  />
         </div>
+
+        <div className={styles.felt_cloth}></div>
       </TableEdge>
     </div>
   );
