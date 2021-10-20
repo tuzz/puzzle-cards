@@ -9,14 +9,15 @@ const Draggable = ({ children, ...props }) => {
   const [startCoords, setStartCoords] = useState();
 
   useEffect(() => {
-    const listener = addEventListener("resize", () => {
+    const listener = () => {
       triggerMouseEvent(ref.current, "mouseover");
       triggerMouseEvent(ref.current, "mousedown");
       triggerMouseEvent(document, "mousemove");
       triggerMouseEvent(ref.current, "mouseup");
       triggerMouseEvent(ref.current, "click");
-    });
+    };
 
+    addEventListener("resize", listener);
     return () => removeEventListener("resize", listener);
   }, []);
 
