@@ -3,6 +3,7 @@ import YellowSun from "../YellowSun";
 import WorshipStick from "../WorshipStick";
 import TableEdge from "../TableEdge";
 import FlipCard from "../FlipCard";
+import Draggable from "react-draggable";
 import styles from "./styles.module.scss";
 
 const CardTable = () => {
@@ -24,7 +25,11 @@ const CardTable = () => {
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.1}>
         <div className={styles.felt_cloth}>
-          <FlipCard flipped={flipped} direction={direction} />
+          <Draggable bounds="parent">
+            <div style={{ display: "inline-block" }}>
+              <FlipCard flipped={flipped} direction={direction} />
+            </div>
+          </Draggable>
         </div>
       </TableEdge>
     </div>
