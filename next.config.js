@@ -1,5 +1,5 @@
 module.exports = {
   rewrites: () => [
-    { source: "/frame", destination: "/frame/index.html" },
+    { source: "/embed", destination: "/embed/index.html" },
   ],
 };
