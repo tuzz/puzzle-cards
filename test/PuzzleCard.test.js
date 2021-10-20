@@ -57,4 +57,44 @@ describe("PuzzleCard", () => {
     expect(puzzleCard.condition).to.equal("Excellent");
     expect(puzzleCard.edition).to.equal("Standard");
   });
+
+  it("can get the metadata url for a puzzle card", () => {
+    PuzzleCard.METADATA_URI = "https://example.com/metadata/{id}.json";
+
+    const puzzleCard = new PuzzleCard({
+      series: "Series 1",
+      puzzle: "Puzzle 1-2",
+      tier: "Celestial",
+      type: "Active",
+      color1: "Red",
+      color2: "None",
+      variant: "Moon",
+      condition: "Excellent",
+      edition: "Standard",
+    });
+
+    expect(puzzleCard.metadataUrl()).to.equal(
+      "https://example.com/metadata/0000000000000000000000000000000000000000000000010204040600010300.json"
+    )
+  });
+
+  it("can get the embed url for a puzzle card", () => {
+    PuzzleCard.EMBED_URI = "https://example.com/embed";
+
+    const puzzleCard = new PuzzleCard({
+      series: "Series 1",
+      puzzle: "Puzzle 1-2",
+      tier: "Celestial",
+      type: "Active",
+      color1: "Red",
+      color2: "None",
+      variant: "Moon",
+      condition: "Excellent",
+      edition: "Standard",
+    });
+
+    expect(puzzleCard.embedUrl()).to.equal(
+      "https://example.com/embed?series=Series+1&puzzle=Puzzle+1-2&tier=Celestial&type=Active&color1=Red&color2=None&variant=Moon&condition=Excellent&edition=Standard"
+    )
+  });
 });

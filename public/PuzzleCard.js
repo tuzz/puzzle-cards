@@ -66,6 +66,14 @@ class PuzzleCard {
     return PuzzleCard.EDITION_NAMES.indexOf(this.edition);
   }
 
+  metadataUrl() {
+    return PuzzleCard.METADATA_URI.replace("{id}", this.tokenHexString().slice(2).padStart(64, "0"));
+  }
+
+  embedUrl() {
+    return [PuzzleCard.EMBED_URI, new URLSearchParams(this).toString()].join("?");
+  }
+
   tokenID() {
     return BigInt(this.tokenHexString());
   }
@@ -605,8 +613,11 @@ PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0x58807bad0b376efc12f5ad86aac70e78ed67deae";
 PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
+PuzzleCard.EMBED_URI = "https://puzzlecards.github.io/embed";
 PuzzleCard.DECKS_URI = "https://puzzlecards.github.io/decks";
-PuzzleCard.DECKS_URI = "http://localhost:3000/decks";
+
+PuzzleCard.EMBED_URI = "http://localhost:3000/embed"; // TMP
+PuzzleCard.DECKS_URI = "http://localhost:3000/decks"; // TMP
 
 // Set a minimum gas limit that provides enough headroom for all actions.
 // Set a maximum gas limit that matches the limit for the polygon network.
