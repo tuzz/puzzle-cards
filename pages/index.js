@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import AppContext from "../components/AppContext";
-import CardFrame from "../components/CardFrame";
 
 const Index = () => {
   const { address, decks, PuzzleCard } = useContext(AppContext);
@@ -46,7 +45,6 @@ const Index = () => {
       {decks[address].fetched && <button onClick={discard2Pickup1}>discard2Pickup1</button>}
       {decks[address].fetched && decks[address].slice(0, 15).map(({ card, quantity, tokenID }) => (
         <span key={tokenID}>
-          <CardFrame card={card} key={tokenID} />
           <span>{quantity}</span>
         </span>
       ))}
