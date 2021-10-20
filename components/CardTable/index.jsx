@@ -27,7 +27,7 @@ const CardTable = () => {
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.1}>
         <div className={styles.draggable_area}>
-          <PlayingCard  />
+          <PlayingCard onClick={() => console.log("clicked")}  />
         </div>
 
         <div className={styles.felt_cloth}></div>
