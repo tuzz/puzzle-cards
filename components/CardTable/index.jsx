@@ -2,14 +2,19 @@ import { useState, useEffect } from "react";
 import YellowSun from "../YellowSun";
 import WorshipStick from "../WorshipStick";
 import TableEdge from "../TableEdge";
+import FlipCard from "../FlipCard";
 import styles from "./styles.module.scss";
 
 const CardTable = () => {
   const [raised, setRaised] = useState(false);
+  const [flipped, setFlipped] = useState(false);
+  const [direction, setDirection] = useState(1);
   const channel = {};
 
   useEffect(() => {
     setInterval(() => setRaised(r => !r), 14000);
+    setInterval(() => setFlipped(r => !r), 3000);
+    setInterval(() => setDirection(d => -d), 10000);
   }, []);
 
   return (
@@ -19,7 +24,7 @@ const CardTable = () => {
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.1}>
         <div className={styles.felt_cloth}>
-
+          <FlipCard flipped={flipped} direction={direction} />
         </div>
       </TableEdge>
     </div>
