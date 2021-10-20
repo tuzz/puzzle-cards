@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import YellowSun from "../YellowSun";
 import WorshipStick from "../WorshipStick";
 import TableEdge from "../TableEdge";
-import FlipCard from "../FlipCard";
 import Draggable from "react-draggable";
 import styles from "./styles.module.scss";
 
@@ -27,7 +26,6 @@ const CardTable = () => {
         <div className={styles.felt_cloth}>
           <Draggable bounds="parent">
             <div style={{ display: "inline-block" }}>
-              <FlipCard flipped={flipped} direction={direction} />
             </div>
           </Draggable>
         </div>
