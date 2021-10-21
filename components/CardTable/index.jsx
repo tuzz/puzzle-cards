@@ -5,6 +5,7 @@ import WorshipStick from "../WorshipStick";
 import TableEdge from "../TableEdge";
 import DragRegion from "../DragRegion";
 import PlayingCard from "../PlayingCard";
+import CardOutline from "../CardOutline";
 import styles from "./styles.module.scss";
 
 const CardTable = () => {
@@ -26,13 +27,15 @@ const CardTable = () => {
       <WorshipStick className={styles.worship_stick} rockHeight={0.8} raised={raised} channel={channel} />
       <YellowSun raised={raised} channel={channel} />
 
-      <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.1}>
+      <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
         <DragRegion>
           <PlayingCard />
           <PlayingCard />
         </DragRegion>
 
-        <div className={styles.felt_cloth}></div>
+        <div className={styles.felt_cloth}>
+          <CardOutline />
+        </div>
       </TableEdge>
     </div>
   );

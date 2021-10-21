@@ -1,0 +1,14 @@
+.card_outline {
+  position: absolute;
+  top: 2.5rem;
+  left: 0;
+  right: 0;
+  margin: auto;
+
+  width: 15rem;
+  height: 21rem;
+
+  border: 0.2rem solid rgba(255, 255, 255, 0.7);
+  border-radius: 0.75rem;
+  box-sizing: border-box;
+}
