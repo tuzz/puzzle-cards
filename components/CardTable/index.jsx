@@ -39,9 +39,12 @@ const CardTable = () => {
     setActionNames(await PuzzleCard.actionsThatCanBeTaken(chosenCards));
   }, [chosenCards]);
 
+  const stickSpinning = actionNames.length > 0;
+  const buttonEnabled = stickSpinning || !address;
+
   return (
     <div className={styles.card_table}>
-      <WorshipStick rockHeight={0.8} spinning={actionNames.length > 0} raised={raised} className={styles.worship_stick} channel={channel} />
+      <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={buttonEnabled} raised={raised} className={styles.worship_stick} channel={channel} />
       <YellowSun raised={raised} channel={channel} />
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>

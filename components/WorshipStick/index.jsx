@@ -2,7 +2,7 @@ import { useRef } from "react";
 import YellowSun from "../YellowSun";
 import styles from "./styles.module.scss";
 
-const WorshipStick = ({ className, spinning = true, rockHeight = 1, raised = true, onClick = () => {}, channel = {} }) => {
+const WorshipStick = ({ className, spinning = true, rockHeight = 1, raised = true, buttonEnabled = true, onButtonClick = () => {}, channel = {} }) => {
   const stick = useRef();
   const sun = useRef();
 
@@ -25,8 +25,8 @@ const WorshipStick = ({ className, spinning = true, rockHeight = 1, raised = tru
       <img src="/images/worship_stick_sun.png" className={`${styles.sun} ${!spinning && styles.paused}`} ref={sun} />
 
       {rockHeight > 0 && <div className={styles.rock} style={{ paddingTop: `${rockHeight * 100}%` }}>
-        {onClick && <div className={styles.rock_inner}>
-          <button onClick={onClick}></button>
+        {onButtonClick && <div className={styles.rock_inner}>
+          <button onClick={onButtonClick} disabled={!buttonEnabled}></button>
         </div>}
       </div>}
     </div>

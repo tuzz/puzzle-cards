@@ -61,8 +61,30 @@
     background-repeat: no-repeat;
     background-size: 100%;
     background-position: center;
+    transition: filter 250ms linear;
 
-    &:hover {
+    &:after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+
+      background: black;
+      opacity: 0;
+      transition: opacity 250ms linear;
+    }
+
+    &:disabled {
+      filter: grayscale(100%);
+
+      &:after {
+        opacity: 0.35;
+      }
+    }
+
+    &:enabled:hover {
       border: 0.2rem solid #f08528;
       background-color: white;
       background-size: 111%;
