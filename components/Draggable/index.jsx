@@ -6,7 +6,7 @@ import ReactDraggable from "react-draggable";
 
 const Draggable = ({ children, ...props }) => {
   const ref = useRef();
-  const [startCoords, setStartCoords] = useState();
+  const [dragObject, setDragObject] = useState();
 
   useEffect(() => {
     const listener = () => {
@@ -34,23 +34,33 @@ const Draggable = ({ children, ...props }) => {
     props.handleStart && props.handleStart(event);
     if (event.causedByResize) { return; }
 
-    setStartCoords({ x: event.clientX, y: event.clientY });
+    setDragObject({ x: event.clientX, y: event.clientY, distance: 0 });
+  };
+
+  const handleDrag = (event) => {
+    props.handleDrag && props.handleDrag(event);
+    if (event.causedByResize || !dragObject) { return; }
+
+    setDragObject(previous => {
+      const [x, y] = [event.clientX, event.clientY];
+
+      const deltaX = (event.clientX - previous.x);
+      const deltaY = (event.clientY - previous.y);
+
+      const distance = previous.distance + Math.sqrt((deltaX ** 2) + (deltaY ** 2));
+
+      return { x, y, distance };
+    });
   };
 
   const handleStop = (event) => {
     props.handleStop && props.handleStop(event);
-    if (event.causedByResize) { return; }
+    if (event.causedByResize || !dragObject) { return; }
 
-    if (!startCoords) { return; }
-
-    const deltaX = (event.clientX - startCoords.x);
-    const deltaY = (event.clientY - startCoords.y);
-
-    const distance = Math.sqrt((deltaX ** 2) + (deltaY ** 2));
-    if (distance < 20) { props.onClick(event); }
+    if (dragObject.distance < 20) { props.onClick(event); }
   };
 
-  const detectClicks = props.onClick ? { onStart: handleStart, onStop: handleStop } : {};
+  const detectClicks = props.onClick ? { onStart: handleStart, onStop: handleStop, onDrag: handleDrag } : {};
 
   return (
     <ReactDraggable {...props} {...detectClicks}>
