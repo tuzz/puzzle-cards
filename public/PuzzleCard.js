@@ -395,7 +395,7 @@ class PuzzleCard {
       throw new Error(`[${expectedNumArgs} cards are required]`);
     }
 
-    return PuzzleCard.call(actionName, puzzleCards).then(PuzzleCard.fromTransferEvent);
+    return PuzzleCard.call(actionName, puzzleCards, true).then(PuzzleCard.fromTransferEvent);
   }
 
   static canPerformAction(actionName, puzzleCards, expectedNumArgs) {
@@ -403,18 +403,24 @@ class PuzzleCard {
       return Promise.resolve([false, `[${expectedNumArgs} cards are required]`]);
     }
 
-    return PuzzleCard.call(actionName, puzzleCards).then(PuzzleCard.decodeErrors);
+    return PuzzleCard.call(actionName, puzzleCards, false).then(PuzzleCard.decodeErrors);
   }
 
-  static async call(functionName, puzzleCards) {
+  static async call(functionName, puzzleCards, setGasLimit) {
     const args = [...puzzleCards]
       .sort((a, b) => a.typeIndex() - b.typeIndex())
       .map(card => card.tokenID());
 
-    const baseGasPrice = (await PuzzleCard.CONTRACT.provider.getGasPrice()).toNumber();
-    const gasPrice = baseGasPrice * PuzzleCard.GAS_PRICE_MULTIPLIER;
+    let options = {};
 
-    return PuzzleCard.CONTRACT[functionName](args, { gasLimit: PuzzleCard.GAS_LIMIT_MINIMUM, gasPrice });
+    if (setGasLimit) {
+      const baseGasPrice = (await PuzzleCard.CONTRACT.provider.getGasPrice()).toNumber();
+      const gasPrice = baseGasPrice * PuzzleCard.GAS_PRICE_MULTIPLIER;
+
+      options = { gasLimit: PuzzleCard.GAS_LIMIT_MINIMUM, gasPrice };
+    }
+
+    return PuzzleCard.CONTRACT[functionName](args, options);
   }
 
   static decodeErrors([isAllowed, errorCodes]) {

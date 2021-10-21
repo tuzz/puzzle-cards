@@ -37,9 +37,8 @@ const CardTable = () => {
   };
 
   useEffect(async () => {
-    const actionNames = await PuzzleCard.actionsThatCanBeTaken(chosenCards);
+    const actionNames = await Metamask.actionsThatCanBeTaken(PuzzleCard, chosenCards);
 
-    console.log(actionNames);
     setButtonAction(
       actionNames.length === 1 ? actionNames[0] :
       actionNames.length > 1 ? actionNames.filter(n => n !== "discard2Pickup1") :
@@ -50,7 +49,6 @@ const CardTable = () => {
 
   const performAction = async () => {
     const success = await Metamask.performAction(PuzzleCard, buttonAction, chosenCards);
-    console.log(success);
   };
 
   const stickSpinning = buttonAction && buttonAction !== "connectToMetamask";
