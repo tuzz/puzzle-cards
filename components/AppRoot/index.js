@@ -27,6 +27,9 @@ const AppRoot = ({ Component, pageProps }) => {
       const connectOnLoad = params.get("connectOnLoad") === "true";
 
       connectOnLoad && ethereum.request({ method: "eth_requestAccounts" });
+
+      const href = window.location.href.replaceAll(/[?&]connectOnLoad=true/g, "");
+      history.replaceState(null, "", href);
     }
   }, []);
 
