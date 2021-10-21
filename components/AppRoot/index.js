@@ -13,14 +13,16 @@ const AppRoot = ({ Component, pageProps }) => {
 
     const provider = new ethers.providers.Web3Provider(ethereum, "any");
     const signer = provider.getSigner();
+    const network = await provider.getNetwork();
 
     PuzzleCard.attach(ethers, provider);
     PuzzleCard.connect(signer);
 
     const address = await signer.getAddress().catch(() => {});
-    if (address) { ensureDeck(address); } else { pollForConnect(); }
+    if (address) { ensureDeck(address, network.chainId); } else { pollForConnect(); }
 
     ethereum.on("accountsChanged", ([address]) => address && ensureDeck(address));
+    ethereum.on("chainChanged", hex => setAppContext(c => ({ ...c, chainId: Number(hex) })));
 
     if (!address) {
       const params = new URLSearchParams(window.location.search);
@@ -35,19 +37,29 @@ const AppRoot = ({ Component, pageProps }) => {
 
   const pollForConnect = () => {
     setConnectPoller(setInterval(() => {
-      PuzzleCard.CONTRACT.signer.getAddress().then(ensureDeck).catch(() => {});
+      PuzzleCard.CONTRACT.signer.getAddress().then(address => {
+        PuzzleCard.CONTRACT.provider.getNetwork().then(network => {
+          ensureDeck(address, network.chainId);
+        });
+      }).catch(() => {});
     }, 1000));
   };
 
-  const ensureDeck = async (address) => {
+  const ensureDeck = async (address, chainId) => {
     address = address.toLowerCase();
 
     setAppContext(c => {
-      if (c.decks[address]) {
-        return { ...c, address };
-      } else {
-        return { ...c, address, decks: { ...c.decks, [address]: [] } };
+      const newContext = { ...c, address };
+
+      if (chainId) {
+        newContext.chainId = chainId;
       }
+
+      if (!c.decks[address]) {
+        newContext.decks = { ...c.decks, [address]: [] };
+      }
+
+      return newContext;
     });
 
     setConnectPoller(poller => { poller && clearInterval(poller); });
