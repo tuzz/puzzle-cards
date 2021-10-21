@@ -1,15 +1,25 @@
 const Metamask = {};
 
 Metamask.actionsThatCanBeTaken = async (PuzzleCard, cards) => {
-  if (cards.length < 2) {
+  if (cards.filter(c => c).length < 2) { return []; }
+  if (typeof ethereum === "undefined") { return []; }
+
+  // If we aren't connected yet, the metamask button's action should be to
+  // connect so we don't need to try and check if any actions can be taken.
+  if (!await Metamask.alreadyConnected(PuzzleCard)) { return []; }
+
+  // This follows the same pattern as in the method below. See for explanation.
+  const managedToSwitch = await Metamask.switchNetwork(PuzzleCard);
+
+  if (!managedToSwitch) {
+    if (Metamask.promptingToSwitch) {
+      alert("Please allow MetaMask to switch network.")
+    }
+    Metamask.tryAgain = true;
+    return [];
+  } else if (!managedToSwitch && Metamask.tryAgain) {
     return [];
   }
-
-  if (typeof ethereum === "undefined") {
-    return [];
-  }
-
-  // TODO: similar pattern to below
 
   return PuzzleCard.actionsThatCanBeTaken(cards);
 };
