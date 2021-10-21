@@ -9,8 +9,9 @@ import CardOutline from "../CardOutline";
 import styles from "./styles.module.scss";
 
 const CardTable = () => {
-  const { decks, address } = useContext(AppContext);
+  const { PuzzleCard, decks, address } = useContext(AppContext);
   const [chosenCards, setChosenCards] = useState([]);
+  const [actionNames, setActionNames] = useState([]);
 
   const [raised, setRaised] = useState(false);
   const [flipped, setFlipped] = useState(false);
@@ -34,9 +35,13 @@ const CardTable = () => {
     }
   };
 
+  useEffect(async () => {
+    setActionNames(await PuzzleCard.actionsThatCanBeTaken(chosenCards));
+  }, [chosenCards]);
+
   return (
     <div className={styles.card_table}>
-      <WorshipStick className={styles.worship_stick} rockHeight={0.8} raised={raised} channel={channel} />
+      <WorshipStick rockHeight={0.8} spinning={actionNames.length > 0} raised={raised} className={styles.worship_stick} channel={channel} />
       <YellowSun raised={raised} channel={channel} />
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
