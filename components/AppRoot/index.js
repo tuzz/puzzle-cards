@@ -2,7 +2,7 @@ import { useState, useEffect, createContext } from "react";
 import { ethers } from "ethers";
 import Head from "next/head";
 import PuzzleCard from "../../public/PuzzleCard";
-import AppContext from "../AppContext";
+import AppContext from "./context";
 
 const AppRoot = ({ Component, pageProps }) => {
   const [appContext, setAppContext] = useState({ PuzzleCard, decks: {} });

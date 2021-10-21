@@ -1,12 +1,14 @@
 // A wrapper for react-draggable that fixes this issue:
 // https://github.com/react-grid-layout/react-draggable/issues/363
 
-import { useRef, useState, useEffect } from "react";
+import { useContext, useState, useRef, useEffect } from "react";
 import ReactDraggable from "react-draggable";
+import DragContext from "../DragRegion/context";
 
 const Draggable = ({ children, ...props }) => {
-  const ref = useRef();
+  const dragContext = useContext(DragContext);
   const [dragObject, setDragObject] = useState();
+  const ref = useRef();
 
   useEffect(() => {
     const listener = () => {
@@ -31,14 +33,14 @@ const Draggable = ({ children, ...props }) => {
   };
 
   const handleStart = (event) => {
-    props.handleStart && props.handleStart(event);
+    props.onStart && props.onStart(event);
     if (event.causedByResize) { return; }
 
     setDragObject({ x: event.clientX, y: event.clientY, distance: 0 });
   };
 
   const handleDrag = (event) => {
-    props.handleDrag && props.handleDrag(event);
+    props.onDrag && props.onDrag(event);
     if (event.causedByResize || !dragObject) { return; }
 
     setDragObject(previous => {
@@ -54,7 +56,7 @@ const Draggable = ({ children, ...props }) => {
   };
 
   const handleStop = (event) => {
-    props.handleStop && props.handleStop(event);
+    props.onStop && props.onStop(event);
     if (event.causedByResize || !dragObject) { return; }
 
     if (dragObject.distance < 20) { props.onClick(event); }

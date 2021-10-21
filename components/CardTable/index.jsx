@@ -1,8 +1,9 @@
 import { useContext, useState, useEffect } from "react";
-import AppContext from "../AppContext";
+import AppContext from "../AppRoot/context";
 import YellowSun from "../YellowSun";
 import WorshipStick from "../WorshipStick";
 import TableEdge from "../TableEdge";
+import DragRegion from "../DragRegion";
 import PlayingCard from "../PlayingCard";
 import styles from "./styles.module.scss";
 
@@ -26,10 +27,10 @@ const CardTable = () => {
       <YellowSun raised={raised} channel={channel} />
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.1}>
-        <div className={styles.draggable_area}>
+        <DragRegion>
           <PlayingCard />
           <PlayingCard />
-        </div>
+        </DragRegion>
 
         <div className={styles.felt_cloth}></div>
       </TableEdge>
