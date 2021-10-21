@@ -1,8 +1,12 @@
 const Metamask = {};
 
-Metamask.actionsThatCanBeTaken = async (PuzzleCard, cards) => {
+Metamask.actionsThatCanBeTaken = async (PuzzleCard, cards, preSwitchCallback = () => {}) => {
   if (cards.filter(c => c).length < 2) { return []; }
   if (typeof ethereum === "undefined") { return []; }
+
+  // Give the calling code the opportunity to run something before the switch
+  // network prompt appears. Otherwise, it blocks until that resolves / rejects.
+  if (!await Metamask.alreadyCorrectNetwork(PuzzleCard)) { preSwitchCallback(); }
 
   // If we aren't connected yet, the metamask button's action should be to
   // connect so we don't need to try and check if any actions can be taken.

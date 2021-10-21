@@ -10,7 +10,7 @@ import CardOutline from "../CardOutline";
 import styles from "./styles.module.scss";
 
 const CardTable = () => {
-  const { PuzzleCard, decks, address } = useContext(AppContext);
+  const { PuzzleCard, decks, address, chainId } = useContext(AppContext);
   const [chosenCards, setChosenCards] = useState([]);
   const [buttonAction, setButtonAction] = useState();
 
@@ -36,8 +36,14 @@ const CardTable = () => {
     }
   };
 
-  useEffect(async () => {
-    const actionNames = await Metamask.actionsThatCanBeTaken(PuzzleCard, chosenCards);
+  const setButtonActionBasedOnChosenCards = async (causedByNetworkChange) => {
+    const actionNames = await Metamask.actionsThatCanBeTaken(PuzzleCard, chosenCards, () => {
+      setButtonAction(); // Disable the button while the switch network prompt is shown.
+
+      if (causedByNetworkChange) {
+        setTimeout(() => alert("Please switch back to the Polygon network."), 0);
+      }
+    });
 
     setButtonAction(
       actionNames.length === 1 ? actionNames[0] :
@@ -45,7 +51,12 @@ const CardTable = () => {
       !address ? "connectToMetamask" :
       null
     );
-  }, [chosenCards, address]);
+  }
+
+  useEffect(setButtonActionBasedOnChosenCards, [chosenCards]);
+  useEffect(() => setButtonActionBasedOnChosenCards(true), [chainId]);
+
+  // TODO: lay out and re-lay out the cards when the address changes (clear chosenCards).
 
   const performAction = async () => {
     const success = await Metamask.performAction(PuzzleCard, buttonAction, chosenCards);
