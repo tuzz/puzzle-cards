@@ -9,11 +9,14 @@ const PlayingCard = ({ card }) => {
 
   const handleCardClick = () => {
     setZoomed(true);
-    setTimeout(() => addEventListener("mousedown", handleWindowClick), 0);
+    setTimeout(() => {
+      addEventListener("mousedown", zoomOut);
+      addEventListener("scroll", zoomOut);
+    }, 0);
   };
 
-  const handleWindowClick = (event) => {
-    removeEventListener("mousedown", handleWindowClick);
+  const zoomOut = (event) => {
+    removeEventListener("mousedown", zoomOut);
     setZoomed(false);
   };
 
