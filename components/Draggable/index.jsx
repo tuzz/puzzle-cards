@@ -1,13 +1,20 @@
-// A wrapper for react-draggable that fixes this issue:
-// https://github.com/react-grid-layout/react-draggable/issues/363
+// A wrapper for react-draggable that:
+//
+// - Fixes: https://github.com/react-grid-layout/react-draggable/issues/363
+// - Adds support for onClick
+// - Moves the draggable on top of others when dragged
 
 import { useContext, useState, useRef, useEffect } from "react";
 import ReactDraggable from "react-draggable";
 import DragContext from "../DragRegion/context";
+import styles from "./styles.module.scss";
 
 const Draggable = ({ children, ...props }) => {
-  const dragContext = useContext(DragContext);
+  const { maxZIndex, setMaxZIndex } = useContext(DragContext);
+
+  const [zIndex, setZIndex] = useState(0);
   const [dragObject, setDragObject] = useState();
+
   const ref = useRef();
 
   useEffect(() => {
@@ -32,7 +39,14 @@ const Draggable = ({ children, ...props }) => {
     element.dispatchEvent(mouseEvent);
   };
 
+  const moveOnTopOfOtherDraggables = () => {
+    setZIndex(maxZIndex + 1);
+    setMaxZIndex(maxZIndex + 1);
+  };
+
   const handleStart = (event) => {
+    moveOnTopOfOtherDraggables();
+
     props.onStart && props.onStart(event);
     if (event.causedByResize) { return; }
 
@@ -66,7 +80,7 @@ const Draggable = ({ children, ...props }) => {
 
   return (
     <ReactDraggable {...props} {...detectClicks}>
-      <div style={{ display: "inline-block" }} ref={ref}>
+      <div ref={ref} className={styles.inner} style={{ zIndex }}>
         {children}
       </div>
     </ReactDraggable>
