@@ -232,6 +232,8 @@ class PuzzleCard {
   }
 
   static actionsThatCanBeTaken(puzzleCards) {
+    if (puzzleCards.length < 2) { return []; }
+
     return Promise.all([
       PuzzleCard.canActivateSunOrMoon(puzzleCards).then(([can])    => can ? "activateSunOrMoon" : null),
       PuzzleCard.canLookThroughTelescope(puzzleCards).then(([can]) => can ? "lookThroughTelescope" : null),

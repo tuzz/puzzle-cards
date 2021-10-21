@@ -21,6 +21,13 @@ const AppRoot = ({ Component, pageProps }) => {
     if (address) { ensureDeck(address); } else { pollForConnect(); }
 
     ethereum.on("accountsChanged", ([address]) => address && ensureDeck(address));
+
+    if (!address) {
+      const params = new URLSearchParams(window.location.search);
+      const connectOnLoad = params.get("connectOnLoad") === "true";
+
+      connectOnLoad && ethereum.request({ method: "eth_requestAccounts" });
+    }
   }, []);
 
   const pollForConnect = () => {
