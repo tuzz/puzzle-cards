@@ -29,8 +29,8 @@ const CardTable = () => {
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
         <DragRegion>
-          <PlayingCard />
-          <PlayingCard />
+          <PlayingCard onMoved={x => console.log(x)} />
+          <PlayingCard onMoved={x => console.log(x)} />
         </DragRegion>
 
         <div className={styles.felt_cloth}>
