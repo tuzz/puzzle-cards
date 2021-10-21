@@ -73,7 +73,7 @@ const Draggable = ({ children, ...props }) => {
     props.onStop && props.onStop(event);
     if (event.causedByResize || !dragObject) { return; }
 
-    if (dragObject.distance < 20) { props.onClick(event); }
+    if (dragObject.distance < 30) { props.onClick(event); }
   };
 
   const detectClicks = props.onClick ? { onStart: handleStart, onStop: handleStop, onDrag: handleDrag } : {};
