@@ -10,6 +10,7 @@ import styles from "./styles.module.scss";
 
 const CardTable = () => {
   const { decks, address } = useContext(AppContext);
+  const [chosenCards, setChosenCards] = useState([]);
 
   const [raised, setRaised] = useState(false);
   const [flipped, setFlipped] = useState(false);
@@ -22,6 +23,17 @@ const CardTable = () => {
     setInterval(() => setDirection(d => -d), 10000);
   }, []);
 
+  const handleCardMoved = ({ card, movedTo }) => {
+    const expectedChosen = channel.overlapsOutline(movedTo);
+    const actualChosen = chosenCards.indexOf(card) !== -1;
+
+    if (expectedChosen && !actualChosen) {
+      setChosenCards(array => [...array, card]);
+    } else if (!expectedChosen && actualChosen) {
+      setChosenCards(array => array.filter(c => c !== card));
+    }
+  };
+
   return (
     <div className={styles.card_table}>
       <WorshipStick className={styles.worship_stick} rockHeight={0.8} raised={raised} channel={channel} />
@@ -29,12 +41,12 @@ const CardTable = () => {
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
         <DragRegion>
-          <PlayingCard onMoved={x => console.log(x)} />
-          <PlayingCard onMoved={x => console.log(x)} />
+          <PlayingCard card={address && decks[address].length >= 1 && decks[address][0].card} onMoved={handleCardMoved} />
+          <PlayingCard card={address && decks[address].length >= 2 && decks[address][1].card} onMoved={handleCardMoved} />
         </DragRegion>
 
         <div className={styles.felt_cloth}>
-          <CardOutline />
+          <CardOutline channel={channel} />
         </div>
       </TableEdge>
     </div>
