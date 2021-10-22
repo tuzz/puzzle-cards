@@ -37,7 +37,7 @@ const CardTable = () => {
   };
 
   const setButtonActionBasedOnChosenCards = async (causedByNetworkChange) => {
-    const actionNames = await Metamask.actionsThatCanBeTaken(PuzzleCard, chosenCards, () => {
+    const actionNames = await Metamask.actionsThatCanBeTaken(PuzzleCard, chosenCards, address, () => {
       setButtonAction(); // Disable the button while the switch network prompt is shown.
 
       if (causedByNetworkChange) {
@@ -60,7 +60,7 @@ const CardTable = () => {
     const success = await Metamask.performAction(PuzzleCard, buttonAction, chosenCards);
   };
 
-  const stickSpinning = buttonAction && buttonAction !== "connectToMetamask";
+  const stickSpinning = buttonAction && !buttonAction.match(/connectToMetamask/);
 
   return (
     <div className={styles.card_table}>
