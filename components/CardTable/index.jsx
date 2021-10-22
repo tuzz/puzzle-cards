@@ -14,6 +14,7 @@ const CardTable = () => {
   const [chosenCards, setChosenCards] = useState([]);
   const [buttonAction, setButtonAction] = useState();
   const [transacting, setTransacting] = useState(false);
+  const [stickGrounded, setStickGrounded] = useState(true);
 
   const [raised, setRaised] = useState(false);
   const [flipped, setFlipped] = useState(false);
@@ -66,6 +67,7 @@ const CardTable = () => {
     if (!transaction) { return; } // The user rejected the transaction request in Metamask.
 
     setTransacting(true);
+    setStickGrounded(false);
 
     try {
       const _mintedCard = await PuzzleCard.fromTransferEvent(transaction);
@@ -77,15 +79,15 @@ const CardTable = () => {
     }
 
     setTransacting(false);
+    channel.waitForStickToFinishMoving().then(() => setStickGrounded(true));
   };
 
-  const buttonEnabled = !!buttonAction && !transacting;
-  const stickSpinning = buttonAction && !buttonAction.match(/connectToMetamask/);
+  const stickSpinning = buttonAction && !buttonAction.match(/connectToMetamask/) || !stickGrounded;
   const stickRaised = transacting; // Raise the stick while the transaction is processing.
 
   return (
     <div className={styles.card_table}>
-      <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={buttonEnabled} onButtonClick={performAction} raised={stickRaised} className={styles.worship_stick} channel={channel} />
+      <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={!!buttonAction} onButtonClick={performAction} raised={stickRaised} className={styles.worship_stick} channel={channel} />
       <YellowSun raised={stickRaised} channel={channel} />
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>

@@ -9,6 +9,30 @@ const WorshipStick = ({ className, spinning = false, rockHeight = 1, raised = tr
   channel.worshipStickRef = () => stick;
   channel.worshipStickSunRef = () => sun;
 
+  channel.distanceFromTop = () => {
+    if (!stick.current) { return 0; }
+
+    const transform = getComputedStyle(stick.current).transform;
+    const parts = transform.split(/[(,]/).map(s => parseFloat(s));
+    const yOffset = parts[parts.length - 1];
+
+    return yOffset;
+  };
+
+  channel.waitForStickToFinishMoving = () => {
+    return new Promise(resolve => {
+      let previous;
+
+      let interval = setInterval(() => {
+        const current = channel.distanceFromTop();
+        if (current !== previous) { previous = current; return; }
+
+        clearInterval(interval);
+        resolve(current);
+      }, 100);
+    });
+  };
+
   // Calculate the ratio we need to move the stick down by to submerge the rock
   // underground with only the metamask lock showing above the surface.
   const aspectRatio = 2598 / 4508;

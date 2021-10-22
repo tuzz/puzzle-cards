@@ -19,8 +19,7 @@ const YellowSun = ({ className, raised, channel = {} }) => {
   }, [raised]);
 
   const meshCogs = () => {
-    const distance = distanceFromTop(channel.worshipStickRef());
-    const closeEnough = distance < 15;
+    const closeEnough = channel.distanceFromTop() < 15;
     if (!closeEnough) { return; }
 
     const worshipPhase = rotationPhase(channel.worshipStickSunRef(), 8);
@@ -30,16 +29,6 @@ const YellowSun = ({ className, raised, channel = {} }) => {
 
     setSpinning(true);
     setPoller(i => i && clearInterval(i));
-  };
-
-  const distanceFromTop = (worshipStickRef) => {
-    if (!worshipStickRef.current) { return Infinity; }
-
-    const transform = getComputedStyle(worshipStickRef.current).transform;
-    const parts = transform.split(/[(,]/).map(s => parseFloat(s));
-    const yOffset = parts[parts.length - 1];
-
-    return yOffset;
   };
 
   const rotationPhase = (cogRef, numberOfSpokes) => {
