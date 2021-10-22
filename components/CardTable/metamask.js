@@ -54,7 +54,7 @@ Metamask.performAction = async (PuzzleCard, actionName, cards) => {
   const isOkToReload = actionName === "connectToMetamask";
 
   if (isOkToReload && await Metamask.ensureConnectedOrReloadPageToShowPromptAgain()) {
-    return [true, true];
+    return [false, false];
   }
 
   // This will fail if there is already a prompt to connect that the user hasn't yet accepted.
