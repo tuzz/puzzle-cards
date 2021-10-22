@@ -10,7 +10,7 @@ import CardOutline from "../CardOutline";
 import styles from "./styles.module.scss";
 
 const CardTable = () => {
-  const { PuzzleCard, decks, address, chainId } = useContext(AppContext);
+  const { PuzzleCard, decks, address, chainId, generation } = useContext(AppContext);
   const [chosenCards, setChosenCards] = useState([]);
   const [buttonAction, setButtonAction] = useState();
 
@@ -53,7 +53,7 @@ const CardTable = () => {
     );
   }
 
-  useEffect(setButtonActionBasedOnChosenCards, [chosenCards]);
+  useEffect(setButtonActionBasedOnChosenCards, [chosenCards, generation]);
   useEffect(() => setButtonActionBasedOnChosenCards(true), [chainId]);
 
   // TODO: lay out and re-lay out the cards when the address changes (clear chosenCards).

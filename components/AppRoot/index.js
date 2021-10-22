@@ -5,7 +5,7 @@ import PuzzleCard from "../../public/PuzzleCard";
 import AppContext from "./context";
 
 const AppRoot = ({ Component, pageProps }) => {
-  const [appContext, setAppContext] = useState({ PuzzleCard, decks: {} });
+  const [appContext, setAppContext] = useState({ PuzzleCard, decks: {}, generation: 0 });
   const [connectPoller, setConnectPoller] = useState();
 
   useEffect(async () => {
@@ -49,7 +49,7 @@ const AppRoot = ({ Component, pageProps }) => {
     address = address.toLowerCase();
 
     setAppContext(c => {
-      const newContext = { ...c, address };
+      const newContext = { ...c, address, generation: c.generation + 1 };
 
       if (chainId) {
         newContext.chainId = chainId;
