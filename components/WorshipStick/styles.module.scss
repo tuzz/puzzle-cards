@@ -71,23 +71,22 @@
       top: 0;
       bottom: 0;
 
-      background: black;
-      opacity: 0;
-      transition: opacity 250ms linear;
+      background-color: rgba(0, 0, 0, 0);
+      transition: background-color 250ms linear;
     }
 
     &:disabled {
       filter: grayscale(100%);
 
       &:after {
-        opacity: 0.35;
+        background-color: rgba(0, 0, 0, 0.35);
       }
     }
 
     &:enabled:hover {
-      border: 0.2rem solid #f08528;
-      background-color: white;
-      background-size: 111%;
+      &:after {
+        border: 0.2rem solid #f08528;
+      }
     }
   }
 }
