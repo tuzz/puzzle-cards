@@ -1,6 +1,9 @@
 const Metamask = {};
 
 Metamask.actionsThatCanBeTaken = async (PuzzleCard, cards, preSwitchCallback = () => {}) => {
+  // If the user isn't connect the the only action they can take is to connect.
+  if (!await Metamask.alreadyConnected(PuzzleCard)) { return ["connectToMetamask"]; }
+
   if (cards.filter(c => c).length < 2) { return []; }
   if (typeof ethereum === "undefined") { return []; }
 

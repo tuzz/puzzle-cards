@@ -47,9 +47,7 @@ const CardTable = () => {
 
     setButtonAction(
       actionNames.length === 1 ? actionNames[0] :
-      actionNames.length > 1 ? actionNames.filter(n => n !== "discard2Pickup1") :
-      !address ? "connectToMetamask" :
-      null
+      actionNames.length > 1 ? actionNames.filter(n => n !== "discard2Pickup1") : null
     );
   }
 
