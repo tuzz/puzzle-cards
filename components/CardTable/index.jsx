@@ -41,7 +41,7 @@ const CardTable = () => {
       setButtonAction(); // Disable the button while the switch network prompt is shown.
 
       if (causedByNetworkChange) {
-        setTimeout(() => alert("Please switch back to the Polygon network."), 0);
+        setTimeout(() => alert("Please switch back to the Polygon network."), 100);
       }
     });
 

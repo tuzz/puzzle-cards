@@ -2,7 +2,7 @@ import { useRef } from "react";
 import YellowSun from "../YellowSun";
 import styles from "./styles.module.scss";
 
-const WorshipStick = ({ className, spinning = true, rockHeight = 1, raised = true, buttonEnabled = true, onButtonClick = () => {}, channel = {} }) => {
+const WorshipStick = ({ className, spinning = false, rockHeight = 1, raised = true, buttonEnabled = true, onButtonClick = () => {}, channel = {} }) => {
   const stick = useRef();
   const sun = useRef();
 
