@@ -13,6 +13,7 @@ const CardTable = () => {
   const { PuzzleCard, decks, address, chainId, generation } = useContext(AppContext);
   const [chosenCards, setChosenCards] = useState([]);
   const [buttonAction, setButtonAction] = useState();
+  const [transacting, setTransacting] = useState(false);
 
   const [raised, setRaised] = useState(false);
   const [flipped, setFlipped] = useState(false);
@@ -20,7 +21,6 @@ const CardTable = () => {
   const channel = {};
 
   useEffect(() => {
-    setInterval(() => setRaised(r => !r), 14000);
     setInterval(() => setFlipped(r => !r), 3000);
     setInterval(() => setDirection(d => -d), 10000);
   }, []);
@@ -55,17 +55,38 @@ const CardTable = () => {
   useEffect(() => setButtonActionBasedOnChosenCards(true), [chainId]);
 
   // TODO: lay out and re-lay out the cards when the address changes (clear chosenCards).
+  // TODO: display the minted card?
+  // TODO: disable the button while something is happening
 
   const performAction = async () => {
-    const success = await Metamask.performAction(PuzzleCard, buttonAction, chosenCards);
+    const promise = Metamask.performAction(PuzzleCard, buttonAction, chosenCards);
+    if (!promise) { return; } // No transaction request initiated, e.g. Metamask locked.
+
+    const transaction = await promise.catch(() => {});
+    if (!transaction) { return; } // The user rejected the transaction request in Metamask.
+
+    setTransacting(true);
+
+    try {
+      const _mintedCard = await PuzzleCard.fromTransferEvent(transaction);
+    } catch (error) {
+      alert(error.message && error.message.length > 0 ? `Error: ${error.message}` : [
+        "Sorry, something unexpected happened.",
+        "You may want to check MetaMask to see if the transaction went through. Otherwise, try again in a few seconds.",
+      ].join("\n"))
+    }
+
+    setTransacting(false);
   };
 
+  const buttonEnabled = !!buttonAction && !transacting;
   const stickSpinning = buttonAction && !buttonAction.match(/connectToMetamask/);
+  const stickRaised = transacting; // Raise the stick while the transaction is processing.
 
   return (
     <div className={styles.card_table}>
-      <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={!!buttonAction} onButtonClick={performAction} raised={raised} className={styles.worship_stick} channel={channel} />
-      <YellowSun raised={raised} channel={channel} />
+      <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={buttonEnabled} onButtonClick={performAction} raised={stickRaised} className={styles.worship_stick} channel={channel} />
+      <YellowSun raised={stickRaised} channel={channel} />
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
         <DragRegion>

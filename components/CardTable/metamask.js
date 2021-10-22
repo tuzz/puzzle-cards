@@ -43,7 +43,7 @@ Metamask.performAction = async (PuzzleCard, actionName, cards) => {
   }
 
   if (!actionName.match(/connectToMetamask/) && await Metamask.alreadyConnected(PuzzleCard) && await Metamask.alreadyCorrectNetwork(PuzzleCard)) {
-    return PuzzleCard[actionName](cards);
+    return PuzzleCard.call(actionName, cards, true);
   }
 
   // Only allow the page to reload if the user won't lose the positions of their cards.
@@ -92,7 +92,7 @@ Metamask.performAction = async (PuzzleCard, actionName, cards) => {
   if (actionName === "reconnectToMetamask") { return null }
 
   // Initiate the request immediate after connect/switching since a popup will be shown.
-  return PuzzleCard[actionName](cards);
+  return PuzzleCard.call(actionName, cards, true);
 };
 
 Metamask.alreadyConnected = async (PuzzleCard) => {
