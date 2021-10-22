@@ -43,8 +43,10 @@ const WorshipStick = ({ className, spinning = false, rockHeight = 1, raised = tr
   const aboveGround = 0;
   const targetY = raised ? aboveGround : belowGround;
 
+  const classes = [styles.worship_stick, raised && styles.raised, className].join(" ");
+
   return (
-    <div className={`${styles.worship_stick} ${className}`} style={{ transform: `translateY(${targetY * 100}%` }} ref={stick}>
+    <div className={classes} style={{ transform: `translateY(${targetY * 100}%` }} ref={stick}>
       <img src="/images/worship_stick_base.png" className={styles.base} />
       <img src="/images/worship_stick_sun.png" className={`${styles.sun} ${!spinning && styles.paused}`} ref={sun} />
 

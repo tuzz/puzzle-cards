@@ -57,7 +57,6 @@ const CardTable = () => {
 
   // TODO: lay out and re-lay out the cards when the address changes (clear chosenCards).
   // TODO: display the minted card?
-  // TODO: disable the button while something is happening
 
   const performAction = async () => {
     const promise = Metamask.performAction(PuzzleCard, buttonAction, chosenCards);
@@ -82,12 +81,13 @@ const CardTable = () => {
     channel.waitForStickToFinishMoving().then(() => setStickGrounded(true));
   };
 
+  const buttonEnabled = buttonAction && !transacting;
   const stickSpinning = buttonAction && !buttonAction.match(/connectToMetamask/) || !stickGrounded;
   const stickRaised = transacting; // Raise the stick while the transaction is processing.
 
   return (
     <div className={styles.card_table}>
-      <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={!!buttonAction} onButtonClick={performAction} raised={stickRaised} className={styles.worship_stick} channel={channel} />
+      <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={buttonEnabled} onButtonClick={performAction} raised={stickRaised} className={styles.worship_stick} channel={channel} />
       <YellowSun raised={stickRaised} channel={channel} />
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
