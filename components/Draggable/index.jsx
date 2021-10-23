@@ -9,9 +9,10 @@ import ReactDraggable from "react-draggable";
 import DragContext from "../DragRegion/context";
 import styles from "./styles.module.scss";
 
-const Draggable = ({ children, ...props }) => {
-  const { maxZIndex, setMaxZIndex } = useContext(DragContext);
+const Draggable = ({ startPosition, children, ...props }) => {
+  startPosition = startPosition || { left: 0, top: 0 };
 
+  const { maxZIndex, setMaxZIndex } = useContext(DragContext);
   const [zIndex, setZIndex] = useState(0);
   const [dragObject, setDragObject] = useState();
 
@@ -80,7 +81,7 @@ const Draggable = ({ children, ...props }) => {
 
   return (
     <ReactDraggable {...props} {...detectClicks}>
-      <div ref={ref} className={styles.inner} style={{ zIndex }}>
+      <div ref={ref} className={styles.inner} style={{ zIndex, ...startPosition }}>
         {children}
       </div>
     </ReactDraggable>
