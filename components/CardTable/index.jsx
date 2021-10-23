@@ -5,6 +5,7 @@ import YellowSun from "../YellowSun";
 import WorshipStick from "../WorshipStick";
 import TableEdge from "../TableEdge";
 import DragRegion from "../DragRegion";
+import CardsInPlay from "../CardsInPlay";
 import PlayingCard from "../PlayingCard";
 import CardOutline from "../CardOutline";
 import styles from "./styles.module.scss";
@@ -18,19 +19,21 @@ const CardTable = () => {
 
   const channel = {};
 
-  const handleCardMoved = ({ card, movedTo }) => {
+  const handleCardMoved = ({ cardStack, movedTo }) => {
     const expectedChosen = channel.overlapsOutline(movedTo);
-    const actualChosen = chosenCards.indexOf(card) !== -1;
+    const actualChosen = chosenCards.indexOf(cardStack) !== -1;
 
     if (expectedChosen && !actualChosen) {
-      setChosenCards(array => [...array, card]);
+      setChosenCards(array => [...array, cardStack]);
     } else if (!expectedChosen && actualChosen) {
-      setChosenCards(array => array.filter(c => c !== card));
+      setChosenCards(array => array.filter(c => c !== cardStack));
     }
   };
 
   const setButtonActionBasedOnChosenCards = async (causedByNetworkChange) => {
-    const actionNames = await Metamask.actionsThatCanBeTaken(PuzzleCard, chosenCards, address, () => {
+    const cards = chosenCards.map(cardStack => cardStack.card);
+
+    const actionNames = await Metamask.actionsThatCanBeTaken(PuzzleCard, cards, address, () => {
       setButtonAction(); // Disable the button while the switch network prompt is shown.
 
       if (causedByNetworkChange) {
@@ -51,7 +54,9 @@ const CardTable = () => {
   // TODO: display the minted card?
 
   const performAction = async () => {
-    const promise = Metamask.performAction(PuzzleCard, buttonAction, chosenCards);
+    const cards = chosenCards.map(cardStack => cardStack.card);
+
+    const promise = Metamask.performAction(PuzzleCard, buttonAction, cards);
     if (!promise) { return; } // No transaction request initiated, e.g. Metamask locked.
 
     const transaction = await promise.catch(() => {});
@@ -84,8 +89,7 @@ const CardTable = () => {
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
         <DragRegion>
-          {address && decks[address].length >= 1 && <PlayingCard card={decks[address][0].card} onMoved={handleCardMoved} />}
-          {address && decks[address].length >= 2 && <PlayingCard card={decks[address][1].card} onMoved={handleCardMoved} />}
+          <CardsInPlay onCardMoved={handleCardMoved} />
         </DragRegion>
 
         <div className={styles.felt_cloth}>

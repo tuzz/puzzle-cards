@@ -4,7 +4,7 @@ import Zoomable from "../Zoomable";
 import Flippable from "../Flippable";
 import styles from "./styles.module.scss";
 
-const PlayingCard = ({ card, onMoved = () => {} }) => {
+const PlayingCard = ({ cardStack, onMoved = () => {} }) => {
   const [zoomed, setZoomed] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
@@ -23,11 +23,11 @@ const PlayingCard = ({ card, onMoved = () => {} }) => {
 
   const handleStop = (event) => {
     if (!zoomed) {
-      onMoved({ card, movedTo: event.target.getBoundingClientRect() });
+      onMoved({ cardStack, movedTo: event.target.getBoundingClientRect() });
     }
   };
 
-  const iframeSrc = `/embed?${card && card.embedQueryString()}`;
+  const iframeSrc = `/embed?${cardStack && cardStack.card.embedQueryString()}`;
 
   return (
     <Draggable bounds="parent" onClick={zoomIn} onStop={handleStop} disabled={zoomed} className={styles.draggable}>
