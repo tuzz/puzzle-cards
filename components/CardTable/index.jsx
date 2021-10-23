@@ -84,8 +84,8 @@ const CardTable = () => {
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
         <DragRegion>
-          <PlayingCard card={address && decks[address].length >= 1 && decks[address][0].card} onMoved={handleCardMoved} />
-          <PlayingCard card={address && decks[address].length >= 2 && decks[address][1].card} onMoved={handleCardMoved} />
+          {address && decks[address].length >= 1 && <PlayingCard card={decks[address][0].card} onMoved={handleCardMoved} />}
+          {address && decks[address].length >= 2 && <PlayingCard card={decks[address][1].card} onMoved={handleCardMoved} />}
         </DragRegion>
 
         <div className={styles.felt_cloth}>

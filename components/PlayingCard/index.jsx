@@ -6,6 +6,7 @@ import styles from "./styles.module.scss";
 
 const PlayingCard = ({ card, onMoved = () => {} }) => {
   const [zoomed, setZoomed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const zoomIn = () => {
     setZoomed(true);
@@ -26,11 +27,13 @@ const PlayingCard = ({ card, onMoved = () => {} }) => {
     }
   };
 
+  const iframeSrc = `/embed?${card && card.embedQueryString()}`;
+
   return (
     <Draggable bounds="parent" onClick={zoomIn} onStop={handleStop} disabled={zoomed} className={styles.draggable}>
       <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={{ base: 0, random: 5 }}>
-        <Flippable flipped={false} direction={-1} className={styles.flippable}>
-          <iframe src={`/embed?${card && card.embedQueryString()}`} className={styles.iframe}>
+        <Flippable flipped={!loaded} direction={-1} className={styles.flippable}>
+          <iframe src={iframeSrc} onLoad={() => setLoaded(true)} className={styles.iframe}>
             Your browser does not support iframes.
           </iframe>
 
