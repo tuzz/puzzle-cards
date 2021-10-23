@@ -12,15 +12,26 @@ const playAreaTop = 37 * 16;
 
 const CardsInPlay = ({ onStackMoved = () => {} }) => {
   const { address, decks } = useContext(AppContext);
-  const [numColumns, setNumColumns] = useState(numColumnsBasedOnPageWidth());
+  const [loadedAddress, setLoadedAddress] = useState(address);
+  const [stackPositions, setStackPositions] = useState([]);
 
-  const cardStacks = address && decks[address].slice(0, 10) || []; // TODO: filters
-  const positions = evenPositions(numRows, numColumns, cardStacks.length);
+  useEffect(() => {
+    if (!address || address === loadedAddress) { return; }
+
+    const cardStacks = decks[address];
+    if (!cardStacks.fetched) { setLoadedAddress(); setStackPositions([]); return; }
+
+    const numColumns = numColumnsBasedOnPageWidth();
+    const positions = evenPositions(numRows, numColumns, cardStacks.length);
+
+    setStackPositions(positions.map((p, i) => ({ cardStack: cardStacks[i], position: p })));
+    setLoadedAddress(address);
+  }, [address, decks]);
 
   return (
     <div className={styles.cards_in_play}>
-      {positions.map((p, i) => (
-        cardStacks[i] && <CardStack key={cardStacks[i].tokenID} cardStack={cardStacks[i]} startPosition={p} onMoved={onStackMoved} />
+      {stackPositions.map(({ cardStack, position}) => (
+        <CardStack key={cardStack.tokenID} cardStack={cardStack} startPosition={position} onMoved={onStackMoved} />
       ))}
     </div>
   );
