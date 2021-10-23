@@ -6,32 +6,31 @@ import WorshipStick from "../WorshipStick";
 import TableEdge from "../TableEdge";
 import DragRegion from "../DragRegion";
 import CardsInPlay from "../CardsInPlay";
-import PlayingCard from "../PlayingCard";
 import CardOutline from "../CardOutline";
 import styles from "./styles.module.scss";
 
 const CardTable = () => {
   const { PuzzleCard, decks, address, chainId, generation } = useContext(AppContext);
-  const [chosenCards, setChosenCards] = useState([]);
+  const [chosenStacks, setChosenStacks] = useState([]);
   const [buttonAction, setButtonAction] = useState();
   const [transacting, setTransacting] = useState(false);
   const [stickGrounded, setStickGrounded] = useState(true);
 
   const channel = {};
 
-  const handleCardMoved = ({ cardStack, movedTo }) => {
+  const handleStackMoved = ({ cardStack, movedTo }) => {
     const expectedChosen = channel.overlapsOutline(movedTo);
-    const actualChosen = chosenCards.indexOf(cardStack) !== -1;
+    const actualChosen = chosenStacks.indexOf(cardStack) !== -1;
 
     if (expectedChosen && !actualChosen) {
-      setChosenCards(array => [...array, cardStack]);
+      setChosenStacks(array => [...array, cardStack]);
     } else if (!expectedChosen && actualChosen) {
-      setChosenCards(array => array.filter(c => c !== cardStack));
+      setChosenStacks(array => array.filter(c => c !== cardStack));
     }
   };
 
-  const setButtonActionBasedOnChosenCards = async (causedByNetworkChange) => {
-    const cards = chosenCards.map(cardStack => cardStack.card);
+  const setButtonActionBasedOnChosenStacks = async (causedByNetworkChange) => {
+    const cards = chosenStacks.map(cardStack => cardStack.card);
 
     const actionNames = await Metamask.actionsThatCanBeTaken(PuzzleCard, cards, address, () => {
       setButtonAction(); // Disable the button while the switch network prompt is shown.
@@ -47,14 +46,14 @@ const CardTable = () => {
     );
   }
 
-  useEffect(setButtonActionBasedOnChosenCards, [chosenCards, generation]);
-  useEffect(() => setButtonActionBasedOnChosenCards(true), [chainId]);
+  useEffect(setButtonActionBasedOnChosenStacks, [chosenStacks, generation]);
+  useEffect(() => setButtonActionBasedOnChosenStacks(true), [chainId]);
 
   // TODO: lay out and re-lay out the cards when the address changes (clear chosenCards).
   // TODO: display the minted card?
 
   const performAction = async () => {
-    const cards = chosenCards.map(cardStack => cardStack.card);
+    const cards = chosenStacks.map(cardStack => cardStack.card);
 
     const promise = Metamask.performAction(PuzzleCard, buttonAction, cards);
     if (!promise) { return; } // No transaction request initiated, e.g. Metamask locked.
@@ -89,7 +88,7 @@ const CardTable = () => {
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
         <DragRegion>
-          <CardsInPlay onCardMoved={handleCardMoved} />
+          <CardsInPlay onStackMoved={handleStackMoved} />
         </DragRegion>
 
         <div className={styles.felt_cloth}>

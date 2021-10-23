@@ -4,7 +4,7 @@ import Zoomable from "../Zoomable";
 import Flippable from "../Flippable";
 import styles from "./styles.module.scss";
 
-const PlayingCard = ({ cardStack, onMoved = () => {} }) => {
+const CardStack = ({ cardStack, onMoved = () => {} }) => {
   const [zoomed, setZoomed] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
@@ -27,7 +27,7 @@ const PlayingCard = ({ cardStack, onMoved = () => {} }) => {
     }
   };
 
-  const iframeSrc = `/embed?${cardStack && cardStack.card.embedQueryString()}`;
+  const iframeSrc = `/embed?${cardStack.card.embedQueryString()}`;
 
   return (
     <Draggable bounds="parent" onClick={zoomIn} onStop={handleStop} disabled={zoomed} className={styles.draggable}>
@@ -44,4 +44,4 @@ const PlayingCard = ({ cardStack, onMoved = () => {} }) => {
   );
 };
 
-export default PlayingCard;
+export default CardStack;

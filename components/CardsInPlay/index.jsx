@@ -1,29 +1,29 @@
 import { useContext, useState, useRef, useEffect } from "react";
 import AppContext from "../AppRoot/context";
-import PlayingCard from "../PlayingCard";
+import CardStack from "../CardStack";
 import styles from "./styles.module.scss";
-const numberOfRows = 2;
+const numRows = 2;
 
-const CardsInPlay = ({ onCardMoved = () => {} }) => {
+const CardsInPlay = ({ onStackMoved = () => {} }) => {
   const { address, decks } = useContext(AppContext);
-  const [cardsPerRow, setCardsPerRow] = useState(3);
+  const [numColumns, setNumColumns] = useState(3);
   const cardStacks = address && decks[address] || [];
 
   return (
     <div className={styles.cards_in_play}>
-      {placeCards(numberOfRows, cardsPerRow, cardStacks).map(({ row, column, cardStack }) => (
-        <PlayingCard key={cardStack.tokenID} cardStack={cardStack} onMoved={onCardMoved} />
+      {placeStacks(numRows, numColumns, cardStacks).map(({ row, column, cardStack }) => (
+        <CardStack key={cardStack.tokenID} cardStack={cardStack} onMoved={onStackMoved} />
       ))}
     </div>
   );
 };
 
-const placeCards = (numberOfRows, cardsPerRow, cardStacks) => {
+const placeStacks = (numRows, numColumns, cardStacks) => {
   const array = [];
 
-  for (let row = 0; row < numberOfRows; row += 1) {
-    for (let column = 0; column < cardsPerRow; column += 1) {
-      const index = row * cardsPerRow + column;
+  for (let row = 0; row < numRows; row += 1) {
+    for (let column = 0; column < numColumns; column += 1) {
+      const index = row * numColumns + column;
       if (index >= cardStacks.length) { return array; }
 
       array.push({ row, column, cardStack: cardStacks[index] });
