@@ -5,6 +5,8 @@ const CardOutline = ({ channel }) => {
   const ref = useRef();
 
   channel.overlapsOutline = (r1) => {
+    if (!r1) { return false; }
+
     const r2 = ref.current.getBoundingClientRect();
 
     return r1.left < r2.right && r1.right > r2.left

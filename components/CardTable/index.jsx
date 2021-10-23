@@ -20,7 +20,7 @@ const CardTable = () => {
 
   const handleStackMoved = ({ cardStack, movedTo }) => {
     const expectedChosen = channel.overlapsOutline(movedTo);
-    const actualChosen = chosenStacks.indexOf(cardStack) !== -1;
+    const actualChosen = chosenStacks.findIndex(s => s.tokenID === cardStack.tokenID) !== -1;
 
     if (expectedChosen && !actualChosen) {
       setChosenStacks(array => [...array, cardStack]);

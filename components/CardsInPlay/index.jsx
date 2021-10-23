@@ -23,7 +23,7 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
     const cardStacks = decks[address];
     if (!cardStacks.fetched) { setLoadedAddress(); setStackPositions([]); return; }
 
-    if (address === loadedAddress) { updatePositions(cardStacks); return; }
+    if (address === loadedAddress) { updateStackPositions(cardStacks); return; }
 
     setStackPositions([]);
     setLoadedAddress(address);
@@ -38,33 +38,44 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
     // TODO: when paginating, deal cards backwards if going back a page
   }, [address, decks]);
 
-  const updatePositions = (cardStacks) => {
-    setStackPositions(previous => {
-      const newStackPositions = [...previous];
+  const updateStackPositions = (cardStacks) => {
+    const newStackPositions = [...stackPositions];
 
-      updateQuantities(newStackPositions, cardStacks);
-      removeZeroQuantities(newStackPositions);
-      addOverOutlineIfNotPresent(cardStacks[0], newStackPositions);
+    // Update quantities. If a stack is depleted, remove its stackPosition and
+    // inform the parent that it has 'moved' so the parent can remove it too.
+    for (let i = newStackPositions.length - 1; i >= 0; i -= 1) {
+      const cardStack1 = newStackPositions[i].cardStack;
+      const cardStack2 = cardStacks.find(s => s.tokenID === cardStack1.tokenID);
 
-      return newStackPositions;
-    });
-  };
+      if (cardStack2) {
+        // This change seems to be visible to the parent component which is good.
+        cardStack1.quantity = cardStack2.quantity;
+      } else {
+        newStackPositions.splice(i, 1);
+        onStackMoved({ cardStack: cardStack1, movedTo: null }); // The void.
+      }
+    }
 
-  const updateQuantities = (stackPositions, cardStacks) => {
-    // TODO
-  };
+    // Check if a newly minted card was added to the front of the deck. If so,
+    // set its position so that it gets flipped over on top of the CardOutline.
+    const cardStack = cardStacks[0];
+    if (cardStack) {
+      const added = !newStackPositions.some(p => p.cardStack.tokenID === cardStack.tokenID);
 
-  const removeZeroQuantities = (stackPositions) => {
-    // TODO
-  };
+      if (added) {
+        const pageMiddle = document.body.clientWidth / 2;
 
-  const addOverOutlineIfNotPresent = (cardStack, stackPositions) => {
-    if (stackPositions.some(p => p.cardStack.tokenID === cardStack.tokenID)) { return; }
+        const left = pageMiddle - stackWidth / 2;
+        const right = pageMiddle + stackWidth / 2;
+        const top = outlineTop;
+        const bottom = outlineTop + stackHeight;
 
-    const pageMiddle = document.body.clientWidth / 2;
-    const left = pageMiddle - stackWidth / 2;
+        newStackPositions.splice(0, 0, { cardStack, position: { left, top, angle: 0 } });
+        onStackMoved({ cardStack, movedTo: { left, right, top, bottom } });
+      }
+    }
 
-    stackPositions.splice(0, 0, { cardStack, position: { top: outlineTop, left, angle: 0 } });
+    setStackPositions(newStackPositions);
   };
 
   return (
