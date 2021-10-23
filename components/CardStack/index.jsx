@@ -43,7 +43,7 @@ const CardStack = ({ cardStack, startPosition, dealDelay, onMoved = () => {} }) 
   const iframeSrc = `/embed?${cardStack.card.embedQueryString()}`;
 
   return (
-    <Draggable bounds="parent" startPosition={startPosition} onClick={zoomIn} onStop={handleStop} disabled={zoomed} className={styles.draggable}>
+    <Draggable bounds="parent" startPosition={startPosition} zoomed={zoomed} onClick={zoomIn} onStop={handleStop} disabled={zoomed} className={styles.draggable}>
       <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={rotation}>
         <Flippable flipped={!loaded} direction={-1} className={styles.flippable}>
           <iframe src={iframeSrc} onLoad={() => setLoaded(true)} className={styles.iframe}>

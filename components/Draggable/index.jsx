@@ -9,16 +9,19 @@ import ReactDraggable from "react-draggable";
 import DragContext from "../DragRegion/context";
 import styles from "./styles.module.scss";
 
-const Draggable = ({ startPosition, className, children, ...props }) => {
+const Draggable = ({ startPosition, zoomed, className, children, ...props }) => {
   startPosition = startPosition || { left: 0, top: 0 };
 
   const { maxZIndex, setMaxZIndex } = useContext(DragContext);
-  const [zIndex, setZIndex] = useState(0);
+  const [currentZIndex, setCurrentZIndex] = useState(maxZIndex + 1);
   const [dragObject, setDragObject] = useState();
+  const [prevZoomed, setPrevZoomed] = useState(false);
 
   const ref = useRef();
 
   useEffect(() => {
+    setMaxZIndex(z => z + 1);
+
     const listener = () => {
       triggerMouseEvent(ref.current, "mouseover");
       triggerMouseEvent(ref.current, "mousedown");
@@ -31,6 +34,12 @@ const Draggable = ({ startPosition, className, children, ...props }) => {
     return () => removeEventListener("resize", listener);
   }, []);
 
+  useEffect(() => {
+    const zoomedOut = prevZoomed && !zoomed;
+    if (zoomedOut) { moveOnTopOfOtherDraggables(); }
+    setPrevZoomed(zoomed);
+  }, [zoomed]);
+
   const triggerMouseEvent = (element, eventType) => {
     const mouseEvent = document.createEvent("MouseEvents");
 
@@ -41,7 +50,7 @@ const Draggable = ({ startPosition, className, children, ...props }) => {
   };
 
   const moveOnTopOfOtherDraggables = () => {
-    setZIndex(maxZIndex + 1);
+    setCurrentZIndex(maxZIndex + 1);
     setMaxZIndex(maxZIndex + 1);
   };
 
@@ -78,6 +87,7 @@ const Draggable = ({ startPosition, className, children, ...props }) => {
   };
 
   const detectClicks = props.onClick ? { onStart: handleStart, onStop: handleStop, onDrag: handleDrag } : {};
+  const zIndex = zoomed ? 999999 : currentZIndex;
 
   return (
     <ReactDraggable {...props} {...detectClicks}>
