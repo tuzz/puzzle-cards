@@ -44,8 +44,9 @@ const evenPositions = (numRows, numColumns, numCards) => {
   const perPlaceWidth = stackWidth + stackMargin;
   const perPlaceHeight = stackHeight + stackMargin;
   const equalPerRow = Math.ceil(numCards / numRows);
-  const maxCardsPerRow = Math.max(3, Math.min(numColumns, equalPerRow));
-  const compressedMode = maxCardsPerRow > numColumns;
+  const softMaxCardsPerRow = Math.max(3, Math.min(numColumns, equalPerRow));
+  const compressedMode = softMaxCardsPerRow > numColumns;
+  const maxCardsPerRow = compressedMode && numCards <= 4 ? 2 : softMaxCardsPerRow;
   const positions = [];
 
   for (let row = 0; row < numRows; row += 1) {
