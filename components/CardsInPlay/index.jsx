@@ -21,11 +21,24 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
     const cardStacks = decks[address];
     if (!cardStacks.fetched) { setLoadedAddress(); setStackPositions([]); return; }
 
+    setStackPositions([]);
+    setLoadedAddress(address);
+
     const numColumns = numColumnsBasedOnPageWidth();
     const positions = evenPositions(numRows, numColumns, cardStacks.length);
 
-    setStackPositions(positions.map((p, i) => ({ cardStack: cardStacks[i], position: p })));
-    setLoadedAddress(address);
+    const stackPositions = positions.map((p, i) => ({ cardStack: cardStacks[i], position: p }));
+
+    let i = 0;
+    const dealCard = () => {
+      if (i >= stackPositions.length) { return; }
+
+      setStackPositions(array => [...array, stackPositions[i]]);
+      setTimeout(() => { i += 1; dealCard(); }, 150);
+    };
+    dealCard();
+
+    // TODO: when paginating, deal cards backwards if going back a page
   }, [address, decks]);
 
   return (

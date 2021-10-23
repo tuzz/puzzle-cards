@@ -1,3 +1,11 @@
+.draggable {
+  opacity: 1;
+  animation-name: fade_in;
+  animation-iteration-count: 1;
+  animation-timing-function: ease-in;
+  animation-duration: 500ms;
+}
+
 .flippable, .iframe, .back {
   width: 15rem;
   height: 21rem;
@@ -11,4 +19,9 @@
 
 .back {
   background: yellow;
+}
+
+@keyframes fade_in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
