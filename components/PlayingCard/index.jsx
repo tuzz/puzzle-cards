@@ -28,7 +28,7 @@ const PlayingCard = ({ card, onMoved = () => {} }) => {
 
   return (
     <Draggable bounds="parent" onClick={zoomIn} onStop={handleStop} disabled={zoomed} className={styles.draggable}>
-      <Zoomable zoomed={zoomed}>
+      <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={{ base: 0, random: 5 }}>
         <Flippable flipped={false} direction={-1} className={styles.flippable}>
           <iframe src={`/embed?${card && card.embedQueryString()}`} className={styles.iframe}>
             Your browser does not support iframes.

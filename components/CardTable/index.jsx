@@ -16,15 +16,7 @@ const CardTable = () => {
   const [transacting, setTransacting] = useState(false);
   const [stickGrounded, setStickGrounded] = useState(true);
 
-  const [raised, setRaised] = useState(false);
-  const [flipped, setFlipped] = useState(false);
-  const [direction, setDirection] = useState(1);
   const channel = {};
-
-  useEffect(() => {
-    setInterval(() => setFlipped(r => !r), 3000);
-    setInterval(() => setDirection(d => -d), 10000);
-  }, []);
 
   const handleCardMoved = ({ card, movedTo }) => {
     const expectedChosen = channel.overlapsOutline(movedTo);
