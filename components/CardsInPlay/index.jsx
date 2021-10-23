@@ -4,11 +4,13 @@ import CardStack from "../CardStack";
 import styles from "./styles.module.scss";
 
 const numRows = 2;
-const stackWidth = 15 * 16; // As per the CardStack css rules.
-const stackHeight = 21 * 16; // As per the CardStack css rules.
-const stackMargin = 5 * 16; // The minimum margin between card stacks.
-const pagePadding = 5 * 16; // The horizontal page padding on the left/right.
-const playAreaTop = 37 * 16;
+const oneRem = 16;
+const stackWidth = 15 * oneRem; // As per the CardStack css rules.
+const stackHeight = 21 * oneRem; // As per the CardStack css rules.
+const stackMargin = 5 * oneRem; // The minimum margin between card stacks.
+const pagePadding = 5 * oneRem; // The horizontal page padding on the left/right.
+const outlineTop = 11.2 * oneRem;
+const playAreaTop = outlineTop + stackHeight + 5 * oneRem;
 
 const CardsInPlay = ({ onStackMoved = () => {} }) => {
   const { address, decks } = useContext(AppContext);
@@ -16,10 +18,12 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
   const [stackPositions, setStackPositions] = useState([]);
 
   useEffect(() => {
-    if (!address || address === loadedAddress) { return; }
+    if (!address) { return; }
 
     const cardStacks = decks[address];
     if (!cardStacks.fetched) { setLoadedAddress(); setStackPositions([]); return; }
+
+    if (address === loadedAddress) { updatePositions(cardStacks); return; }
 
     setStackPositions([]);
     setLoadedAddress(address);
@@ -33,6 +37,35 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
 
     // TODO: when paginating, deal cards backwards if going back a page
   }, [address, decks]);
+
+  const updatePositions = (cardStacks) => {
+    setStackPositions(previous => {
+      const newStackPositions = [...previous];
+
+      updateQuantities(newStackPositions, cardStacks);
+      removeZeroQuantities(newStackPositions);
+      addOverOutlineIfNotPresent(cardStacks[0], newStackPositions);
+
+      return newStackPositions;
+    });
+  };
+
+  const updateQuantities = (stackPositions, cardStacks) => {
+    // TODO
+  };
+
+  const removeZeroQuantities = (stackPositions) => {
+    // TODO
+  };
+
+  const addOverOutlineIfNotPresent = (cardStack, stackPositions) => {
+    if (stackPositions.some(p => p.cardStack.tokenID === cardStack.tokenID)) { return; }
+
+    const pageMiddle = document.body.clientWidth / 2;
+    const left = pageMiddle - stackWidth / 2;
+
+    stackPositions.splice(0, 0, { cardStack, position: { top: outlineTop, left, angle: 0 } });
+  };
 
   return (
     <div className={styles.cards_in_play}>
