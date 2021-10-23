@@ -27,24 +27,17 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
     const numColumns = numColumnsBasedOnPageWidth();
     const positions = evenPositions(numRows, numColumns, cardStacks.length);
 
-    const stackPositions = positions.map((p, i) => ({ cardStack: cardStacks[i], position: p }));
-
-    let i = 0;
-    const dealCard = () => {
-      if (i >= stackPositions.length) { return; }
-
-      setStackPositions(array => [...array, stackPositions[i]]);
-      setTimeout(() => { i += 1; dealCard(); }, 150);
-    };
-    dealCard();
+    setStackPositions(positions.map((position, i) => (
+      { cardStack: cardStacks[i], position, dealDelay: i * 150 }
+    )));
 
     // TODO: when paginating, deal cards backwards if going back a page
   }, [address, decks]);
 
   return (
     <div className={styles.cards_in_play}>
-      {stackPositions.map(({ cardStack, position}) => (
-        <CardStack key={cardStack.tokenID} cardStack={cardStack} startPosition={position} onMoved={onStackMoved} />
+      {stackPositions.map(({ cardStack, position, dealDelay }) => (
+        <CardStack key={cardStack.tokenID} cardStack={cardStack} startPosition={position} dealDelay={dealDelay} onMoved={onStackMoved} />
       ))}
     </div>
   );

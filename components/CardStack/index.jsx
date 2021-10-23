@@ -4,9 +4,19 @@ import Zoomable from "../Zoomable";
 import Flippable from "../Flippable";
 import styles from "./styles.module.scss";
 
-const CardStack = ({ cardStack, startPosition, onMoved = () => {} }) => {
+const CardStack = ({ cardStack, startPosition, dealDelay = 0, onMoved = () => {} }) => {
+  const [dealing, setDealing] = useState(dealDelay > 0);
   const [zoomed, setZoomed] = useState(false);
   const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (dealDelay === 0) { return; }
+
+    const timeout = setTimeout(() => setDealing(false), dealDelay);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  if (dealing) { return null; }
 
   const zoomIn = () => {
     setZoomed(true);
