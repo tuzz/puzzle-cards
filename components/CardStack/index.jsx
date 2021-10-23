@@ -27,11 +27,14 @@ const CardStack = ({ cardStack, startPosition, onMoved = () => {} }) => {
     }
   };
 
+  const angle = startPosition.angle;
+  const rotation = typeof angle === "undefined" ? { base: 0, random: 4 } : { base: angle, random: 0 };
+
   const iframeSrc = `/embed?${cardStack.card.embedQueryString()}`;
 
   return (
     <Draggable bounds="parent" startPosition={startPosition} onClick={zoomIn} onStop={handleStop} disabled={zoomed} className={styles.draggable}>
-      <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={{ base: 0, random: 4 }}>
+      <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={rotation}>
         <Flippable flipped={!loaded} direction={-1} className={styles.flippable}>
           <iframe src={iframeSrc} onLoad={() => setLoaded(true)} className={styles.iframe}>
             Your browser does not support iframes.
