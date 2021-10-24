@@ -13,7 +13,8 @@ const CardTable = () => {
   const { PuzzleCard, decks, address, chainId, generation } = useContext(AppContext);
   const [chosenStacks, setChosenStacks] = useState([]);
   const [buttonAction, setButtonAction] = useState();
-  const [stickRaised, setStickRaised] = useState(false);
+  const [buttonFlashing, setButtonFlashing] = useState(false);
+  const [transacting, setTransacting] = useState(false);
   const [stickGrounded, setStickGrounded] = useState(true);
 
   const channel = {};
@@ -62,12 +63,13 @@ const CardTable = () => {
     const requests = await Metamask.performActionOnStacks(PuzzleCard, buttonAction, chosenStacks);
     if (requests.length === 0) { return; } // No transaction requests initiated, e.g. Metamask locked.
 
-    setStickRaised(true); // Prevent the user creating more requests until these are resolved.
-    setStickGrounded(false);
+    setButtonFlashing(true); // Prevent the user creating more requests until these are resolved.
 
     const results = requests.map(async (request) => {
       const transaction = await request.catch(() => {});
       if (!transaction) { return; } // The user rejected the transaction request in Metamask.
+
+      setTransacting(true);
 
       try {
         const mintedCard = await PuzzleCard.fromTransferEvent(transaction);
@@ -86,16 +88,18 @@ const CardTable = () => {
       ].join("\n"));
     }
 
-    setStickRaised(false);
+    setTransacting(false);
+    setButtonFlashing(false);
     channel.waitForStickToFinishMoving().then(() => setStickGrounded(true));
   };
 
-  const buttonEnabled = buttonAction && !stickRaised;
+  const buttonEnabled = buttonAction && !buttonFlashing;
   const stickSpinning = buttonAction && !buttonAction.match(/connectToMetamask/) || !stickGrounded;
+  const stickRaised = transacting; // Raise the stick while at least one transaction is being processed.
 
   return (
     <div className={styles.card_table}>
-      <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={buttonEnabled} onButtonClick={performActionOnStacks} raised={stickRaised} className={styles.worship_stick} channel={channel} />
+      <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={buttonEnabled} buttonFlashing={buttonFlashing} onButtonClick={performActionOnStacks} raised={stickRaised} className={styles.worship_stick} channel={channel} />
       <YellowSun raised={stickRaised} channel={channel} />
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>

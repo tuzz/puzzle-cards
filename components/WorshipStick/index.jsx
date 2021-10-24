@@ -2,7 +2,7 @@ import { useRef } from "react";
 import YellowSun from "../YellowSun";
 import styles from "./styles.module.scss";
 
-const WorshipStick = ({ className, spinning = false, rockHeight = 1, raised = true, buttonEnabled = false, onButtonClick = () => {}, channel = {} }) => {
+const WorshipStick = ({ className, spinning = false, rockHeight = 1, raised = true, buttonEnabled = false, buttonFlashing = false, onButtonClick = () => {}, channel = {} }) => {
   const stick = useRef();
   const sun = useRef();
 
@@ -43,16 +43,14 @@ const WorshipStick = ({ className, spinning = false, rockHeight = 1, raised = tr
   const aboveGround = 0;
   const targetY = raised ? aboveGround : belowGround;
 
-  const classes = [styles.worship_stick, raised && styles.raised, className].join(" ");
-
   return (
-    <div className={classes} style={{ transform: `translateY(${targetY * 100}%` }} ref={stick}>
+    <div className={`${styles.worship_stick} ${className}`} style={{ transform: `translateY(${targetY * 100}%` }} ref={stick}>
       <img src="/images/worship_stick_base.png" className={styles.base} />
       <img src="/images/worship_stick_sun.png" className={`${styles.sun} ${!spinning && styles.paused}`} ref={sun} />
 
       {rockHeight > 0 && <div className={styles.rock} style={{ paddingTop: `${rockHeight * 100}%` }}>
         {onButtonClick && <div className={styles.rock_inner}>
-          <button onClick={onButtonClick} disabled={!buttonEnabled}></button>
+          <button onClick={onButtonClick} disabled={!buttonEnabled} className={`${buttonFlashing && styles.flashing}`}></button>
         </div>}
       </div>}
     </div>

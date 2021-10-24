@@ -91,31 +91,27 @@
         box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
       }
     }
-  }
-}
 
-.worship_stick.raised {
-  button:disabled {
-    &:before, &:after {
-      animation-name: flash;
-      animation-duration: 1500ms;
-      animation-iteration-count: infinite;
-      animation-timing-function: linear;
+    &:disabled.flashing {
+      &:before, &:after {
+        animation-name: flash;
+        animation-duration: 1500ms;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+      }
+
+      &:after {
+        border: 0.2rem solid #f08528;
+        box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+      }
     }
 
-    &:after {
-      border: 0.2rem solid #f08528;
-      box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
-    }
-  }
-}
+    &:disabled:not(.flashing) {
+      filter: grayscale(100%);
 
-.worship_stick:not(.raised) {
-  button:disabled {
-    filter: grayscale(100%);
-
-    &:after {
-      background-color: rgba(0, 0, 0, 0.35);
+      &:after {
+        background-color: rgba(0, 0, 0, 0.35);
+      }
     }
   }
 }
