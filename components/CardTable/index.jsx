@@ -104,7 +104,7 @@ const CardTable = () => {
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
         <DragRegion>
-          <CardsInPlay onStackMoved={handleStackMoved} />
+          <CardsInPlay onStackMoved={handleStackMoved} buttonFlashing={buttonFlashing} />
         </DragRegion>
 
         <div className={styles.felt_cloth}>

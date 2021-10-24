@@ -37,7 +37,7 @@ const CardStack = ({ cardStack, startPosition, dealDelay, fadeIn = true, onMoved
     }
   };
 
-  const rotation = startPosition.rotation || { degrees: 0, random: 4, startRandom: true };
+  const rotation = startPosition.rotation || { degrees: 0, random: 4 };
   const iframeSrc = `/embed?${cardStack.card.embedQueryString()}`;
 
   return (

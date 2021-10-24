@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import styles from "./styles.module.scss";
 
-const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { degrees: 0, random: 0, startRandom: false }, children }) => {
+const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { degrees: 0, random: 0, initial: null }, children }) => {
   const ref = useRef();
 
   const [angle, setAngle] = useState();
@@ -43,7 +43,9 @@ const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { deg
 };
 
 const chooseAngle = (rotation, previousAngle) => {
-  if (typeof previousAngle === "undefined" && !rotation.startRandom) { return rotation.degrees; }
+  if (typeof previousAngle === "undefined" && typeof rotation.initial === "number") {
+    return rotation.initial;
+  }
 
   const randomDegrees = Math.random() * rotation.random;
   const randomDirection = Math.random() < 0.5 ? -1 : 1;

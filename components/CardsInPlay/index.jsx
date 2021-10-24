@@ -4,10 +4,11 @@ import CardStack from "../CardStack";
 import layout from "./layout";
 import styles from "./styles.module.scss";
 
-const CardsInPlay = ({ onStackMoved = () => {} }) => {
+const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing }) => {
   const { address, decks } = useContext(AppContext);
   const [loadedAddress, setLoadedAddress] = useState(address);
   const [stackPositions, setStackPositions] = useState([]);
+  const [batchTokenIDs, setBatchTokenIDs] = useState(new Set());
 
   useEffect(() => {
     if (!address) { return; }
@@ -30,8 +31,14 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
     // TODO: when paginating, deal cards backwards if going back a page
   }, [address, decks]);
 
+  // Keep track of which tokenIDs have been minted since the button started flashing.
+  // This is so we can position the new card stacks in a rotated fan on top of each other.
+  useEffect(() => buttonFlashing && setBatchTokenIDs([]), [buttonFlashing]);
+
   const updateStackPositions = (cardStacks) => {
-    const newStackPositions = [...stackPositions];
+    const newStackPositions = [...stackPositions]; // TODO: try to write with setState in case of races
+    const newBatchTokenIDs = new Set(batchTokenIDs);
+
     const pageMiddle = document.body.clientWidth / 2;
 
     // Update quantities. If a stack is depleted, remove its stackPosition and
@@ -54,8 +61,16 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
         const left = pageMiddle - layout.stackWidth / 2;
         const top = layout.outlineTop;
 
-        const rotation = { degrees: 0, random: 4, startRandom: false };
-        const position = { left, top, rotation };
+        // Fan the cards out if lots are minted but don't go outside the card outline.
+        const numMinted = newBatchTokenIDs.size;
+        const fanAngle = 3 * numMinted;
+        const fanOffset = Math.min(10 * numMinted, layout.stackWidth - 50);
+
+        // TODO: try to set z-index so fan is stacked in the expected order
+        // TODO: don't flip over cards after the first?
+
+        const rotation = { degrees: 0, random: 4, initial: fanAngle };
+        const position = { left: left + fanOffset, top, rotation };
         const fadeIn = false;
 
         if (visible) {
@@ -69,10 +84,12 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
         }
 
         onStackMoved({ cardStack, movedTo: { cardOutline: true } });
+        newBatchTokenIDs.add(cardStack.tokenID);
       }
     }
 
     setStackPositions(newStackPositions);
+    setBatchTokenIDs(newBatchTokenIDs);
   };
 
   const key = (stackPosition) => `${stackPosition.cardStack.tokenID}-${stackPosition.generation}`;
