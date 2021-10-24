@@ -1,17 +1,17 @@
 import { useRef, useState, useEffect } from "react";
 import styles from "./styles.module.scss";
 
-const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { base: 0, random: 0 }, children }) => {
+const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { degrees: 0, random: 0, startRandom: false }, children }) => {
   const ref = useRef();
 
-  const [angle, setAngle] = useState(0);
+  const [angle, setAngle] = useState();
   const [zoom, setZoom] = useState({ scale: 1, rotate: 0, translateX: 0, translateY: 0 });
 
   useEffect(() => {
     if (zoomed) {
       setZoom(maxZoomThatFitsOnScreen());
     } else {
-      const newAngle = chooseAngle(rotation);
+      const newAngle = chooseAngle(rotation, angle);
 
       setAngle(newAngle);
       setZoom({ scale: 1, rotate: newAngle, translateX: 0, translateY: 0 });
@@ -42,11 +42,13 @@ const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { bas
   );
 };
 
-const chooseAngle = (rotation) => {
-  const degrees = Math.random() * rotation.random;
-  const direction = Math.random() < 0.5 ? -1 : 1;
+const chooseAngle = (rotation, previousAngle) => {
+  if (typeof previousAngle === "undefined" && !rotation.startRandom) { return rotation.degrees; }
 
-  return rotation.base + degrees * direction;
+  const randomDegrees = Math.random() * rotation.random;
+  const randomDirection = Math.random() < 0.5 ? -1 : 1;
+
+  return rotation.degrees + randomDegrees * randomDirection;
 };
 
 export default Zoomable;

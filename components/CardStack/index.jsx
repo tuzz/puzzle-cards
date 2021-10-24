@@ -37,9 +37,7 @@ const CardStack = ({ cardStack, startPosition, dealDelay, onMoved = () => {} }) 
     }
   };
 
-  const angle = startPosition.angle;
-  const rotation = typeof angle === "undefined" ? { base: 0, random: 4 } : { base: angle, random: 0 };
-
+  const rotation = startPosition.rotation || { degrees: 0, random: 4, startRandom: true };
   const iframeSrc = `/embed?${cardStack.card.embedQueryString()}`;
 
   return (

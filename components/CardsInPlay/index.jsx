@@ -63,10 +63,12 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
         const top = outlineTop;
         const bottom = outlineTop + stackHeight;
 
+        const rotation = { degrees: 0, random: 4, startRandom: false };
+
         if (visible) {
           // TODO: how to handle this?
         } else {
-          newStackPositions.splice(0, 0, { cardStack, position: { left, top, angle: 0 } });
+          newStackPositions.splice(0, 0, { cardStack, position: { left, top, rotation } });
         }
 
         onStackMoved({ cardStack, movedTo: { left, right, top, bottom } });
@@ -118,18 +120,18 @@ const evenPositions = (numRows, numColumns, numCards) => {
       const perPlaceOffset = availableWidth / (cardsInRow - 1);
 
       for (let column = 0; column < cardsInRow; column += 1) {
-        let left, angle;
+        let left, degrees;
 
         if (cardsInRow > 1) {
           left = reducedPadding + perPlaceOffset * column;
-          angle = column / (cardsInRow - 1) * 8 - 4;
+          degrees = column / (cardsInRow - 1) * 8 - 4;
         } else {
           left = reducedPadding + availableWidth / 2;
-          angle = 0;
+          degrees = 0;
         }
 
         const top = playAreaTop + row * perPlaceHeight;
-        positions.push({ left, top, angle });
+        positions.push({ left, top, rotation: { degrees, random: 0 } });
       }
     } else {
       const cardsWidth = cardsInRow * perPlaceWidth;
