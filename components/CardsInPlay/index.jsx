@@ -56,7 +56,8 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
         newStackPositions[index].cardStack.quantity = cardStack.quantity;
       }
 
-      // If a card was added, make the stack appear over the CardOutline.
+      // If a card was added, make the stack appear over the CardOutline. If the
+      // stack is already visible, force a re-render by changing its key.
       if (cardStack.quantity > 0 && cardStack.lastDelta > 0) {
         const left = pageMiddle - stackWidth / 2;
         const right = pageMiddle + stackWidth / 2;
@@ -64,11 +65,15 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
         const bottom = outlineTop + stackHeight;
 
         const rotation = { degrees: 0, random: 4, startRandom: false };
+        const position = { left, top, rotation };
 
         if (visible) {
-          // TODO: how to handle this?
+          const existing = newStackPositions[index];
+
+          existing.position = position;
+          existing.generation = (existing.generation || 0) + 1;
         } else {
-          newStackPositions.splice(0, 0, { cardStack, position: { left, top, rotation } });
+          newStackPositions.splice(0, 0, { cardStack, position });
         }
 
         onStackMoved({ cardStack, movedTo: { left, right, top, bottom } });
@@ -78,10 +83,12 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
     setStackPositions(newStackPositions);
   };
 
+  const key = (stackPosition) => `${stackPosition.cardStack.tokenID}-${stackPosition.generation}`;
+
   return (
     <div className={styles.cards_in_play}>
-      {stackPositions.map(({ cardStack, position, dealDelay }) => (
-        <CardStack key={cardStack.tokenID} cardStack={cardStack} startPosition={position} dealDelay={dealDelay} onMoved={onStackMoved} />
+      {stackPositions.map(o => (
+        <CardStack key={key(o)} cardStack={o.cardStack} startPosition={o.position} dealDelay={o.dealDelay} onMoved={onStackMoved} />
       ))}
     </div>
   );
