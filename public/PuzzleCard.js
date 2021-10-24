@@ -582,6 +582,8 @@ class PuzzleCard {
   };
 
   static updateFetchedDeck(deck, changes) {
+    const justChanged = [];
+
     for (let { card, delta, tokenID } of changes) {
       const position = deck.findIndex(({ tokenID: t }) => t === tokenID);
       let quantity = delta;
@@ -594,7 +596,11 @@ class PuzzleCard {
       if (quantity !== 0) {
         deck.unshift({ card, quantity, tokenID });
       }
+
+      justChanged.push({ card, quantity, lastDelta: delta, tokenID });
     }
+
+    return justChanged;
   }
 }
 

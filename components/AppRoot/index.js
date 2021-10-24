@@ -82,9 +82,9 @@ const AppRoot = ({ Component, pageProps }) => {
   const updateFetchedDeck = (address) => (changes) => {
     setAppContext(c => {
       const deck = c.decks[address].slice(0);
-      deck.fetched = true;
 
-      PuzzleCard.updateFetchedDeck(deck, changes);
+      deck.fetched = true;
+      deck.justChanged = PuzzleCard.updateFetchedDeck(deck, changes);
 
       return { ...c, decks: { ...c.decks, [address]: deck } };
     });
