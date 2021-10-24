@@ -40,37 +40,35 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
 
   const updateStackPositions = (cardStacks) => {
     const newStackPositions = [...stackPositions];
+    const pageMiddle = document.body.clientWidth / 2;
 
     // Update quantities. If a stack is depleted, remove its stackPosition and
     // inform the parent that it has 'moved' so the parent can remove it too.
-    for (let i = newStackPositions.length - 1; i >= 0; i -= 1) {
-      const cardStack1 = newStackPositions[i].cardStack;
-      const cardStack2 = cardStacks.find(s => s.tokenID === cardStack1.tokenID);
+    for (let cardStack of cardStacks.justChanged) {
+      const index = newStackPositions.findIndex(p => p.cardStack.tokenID === cardStack.tokenID);
+      const visible = index !== -1;
 
-      if (cardStack2) {
+      if (visible && cardStack.quantity === 0) {
+        newStackPositions.splice(index, 1);
+        onStackMoved({ cardStack, movedTo: null }); // The void.
+      } else if (visible) {
         // This change seems to be visible to the parent component which is good.
-        cardStack1.quantity = cardStack2.quantity;
-      } else {
-        newStackPositions.splice(i, 1);
-        onStackMoved({ cardStack: cardStack1, movedTo: null }); // The void.
+        newStackPositions[index].cardStack.quantity = cardStack.quantity;
       }
-    }
 
-    // Check if a newly minted card was added to the front of the deck. If so,
-    // set its position so that it gets flipped over on top of the CardOutline.
-    const cardStack = cardStacks[0];
-    if (cardStack) {
-      const added = !newStackPositions.some(p => p.cardStack.tokenID === cardStack.tokenID);
-
-      if (added) {
-        const pageMiddle = document.body.clientWidth / 2;
-
+      // If a card was added, make the stack appear over the CardOutline.
+      if (cardStack.quantity > 0 && cardStack.lastDelta > 0) {
         const left = pageMiddle - stackWidth / 2;
         const right = pageMiddle + stackWidth / 2;
         const top = outlineTop;
         const bottom = outlineTop + stackHeight;
 
-        newStackPositions.splice(0, 0, { cardStack, position: { left, top, angle: 0 } });
+        if (visible) {
+          // TODO: how to handle this?
+        } else {
+          newStackPositions.splice(0, 0, { cardStack, position: { left, top, angle: 0 } });
+        }
+
         onStackMoved({ cardStack, movedTo: { left, right, top, bottom } });
       }
     }
