@@ -19,14 +19,18 @@ const CardTable = () => {
   const channel = {};
 
   const handleStackMoved = ({ cardStack, movedTo }) => {
-    const expectedChosen = channel.overlapsOutline(movedTo);
-    const actualChosen = chosenStacks.findIndex(s => s.tokenID === cardStack.tokenID) !== -1;
+    setChosenStacks(array => {
+      const expectedChosen = channel.overlapsOutline(movedTo);
+      const actualChosen = chosenStacks.findIndex(s => s.tokenID === cardStack.tokenID) !== -1;
 
-    if (expectedChosen && !actualChosen) {
-      setChosenStacks(array => [...array, cardStack]);
-    } else if (!expectedChosen && actualChosen) {
-      setChosenStacks(array => array.filter(c => c !== cardStack));
-    }
+      if (expectedChosen && !actualChosen) {
+        return [...array, cardStack];
+      } else if (!expectedChosen && actualChosen) {
+        return array.filter(c => c.tokenID !== cardStack.tokenID);
+      } else {
+        return array;
+      }
+    });
   };
 
   const setButtonActionBasedOnChosenStacks = async (causedByNetworkChange) => {

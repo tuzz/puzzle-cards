@@ -60,9 +60,7 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
       // stack is already visible, force a re-render by changing its key.
       if (cardStack.quantity > 0 && cardStack.lastDelta > 0) {
         const left = pageMiddle - stackWidth / 2;
-        const right = pageMiddle + stackWidth / 2;
         const top = outlineTop;
-        const bottom = outlineTop + stackHeight;
 
         const rotation = { degrees: 0, random: 4, startRandom: false };
         const position = { left, top, rotation };
@@ -76,7 +74,7 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
           newStackPositions.splice(0, 0, { cardStack, position });
         }
 
-        onStackMoved({ cardStack, movedTo: { left, right, top, bottom } });
+        onStackMoved({ cardStack, movedTo: { cardOutline: true } });
       }
     }
 
