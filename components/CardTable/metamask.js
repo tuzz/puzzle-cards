@@ -32,18 +32,20 @@ Metamask.actionsThatCanBeTaken = async (PuzzleCard, cards, address, preSwitchCal
   return PuzzleCard.actionsThatCanBeTaken(cards);
 };
 
-// TODO: make this method support cardStacks and return success if *any* of the
-// promises succeeds - this is so that the user can choose how many to combine.
-Metamask.performAction = async (PuzzleCard, actionName, cards) => {
+Metamask.performActionOnStacks = async (PuzzleCard, actionName, cardStacks) => {
   Metamask.tryAgain = false;
 
   if (typeof ethereum === "undefined") {
     alert("Please install the MetaMask browser extension to use this website.");
-    return null;
+    return [];
   }
 
+  const oneOfEachCard = cardStacks.map(c => c.card);
+  const minQuantity = Math.min(...cardStacks.map(s => s.quantity));
+  const quantityTimes = [...Array(minQuantity).keys()];
+
   if (!actionName.match(/connectToMetamask/) && await Metamask.alreadyConnected(PuzzleCard) && await Metamask.alreadyCorrectNetwork(PuzzleCard)) {
-    return PuzzleCard.call(actionName, cards, true);
+    return quantityTimes.map(() => PuzzleCard.call(actionName, oneOfEachCard, true));
   }
 
   // Only allow the page to reload if the user won't lose the positions of their cards.
@@ -51,7 +53,7 @@ Metamask.performAction = async (PuzzleCard, actionName, cards) => {
   const isOkToReload = actionName === "connectToMetamask";
 
   if (isOkToReload && await Metamask.ensureConnectedOrReloadPageToShowPromptAgain()) {
-    return null;
+    return [];
   }
 
   // This will fail if there is already a prompt to connect that the user hasn't yet accepted.
@@ -66,9 +68,9 @@ Metamask.performAction = async (PuzzleCard, actionName, cards) => {
   if (!managedToConnect) {
     alert("Please unlock MetaMask then press the button again.");
     Metamask.tryAgain = true;
-    return null;
+    return [];
   } else if (Metamask.tryAgain) {
-    return null;
+    return [];
   }
 
   // This follows the same pattern as above. The slight difference is that we
@@ -83,16 +85,16 @@ Metamask.performAction = async (PuzzleCard, actionName, cards) => {
       alert("Please allow MetaMask to switch network then press the button again.");
     }
     Metamask.tryAgain = true;
-    return null;
+    return [];
   } else if (Metamask.tryAgain) {
-    return null;
+    return [];
   }
 
   // If they got this far, they managed to connect but this isn't a PuzzleCard action.
-  if (actionName === "reconnectToMetamask") { return null }
+  if (actionName === "reconnectToMetamask") { return [] }
 
-  // Initiate the request immediate after connect/switching since a popup will be shown.
-  return PuzzleCard.call(actionName, cards, true);
+  // Initiate the requests immediately after connect/switching since a popup will be shown.
+  return quantityTimes.map(() => PuzzleCard.call(actionName, oneOfEachCard, true));
 };
 
 Metamask.alreadyConnected = async (PuzzleCard) => {
