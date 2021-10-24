@@ -32,7 +32,7 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
     const positions = evenPositions(numRows, numColumns, cardStacks.length);
 
     setStackPositions(positions.map((position, i) => (
-      { cardStack: cardStacks[i], position, dealDelay: i * 150 }
+      { cardStack: cardStacks[i], position, dealDelay: i * 150, fadeIn: true }
     )));
 
     // TODO: when paginating, deal cards backwards if going back a page
@@ -64,14 +64,16 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
 
         const rotation = { degrees: 0, random: 4, startRandom: false };
         const position = { left, top, rotation };
+        const fadeIn = false;
 
         if (visible) {
           const existing = newStackPositions[index];
 
           existing.position = position;
           existing.generation = (existing.generation || 0) + 1;
+          existing.fadeIn = fadeIn;
         } else {
-          newStackPositions.splice(0, 0, { cardStack, position });
+          newStackPositions.splice(0, 0, { cardStack, position, fadeIn });
         }
 
         onStackMoved({ cardStack, movedTo: { cardOutline: true } });
@@ -86,7 +88,7 @@ const CardsInPlay = ({ onStackMoved = () => {} }) => {
   return (
     <div className={styles.cards_in_play}>
       {stackPositions.map(o => (
-        <CardStack key={key(o)} cardStack={o.cardStack} startPosition={o.position} dealDelay={o.dealDelay} onMoved={onStackMoved} />
+        <CardStack key={key(o)} cardStack={o.cardStack} startPosition={o.position} dealDelay={o.dealDelay} fadeIn={o.fadeIn} onMoved={onStackMoved} />
       ))}
     </div>
   );
