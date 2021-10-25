@@ -69,21 +69,21 @@ module.exports.evenPositions = (numColumns, numCards) => {
   return positions;
 };
 
-module.exports.cardFanPosition = (tokenID, tokenIDsInCardFan, degreesPerCard = 1.5, offsetPerCard = 3, maxOffsetFromRight = 50) => {
+module.exports.cardFanPosition = (tokenID, tokenIDsInCardFan, maxZIndex, degreesPerCard = 1.5, offsetPerCard = 3, maxOffsetFromRight = 50) => {
   if (tokenIDsInCardFan.has(tokenID)) { return null; } // Don't change it.
 
   const indexFromBack = tokenIDsInCardFan.size;
 
   const fanAngle = indexFromBack * degreesPerCard;
   const fanOffset = Math.min(indexFromBack * offsetPerCard, stackWidth - maxOffsetFromRight);
-  console.log(fanOffset, indexFromBack, offsetPerCard, stackWidth, maxOffsetFromRight);
+  const zIndex = maxZIndex + 1 + indexFromBack;
 
   const pageMiddle = document.body.clientWidth / 2;
   const left = pageMiddle - stackWidth / 2;
   const top = outlineTop;
 
   const rotation = { degrees: 0, random: 4, initial: fanAngle };
-  const position = { left: left + fanOffset, top, rotation };
+  const position = { left: left + fanOffset, top, rotation, zIndex };
 
   return position;
 };

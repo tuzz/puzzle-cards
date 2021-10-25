@@ -13,14 +13,16 @@ const Draggable = ({ startPosition, zoomed, className, children, ...props }) => 
   startPosition = startPosition || { left: 0, top: 0 };
 
   const { maxZIndex, setMaxZIndex } = useContext(DragContext);
-  const [currentZIndex, setCurrentZIndex] = useState(maxZIndex + 1);
+  const initialZIndex = startPosition.zIndex || maxZIndex + 1;
+
+  const [currentZIndex, setCurrentZIndex] = useState(initialZIndex);
   const [dragObject, setDragObject] = useState();
   const [prevZoomed, setPrevZoomed] = useState(false);
 
   const ref = useRef();
 
   useEffect(() => {
-    setMaxZIndex(z => z + 1);
+    setMaxZIndex(z => Math.max(z, initialZIndex));
 
     const listener = () => {
       triggerMouseEvent(ref.current, "mouseover");
@@ -91,7 +93,7 @@ const Draggable = ({ startPosition, zoomed, className, children, ...props }) => 
 
   return (
     <ReactDraggable {...props} {...detectClicks}>
-      <div ref={ref} className={`${styles.inner} ${className}`} style={{ zIndex, ...startPosition }}>
+      <div ref={ref} className={`${styles.inner} ${className}`} style={{ ...startPosition, zIndex }}>
         {children}
       </div>
     </ReactDraggable>

@@ -1,11 +1,14 @@
 import { useContext, useState, useRef, useEffect } from "react";
 import AppContext from "../AppRoot/context";
+import DragContext from "../DragRegion/context";
 import CardStack from "../CardStack";
 import layout from "./layout";
 import styles from "./styles.module.scss";
 
 const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing }) => {
   const { address, decks } = useContext(AppContext);
+  const { maxZIndex } = useContext(DragContext);
+
   const [loadedAddress, setLoadedAddress] = useState(address);
   const [stackPositions, _setStackPositions] = useState(withBatchTokenIDs([]));
   const setStackPositions = (array) => _setStackPositions(withBatchTokenIDs(array));
@@ -74,10 +77,9 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing }) => {
         // stack is already visible, force a re-render by changing its key.
         if (cardStack.quantity > 0 && cardStack.lastDelta > 0) {
 
-          // TODO: try to set z-index so fan is stacked in the expected order
           // TODO: don't flip over cards after the first?
 
-          const position = layout.cardFanPosition(cardStack.tokenID, newStackPositions.batchTokenIDs);
+          const position = layout.cardFanPosition(cardStack.tokenID, newStackPositions.batchTokenIDs, maxZIndex);
           if (!position) { continue; } // The card stack is already positioned in the card fan.
 
           if (visible) {
