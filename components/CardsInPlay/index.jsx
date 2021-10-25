@@ -14,7 +14,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing }) => {
     if (!address) { return; }
 
     const cardStacks = decks[address];
-    if (!cardStacks.fetched) { setLoadedAddress(); setStackPositions([]); return; }
+    if (!cardStacks.fetched) { resetCardsInPlay(); return; }
 
     if (address === loadedAddress) { updateStackPositions(cardStacks); return; }
 
@@ -30,6 +30,15 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing }) => {
 
     // TODO: when paginating, deal cards backwards if going back a page
   }, [address, decks]);
+
+  const resetCardsInPlay = () => {
+    for (const stackPosition of stackPositions) {
+      onStackMoved({ cardStack: stackPosition.cardStack, movedTo: null });
+    }
+
+    setLoadedAddress();
+    setStackPositions([]);
+  };
 
   // Keep track of which tokenIDs have been minted since the button started flashing.
   // This is so we can position the new card stacks in a rotated fan on top of each other.

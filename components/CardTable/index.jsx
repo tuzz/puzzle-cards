@@ -54,9 +54,6 @@ const CardTable = () => {
   useEffect(setButtonActionBasedOnChosenStacks, [chosenStacks, generation]);
   useEffect(() => setButtonActionBasedOnChosenStacks(true), [chainId]);
 
-  // TODO: lay out and re-lay out the cards when the address changes (clear chosenCards).
-  // TODO: display the minted card?
-
   const performActionOnStacks = async () => {
     const oneOfEachCard = chosenStacks.map(s => s.card);
 
@@ -72,8 +69,7 @@ const CardTable = () => {
       setTransacting(true);
 
       try {
-        const mintedCard = await PuzzleCard.fromTransferEvent(transaction);
-        // TODO: update CardsInPlay directly rather than relying on RPC events
+        const _mintedCard = await PuzzleCard.fromTransferEvent(transaction);
       } catch (error) {
         return error;
       }
