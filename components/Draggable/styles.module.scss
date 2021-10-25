@@ -1,4 +1,16 @@
 .inner {
   position: absolute;
   pointer-events: auto;
+
+  &.controlled {
+    transform: none !important;
+  }
+
+  transition: transform 0.5s ease-in-out,
+              left 0.5s ease-in-out,
+              top 0.5s ease-in-out;
+
+  &:global(.react-draggable-dragging) {
+    transition: none;
+  }
 }

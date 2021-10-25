@@ -9,7 +9,7 @@ import ReactDraggable from "react-draggable";
 import DragContext from "../DragRegion/context";
 import styles from "./styles.module.scss";
 
-const Draggable = ({ startPosition, zoomed, className, children, ...props }) => {
+const Draggable = ({ startPosition, position, zoomed, disabled, className, children, ...props }) => {
   startPosition = startPosition || { left: 0, top: 0 };
 
   const { maxZIndex, setMaxZIndex } = useContext(DragContext);
@@ -92,8 +92,8 @@ const Draggable = ({ startPosition, zoomed, className, children, ...props }) => 
   const zIndex = zoomed ? 999999 : currentZIndex;
 
   return (
-    <ReactDraggable {...props} {...detectClicks}>
-      <div ref={ref} className={`${styles.inner} ${className}`} style={{ ...startPosition, zIndex }}>
+    <ReactDraggable {...props} disabled={disabled || !!position} {...detectClicks}>
+      <div ref={ref} className={`${styles.inner} ${className} ${position && styles.controlled}`} style={{ ...startPosition, zIndex, ...(position || {}) }}>
         {children}
       </div>
     </ReactDraggable>
