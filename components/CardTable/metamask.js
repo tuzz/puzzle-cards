@@ -41,8 +41,8 @@ Metamask.performActionOnStacks = async (PuzzleCard, actionName, cardStacks) => {
   }
 
   const oneOfEachCard = cardStacks.map(c => c.card);
-  const minQuantity = Math.min(...cardStacks.map(s => s.quantity));
-  const quantityTimes = [...Array(minQuantity).keys()];
+  const quantity = Math.min(...cardStacks.map(s => s.quantity), 1000);
+  const quantityTimes = [...Array(quantity).keys()];
 
   if (!actionName.match(/connectToMetamask/) && await Metamask.alreadyConnected(PuzzleCard) && await Metamask.alreadyCorrectNetwork(PuzzleCard)) {
     return quantityTimes.map(() => PuzzleCard.call(actionName, oneOfEachCard, true));
