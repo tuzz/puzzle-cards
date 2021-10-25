@@ -232,7 +232,7 @@ class PuzzleCard {
   }
 
   static actionsThatCanBeTaken(puzzleCards) {
-    if (puzzleCards.length < 2) { return []; }
+    if (puzzleCards.length < 2 || puzzleCards.length > 7) { return []; }
 
     return Promise.all([
       PuzzleCard.canActivateSunOrMoon(puzzleCards).then(([can])    => can ? "activateSunOrMoon" : null),

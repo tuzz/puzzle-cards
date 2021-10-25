@@ -6,7 +6,9 @@ Metamask.actionsThatCanBeTaken = async (PuzzleCard, cards, address, preSwitchCal
     return [address ? "reconnectToMetamask" : "connectToMetamask"];
   }
 
-  if (cards.filter(c => c).length < 2) { return []; }
+  const numCards = cards.filter(c => c).length;
+
+  if (numCards < 2 || numCards > 7) { return []; }
   if (typeof ethereum === "undefined") { return []; }
 
   // Give the calling code the opportunity to run something before the switch
