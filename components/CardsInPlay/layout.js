@@ -7,9 +7,6 @@ const pagePadding = 5 * oneRem; // The horizontal page padding on the left/right
 const outlineTop = 11.2 * oneRem;
 const playAreaTop = outlineTop + stackHeight + 5 * oneRem;
 
-module.exports.stackWidth = stackWidth;
-module.exports.outlineTop = outlineTop;
-
 module.exports.numColumnsBasedOnPageWidth = () => {
   if (typeof document === "undefined") { return 0; }
 
@@ -70,4 +67,23 @@ module.exports.evenPositions = (numColumns, numCards) => {
   }
 
   return positions;
+};
+
+module.exports.cardFanPosition = (tokenID, tokenIDsInCardFan, degreesPerCard = 1.5, offsetPerCard = 3, maxOffsetFromRight = 50) => {
+  if (tokenIDsInCardFan.has(tokenID)) { return null; } // Don't change it.
+
+  const indexFromBack = tokenIDsInCardFan.size;
+
+  const fanAngle = indexFromBack * degreesPerCard;
+  const fanOffset = Math.min(indexFromBack * offsetPerCard, stackWidth - maxOffsetFromRight);
+  console.log(fanOffset, indexFromBack, offsetPerCard, stackWidth, maxOffsetFromRight);
+
+  const pageMiddle = document.body.clientWidth / 2;
+  const left = pageMiddle - stackWidth / 2;
+  const top = outlineTop;
+
+  const rotation = { degrees: 0, random: 4, initial: fanAngle };
+  const position = { left: left + fanOffset, top, rotation };
+
+  return position;
 };

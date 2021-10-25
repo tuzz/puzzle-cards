@@ -45,8 +45,6 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing }) => {
 
     setStackPositions(stackPositions => {
       const newStackPositions = [...stackPositions];
-      const pageMiddle = document.body.clientWidth / 2;
-
       newStackPositions.batchTokenIDs = stackPositions.batchTokenIDs;
 
       // Update quantities. If a stack is depleted, remove its stackPosition and
@@ -66,29 +64,21 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing }) => {
         // If a card was added, make the stack appear over the CardOutline. If the
         // stack is already visible, force a re-render by changing its key.
         if (cardStack.quantity > 0 && cardStack.lastDelta > 0) {
-          const left = pageMiddle - layout.stackWidth / 2;
-          const top = layout.outlineTop;
-
-          // Fan the cards out if lots are minted but don't go outside the card outline.
-          const numMinted = newStackPositions.batchTokenIDs.size;
-          const fanAngle = 2 * numMinted;
-          const fanOffset = Math.min(5 * numMinted, layout.stackWidth - 50);
 
           // TODO: try to set z-index so fan is stacked in the expected order
           // TODO: don't flip over cards after the first?
 
-          const rotation = { degrees: 0, random: 4, initial: fanAngle };
-          const position = { left: left + fanOffset, top, rotation };
-          const fadeIn = false;
+          const position = layout.cardFanPosition(cardStack.tokenID, newStackPositions.batchTokenIDs);
+          if (!position) { continue; } // The card stack is already positioned in the card fan.
 
           if (visible) {
             const existing = newStackPositions[index];
 
             existing.position = position;
             existing.generation = (existing.generation || 0) + 1;
-            existing.fadeIn = fadeIn;
+            existing.fadeIn = false;
           } else {
-            newStackPositions.splice(0, 0, { cardStack, position, fadeIn });
+            newStackPositions.splice(0, 0, { cardStack, position, fadeIn: false });
           }
 
           setTimeout(() => onStackMoved({ cardStack, movedTo: { cardOutline: true } }), 0);
@@ -110,7 +100,6 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing }) => {
     </div>
   );
 };
-
 
 const withBatchTokenIDs = (array) => {
   if (!array.batchTokenIDs) {
