@@ -5,7 +5,7 @@ import CardStack from "../CardStack";
 import layout from "./layout";
 import styles from "./styles.module.scss";
 
-const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks }) => {
+const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, filters }) => {
   const { address, decks } = useContext(AppContext);
   const { maxZIndex } = useContext(DragContext);
 
@@ -16,24 +16,14 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks }) =
 
   useEffect(() => {
     if (!address) { return; }
-
-    const cardStacks = decks[address];
-    if (!cardStacks.fetched) { resetCardsInPlay(); return; }
-
-    if (address === loadedAddress) { respondToDeckChanges(cardStacks); return; }
-
-    setStackPositions([]);
-    setLoadedAddress(address);
-
-    const numColumns = layout.numColumnsBasedOnPageWidth();
-    const positions = layout.evenPositions(numColumns, cardStacks.length);
-
-    setStackPositions(positions.map((startPosition, i) => (
-      { cardStack: cardStacks[i], startPosition, dealDelay: i * 150, fadeIn: true }
-    )));
-
-    // TODO: when paginating, deal cards backwards if going back a page
+    if (!decks[address].fetched) { clearEntireArea(); return; }
+    if (address === loadedAddress) { updateTopArea(decks[address]); return; }
+    updateMainArea();
   }, [address, decks]);
+
+  useEffect(() => {
+    if (address === loadedAddress) { updateMainArea(); }
+  }, [filters]);
 
   useEffect(() => {
     setStackPositions(stackPositions => {
@@ -56,14 +46,28 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks }) =
     checkForRelease(false);
   }, [transactState]);
 
-  const resetCardsInPlay = () => {
-    for (const stackPosition of stackPositions) {
-      onStackMoved({ cardStack: stackPosition.cardStack, movedTo: null });
-    }
-
+  const clearEntireArea = () => {
+    stackPositions.forEach(p => onStackMoved({ cardStack: p.cardStack, movedTo: null }));
     setLoadedAddress();
     setStackPositions([]);
   };
+
+  const updateMainArea = () => {
+    filters.setDeck(decks[address]);
+    const cardStacks = filters.filteredDeck;
+
+    setStackPositions([]);
+    setLoadedAddress(address);
+
+    const numColumns = layout.numColumnsBasedOnPageWidth();
+    const positions = layout.evenPositions(numColumns, cardStacks.length);
+
+    setStackPositions(positions.map((startPosition, i) => (
+      { cardStack: cardStacks[i], startPosition, dealDelay: i * 150, fadeIn: true }
+    )));
+
+    // TODO: when paginating, deal cards backwards if going back a page
+  }
 
   const flipOntoCardOutline = (stackPositions) => {
     for (let chosenStack of chosenStacks) {
@@ -77,9 +81,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks }) =
 
   const flipToFaceForwardAgain = (stackPositions, flipDirection, holdInPosition) => {
     for (let stackPosition of stackPositions) {
-      if (!holdInPosition) {
-        stackPosition.position = null;
-      }
+      if (!holdInPosition) { stackPosition.position = null; }
 
       stackPosition.flipped = false;
       stackPosition.flipDirection = flipDirection;
@@ -117,9 +119,9 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks }) =
     });
   };
 
-  const respondToDeckChanges = (cardStacks) => {
+  const updateTopArea = (deck) => {
     // TODO: explicitly check if we're minting so it can be handled differently
-    if (cardStacks.justChanged && cardStacks.justChanged.length > 2) { return; }
+    if (!deck.justChanged || deck.justChanged.length > 2) { return; }
 
     setStackPositions(stackPositions => {
       const newStackPositions = [...stackPositions];
@@ -127,7 +129,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks }) =
 
       // Update quantities. If a stack is depleted, remove its stackPosition and
       // inform the parent that it has 'moved' so the parent can remove it too.
-      for (let cardStack of cardStacks.justChanged) {
+      for (let cardStack of deck.justChanged) {
         const index = newStackPositions.findIndex(p => p.cardStack.tokenID === cardStack.tokenID);
         const visible = index !== -1;
 

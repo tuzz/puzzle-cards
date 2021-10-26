@@ -16,24 +16,11 @@ const CardTable = () => {
   const [chosenStacks, setChosenStacks] = useState([]);
   const [buttonAction, setButtonAction] = useState();
   const [transactState, setTransactState] = useState(TransactState.INITIAL);
+  const [filters, setFilters] = useState(new Filters().set("color1", "Red"));
 
   useEffect(() => {
-    const filters = new Filters();
-    filters.setDeck(decks[address]);
-
-    filters.set("series", "Series 0");
-    filters.set("tier", "Immortal");
-    filters.set("type", "Telescope");
-    filters.set("color1", "Red");
-    filters.exclude({ tokenID: 286998304654336n, card: {} });
-    //filters.include({ tokenID: 286998304654336n, card: { series: "Series 0", tier: "Immortal", type: "Telescope", color1: "Red" } });
-
-    console.log("filtered:", filters.filteredDeck);
-    console.log(filters.filteredDeckWithExclusions.length, filters.filteredDeck.length);
-
-    const newFilters = filters.set("series", "hello");
-    console.log(filters === newFilters);
-  }, [decks, address]);
+    setTimeout(() => setFilters(f => f.set("type", "Telescope").set("variant", "Sun").set("tier", "Immortal")), 10000);
+  }, []);
   const channel = {};
 
   const handleStackMoved = ({ cardStack, movedTo }) => {
@@ -129,7 +116,7 @@ const CardTable = () => {
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
         <DragRegion>
-          <CardsInPlay onStackMoved={handleStackMoved} buttonFlashing={buttonFlashing} transactState={transactState} chosenStacks={chosenStacks} />
+          <CardsInPlay onStackMoved={handleStackMoved} transactState={transactState} chosenStacks={chosenStacks} filters={filters} />
         </DragRegion>
 
         <div className={styles.felt_cloth}>
