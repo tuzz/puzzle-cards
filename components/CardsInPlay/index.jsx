@@ -5,7 +5,7 @@ import CardStack from "../CardStack";
 import layout from "./layout";
 import styles from "./styles.module.scss";
 
-const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing }) => {
+const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing, transacting, chosenStacks }) => {
   const { address, decks } = useContext(AppContext);
   const { maxZIndex } = useContext(DragContext);
 
@@ -19,7 +19,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing }) => {
     const cardStacks = decks[address];
     if (!cardStacks.fetched) { resetCardsInPlay(); return; }
 
-    if (address === loadedAddress) { updateStackPositions(cardStacks); return; }
+    if (address === loadedAddress) { respondToDeckChanges(cardStacks); return; }
 
     setStackPositions([]);
     setLoadedAddress(address);
@@ -27,8 +27,8 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing }) => {
     const numColumns = layout.numColumnsBasedOnPageWidth();
     const positions = layout.evenPositions(numColumns, cardStacks.length);
 
-    setStackPositions(positions.map((position, i) => (
-      { cardStack: cardStacks[i], position, dealDelay: i * 150, fadeIn: true }
+    setStackPositions(positions.map((startPosition, i) => (
+      { cardStack: cardStacks[i], startPosition, dealDelay: i * 150, fadeIn: true }
     )));
 
     // TODO: when paginating, deal cards backwards if going back a page
@@ -51,9 +51,30 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing }) => {
     }
   }, [buttonFlashing]);
 
-  const updateStackPositions = (cardStacks) => {
+  const flipOntoCardOutline = () => {
+    setStackPositions(stackPositions => {
+      const newStackPositions = [...stackPositions];
+      newStackPositions.batchTokenIDs = stackPositions.batchTokenIDs;
+
+      for (let stackPosition of newStackPositions) {
+        stackPosition.position = null; // Hand control back to Draggable.
+        stackPosition.flipped = false;
+
+        if (transacting && chosenStacks.some(s => s.tokenID === stackPosition.cardStack.tokenID)) {
+          stackPosition.position = layout.outlinePosition();
+          stackPosition.flipped = true;
+        }
+      }
+
+      return newStackPositions;
+    });
+  };
+
+  useEffect(flipOntoCardOutline, [transacting]);
+
+  const respondToDeckChanges = (cardStacks) => {
     // TODO: explicitly check if we're minting so it can be handled differently
-    if (cardStacks.justChanged.length > 2) { return; }
+    if (cardStacks.justChanged && cardStacks.justChanged.length > 2) { return; }
 
     setStackPositions(stackPositions => {
       const newStackPositions = [...stackPositions];
@@ -79,17 +100,17 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing }) => {
 
           // TODO: don't flip over cards after the first?
 
-          const position = layout.cardFanPosition(cardStack.tokenID, newStackPositions.batchTokenIDs, maxZIndex);
-          if (!position) { continue; } // The card stack is already positioned in the card fan.
+          const startPosition = layout.cardFanPosition(cardStack.tokenID, newStackPositions.batchTokenIDs, maxZIndex);
+          if (!startPosition) { continue; } // The card stack is already positioned in the card fan.
 
           if (visible) {
             const existing = newStackPositions[index];
 
-            existing.position = position;
+            existing.startPosition = startPosition;
             existing.generation = (existing.generation || 0) + 1;
             existing.fadeIn = false;
           } else {
-            newStackPositions.splice(0, 0, { cardStack, position, fadeIn: false });
+            newStackPositions.splice(0, 0, { cardStack, startPosition, fadeIn: false });
           }
 
           setTimeout(() => onStackMoved({ cardStack, movedTo: { cardOutline: true } }), 0);
@@ -105,8 +126,8 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing }) => {
 
   return (
     <div className={styles.cards_in_play}>
-      {stackPositions.map(o => (
-        <CardStack key={key(o)} cardStack={o.cardStack} startPosition={o.position} dealDelay={o.dealDelay} fadeIn={o.fadeIn} onMoved={onStackMoved} />
+      {stackPositions.map(p => (
+        <CardStack key={key(p)} {...p} onMoved={onStackMoved} />
       ))}
     </div>
   );
