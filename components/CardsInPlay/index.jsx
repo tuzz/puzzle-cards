@@ -10,6 +10,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks }) =
   const { maxZIndex } = useContext(DragContext);
 
   const [loadedAddress, setLoadedAddress] = useState(address);
+  const [releasePoller, setReleasePoller] = useState();
   const [stackPositions, _setStackPositions] = useState(withBatchTokenIDs([]));
   const setStackPositions = (array) => _setStackPositions(withBatchTokenIDs(array));
 
@@ -35,13 +36,24 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks }) =
   }, [address, decks]);
 
   useEffect(() => {
-    flipOntoCardOutline(transactState.processing());
+    setStackPositions(stackPositions => {
+      const newStackPositions = [...stackPositions];
+      newStackPositions.batchTokenIDs = stackPositions.batchTokenIDs;
 
-    // Keep track of which tokenIDs have been minted for this set of transaction requests.
-    // This is so we can position the new card stacks in a rotated fan on top of each other.
-    if (transactState.requesting()) {
-      setStackPositions(array => { array.batchTokenIDs = new Set(); return array; });
-    }
+      if (transactState.requesting()) {
+        // Reset batchTokenIDs so that a new card fan is created for newly minted cards.
+        newStackPositions.batchTokenIDs = new Set();
+      } else if (transactState.processing()) {
+        flipOntoCardOutline(newStackPositions);
+      } else if (transactState.allFailed()) {
+        flipToFaceForwardAgain(newStackPositions, -1);
+      }
+
+      return newStackPositions;
+    });
+
+    setReleasePoller(i => { i && clearInterval(i); return setInterval(() => checkForRelease(true), 0); });
+    checkForRelease(false);
   }, [transactState]);
 
   const resetCardsInPlay = () => {
@@ -53,19 +65,52 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks }) =
     setStackPositions([]);
   };
 
-  const flipOntoCardOutline = (shouldBeFlipped) => {
+  const flipOntoCardOutline = (stackPositions) => {
+    for (let chosenStack of chosenStacks) {
+      const stackPosition = stackPositions.find(p => p.cardStack.tokenID === chosenStack.tokenID);
+      if (!stackPosition) { continue; }
+
+      stackPosition.position = layout.outlinePosition();
+      stackPosition.flipped = true;
+    }
+  };
+
+  const flipToFaceForwardAgain = (stackPositions, flipDirection, holdInPosition) => {
+    for (let stackPosition of stackPositions) {
+      if (!holdInPosition) {
+        stackPosition.position = null;
+      }
+
+      stackPosition.flipped = false;
+      stackPosition.flipDirection = flipDirection;
+    }
+  };
+
+  const checkForRelease = (currentlyFlippingCards) => {
+    if (transactState.processing()) { return; }
+    if (stackPositions.some(p => p.flipped)) { return; }
+
+    // If currentlyFlippingCards is true, it means we reached here from inside
+    // the interval and not as a result of a transactState change.
+    //
+    // Therefore, delay releasing the cards and sliding them until the flip has
+    // finished so that it's easier to understand what's going on.
+    if (currentlyFlippingCards) {
+      setTimeout(releaseHeldPosition, 1500);
+    } else {
+      releaseHeldPosition();
+    }
+
+    setReleasePoller(i => clearInterval(i));
+  };
+
+  const releaseHeldPosition = () => {
     setStackPositions(stackPositions => {
       const newStackPositions = [...stackPositions];
       newStackPositions.batchTokenIDs = stackPositions.batchTokenIDs;
 
       for (let stackPosition of newStackPositions) {
         stackPosition.position = null; // Hand control back to Draggable.
-        stackPosition.flipped = false;
-
-        if (shouldBeFlipped && chosenStacks.some(s => s.tokenID === stackPosition.cardStack.tokenID)) {
-          stackPosition.position = layout.outlinePosition();
-          stackPosition.flipped = true;
-        }
       }
 
       return newStackPositions;
@@ -97,20 +142,25 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks }) =
         // If a card was added, make the stack appear over the CardOutline. If the
         // stack is already visible, force a re-render by changing its key.
         if (cardStack.quantity > 0 && cardStack.lastDelta > 0) {
-
-          // TODO: don't flip over cards after the first?
-
           const startPosition = layout.cardFanPosition(cardStack.tokenID, newStackPositions.batchTokenIDs, maxZIndex);
           if (!startPosition) { continue; } // The card stack is already positioned in the card fan.
+
+          // Flip the combining cards back over at the same time as the newly minted card.
+          // Hold it in position to keep it behind the stack of cards being minted.
+          flipToFaceForwardAgain(newStackPositions, 1, true);
+
+          // Hold the position unless the change arrives after the card was minted.
+          const position = transactState.requesting() || transactState.processing() ? startPosition : null;
 
           if (visible) {
             const existing = newStackPositions[index];
 
             existing.startPosition = startPosition;
+            existing.position = position;
             existing.generation = (existing.generation || 0) + 1;
             existing.fadeIn = false;
           } else {
-            newStackPositions.splice(0, 0, { cardStack, startPosition, fadeIn: false });
+            newStackPositions.splice(0, 0, { cardStack, startPosition, position, fadeIn: false });
           }
 
           setTimeout(() => onStackMoved({ cardStack, movedTo: { cardOutline: true } }), 0);
