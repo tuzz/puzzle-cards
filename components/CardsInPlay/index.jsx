@@ -17,13 +17,21 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
   useEffect(() => {
     if (!address) { return; }
     if (!decks[address].fetched) { clearEntireArea(); return; }
-    if (address === loadedAddress) { updateTopArea(decks[address]); return; }
-    updateMainArea();
+
+    const alreadyLoaded = address === loadedAddress;
+
+    if (alreadyLoaded) { // The change was caused by new cards being minted.
+      updateTopArea(decks[address]);
+    } else {
+      filters.setDeck(decks[address]);
+      setLoadedAddress(address);
+
+      updateMainArea();
+    }
   }, [address, decks]);
 
-  useEffect(() => {
-    if (address === loadedAddress) { updateMainArea(); }
-  }, [filters]);
+  // If the filters change, update the main area but leave the top alone.
+  useEffect(() => address === loadedAddress && updateMainArea(), [filters]);
 
   useEffect(() => {
     setStackPositions(stackPositions => {
@@ -53,18 +61,25 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
   };
 
   const updateMainArea = () => {
-    filters.setDeck(decks[address]);
-    const cardStacks = filters.filteredDeck;
-
-    setStackPositions([]);
-    setLoadedAddress(address);
-
     const numColumns = layout.numColumnsBasedOnPageWidth();
-    const positions = layout.evenPositions(numColumns, cardStacks.length);
+    const positions = layout.evenPositions(numColumns, filters.filteredDeck.length);
 
-    setStackPositions(positions.map((startPosition, i) => (
-      { cardStack: cardStacks[i], startPosition, dealDelay: i * 150, fadeIn: true }
-    )));
+    setStackPositions(stackPositions => {
+      const newStackPositions = stackPositions.filter(p => filters.exclusions[p.cardStack.tokenID]);
+      newStackPositions.batchTokenIDs = stackPositions.batchTokenIDs;
+
+      // Note: we don't need to call onStackMoved here because changing card
+      // stacks in the main area won't affect chosenStacks or hourglassStacks.
+
+      for (let i = 0; i < positions.length; i += 1) {
+        const cardStack = filters.filteredDeck[i];
+        const startPosition = positions[i];
+
+        newStackPositions.push({ cardStack, startPosition, dealDelay: i * 150, fadeIn: true, });
+      }
+
+      return newStackPositions;
+    });
 
     // TODO: when paginating, deal cards backwards if going back a page
   }

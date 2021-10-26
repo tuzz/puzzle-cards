@@ -45,7 +45,7 @@ class Filters {
       this.filteredDeck.unshift(cardStack);
     }
 
-    return this.shallowCopy();
+    return this; // Don't re-render when moving card stacks to/from the hourglass area.
   }
 
   exclude(cardStack) {
@@ -55,7 +55,7 @@ class Filters {
     const index = this.filteredDeck.findIndex(c => c.tokenID === cardStack.tokenID);
     if (index !== -1) { this.filteredDeck.splice(index, 1); }
 
-    return this.shallowCopy();
+    return this;
   }
 
   filterDeck() {

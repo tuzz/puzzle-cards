@@ -4,14 +4,23 @@ import styles from "./styles.module.scss";
 const CardOutline = ({ channel }) => {
   const ref = useRef();
 
-  channel.overlapsOutline = (movedTo) => {
-    if (movedTo === null) { return false; }
-    if (movedTo.cardOutline) { return true; }
+  channel.overlapsOutline = (position) => {
+    if (position === null) { return false; }
+    if (position.cardOutline) { return true; }
 
     const outline = ref.current.getBoundingClientRect();
 
-    return movedTo.left < outline.right && movedTo.right > outline.left
-        && movedTo.bottom > outline.top && movedTo.top < outline.bottom;
+    return position.left < outline.right && position.right > outline.left
+        && position.bottom > outline.top && position.top < outline.bottom;
+  };
+
+  channel.overlapsYOfTheBottomOfOutline = (position) => {
+    if (position === null) { return false; }
+    if (position.cardOutline) { return true; }
+
+    const outline = ref.current.getBoundingClientRect();
+
+    return position.top < outline.bottom;
   };
 
   return (

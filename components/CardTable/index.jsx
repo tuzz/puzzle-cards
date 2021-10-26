@@ -14,28 +14,41 @@ import Filters from "./filters";
 const CardTable = () => {
   const { PuzzleCard, decks, address, chainId, generation } = useContext(AppContext);
   const [chosenStacks, setChosenStacks] = useState([]);
+  const [hourglassStacks, setHourglassStacks] = useState([]);
   const [buttonAction, setButtonAction] = useState();
   const [transactState, setTransactState] = useState(TransactState.INITIAL);
   const [filters, setFilters] = useState(new Filters().set("color1", "Red"));
 
   useEffect(() => {
-    setTimeout(() => setFilters(f => f.set("type", "Telescope").set("variant", "Sun").set("tier", "Immortal")), 10000);
+    setTimeout(() => setFilters(f => f.set("type", "Telescope").set("variant", "Sun").set("tier", "Immortal")), 5000);
   }, []);
+
   const channel = {};
 
   const handleStackMoved = ({ cardStack, movedTo }) => {
-    setChosenStacks(array => {
-      const expectedChosen = channel.overlapsOutline(movedTo);
-      const actualChosen = chosenStacks.findIndex(s => s.tokenID === cardStack.tokenID) !== -1;
+    updateStacksBasedOnPosition(cardStack, movedTo, chosenStacks, setChosenStacks, channel.overlapsOutline);
+    updateStacksBasedOnPosition(cardStack, movedTo, hourglassStacks, setHourglassStacks, channel.overlapsYOfTheBottomOfOutline, updateExclusions);
+  };
 
-      if (expectedChosen && !actualChosen) {
-        return [...array, cardStack];
-      } else if (!expectedChosen && actualChosen) {
-        return array.filter(c => c.tokenID !== cardStack.tokenID);
+  const updateStacksBasedOnPosition = (cardStack, position, stacks, setStacks, shouldIncludeFn, callbackFn) => {
+    const shouldInclude = shouldIncludeFn(position);
+    const isIncluded = stacks.findIndex(s => s.tokenID === cardStack.tokenID) !== -1;
+
+    setStacks(stacks => {
+      if (shouldInclude && !isIncluded) {
+        return [...stacks, cardStack];
+      } else if (!shouldInclude && isIncluded) {
+        return stacks.filter(c => c.tokenID !== cardStack.tokenID);
       } else {
-        return array;
+        return stacks;
       }
     });
+
+    callbackFn && callbackFn(cardStack, shouldInclude);
+  };
+
+  const updateExclusions = (cardStack, isInHourglassArea) => {
+    setFilters(f => isInHourglassArea ? f.exclude(cardStack) : f.include(cardStack));
   };
 
   const setButtonActionBasedOnChosenStacks = async (causedByNetworkChange) => {
