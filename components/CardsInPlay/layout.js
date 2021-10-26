@@ -40,18 +40,18 @@ module.exports.evenPositions = (numColumns, numCards) => {
       const perPlaceOffset = availableWidth / (cardsInRow - 1);
 
       for (let column = 0; column < cardsInRow; column += 1) {
-        let left, degrees;
+        let left, base;
 
         if (cardsInRow > 1) {
           left = reducedPadding + perPlaceOffset * column;
-          degrees = column / (cardsInRow - 1) * 8 - 4;
+          base = column / (cardsInRow - 1) * 8 - 4;
         } else {
           left = reducedPadding + availableWidth / 2;
-          degrees = 0;
+          base = 0;
         }
 
         const top = playAreaTop + row * perPlaceHeight;
-        positions.push({ left, top, rotation: { degrees, random: 0 } });
+        positions.push({ left, top, rotation: { base, random: 0 } });
       }
     } else {
       const cardsWidth = cardsInRow * perPlaceWidth;
@@ -82,7 +82,7 @@ module.exports.cardFanPosition = (tokenID, tokenIDsInCardFan, maxZIndex, degrees
   const left = pageMiddle - stackWidth / 2;
   const top = outlineTop;
 
-  const rotation = { degrees: 0, random: 4, initial: fanAngle };
+  const rotation = { base: 0, random: 4, initial: fanAngle };
   const position = { left: left + fanOffset, top, rotation, zIndex };
 
   return position;

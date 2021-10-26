@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import styles from "./styles.module.scss";
 
-const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { degrees: 0, random: 0, initial: null }, children }) => {
+const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { degrees: null, base: 0, random: 0, initial: null }, children }) => {
   const ref = useRef();
 
   const [angle, setAngle] = useState();
@@ -29,9 +29,11 @@ const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { deg
     return { scale, rotate: 0, translateX, translateY };
   };
 
+  const degrees = typeof rotation.degrees === "number" ? rotation.degrees : zoom.rotate;
+
   const transform = [
     `scale(${zoom.scale})`,
-    rotateWhenZoomedOut ? `rotate(${zoom.rotate}deg)` : "",
+    rotateWhenZoomedOut ? `rotate(${degrees}deg)` : "",
     `translate(${zoom.translateX}px, ${zoom.translateY}px)`,
   ].join(" ");
 
@@ -50,7 +52,7 @@ const chooseAngle = (rotation, previousAngle) => {
   const randomDegrees = Math.random() * rotation.random;
   const randomDirection = Math.random() < 0.5 ? -1 : 1;
 
-  return rotation.degrees + randomDegrees * randomDirection;
+  return rotation.base + randomDegrees * randomDirection;
 };
 
 export default Zoomable;
