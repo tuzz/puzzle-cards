@@ -1,6 +1,7 @@
 .inner {
   position: absolute;
   pointer-events: auto;
+  cursor: grab;
 
   &.controlled {
     transform: none !important;
@@ -12,5 +13,6 @@
 
   &:global(.react-draggable-dragging) {
     transition: none;
+    cursor: grabbing;
   }
 }
