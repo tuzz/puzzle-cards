@@ -122,6 +122,8 @@ const CardTable = () => {
   const stickSpinning = isPuzzleCardAction || !transactState.initial();
   const stickRaised = transactState.processing();
 
+  const setPageSize = (pageSize) => setFilters(f => f.setPageSize(pageSize));
+
   return (
     <div className={styles.card_table}>
       <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={buttonEnabled} buttonFlashing={buttonFlashing} onButtonClick={performActionOnStacks} raised={stickRaised} className={styles.worship_stick} channel={channel} />
@@ -129,11 +131,14 @@ const CardTable = () => {
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
         <DragRegion>
-          <CardsInPlay onStackMoved={handleStackMoved} transactState={transactState} chosenStacks={chosenStacks} filters={filters} />
+          <CardsInPlay onStackMoved={handleStackMoved} transactState={transactState} chosenStacks={chosenStacks} filters={filters} setPageSize={setPageSize} />
         </DragRegion>
 
         <div className={styles.felt_cloth}>
           <CardOutline channel={channel} />
+
+          <button onClick={() => setFilters(f => f.prevPage())}>previous</button>
+          <button onClick={() => setFilters(f => f.nextPage())}>next</button>
         </div>
       </TableEdge>
     </div>

@@ -66,7 +66,9 @@ module.exports.evenPositions = (numColumns, numCards) => {
     }
   }
 
-  return positions;
+  const maxPageSize = numRows * Math.max(3, numColumns);
+
+  return [positions, maxPageSize];
 };
 
 module.exports.cardFanPosition = (tokenID, tokenIDsInCardFan, maxZIndex, degreesPerCard = 1.5, offsetPerCard = 3, maxOffsetFromRight = 50) => {

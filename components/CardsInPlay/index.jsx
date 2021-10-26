@@ -5,12 +5,13 @@ import CardStack from "../CardStack";
 import layout from "./layout";
 import styles from "./styles.module.scss";
 
-const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, filters }) => {
+const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, filters, setPageSize }) => {
   const { address, decks } = useContext(AppContext);
   const { maxZIndex } = useContext(DragContext);
 
   const [loadedAddress, setLoadedAddress] = useState(address);
   const [releasePoller, setReleasePoller] = useState();
+  const [draggedTokenIDs, setDraggedTokenIDs] = useState([]);
   const [stackPositions, _setStackPositions] = useState(withBatchTokenIDs([]));
   const setStackPositions = (array) => _setStackPositions(withBatchTokenIDs(array));
 
@@ -62,7 +63,14 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
 
   const updateMainArea = () => {
     const numColumns = layout.numColumnsBasedOnPageWidth();
-    const positions = layout.evenPositions(numColumns, filters.filteredDeck.length);
+    const numCards = filters.filteredDeck.length - filters.pageOffset;
+
+    const [positions, maxPageSize] = layout.evenPositions(numColumns, numCards);
+
+    // It's possible that a few cards might be skipped when paging forwards/backwards
+    // if the browser's width changes before the new pageSize is set. For the most
+    // likely case when going from small -> large and paging forwards it works fine.
+    setPageSize(maxPageSize);
 
     setStackPositions(stackPositions => {
       const newStackPositions = stackPositions.filter(p => filters.exclusions[p.cardStack.tokenID]);
@@ -72,14 +80,24 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
       // stacks in the main area won't affect chosenStacks or hourglassStacks.
 
       for (let i = 0; i < positions.length; i += 1) {
-        const cardStack = filters.filteredDeck[i];
+        const cardStack = filters.filteredDeck[filters.pageOffset + i];
         const startPosition = positions[i];
 
-        newStackPositions.push({ cardStack, startPosition, dealDelay: i * 150, fadeIn: true, });
+        const existing = stackPositions.find(p => p.cardStack.tokenID === cardStack.tokenID);
+        let generation = (existing || {}).generation || 0;
+
+        // If the stack has been dragged by the user and it continues to be visible
+        // in the main area of the page, force it to re-render. Otherwise, React
+        // should slide the stack over to its new position, e.g. when filtering.
+        if (draggedTokenIDs[cardStack.tokenID]) { generation += 1; }
+
+        newStackPositions.push({ cardStack, startPosition, generation, dealDelay: i * 150, fadeIn: true, });
       }
 
       return newStackPositions;
     });
+
+    setDraggedTokenIDs({});
 
     // TODO: when paginating, deal cards backwards if going back a page
   }
@@ -189,12 +207,17 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
     });
   };
 
+  const handleStackMovedByDragging = ({ cardStack, movedTo }) => {
+    setDraggedTokenIDs(o => ({ ...o, [cardStack.tokenID]: true }));
+    onStackMoved({ cardStack, movedTo });
+  };
+
   const key = (stackPosition) => `${stackPosition.cardStack.tokenID}-${stackPosition.generation}`;
 
   return (
     <div className={styles.cards_in_play}>
       {stackPositions.map(p => (
-        <CardStack key={key(p)} {...p} onMoved={onStackMoved} />
+        <CardStack key={key(p)} {...p} onMoved={handleStackMovedByDragging} />
       ))}
     </div>
   );
