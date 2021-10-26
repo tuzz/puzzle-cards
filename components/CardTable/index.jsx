@@ -1,6 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import AppContext from "../AppRoot/context";
 import Metamask from "./metamask";
+import TransactState from "./transactState";
 import YellowSun from "../YellowSun";
 import WorshipStick from "../WorshipStick";
 import TableEdge from "../TableEdge";
@@ -13,9 +14,7 @@ const CardTable = () => {
   const { PuzzleCard, decks, address, chainId, generation } = useContext(AppContext);
   const [chosenStacks, setChosenStacks] = useState([]);
   const [buttonAction, setButtonAction] = useState();
-  const [buttonFlashing, setButtonFlashing] = useState(false);
-  const [transacting, setTransacting] = useState(false);
-  const [stickGrounded, setStickGrounded] = useState(true);
+  const [transactState, setTransactState] = useState(TransactState.INITIAL);
 
   const channel = {};
 
@@ -60,47 +59,58 @@ const CardTable = () => {
     const requests = await Metamask.performActionOnStacks(PuzzleCard, buttonAction, chosenStacks);
     if (requests.length === 0) { return; } // No transaction requests initiated, e.g. Metamask locked.
 
-    setButtonFlashing(true); // Prevent the user creating more requests until these are resolved.
+    setTransactState(TransactState.REQUESTING);
 
-    const results = requests.map(async (request) => {
+    const results = await Promise.all(requests.map(async (request) => {
       const transaction = await request.catch(() => {});
-      if (!transaction) { return; } // The user rejected the transaction request in Metamask.
+      if (!transaction) { return { state: "cancelled" }; } // The user rejected the request in Metamask.
 
-      setTransacting(true);
+      setTransactState(TransactState.PROCESSING);
 
       try {
-        const _mintedCard = await PuzzleCard.fromTransferEvent(transaction);
+        const mintedCard = await PuzzleCard.fromTransferEvent(transaction);
+        return { state: "succeeded", mintedCard };
       } catch (error) {
-        return error;
+        return { state: "failed", error };
       }
-    });
+    }));
 
-    const errors = (await Promise.all(results)).filter(e => e);
+    const errors = results.filter(r => typeof r === "object");
 
-    if (errors.length > 0) {
+    if (results.some(r => r.state === "error")) {
       alert([
         `${errors.length} out of ${results.length} requests failed.`,
         `You may want to check MetaMask to see if the transactions went through. Otherwise, try again in a few seconds.`,
       ].join("\n"));
     }
 
-    setTransacting(false);
-    setButtonFlashing(false);
-    channel.waitForStickToFinishMoving().then(() => setStickGrounded(true));
+    if (results.some(r => r.state === "succeeded")) {
+      setTransactState(TransactState.ANY_SUCCEEDED);
+    } else if (results.every(r => r.state === "failed")) {
+      setTransactState(TransactState.ALL_FAILED);
+    } else {
+      setTransactState(TransactState.ALL_CANCELLED);
+    }
+
+    channel.waitForStickToFinishMoving().then(() => setTransactState(TransactState.INITIAL));
   };
 
+  const buttonFlashing = transactState.requesting() || transactState.processing();
   const buttonEnabled = buttonAction && !buttonFlashing;
-  const stickSpinning = buttonAction && !buttonAction.match(/connectToMetamask/) || !stickGrounded;
-  const stickRaised = transacting; // Raise the stick while at least one transaction is being processed.
+
+  const isPuzzleCardAction = buttonAction && !buttonAction.match(/connectToMetamask/);
+
+  const stickSpinning = isPuzzleCardAction || !transactState.initial();
+  const stickRaised = transactState.processing();
 
   return (
     <div className={styles.card_table}>
       <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={buttonEnabled} buttonFlashing={buttonFlashing} onButtonClick={performActionOnStacks} raised={stickRaised} className={styles.worship_stick} channel={channel} />
-      <YellowSun raised={stickRaised} channel={channel} />
+      <YellowSun stickRaised={stickRaised} channel={channel} />
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
         <DragRegion>
-          <CardsInPlay onStackMoved={handleStackMoved} buttonFlashing={buttonFlashing} transacting={transacting} chosenStacks={chosenStacks} />
+          <CardsInPlay onStackMoved={handleStackMoved} buttonFlashing={buttonFlashing} transactState={transactState} chosenStacks={chosenStacks} />
         </DragRegion>
 
         <div className={styles.felt_cloth}>

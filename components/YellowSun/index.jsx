@@ -1,14 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./styles.module.scss";
 
-const YellowSun = ({ className, raised, channel = {} }) => {
+const YellowSun = ({ className, stickRaised, channel = {} }) => {
   const yellowSunRef = useRef();
 
   const [spinning, setSpinning] = useState(false);
   const [poller, setPoller] = useState();
 
   useEffect(() => {
-    if (raised) {
+    if (stickRaised) {
       setPoller(setInterval(meshCogs, 0));
     } else {
       setTimeout(() => {
@@ -16,7 +16,7 @@ const YellowSun = ({ className, raised, channel = {} }) => {
         setPoller(i => i && clearInterval(i));
       }, 1200);
     }
-  }, [raised]);
+  }, [stickRaised]);
 
   const meshCogs = () => {
     const closeEnough = channel.distanceFromTop() < 15;

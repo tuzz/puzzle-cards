@@ -5,7 +5,7 @@ import CardStack from "../CardStack";
 import layout from "./layout";
 import styles from "./styles.module.scss";
 
-const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing, transacting, chosenStacks }) => {
+const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks }) => {
   const { address, decks } = useContext(AppContext);
   const { maxZIndex } = useContext(DragContext);
 
@@ -34,6 +34,16 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing, transacting, cho
     // TODO: when paginating, deal cards backwards if going back a page
   }, [address, decks]);
 
+  useEffect(() => {
+    flipOntoCardOutline(transactState.processing());
+
+    // Keep track of which tokenIDs have been minted for this set of transaction requests.
+    // This is so we can position the new card stacks in a rotated fan on top of each other.
+    if (transactState.requesting()) {
+      setStackPositions(array => { array.batchTokenIDs = new Set(); return array; });
+    }
+  }, [transactState]);
+
   const resetCardsInPlay = () => {
     for (const stackPosition of stackPositions) {
       onStackMoved({ cardStack: stackPosition.cardStack, movedTo: null });
@@ -43,15 +53,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing, transacting, cho
     setStackPositions([]);
   };
 
-  // Keep track of which tokenIDs have been minted since the button started flashing.
-  // This is so we can position the new card stacks in a rotated fan on top of each other.
-  useEffect(() => {
-    if (buttonFlashing) {
-      setStackPositions(array => { array.batchTokenIDs = new Set(); return array; });
-    }
-  }, [buttonFlashing]);
-
-  const flipOntoCardOutline = () => {
+  const flipOntoCardOutline = (shouldBeFlipped) => {
     setStackPositions(stackPositions => {
       const newStackPositions = [...stackPositions];
       newStackPositions.batchTokenIDs = stackPositions.batchTokenIDs;
@@ -60,7 +62,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing, transacting, cho
         stackPosition.position = null; // Hand control back to Draggable.
         stackPosition.flipped = false;
 
-        if (transacting && chosenStacks.some(s => s.tokenID === stackPosition.cardStack.tokenID)) {
+        if (shouldBeFlipped && chosenStacks.some(s => s.tokenID === stackPosition.cardStack.tokenID)) {
           stackPosition.position = layout.outlinePosition();
           stackPosition.flipped = true;
         }
@@ -69,8 +71,6 @@ const CardsInPlay = ({ onStackMoved = () => {}, buttonFlashing, transacting, cho
       return newStackPositions;
     });
   };
-
-  useEffect(flipOntoCardOutline, [transacting]);
 
   const respondToDeckChanges = (cardStacks) => {
     // TODO: explicitly check if we're minting so it can be handled differently
