@@ -30,6 +30,9 @@ const CardTable = () => {
 
     console.log("filtered:", filters.filteredDeck);
     console.log(filters.filteredDeckWithExclusions.length, filters.filteredDeck.length);
+
+    const newFilters = filters.set("series", "hello");
+    console.log(filters === newFilters);
   }, [decks, address]);
   const channel = {};
 

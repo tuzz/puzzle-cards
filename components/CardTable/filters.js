@@ -7,13 +7,17 @@ class Filters {
     this.exclusions = {};
   }
 
+  shallowCopy() {
+    return Object.setPrototypeOf(Object.assign({}, this), Filters.prototype);
+  }
+
   setDeck(deck) {
     this.deck = deck || [];
     this.filterDeck();
   }
 
   set(key, value) {
-    if (this.filters[key] === value) { return; }
+    if (this.filters[key] === value) { return this; }
 
     if (value === undefined) {
       delete this.filters[key];
@@ -22,13 +26,36 @@ class Filters {
     }
 
     this.filterDeck();
+    return this.shallowCopy();
   }
 
   reset() {
-    if (Object.keys(this.filters).length === 0) { return; }
+    if (Object.keys(this.filters).length === 0) { return this; }
 
     this.filters = {};
     this.filterDeck();
+    return this.shallowCopy();
+  }
+
+  include(cardStack) {
+    if (!this.exclusions[cardStack.tokenID]) { return this; }
+    delete this.exclusions[cardStack.tokenID];
+
+    if (this.matches(cardStack)) {
+      this.filteredDeck.unshift(cardStack);
+    }
+
+    return this.shallowCopy();
+  }
+
+  exclude(cardStack) {
+    if (this.exclusions[cardStack.tokenID]) { return this; }
+    this.exclusions[cardStack.tokenID] = true;
+
+    const index = this.filteredDeck.findIndex(c => c.tokenID === cardStack.tokenID);
+    if (index !== -1) { this.filteredDeck.splice(index, 1); }
+
+    return this.shallowCopy();
   }
 
   filterDeck() {
@@ -38,23 +65,6 @@ class Filters {
 
   matches(cardStack) {
     return Object.entries(this.filters).every(([key, value]) => cardStack.card[key] === value);
-  }
-
-  include(cardStack) {
-    if (!this.exclusions[cardStack.tokenID]) { return; }
-    delete this.exclusions[cardStack.tokenID];
-
-    if (this.matches(cardStack)) {
-      this.filteredDeck.unshift(cardStack);
-    }
-  }
-
-  exclude(cardStack) {
-    if (this.exclusions[cardStack.tokenID]) { return; }
-    this.exclusions[cardStack.tokenID] = true;
-
-    const index = this.filteredDeck.findIndex(c => c.tokenID === cardStack.tokenID);
-    if (index !== -1) { this.filteredDeck.splice(index, 1); }
   }
 }
 
