@@ -75,11 +75,12 @@ const CardTable = () => {
       }
     }));
 
-    const errors = results.filter(r => typeof r === "object");
+    const numSucceeded = results.filter(r => r.state === "succeeded").length;
+    const numFailed = results.filter(r => r.state === "failed").length;
 
-    if (results.some(r => r.state === "error")) {
+    if (numFailed > 0) {
       alert([
-        `${errors.length} out of ${results.length} requests failed.`,
+        `${numFailed} out of ${numSucceeded + numFailed} requests failed.`,
         `You may want to check MetaMask to see if the transactions went through. Otherwise, try again in a few seconds.`,
       ].join("\n"));
     }
