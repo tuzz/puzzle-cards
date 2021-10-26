@@ -69,9 +69,11 @@ const AppRoot = ({ Component, pageProps }) => {
     for (let [address, deck] of Object.entries(appContext.decks)) {
       if (!deck.fetching && !deck.fetched) {
         deck.fetching = true;
+        deck.justChanged = [];
 
         PuzzleCard.fetchDeck(address, updateFetchedDeck(address), console.log).then(deck => {
           deck.fetched = true;
+          deck.justChanged = [];
 
           setAppContext(c => ({ ...c, decks: { ...c.decks, [address]: deck } }));
         });
