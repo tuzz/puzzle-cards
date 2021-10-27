@@ -5,6 +5,7 @@ import TransactState from "./transactState";
 import YellowSun from "../YellowSun";
 import WorshipStick from "../WorshipStick";
 import TableEdge from "../TableEdge";
+import FilterRows from "../FilterRows";
 import DragRegion from "../DragRegion";
 import CardsInPlay from "../CardsInPlay";
 import Pagination from "../Pagination";
@@ -125,6 +126,8 @@ const CardTable = () => {
       <YellowSun stickRaised={stickRaised} channel={channel} />
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
+        <FilterRows filters={filters} setFilters={setFilters} />
+
         <DragRegion>
           <CardsInPlay onStackMoved={handleStackMoved} transactState={transactState} chosenStacks={chosenStacks} filters={filters} setFilters={setFilters} />
         </DragRegion>

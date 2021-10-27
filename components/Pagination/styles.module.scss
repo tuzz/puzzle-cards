@@ -16,7 +16,7 @@
 
   &:disabled {
     opacity: 0.3;
-    cursor: default;
+    cursor: not-allowed;
   }
 }
 
@@ -29,13 +29,13 @@
   right: 3rem;
 }
 
-@media only screen and (min-width: 1221px) {
+@media only screen and (min-width: 1251px) {
   .tick_mark {
     top: 49rem;
   }
 }
 
-@media only screen and (max-width: 1220px) {
+@media only screen and (max-width: 1250px) {
   .tick_mark {
     bottom: 3rem;
   }

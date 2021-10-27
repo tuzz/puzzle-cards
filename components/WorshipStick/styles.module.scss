@@ -92,6 +92,10 @@
       }
     }
 
+    &:disabled {
+      cursor: not-allowed;
+    }
+
     &:disabled.flashing {
       &:before, &:after {
         animation-name: flash;
