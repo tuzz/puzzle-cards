@@ -3,9 +3,9 @@ const oneRem = 16;
 const stackWidth = 15 * oneRem; // As per the CardStack css rules.
 const stackHeight = 21 * oneRem; // As per the CardStack css rules.
 const stackMargin = 5 * oneRem; // The minimum margin between card stacks.
-const pagePadding = 5 * oneRem; // The horizontal page padding on the left/right.
+const pagePadding = 8 * oneRem; // The horizontal page padding on the left/right.
 const outlineTop = 11.2 * oneRem;
-const playAreaTop = outlineTop + stackHeight + 5 * oneRem;
+const playAreaTop = outlineTop + stackHeight + 4 * oneRem;
 
 module.exports.numColumnsBasedOnPageWidth = () => {
   if (typeof document === "undefined") { return 0; }
@@ -55,7 +55,7 @@ module.exports.evenPositions = (numColumns, numCards) => {
       }
     } else {
       const cardsWidth = cardsInRow * perPlaceWidth;
-      const leftPadding = (pageWidth - cardsWidth + stackMargin / 2) / 2;
+      const leftPadding = (pageWidth - cardsWidth + stackMargin) / 2;
 
       for (let column = 0; column < cardsInRow; column += 1) {
         const left = leftPadding + perPlaceWidth * column;

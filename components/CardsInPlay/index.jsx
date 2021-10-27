@@ -5,7 +5,7 @@ import CardStack from "../CardStack";
 import layout from "./layout";
 import styles from "./styles.module.scss";
 
-const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, filters, setPageSize }) => {
+const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, filters, setFilters }) => {
   const { address, decks } = useContext(AppContext);
   const { maxZIndex } = useContext(DragContext);
 
@@ -24,7 +24,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
     if (alreadyLoaded) { // The change was caused by new cards being minted.
       updateTopArea(decks[address]);
     } else {
-      filters.setDeck(decks[address]);
+      setFilters(f => f.setDeck(decks[address]));
       setLoadedAddress(address);
 
       updateMainArea();
@@ -70,7 +70,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
     // It's possible that a few cards might be skipped when paging forwards/backwards
     // if the browser's width changes before the new pageSize is set. For the most
     // likely case when going from small -> large and paging forwards it works fine.
-    setPageSize(maxPageSize);
+    setFilters(f => f.setPageSize(maxPageSize));
 
     setStackPositions(stackPositions => {
       const newStackPositions = stackPositions.filter(p => filters.exclusions[p.cardStack.tokenID]);
@@ -82,6 +82,8 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
       for (let i = 0; i < positions.length; i += 1) {
         const cardStack = filters.filteredDeck[filters.pageOffset + i];
         const startPosition = positions[i];
+        const flipDirection = filters.dealForwards ? 1 : -1;
+        const dealDelay = (filters.dealForwards ? i : (positions.length - i - 1)) * 100;
 
         const existing = stackPositions.find(p => p.cardStack.tokenID === cardStack.tokenID);
         let generation = (existing || {}).generation || 0;
@@ -91,15 +93,13 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
         // should slide the stack over to its new position, e.g. when filtering.
         if (draggedTokenIDs[cardStack.tokenID]) { generation += 1; }
 
-        newStackPositions.push({ cardStack, startPosition, generation, dealDelay: i * 150, fadeIn: true, });
+        newStackPositions.push({ cardStack, startPosition, flipDirection, dealDelay, generation, fadeIn: true });
       }
 
       return newStackPositions;
     });
 
     setDraggedTokenIDs({});
-
-    // TODO: when paginating, deal cards backwards if going back a page
   }
 
   const flipOntoCardOutline = (stackPositions) => {

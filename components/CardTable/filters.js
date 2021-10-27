@@ -16,6 +16,7 @@ class Filters {
   setDeck(deck) {
     this.deck = deck || [];
     this.filterDeck();
+    return this.shallowCopy();
   }
 
   set(key, value) {
@@ -83,18 +84,24 @@ class Filters {
 
   prevPage() {
     this.pageOffset = Math.max(0, this.pageOffset - this.pageSize);
+    this.dealForwards = false;
+
     return this.shallowCopy();
   }
 
   nextPage() {
     this.pageOffset += this.pageSize;
+    this.dealForwards = true;
+
     return this.shallowCopy();
   }
 
   filterDeck() {
     this.filteredDeckWithExclusions = this.deck.filter(cardStack => this.matches(cardStack));
     this.filteredDeck = this.filteredDeckWithExclusions.filter(c => !this.exclusions[c.tokenID]);
+
     this.pageOffset = 0;
+    this.dealForwards = true;
   }
 
   matches(cardStack) {

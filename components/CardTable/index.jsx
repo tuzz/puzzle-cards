@@ -7,6 +7,7 @@ import WorshipStick from "../WorshipStick";
 import TableEdge from "../TableEdge";
 import DragRegion from "../DragRegion";
 import CardsInPlay from "../CardsInPlay";
+import Pagination from "../Pagination";
 import CardOutline from "../CardOutline";
 import styles from "./styles.module.scss";
 import Filters from "./filters";
@@ -17,11 +18,7 @@ const CardTable = () => {
   const [hourglassStacks, setHourglassStacks] = useState([]);
   const [buttonAction, setButtonAction] = useState();
   const [transactState, setTransactState] = useState(TransactState.INITIAL);
-  const [filters, setFilters] = useState(new Filters().set("color1", "Red"));
-
-  useEffect(() => {
-    setTimeout(() => setFilters(f => f.set("type", "Telescope").set("variant", "Sun").set("tier", "Immortal")), 5000);
-  }, []);
+  const [filters, setFilters] = useState(new Filters());
 
   const channel = {};
 
@@ -122,8 +119,6 @@ const CardTable = () => {
   const stickSpinning = isPuzzleCardAction || !transactState.initial();
   const stickRaised = transactState.processing();
 
-  const setPageSize = (pageSize) => setFilters(f => f.setPageSize(pageSize));
-
   return (
     <div className={styles.card_table}>
       <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={buttonEnabled} buttonFlashing={buttonFlashing} onButtonClick={performActionOnStacks} raised={stickRaised} className={styles.worship_stick} channel={channel} />
@@ -131,14 +126,12 @@ const CardTable = () => {
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
         <DragRegion>
-          <CardsInPlay onStackMoved={handleStackMoved} transactState={transactState} chosenStacks={chosenStacks} filters={filters} setPageSize={setPageSize} />
+          <CardsInPlay onStackMoved={handleStackMoved} transactState={transactState} chosenStacks={chosenStacks} filters={filters} setFilters={setFilters} />
         </DragRegion>
 
         <div className={styles.felt_cloth}>
           <CardOutline channel={channel} />
-
-          <button onClick={() => setFilters(f => f.prevPage())}>previous</button>
-          <button onClick={() => setFilters(f => f.nextPage())}>next</button>
+          <Pagination filters={filters} setFilters={setFilters} />
         </div>
       </TableEdge>
     </div>

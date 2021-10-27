@@ -1,0 +1,42 @@
+.tick_mark {
+  position: absolute;
+
+  border-top: 2rem solid transparent;
+  border-bottom: 2rem solid transparent;
+  border-left: 4rem solid rgba(255, 255, 255, 0.7);
+  border-right: none;
+
+  background: none;
+  padding: 0;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-left-color: white;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+}
+
+.prev_page {
+  left: 3rem;
+  transform: rotate(180deg);
+}
+
+.next_page {
+  right: 3rem;
+}
+
+@media only screen and (min-width: 1221px) {
+  .tick_mark {
+    top: 49rem;
+  }
+}
+
+@media only screen and (max-width: 1220px) {
+  .tick_mark {
+    bottom: 3rem;
+  }
+}
