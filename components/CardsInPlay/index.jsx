@@ -67,6 +67,8 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
   };
 
   const updateMainArea = () => {
+    if (address !== loadedAddress) { return; }
+
     const numColumns = layout.numColumnsBasedOnPageWidth();
     const numCards = filters.filteredDeck.length - filters.pageOffset;
 
