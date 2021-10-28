@@ -1,6 +1,8 @@
 import styles from "./styles.module.scss";
 
 const Pagination = ({ filters, setFilters }) => {
+  if (filters.deck.length <= 6) { return null; }
+
   return (
     <div className={styles.pagination}>
       <button disabled={!filters.hasPrevPage()} onClick={() => setFilters(f => f.prevPage())} className={`${styles.tick_mark} ${styles.prev_page}`}></button>

@@ -7,6 +7,8 @@ const FilterRows = ({ filters, setFilters }) => {
   const [showingFilters, setShowingFilters] = useState(false);
   const { PuzzleCard } = useContext(AppContext);
 
+  if (filters.deck.length <= 6) { return null; }
+
   if (!showingFilters) {
     return (
       <div className={`${styles.filter_row} ${styles.bottom}`}>
