@@ -11,7 +11,10 @@ const Dropdown = ({ placeholder, onChange, names, counts, alphabetic, disabled, 
   // TODO: present the count nicely
   const options = names.map(s => ({
     value: s,
-    label: s + " (" + (counts[s] || 0) + ")",
+    label: <>
+      <span className={styles.option_name}>{s}</span>
+      <span className={styles.option_count}> ({(counts || {})[s] || 0})</span>
+    </>,
     ...optionColors(s),
   }));
 
