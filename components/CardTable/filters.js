@@ -44,7 +44,7 @@ class Filters {
     if (!this.exclusions[cardStack.tokenID]) { return this; }
     delete this.exclusions[cardStack.tokenID];
 
-    if (this.matches(cardStack)) {
+    if (this.matchesAll(this.matchObject(cardStack))) {
       this.filteredDeck.unshift(cardStack);
       this.pageOffset += 1;
     }
@@ -97,15 +97,49 @@ class Filters {
   }
 
   filterDeck() {
-    this.filteredDeckWithExclusions = this.deck.filter(cardStack => this.matches(cardStack));
+    this.filteredDeckWithExclusions = [];
+    this.countsForDropdownOptions = {};
+    const counts = this.countsForDropdownOptions;
+
+    for (let cardStack of this.deck) {
+      const matchObject = this.matchObject(cardStack);
+
+      for (let [key, value] of Object.entries(cardStack.card)) {
+        if (this.matchesAllIgnoring(key, matchObject)) {
+          counts[key] = counts[key] || {};
+          counts[key][value] = counts[key][value] || 0;
+
+          counts[key][value] += cardStack.quantity;
+        }
+      }
+
+      if (this.matchesAll(matchObject)) {
+        this.filteredDeckWithExclusions.push(cardStack);
+      }
+    }
+
     this.filteredDeck = this.filteredDeckWithExclusions.filter(c => !this.exclusions[c.tokenID]);
 
     this.pageOffset = 0;
     this.dealForwards = true;
   }
 
-  matches(cardStack) {
-    return Object.entries(this.filters).every(([key, value]) => cardStack.card[key] === value);
+  matchesAll(matchObject) {
+    return Object.values(matchObject).every(bool => bool);
+  }
+
+  matchesAllIgnoring(field, matchObject) {
+    return Object.entries(matchObject).every(([key, matches]) => key === field || matches);
+  }
+
+  matchObject(cardStack) {
+    const object = {};
+
+    for (let [key, value] of Object.entries(this.filters)) {
+      object[key] = cardStack.card[key] === value;
+    }
+
+    return object;
   }
 }
 

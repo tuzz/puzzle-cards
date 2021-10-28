@@ -37,15 +37,55 @@ const FilterRows = ({ filters, setFilters }) => {
 
   return <>
     <div className={`${styles.filter_row} ${styles.top}`}>
-      <Dropdown placeholder="Type…" onChange={handleChange("type")} names={PuzzleCard.TYPE_NAMES} alphabetic={true} />
-      <Dropdown placeholder="Color 1…" onChange={handleChange("color1")} names={PuzzleCard.COLOR_NAMES} alphabetic={true} disabled={numColorSlots < 1} alertText={colorAlert} />
-      <Dropdown placeholder="Color 2…" onChange={handleChange("color2")} names={PuzzleCard.COLOR_NAMES} alphabetic={true} disabled={numColorSlots < 2} alertText={colorAlert} />
+      <Dropdown
+        placeholder="Type…"
+        onChange={handleChange("type")}
+        names={PuzzleCard.TYPE_NAMES}
+        counts={filters.countsForDropdownOptions["type"]}
+        alphabetic={true} />
+
+      <Dropdown
+        placeholder="Color 1…"
+        onChange={handleChange("color1")}
+        names={PuzzleCard.COLOR_NAMES}
+        counts={filters.countsForDropdownOptions["color1"]}
+        alphabetic={true}
+        disabled={numColorSlots < 1}
+        alertText={colorAlert} />
+
+      <Dropdown
+        placeholder="Color 2…"
+        onChange={handleChange("color2")}
+        names={PuzzleCard.COLOR_NAMES}
+        counts={filters.countsForDropdownOptions["color2"]}
+        alphabetic={true}
+        disabled={numColorSlots < 2}
+        alertText={colorAlert} />
     </div>
 
     <div className={`${styles.filter_row} ${styles.bottom}`}>
-      <Dropdown menuPlacement="top" placeholder="Tier…" onChange={handleChange("tier")} names={PuzzleCard.TIER_NAMES} />
-      <Dropdown menuPlacement="top" placeholder="Condition…" onChange={handleChange("condition")} names={PuzzleCard.CONDITION_NAMES} />
-      <Dropdown menuPlacement="top" placeholder="Variant…" onChange={handleChange("variant")} names={variantNamesForType} disabled={numVariants === 0} alertText={variantAlert} />
+      <Dropdown
+        menuPlacement="top"
+        placeholder="Tier…"
+        onChange={handleChange("tier")}
+        counts={filters.countsForDropdownOptions["tier"]}
+        names={PuzzleCard.TIER_NAMES} />
+
+      <Dropdown
+        menuPlacement="top"
+        placeholder="Condition…"
+        onChange={handleChange("condition")}
+        counts={filters.countsForDropdownOptions["condition"]}
+        names={PuzzleCard.CONDITION_NAMES} />
+
+      <Dropdown
+        menuPlacement="top"
+        placeholder="Variant…"
+        onChange={handleChange("variant")}
+        counts={filters.countsForDropdownOptions["variant"]}
+        names={variantNamesForType}
+        disabled={numVariants === 0}
+        alertText={variantAlert} />
     </div>
   </>;
 };

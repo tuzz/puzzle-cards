@@ -2,13 +2,18 @@ import { useRef, useEffect } from "react";
 import ReactSelect from "react-select";
 import styles from "./styles.module.scss";
 
-const Dropdown = ({ placeholder, onChange, names, alphabetic, disabled, alertText, ...props }) => {
+const Dropdown = ({ placeholder, onChange, names, counts, alphabetic, disabled, alertText, ...props }) => {
   const ref = useRef();
 
   names = names.filter(s => s !== "None");
   if (alphabetic) { names.sort(); }
 
-  const options = names.map(s => ({ value: s, label: s, ...optionColors(s) }));
+  // TODO: present the count nicely
+  const options = names.map(s => ({
+    value: s,
+    label: s + " (" + (counts[s] || 0) + ")",
+    ...optionColors(s),
+  }));
 
   // Hide the dropdown when it is disabled, but preserve its value so that when
   // it becomes enabled again, it continues to have an effect.
@@ -25,7 +30,7 @@ const Dropdown = ({ placeholder, onChange, names, alphabetic, disabled, alertTex
   useEffect(() => {
     const value = ref.current && ref.current.getValue()[0];
 
-    if (value && !disabled && !names.find(s => s === value.label)) {
+    if (value && !disabled && !names.find(s => s === value.value)) {
       ref.current.setValue(null);
     }
   }, [names]);
@@ -75,7 +80,7 @@ const customStyles = {
     backgroundColor: (selectProps.value || {}).selectedBackground || "#38261b",
     borderColor: (selectProps.value || {}).selectedBorder || "rgba(0, 0, 0, 0.5)",
     borderWidth: "2px",
-    width: (selectProps.value || {}).label === "Reasonable" ? "12rem" : styles.width,
+    width: (selectProps.value || {}).value === "Reasonable" ? "12rem" : styles.width,
   }),
   singleValue: (styles, { selectProps }) => ({ ...styles,
     color: (selectProps.value || {}).selectedForeground || styles.color,
