@@ -35,6 +35,11 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
   useEffect(() => address === loadedAddress && updateMainArea(), [filters]);
 
   useEffect(() => {
+    addEventListener("resize", updateMainArea);
+    return () => removeEventListener("resize", updateMainArea);
+  }, []);
+
+  useEffect(() => {
     setStackPositions(stackPositions => {
       const newStackPositions = [...stackPositions];
       newStackPositions.batchTokenIDs = stackPositions.batchTokenIDs;
