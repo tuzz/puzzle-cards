@@ -3,6 +3,7 @@
   width: 100%;
   height: 5rem;
   display: flex;
+  align-items: center;
   justify-content: space-around;
   flex-wrap: wrap;
 }
@@ -60,4 +61,15 @@
   &:hover .na {
     color: white;
   }
+}
+
+.show_filters {
+  color: rgba(255, 255, 255, 0.85);
+  background: none;
+  border: none;
+  font-family: Arial, sans-serif;
+  font-size: 1.5rem;
+  text-decoration: underline;
+  cursor: pointer;
+  letter-spacing: 1px;
 }

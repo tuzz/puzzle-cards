@@ -1,10 +1,19 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import AppContext from "../AppRoot/context";
 import Dropdown from "./dropdown";
 import styles from "./styles.module.scss";
 
 const FilterRows = ({ filters, setFilters }) => {
+  const [showingFilters, setShowingFilters] = useState(false);
   const { PuzzleCard } = useContext(AppContext);
+
+  if (!showingFilters) {
+    return (
+      <div className={`${styles.filter_row} ${styles.bottom}`}>
+        <button className={styles.show_filters} onClick={() => setShowingFilters(true)}>Show filters</button>
+      </div>
+    );
+  }
 
   const handleChange = (field) => (option) => {
     setFilters(f => f.set(field, option ? option.value : undefined));
