@@ -6,6 +6,10 @@
   animation-duration: 500ms;
 }
 
+.iframe, .back {
+  box-shadow: 0 0 0.2rem rgba(0, 0, 0, 0.2);
+}
+
 .flippable, .iframe, .back {
   width: 15rem;
   height: 21rem;
