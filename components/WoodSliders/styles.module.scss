@@ -3,6 +3,20 @@
   top: -0.7rem;
   width: 100%;
   height: 24.2rem;
+
+  &.off_screen {
+    .left {
+      left: -51% !important;
+    }
+
+    .right {
+      right: -51% !important;
+    }
+
+    .line_dash {
+      opacity: 0;
+    }
+  }
 }
 
 .left, .right {

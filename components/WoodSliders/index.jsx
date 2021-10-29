@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "./styles.module.scss";
 
-const WoodSliders = ({ transactState, onButtonClick = () => {}, onSlidersClosed = () => {} }) => {
+const WoodSliders = ({ filters, transactState, onButtonClick = () => {}, onSlidersClosed = () => {} }) => {
   const [state, setState] = useState(0);
 
   useEffect(() => {
@@ -23,9 +23,10 @@ const WoodSliders = ({ transactState, onButtonClick = () => {}, onSlidersClosed 
 
   const stateName = patterns[state][0];
   const disabled = stateName !== "initial" || !transactState.initial();
+  const offScreen = filters.deck.length <= 6;
 
   return (
-    <div className={`${styles.wood_sliders} ${stateName}_state`}>
+    <div className={`${styles.wood_sliders} ${stateName}_state ${offScreen && styles.off_screen}`}>
       <div className={styles.left}>
         <button onClick={nextState} disabled={disabled} className={styles.hourglass}></button>
       </div>
