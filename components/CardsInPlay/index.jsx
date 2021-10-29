@@ -10,6 +10,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
   const { maxZIndex } = useContext(DragContext);
 
   const [loadedAddress, setLoadedAddress] = useState(address);
+  const [resizeListener, setResizeListener] = useState();
   const [releasePoller, setReleasePoller] = useState();
   const [draggedTokenIDs, setDraggedTokenIDs] = useState([]);
   const [stackPositions, _setStackPositions] = useState(withBatchTokenIDs([]));
@@ -35,9 +36,15 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
   useEffect(() => address === loadedAddress && updateMainArea(), [filters]);
 
   useEffect(() => {
-    addEventListener("resize", updateMainArea);
-    return () => removeEventListener("resize", updateMainArea);
-  }, []);
+    setResizeListener(previous => {
+      removeEventListener("resize", previous);
+      addEventListener("resize", updateMainArea);
+
+      return updateMainArea;
+    });
+
+    return () => removeEventListener("resize", resizeListener);
+  }, [loadedAddress]);
 
   useEffect(() => {
     setStackPositions(stackPositions => {
