@@ -107,3 +107,37 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(180deg); }
 }
+
+.left_dashed_lines, .right_dashed_lines {
+  position: absolute;
+  top: 23.3rem;
+}
+
+.left_dashed_lines {
+  left: 5rem;
+
+  .line_dash {
+    margin-right: 0.7rem;
+  }
+}
+
+.right_dashed_lines {
+  right: 5rem;
+
+  .line_dash {
+    margin-left: 0.7rem;
+  }
+}
+
+.line_dash {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.2rem;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+@media only screen and (max-width: 720px) {
+  .line_dash {
+    display: none;
+  }
+}

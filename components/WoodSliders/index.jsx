@@ -33,6 +33,14 @@ const WoodSliders = ({ transactState, onButtonClick = () => {}, onSlidersClosed 
       <div className={styles.right}>
         <button onClick={nextState} disabled={disabled} className={styles.hourglass}></button>
       </div>
+
+      <div className={styles.left_dashed_lines}>
+        {[...Array(5).keys()].map(() => <div className={styles.line_dash}></div>)}
+      </div>
+
+      <div className={styles.right_dashed_lines}>
+        {[...Array(5).keys()].map(() => <div className={styles.line_dash}></div>)}
+      </div>
     </div>
   );
 };
