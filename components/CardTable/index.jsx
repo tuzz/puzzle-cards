@@ -10,6 +10,7 @@ import DragRegion from "../DragRegion";
 import CardsInPlay from "../CardsInPlay";
 import Pagination from "../Pagination";
 import CardOutline from "../CardOutline";
+import WoodSliders from "../WoodSliders";
 import styles from "./styles.module.scss";
 import Filters from "./filters";
 
@@ -134,6 +135,7 @@ const CardTable = () => {
 
         <div className={styles.felt_cloth}>
           <CardOutline channel={channel} />
+          <WoodSliders />
           <Pagination filters={filters} setFilters={setFilters} />
         </div>
       </TableEdge>
