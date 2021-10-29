@@ -70,7 +70,7 @@
 :global(.initial_state) .hourglass:disabled {
   background-color: rgba(255, 255, 255, 0.25);
   background-image: url("/images/crossed_hourglass.png");
-
+  animation-name: none;
   cursor: not-allowed;
 }
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "./styles.module.scss";
 
-const WoodSliders = ({ onClosed = () => {} }) => {
+const WoodSliders = ({ transactState, onClosed = () => {} }) => {
   const [state, setState] = useState(0);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const WoodSliders = ({ onClosed = () => {} }) => {
   };
 
   const stateName = patterns[state][0];
-  const disabled = stateName !== "initial";
+  const disabled = stateName !== "initial" || !transactState.initial();
 
   return (
     <div className={`${styles.wood_sliders} ${stateName}_state`}>
