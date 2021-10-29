@@ -7,7 +7,7 @@
 
 .left, .right {
   position: absolute;
-  width: 50%;
+  width: 50.1%;
   height: 22.8rem;
 
   border-top: 0.7rem solid #38261b;
@@ -74,29 +74,29 @@
   cursor: not-allowed;
 }
 
-:global(.initial_state) .left { left: calc(-50% + 5rem); }
-:global(.initial_state) .right { right: calc(-50% + 5rem); }
+:global(.initial_state) .left { left: calc(-50.1% + 5rem); }
+:global(.initial_state) .right { right: calc(-50.1% + 5rem); }
 
-:global(.align_cards_state) .left { left: calc(-50% + 5rem); }
-:global(.align_cards_state) .right { right: calc(-50% + 5rem); }
+:global(.align_cards_state) .left { left: calc(-50.1% + 5rem); }
+:global(.align_cards_state) .right { right: calc(-50.1% + 5rem); }
 
 :global(.close_both_state) .left { left: 0; }
 :global(.close_both_state) .right { right: 0; }
 
-:global(.open_both_state) .left { left: calc(-50% + 5rem); }
-:global(.open_both_state) .right { right: calc(-50% + 5rem); }
+:global(.open_both_state) .left { left: calc(-50.1% + 5rem); }
+:global(.open_both_state) .right { right: calc(-50.1% + 5rem); }
 
-:global(.open_left_first_state) .left { left: calc(-50% + 5rem); }
+:global(.open_left_first_state) .left { left: calc(-50.1% + 5rem); }
 :global(.open_left_first_state) .right { right: 0 }
 
 :global(.open_right_first_state) .left { left: 0 }
-:global(.open_right_first_state) .right { right: calc(-50% + 5rem); }
+:global(.open_right_first_state) .right { right: calc(-50.1% + 5rem); }
 
-:global(.open_left_second_state) .left { left: calc(-50% + 5rem); }
-:global(.open_left_second_state) .right { right: calc(-50% + 5rem); }
+:global(.open_left_second_state) .left { left: calc(-50.1% + 5rem); }
+:global(.open_left_second_state) .right { right: calc(-50.1% + 5rem); }
 
-:global(.open_right_second_state) .left { left: calc(-50% + 5rem); }
-:global(.open_right_second_state) .right { right: calc(-50% + 5rem); }
+:global(.open_right_second_state) .left { left: calc(-50.1% + 5rem); }
+:global(.open_right_second_state) .right { right: calc(-50.1% + 5rem); }
 
 @keyframes spin-counter-clockwise {
   from { transform: rotate(0deg); }
