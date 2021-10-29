@@ -97,6 +97,10 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
 
       return newStackPositions;
     });
+
+    for (let cardStack of cardStacks) {
+      onStackMoved({ cardStack, movedTo: null });
+    }
   };
 
   const updateMainArea = () => {

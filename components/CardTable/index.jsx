@@ -119,9 +119,6 @@ const CardTable = () => {
 
   const clearHourglassStacks = () => {
     channel.clearStacks(hourglassStacks);
-
-    setHourglassStacks([]);
-    setChosenStacks([]);
   };
 
   const buttonFlashing = transactState.requesting() || transactState.processing();
