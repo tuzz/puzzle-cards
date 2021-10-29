@@ -44,6 +44,7 @@ const Dropdown = ({ placeholder, onChange, names, counts, alphabetic, disabled, 
         placeholder={placeholder}
         onChange={onChange}
         options={options}
+        classNamePrefix="dropdown"
         className={`${styles.dropdown} ${disabled && styles.display_none}`}
         styles={customStyles}
         theme={theme}
@@ -69,8 +70,6 @@ const optionColors = (name) => {
     "Pink":   { selectedForeground: "#f0e", selectedBorder: "#f0e", optionForeground: "#c0b" },
     "White":  { selectedForeground: "#fff", selectedBorder: "#fff", optionForeground: "#777" },
     "Black":  { selectedForeground: "#fff", selectedBorder: "#97f", optionForeground: "#000", selectedBackground: "#111" },
-
-    "Hidden":  { selectedForeground: "#38261b" },
 
     "Godly":  { selectedForeground: "#000", selectedBorder: "#ff0", selectedBackground: "#fff" },
     "Master":  { selectedForeground: "#fff", selectedBorder: "#97f", selectedBackground: "#111" },

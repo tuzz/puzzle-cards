@@ -44,6 +44,13 @@
 
 .option_count {
   color: #38261b;
+  display: none;
+}
+
+:global(.dropdown__menu) {
+  .option_count {
+    display: inline;
+  }
 }
 
 .fake_dropdown {
