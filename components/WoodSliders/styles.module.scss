@@ -27,10 +27,6 @@
   align-items: center;
 }
 
-.left {
-  transform: scaleX(-1);
-}
-
 .hourglass {
   position: absolute;
   width: 4.5rem;
@@ -46,10 +42,36 @@
   border-radius: 50%;
   cursor: pointer;
   box-shadow: inset 0 -0.1rem 0.2rem rgb(0, 0, 0, 0.5);
+  transition: background-color 250ms linear;
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.5);
   }
+
+  &:disabled {
+    background-color: rgba(255, 255, 255, 0.5);
+    background-image: url("/images/hourglass.png");
+
+    animation-name: spin-counter-clockwise;
+    animation-duration: 2000ms;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+  }
+}
+
+.left {
+  transform: scaleX(-1);
+
+  .hourglass:disabled {
+    animation-name: spin-clockwise;
+  }
+}
+
+:global(.initial_state) .hourglass:disabled {
+  background-color: rgba(255, 255, 255, 0.25);
+  background-image: url("/images/crossed_hourglass.png");
+
+  cursor: not-allowed;
 }
 
 :global(.initial_state) .left { left: calc(-50% + 5rem); }
@@ -72,3 +94,13 @@
 
 :global(.open_right_second_state) .left { left: calc(-50% + 5rem); }
 :global(.open_right_second_state) .right { right: calc(-50% + 5rem); }
+
+@keyframes spin-counter-clockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-180deg); }
+}
+
+@keyframes spin-clockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(180deg); }
+}

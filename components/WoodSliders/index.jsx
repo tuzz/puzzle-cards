@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "./styles.module.scss";
 
-const WoodSliders = () => {
+const WoodSliders = ({ onClosed = () => {} }) => {
   const [state, setState] = useState(0);
 
   useEffect(() => {
@@ -12,16 +12,27 @@ const WoodSliders = () => {
     }
   }, [state]);
 
-  const nextState = () => setState(i => (i + 1) % patterns.length);
+  const nextState = () => {
+    const [stateName, _] = patterns[state];
+
+    if (stateName === "close_both") {
+      onClosed();
+    }
+
+    setState(i => (i + 1) % patterns.length)
+  };
+
+  const stateName = patterns[state][0];
+  const disabled = stateName !== "initial";
 
   return (
-    <div className={`${styles.wood_sliders} ${patterns[state][0]}_state`}>
+    <div className={`${styles.wood_sliders} ${stateName}_state`}>
       <div className={styles.left}>
-        <button onClick={nextState} className={styles.hourglass}></button>
+        <button onClick={nextState} disabled={disabled} className={styles.hourglass}></button>
       </div>
 
       <div className={styles.right}>
-        <button onClick={nextState} className={styles.hourglass}></button>
+        <button onClick={nextState} disabled={disabled} className={styles.hourglass}></button>
       </div>
     </div>
   );
@@ -30,17 +41,20 @@ const WoodSliders = () => {
 const patterns = [
   ["initial", 1200],
   ["close_both", 1000],
+  ["open_both", 1300],
   ["open_both", null],
 
   ["initial", 1000],
   ["close_both", 800],
-  ["open_right_first", 600],
-  ["open_left_second", null],
+  ["open_right_first", 700],
+  ["open_left_second", 1000],
+  ["open_both", null],
 
   ["initial", 1000],
   ["close_both", 800],
-  ["open_left_first", 600],
-  ["open_right_second", null],
+  ["open_left_first", 700],
+  ["open_right_second", 1000],
+  ["open_both", null],
 ];
 
 export default WoodSliders;

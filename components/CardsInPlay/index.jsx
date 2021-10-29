@@ -5,7 +5,7 @@ import CardStack from "../CardStack";
 import layout from "./layout";
 import styles from "./styles.module.scss";
 
-const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, filters, setFilters }) => {
+const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, filters, setFilters, channel }) => {
   const { address, decks } = useContext(AppContext);
   const { maxZIndex } = useContext(DragContext);
 
@@ -64,6 +64,19 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
     stackPositions.forEach(p => onStackMoved({ cardStack: p.cardStack, movedTo: null }));
     setLoadedAddress();
     setStackPositions([]);
+  };
+
+  // The caller is responsible for ensuring hourglassStacks and chosenStacks are updated.
+  channel.clearStacks = (cardStacks) => {
+    const tokenIDs = {};
+    cardStacks.forEach(s => tokenIDs[s.tokenID] = true);
+
+    setStackPositions(stackPositions => {
+      const newStackPositions = stackPositions.filter(p => !tokenIDs[p.cardStack.tokenID]);
+      newStackPositions.batchTokenIDs = stackPositions.batchTokenIDs;
+
+      return newStackPositions;
+    });
   };
 
   const updateMainArea = () => {

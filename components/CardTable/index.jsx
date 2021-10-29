@@ -113,6 +113,13 @@ const CardTable = () => {
     channel.waitForStickToFinishMoving().then(() => setTransactState(TransactState.INITIAL));
   };
 
+  const clearHourglassStacks = () => {
+    channel.clearStacks(hourglassStacks);
+
+    setHourglassStacks([]);
+    setChosenStacks([]);
+  };
+
   const buttonFlashing = transactState.requesting() || transactState.processing();
   const buttonEnabled = buttonAction && !buttonFlashing;
 
@@ -130,12 +137,12 @@ const CardTable = () => {
         <FilterRows filters={filters} setFilters={setFilters} />
 
         <DragRegion>
-          <CardsInPlay onStackMoved={handleStackMoved} transactState={transactState} chosenStacks={chosenStacks} filters={filters} setFilters={setFilters} />
+          <CardsInPlay onStackMoved={handleStackMoved} transactState={transactState} chosenStacks={chosenStacks} filters={filters} setFilters={setFilters} channel={channel} />
         </DragRegion>
 
         <div className={styles.felt_cloth}>
           <CardOutline channel={channel} />
-          <WoodSliders />
+          <WoodSliders onClosed={clearHourglassStacks} />
           <Pagination filters={filters} setFilters={setFilters} />
         </div>
       </TableEdge>
