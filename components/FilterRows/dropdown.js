@@ -8,7 +8,6 @@ const Dropdown = ({ placeholder, onChange, names, counts, alphabetic, disabled, 
   names = names.filter(s => s !== "None");
   if (alphabetic) { names.sort(); }
 
-  // TODO: present the count nicely
   const options = names.map(s => ({
     value: s,
     label: <>
