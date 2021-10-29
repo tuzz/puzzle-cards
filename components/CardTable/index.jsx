@@ -113,6 +113,10 @@ const CardTable = () => {
     channel.waitForStickToFinishMoving().then(() => setTransactState(TransactState.INITIAL));
   };
 
+  const alignCardsWithSliders = () => {
+    channel.alignStacks(hourglassStacks);
+  }
+
   const clearHourglassStacks = () => {
     channel.clearStacks(hourglassStacks);
 
@@ -142,7 +146,7 @@ const CardTable = () => {
 
         <div className={styles.felt_cloth}>
           <CardOutline channel={channel} />
-          <WoodSliders transactState={transactState} onClosed={clearHourglassStacks} />
+          <WoodSliders transactState={transactState} onButtonClick={alignCardsWithSliders} onSlidersClosed={clearHourglassStacks} />
           <Pagination filters={filters} setFilters={setFilters} />
         </div>
       </TableEdge>

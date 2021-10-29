@@ -66,6 +66,26 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
     setStackPositions([]);
   };
 
+  channel.alignStacks = (cardStacks) => {
+    const tokenIDs = {};
+    cardStacks.forEach(s => tokenIDs[s.tokenID] = true);
+
+    setStackPositions(stackPositions => {
+      const newStackPositions = [...stackPositions];
+      newStackPositions.batchTokenIDs = stackPositions.batchTokenIDs;
+
+      for (let stackPosition of newStackPositions) {
+        if (tokenIDs[stackPosition.cardStack.tokenID]) {
+          stackPosition.withinY = layout.slidersYBounds();
+          stackPosition.flipped = true;
+          stackPosition.flipDirection = -1;
+        }
+      }
+
+      return newStackPositions;
+    });
+  };
+
   // The caller is responsible for ensuring hourglassStacks and chosenStacks are updated.
   channel.clearStacks = (cardStacks) => {
     const tokenIDs = {};

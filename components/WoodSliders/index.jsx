@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styles from "./styles.module.scss";
 
-const WoodSliders = ({ transactState, onClosed = () => {} }) => {
+const WoodSliders = ({ transactState, onButtonClick = () => {}, onSlidersClosed = () => {} }) => {
   const [state, setState] = useState(0);
 
   useEffect(() => {
@@ -15,9 +15,8 @@ const WoodSliders = ({ transactState, onClosed = () => {} }) => {
   const nextState = () => {
     const [stateName, _] = patterns[state];
 
-    if (stateName === "close_both") {
-      onClosed();
-    }
+    if (stateName === "initial") { onButtonClick(); }
+    if (stateName === "close_both") { onSlidersClosed(); }
 
     setState(i => (i + 1) % patterns.length)
   };
@@ -39,22 +38,22 @@ const WoodSliders = ({ transactState, onClosed = () => {} }) => {
 };
 
 const patterns = [
-  ["initial", 1200],
+  ["initial", 1000],
+  ["align_cards", 1200],
   ["close_both", 1000],
   ["open_both", 1300],
-  ["open_both", null],
 
   ["initial", 1000],
+  ["align_cards", 1000],
   ["close_both", 800],
   ["open_right_first", 700],
   ["open_left_second", 1000],
-  ["open_both", null],
 
   ["initial", 1000],
+  ["align_cards", 1000],
   ["close_both", 800],
   ["open_left_first", 700],
   ["open_right_second", 1000],
-  ["open_both", null],
 ];
 
 export default WoodSliders;

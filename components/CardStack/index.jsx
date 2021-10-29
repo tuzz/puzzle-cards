@@ -4,7 +4,7 @@ import Zoomable from "../Zoomable";
 import Flippable from "../Flippable";
 import styles from "./styles.module.scss";
 
-const CardStack = ({ cardStack, startPosition, position, dealDelay, fadeIn = true, flipped, flipDirection = 1, onMoved = () => {} }) => {
+const CardStack = ({ cardStack, startPosition, position, withinY, dealDelay, fadeIn = true, flipped, flipDirection = 1, onMoved = () => {} }) => {
   const [dealing, setDealing] = useState(dealDelay && dealDelay > 0);
   const [zoomed, setZoomed] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -41,7 +41,7 @@ const CardStack = ({ cardStack, startPosition, position, dealDelay, fadeIn = tru
   const iframeSrc = `/embed?${cardStack.card.embedQueryString()}`;
 
   return (
-    <Draggable bounds="parent" startPosition={startPosition} position={position} zoomed={zoomed} onClick={zoomIn} onStop={handleStop} disabled={zoomed} className={`${fadeIn && styles.fade_in}`}>
+    <Draggable bounds="parent" startPosition={startPosition} position={position} withinY={withinY} zoomed={zoomed} onClick={zoomIn} onStop={handleStop} disabled={zoomed} className={`${fadeIn && styles.fade_in}`}>
       <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={rotation}>
         <Flippable flipped={!loaded || flipped} direction={flipDirection} className={styles.flippable}>
           <iframe src={iframeSrc} onLoad={() => setLoaded(true)} className={styles.iframe}>

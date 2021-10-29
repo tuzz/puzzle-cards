@@ -97,3 +97,10 @@ module.exports.outlinePosition = () => {
 
   return { left, top, rotation: { degrees: 0 } };
 };
+
+module.exports.slidersYBounds = () => {
+  const top = outlineTop - 2.5 * oneRem + 8;
+  const bottom = outlineTop - 8;
+
+  return { top, bottom };
+};
