@@ -67,6 +67,8 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
   };
 
   channel.alignStacks = (cardStacks) => {
+    if (cardStacks.length === 0) { return; }
+
     const tokenIDs = {};
     cardStacks.forEach(s => tokenIDs[s.tokenID] = true);
 
@@ -88,6 +90,8 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
 
   // The caller is responsible for ensuring hourglassStacks and chosenStacks are updated.
   channel.clearStacks = (cardStacks) => {
+    if (cardStacks.length === 0) { return; }
+
     const tokenIDs = {};
     cardStacks.forEach(s => tokenIDs[s.tokenID] = true);
 
@@ -100,14 +104,19 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
 
     for (let cardStack of cardStacks) {
       onStackMoved({ cardStack, movedTo: null });
+      setFilters(f => f.include(cardStack));
     }
+
+    setFilters(f => f.shallowCopy());
   };
 
   const updateMainArea = () => {
     if (address !== loadedAddress) { return; }
 
+    const pageOffset = Math.max(0, filters.pageOffset);
+
     const numColumns = layout.numColumnsBasedOnPageWidth();
-    const numCards = filters.filteredDeck.length - filters.pageOffset;
+    const numCards = filters.filteredDeck.length - pageOffset;
 
     const [positions, maxPageSize] = layout.evenPositions(numColumns, numCards);
 
@@ -124,7 +133,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
       // stacks in the main area won't affect chosenStacks or hourglassStacks.
 
       for (let i = 0; i < positions.length; i += 1) {
-        const cardStack = filters.filteredDeck[filters.pageOffset + i];
+        const cardStack = filters.filteredDeck[pageOffset + i];
         const startPosition = positions[i];
         const flipDirection = filters.dealForwards ? 1 : -1;
         const dealDelay = (filters.dealForwards ? i : (positions.length - i - 1)) * 100;

@@ -46,7 +46,6 @@ class Filters {
 
     if (this.matchesAll(this.matchObject(cardStack))) {
       this.filteredDeck.unshift(cardStack);
-      this.pageOffset += 1;
     }
 
     return this; // Don't re-render when moving card stacks to/from the hourglass area.
@@ -60,10 +59,7 @@ class Filters {
 
     if (index !== -1) {
       this.filteredDeck.splice(index, 1);
-
-      if (index <= this.pageOffset) {
-        this.pageOffset -= 1;
-      }
+      this.pageOffset -= 1;
     }
 
     return this;
