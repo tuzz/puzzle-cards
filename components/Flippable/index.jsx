@@ -1,7 +1,7 @@
 import { useState } from "react";
 import styles from "./styles.module.scss";
 
-const Flippable = ({ flipped = false, direction = 1, className, children = [] }) => {
+const Flippable = ({ flipped = false, direction = 1, delay = 0, className, children = [] }) => {
   if (children.length !== 2) { throw new Error("Expected 2 children"); }
 
   const [rotation, setRotation] = useState(0);
@@ -15,7 +15,7 @@ const Flippable = ({ flipped = false, direction = 1, className, children = [] })
 
   return (
     <div className={`${styles.three_d_space} ${className}`}>
-      <div className={styles.flippable} style={{ transform: `rotateY(${rotation}deg)` }}>
+      <div className={styles.flippable} style={{ transform: `rotateY(${rotation}deg)`, transitionDelay: `${delay}s` }}>
         <div className={styles.front}>{children[0]}</div>
         <div className={styles.back}>{children[1]}</div>
       </div>

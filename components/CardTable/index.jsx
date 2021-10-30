@@ -8,9 +8,10 @@ import TableEdge from "../TableEdge";
 import FilterRows from "../FilterRows";
 import DragRegion from "../DragRegion";
 import CardsInPlay from "../CardsInPlay";
-import Pagination from "../Pagination";
+import MintChip from "../MintChip";
 import CardOutline from "../CardOutline";
 import WoodSliders from "../WoodSliders";
+import Pagination from "../Pagination";
 import styles from "./styles.module.scss";
 import Filters from "./filters";
 
@@ -139,6 +140,7 @@ const CardTable = () => {
 
         <DragRegion>
           <CardsInPlay onStackMoved={handleStackMoved} transactState={transactState} chosenStacks={chosenStacks} filters={filters} setFilters={setFilters} channel={channel} />
+          <MintChip filters={filters} />
         </DragRegion>
 
         <div className={styles.felt_cloth}>

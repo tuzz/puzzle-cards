@@ -1,0 +1,36 @@
+.flippable, .front, .back {
+  width: 9.14rem;
+  height: 9.14rem;
+  pointer-events: none;
+}
+
+.front {
+  background-image: url("/images/poker_chip.png");
+  background-size: 100%;
+}
+
+.back {
+  background-image: url("/images/poker_chip2.png");
+  background-size: 100%;
+}
+
+@media only screen and (min-width: 921px) {
+  .draggable {
+    left: calc(50% - 20rem);
+    top: 14rem;
+  }
+}
+
+@media only screen and (max-width: 920px) {
+  .draggable {
+    &:not(.sliders_off_screen) {
+      left: calc(50% - 4.57rem);
+      bottom: 6.4rem;
+    }
+
+    &.sliders_off_screen {
+      left: calc(50% - 13rem);
+      top: 14rem;
+    }
+  }
+}

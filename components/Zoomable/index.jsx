@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import styles from "./styles.module.scss";
 
-const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { degrees: null, base: 0, random: 0, initial: null }, children }) => {
+const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { degrees: null, base: 0, random: 0, initial: null }, duration = 0.5, children }) => {
   const ref = useRef();
 
   const [angle, setAngle] = useState();
@@ -38,7 +38,7 @@ const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { deg
   ].join(" ");
 
   return (
-    <div className={styles.zoomable} ref={ref} style={{ transform }}>
+    <div className={styles.zoomable} ref={ref} style={{ transform, transitionDuration: `${duration}s` }}>
       {children}
     </div>
   );

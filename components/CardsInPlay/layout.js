@@ -91,6 +91,8 @@ module.exports.cardFanPosition = (tokenID, tokenIDsInCardFan, maxZIndex, degrees
 };
 
 module.exports.outlinePosition = () => {
+  if (typeof document === "undefined") { return {}; }
+
   const pageMiddle = document.body.clientWidth / 2;
   const left = pageMiddle - stackWidth / 2;
   const top = outlineTop;

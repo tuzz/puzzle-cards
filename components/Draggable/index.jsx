@@ -95,7 +95,6 @@ const Draggable = ({ startPosition = {}, position, withinY, zoomed, disabled, cl
     const left = rect.x;
     const top = Math.min(withinY.bottom, Math.max(rect.y, withinY.top));
 
-    console.log(top, withinY, rect);
     position = { left, top };
   }
 

@@ -28,6 +28,7 @@ const CardStack = ({ cardStack, startPosition, position, withinY, dealDelay, fad
 
   const zoomOut = () => {
     removeEventListener("mousedown", zoomOut);
+    removeEventListener("scroll", zoomOut);
     setZoomed(false);
   };
 
