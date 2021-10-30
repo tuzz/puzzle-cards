@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Head from "next/head";
 import styles from "./styles.module.scss";
 
 const WoodSliders = ({ filters, transactState, onButtonClick = () => {}, onSlidersClosed = () => {} }) => {
@@ -25,7 +26,7 @@ const WoodSliders = ({ filters, transactState, onButtonClick = () => {}, onSlide
   const disabled = stateName !== "initial" || !transactState.initial();
   const offScreen = filters.deck.length <= 6;
 
-  return (
+  return <>
     <div className={`${styles.wood_sliders} ${stateName}_state ${offScreen && styles.off_screen}`}>
       <div className={styles.left}>
         <button onClick={nextState} disabled={disabled} className={styles.hourglass}></button>
@@ -43,7 +44,11 @@ const WoodSliders = ({ filters, transactState, onButtonClick = () => {}, onSlide
         {[...Array(5).keys()].map(i => <div key={i} className={styles.line_dash}></div>)}
       </div>
     </div>
-  );
+
+    <Head>
+      <link rel="prefetch" href="/images/hourglass.png" />
+    </Head>
+  </>;
 };
 
 const patterns = [
