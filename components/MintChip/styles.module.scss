@@ -1,3 +1,12 @@
+.draggable {
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+}
+
+.loaded {
+  opacity: 1;
+}
+
 .flippable, .front, .back {
   width: 9.14rem;
   height: 9.14rem;
@@ -18,6 +27,7 @@
   .draggable {
     left: calc(50% - 20rem);
     top: 14rem;
+    opacity: 1;
   }
 }
 
