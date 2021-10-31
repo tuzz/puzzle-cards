@@ -31,8 +31,8 @@ const MintChip = ({ filters }) => {
 
   return (
     <Draggable bounds="parent" zoomed={zoomed} onClick={zoomIn} disabled={zoomed} className={`${styles.draggable} ${loaded && styles.loaded} ${slidersOffScreen && styles.sliders_off_screen}`}>
-      <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={rotation} duration={2}>
-        <Flippable flipped={zoomed} direction={Math.random() < 0.5 ? 1 : -1} delay={zoomed ? 0 : 0.75} className={styles.flippable}>
+      <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={rotation} duration={1.5} minWidth={800} minHeight={800}>
+        <Flippable flipped={zoomed} direction={Math.random() < 0.5 ? 1 : -1} delay={zoomed ? 0 : 0.5} className={styles.flippable}>
           <div className={styles.front}></div>
           <div className={styles.back}></div>
         </Flippable>

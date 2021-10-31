@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import styles from "./styles.module.scss";
 
-const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { degrees: null, base: 0, random: 0, initial: null }, duration = 0.5, children }) => {
+const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { degrees: null, base: 0, random: 0, initial: null }, duration = 0.5, minWidth, minHeight, children }) => {
   const ref = useRef();
 
   const [angle, setAngle] = useState();
@@ -20,7 +20,10 @@ const Zoomable = ({ zoomed = true, rotateWhenZoomedOut = false, rotation = { deg
 
   const maxZoomThatFitsOnScreen = () => {
     const { x, y, width, height } = ref.current.getBoundingClientRect();
-    const [maxWidth, maxHeight] = [window.innerWidth * 0.8, window.innerHeight * 0.8];
+    let [maxWidth, maxHeight] = [window.innerWidth * 0.8, window.innerHeight * 0.8];
+
+    if (minWidth) { maxWidth = Math.max(maxWidth, minWidth); }
+    if (minHeight) { maxHeight = Math.max(maxHeight, minHeight); }
 
     const scale = Math.min(maxWidth / width, maxHeight / height);
     const translateX = ((window.innerWidth / 2) - (x + width / 2)) / scale;
