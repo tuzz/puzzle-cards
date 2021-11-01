@@ -55,6 +55,8 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     // minting
 
     function mint(uint256 numberToMint, address to) external payable {
+        if (to == address(0)) { to = msg.sender; }
+
         payable(owner()).transfer(numberToMint * pricePerCard);
         mintStarterCards(numberToMint, to);
     }

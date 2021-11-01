@@ -31,6 +31,16 @@ describe("Minting", () => {
       expect(numOwned).to.equal(1);
     });
 
+    it("mints to the msg.sender if no address is given", async () => {
+      PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
+
+      const cards = await PuzzleCard.mint(1);
+      expect(cards.length).to.equal(1);
+
+      const numOwned = await PuzzleCard.numberOwned(cards[0], user1.address);
+      expect(numOwned).to.equal(1);
+    });
+
     it("sends payment to the contract owner", async () => {
       const balanceBefore = await ethers.provider.getBalance(owner.address);
 

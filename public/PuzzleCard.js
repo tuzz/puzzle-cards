@@ -192,7 +192,9 @@ class PuzzleCard {
     PuzzleCard.CONTRACT = contract;
   }
 
-  static mint(numberToMint, to, { wait = true }) {
+  static mint(numberToMint, to, { wait = true } = {}) {
+    to = to || PuzzleCard.ZERO_ADDRESS; // Cards are minted to the msg.sender if address(0).
+
     return PuzzleCard.pricePerCard().then(price => (
       PuzzleCard.inBatches(numberToMint, (batchSize) => {
         const gasLimit = PuzzleCard.gasLimitToMint(batchSize);
@@ -353,7 +355,7 @@ class PuzzleCard {
 
   // onlyOwner contract methods
 
-  static gift(numberToGift, to, { wait = true }) { // Only callable by the contract owner.
+  static gift(numberToGift, to, { wait = true } = {}) { // Only callable by the contract owner.
     return PuzzleCard.inBatches(numberToGift, (batchSize) => {
       const gasLimit = PuzzleCard.gasLimitToMint(batchSize);
 
@@ -632,7 +634,9 @@ PuzzleCard.STANDARD_TYPE_PROBABILITIES = [300, 100, 100, 200, 100, 100, 20, 20, 
 PuzzleCard.VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
 PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
+PuzzleCard.ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0x58807bad0b376efc12f5ad86aac70e78ed67deae";
+
 PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
 PuzzleCard.EMBED_URI = "https://puzzlecards.github.io/embed";
 PuzzleCard.DECKS_URI = "https://puzzlecards.github.io/decks";
@@ -692,8 +696,8 @@ PuzzleCard.ERROR_STRINGS = [
   "[a color was repeated]",
 ];
 
-PuzzleCard.CONTRACT_ADDRESS = "0xb324983fB5BA6c4421e1f004dEf1767765782Fde";
-PuzzleCard.CONTRACT_BLOCK = 20209157;
+PuzzleCard.CONTRACT_ADDRESS = "0xD937Eeb2eD57Cb87678aBbD98d3Fa0a3864B83Fd";
+PuzzleCard.CONTRACT_BLOCK = 20922860;
 PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
 
 PuzzleCard.CONTRACT_ABI = [

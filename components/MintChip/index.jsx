@@ -10,15 +10,15 @@ const TIER_PRICES = [1, 5, 20, 100, 700, 5000, 50000]; // TODO: add support for 
 const maxMintTier = 2; // TODO: restrict max mint tier per user address in the contract
 
 const MintChip = ({ filters, onMoved = () => {}, channel }) => {
-  const { PuzzleCard, address } = useContext(AppContext);
+  const { PuzzleCard } = useContext(AppContext);
   const dropdowns = [{ ref: useRef() }, { ref: useRef() }];
 
   const [zoomed, setZoomed] = useState(false);
   const [numCards, setNumCards] = useState(1);
   const [tier, setTier] = useState(0);
 
-  //channel.mintArgs = () => [numCards, tier, address]; // TODO: add support for tier to contract
-  channel.mintArgs = () => [numCards, address];
+  //channel.mintArgs = () => [numCards, tier, PuzzleCard.ZERO_ADDRESS]; // TODO
+  channel.mintArgs = () => [numCards, PuzzleCard.ZERO_ADDRESS]; // Mint to the msg.sender.
 
   const zoomIn = () => {
     setZoomed(true);
