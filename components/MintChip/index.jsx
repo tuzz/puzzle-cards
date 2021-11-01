@@ -26,9 +26,12 @@ const MintChip = ({ filters }) => {
   };
 
   const zoomOut = (event) => {
-    // Don't zoom out if the user clicked on either of the dropdowns.
     const path = event.path || (event.composedPath && event.composedPath());
-    if (path.some(node => dropdowns.some(d => node === d.ref.current))) { return; }
+
+    // Don't zoom out if the user clicked on one of the dropdowns.
+    const dropdownIndex = dropdowns.findIndex(d => path.some(node => node === d.ref.current));
+    if (dropdownIndex === 0) { dropdowns[1].setShowMenu(false); return; }
+    if (dropdownIndex === 1) { dropdowns[0].setShowMenu(false); return; }
 
     // Don't zoom out if the user clicked on the chip while either dropdown was open.
     const isOpen = dropdowns.some(d => d.ref.current.children.length === 3);
