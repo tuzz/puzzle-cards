@@ -15,6 +15,10 @@
   }
 }
 
+.back img {
+  image-rendering: -moz-crisp-edges;
+}
+
 .content {
   display: flex;
   align-items: center;
