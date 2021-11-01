@@ -3,11 +3,14 @@ import AppContext from "../AppRoot/context"
 import Draggable from "../Draggable";
 import Zoomable from "../Zoomable";
 import Flippable from "../Flippable";
+import Dropdown from "./dropdown";
 import styles from "./styles.module.scss";
 
 const MintChip = ({ filters }) => {
   const { PuzzleCard } = useContext(AppContext);
   const [zoomed, setZoomed] = useState(false);
+  const [numCards, setNumCards] = useState(1);
+  const [tier, setTier] = useState(0);
 
   const zoomIn = () => {
     setZoomed(true);
@@ -44,6 +47,22 @@ const MintChip = ({ filters }) => {
               <div className={styles.content}>
                 <span className={styles.mint}>Mint</span>
                 <span className={styles.price}>$0.01</span>
+
+                <Dropdown className={styles.number_dropdown} value={numCards} onChange={setNumCards} options={[
+                  { label: "1 card", value: 1 },
+                  { label: "2 cards", value: 2 },
+                  { label: "5 cards", value: 5 },
+                  { label: "10 cards", value: 10 },
+                  { label: "20 cards", value: 20 },
+                  { label: "50 cards", value: 50 },
+                  { label: "100 cards", value: 100 },
+                  { label: "200 cards", value: 200 },
+                  { label: "500 cards", value: 500 },
+                ]} />
+
+                <Dropdown className={styles.tier_dropdown} value={tier} onChange={setTier} options={
+                  PuzzleCard.TIER_NAMES.map((label, value) => ({ label, value }))
+                } />
               </div>
             </div>
           </div>

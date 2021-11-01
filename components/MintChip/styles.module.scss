@@ -15,6 +15,14 @@
   }
 }
 
+.front {
+  pointer-events: none;
+}
+
+.back {
+  cursor: default;
+}
+
 .back img {
   image-rendering: -moz-crisp-edges;
 }
@@ -61,5 +69,80 @@
 
   &.dark_mode .price {
     color: lime;
+  }
+}
+
+.dropdown {
+  width: 2.19em;
+  height: 1.15em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: Times, sans-serif;
+  cursor: pointer;
+  user-select: none;
+
+  .placeholder {
+    font-size: 0.4em;
+    padding-left: 0.35em;
+  }
+
+  .chevron {
+    font-size: 0.6em;
+    color: #777;
+    margin-top: -0.45em;
+    margin-right: 0.15em;
+  }
+
+  // Firefox only.
+  @supports (-moz-appearance:none) {
+    .chevron {
+      margin-top: -0.2em;
+      margin-right: 0.2em;
+    }
+  }
+
+  .menu {
+    position: absolute;
+    width: 100%;
+    background: rgb(246, 246, 246);
+    font-size: 0.4em;
+    border: 0.1em solid #ccc;
+    box-sizing: border-box;
+    border-radius: 0.2em;
+    white-space: nowrap;
+
+    div {
+      height: 1.7em;
+      line-height: 1.7em;
+      padding-left: 0.2em;
+      cursor: pointer;
+
+      &:hover {
+        background: #ccc;
+      }
+
+      &.selected {
+        background: #aaa;
+      }
+    }
+  }
+}
+
+.number_dropdown {
+  position: absolute;
+  top: 0;
+
+  .menu {
+    top: 2.3em;
+  }
+}
+
+.tier_dropdown {
+  position: absolute;
+  bottom: -0.07em;
+
+  .menu {
+    bottom: 2.3em;
   }
 }
