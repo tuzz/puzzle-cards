@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./styles.module.scss";
 
 const Dropdown = ({ _ref, className, value, onChange, options }) => {
   const [showMenu, setShowMenu] = useState(false);
-  const selected = options.find(o => o.value === value);
+  const [selected, setSelected] = useState(options[0]);
+
+  useEffect(() => {
+    setSelected(options.find(o => o.value === value));
+  }, [value]);
 
   return (
     <div ref={_ref} onClick={() => setShowMenu(b => !b)} className={`${styles.dropdown} ${className}`}>

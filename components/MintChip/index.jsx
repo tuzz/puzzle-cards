@@ -6,6 +6,8 @@ import Flippable from "../Flippable";
 import Dropdown from "./dropdown";
 import styles from "./styles.module.scss";
 
+const TIER_PRICES = [1, 5, 20, 100, 700, 5000, 50000]; // TODO: add support to contract
+
 const MintChip = ({ filters }) => {
   const { PuzzleCard } = useContext(AppContext);
   const dropdowns = [useRef(), useRef()];
@@ -34,6 +36,10 @@ const MintChip = ({ filters }) => {
   const rotation = { base: 0, random: 30, initial: -20 };
   const slidersOffScreen = filters.deck.length <= 6;
 
+  const price = numCards * TIER_PRICES[tier];
+  const dollars = price / 100;
+  const displayPrice = price % 100 === 0 ? dollars : dollars.toFixed(2);
+
   return (
     <Draggable bounds="parent" zoomed={zoomed} onClick={zoomIn} disabled={zoomed} className={`${styles.draggable} ${slidersOffScreen && styles.sliders_off_screen}`}>
       <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={rotation} duration={1.5} minWidth={800} minHeight={800}>
@@ -42,7 +48,7 @@ const MintChip = ({ filters }) => {
             <img src={`/images/poker_chip_black.png`} />
             <div className={`${styles.content} ${styles.dark_mode}`}>
               <span className={styles.mint}>Mint</span>
-              <span className={styles.price}>$0.01</span>
+              <span className={styles.price}>${displayPrice}</span>
             </div>
           </div>
 
@@ -51,7 +57,7 @@ const MintChip = ({ filters }) => {
             <div className={styles.safari_blurry_text_fix}>
               <div className={styles.content}>
                 <span className={styles.mint}>Mint</span>
-                <span className={styles.price}>$0.01</span>
+                <span className={styles.price}>${displayPrice}</span>
 
                 <Dropdown _ref={dropdowns[0]} className={styles.number_dropdown} value={numCards} onChange={setNumCards} options={[
                   { label: "1 card", value: 1 },
