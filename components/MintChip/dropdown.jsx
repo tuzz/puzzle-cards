@@ -18,7 +18,10 @@ const Dropdown = ({ object, className, value, onChange, options }) => {
 
       {showMenu && <div className={styles.menu}>
         {options.map(o => (
-          <div key={o.value} className={`${o.value === selected.value && styles.selected}`} onClick={() => onChange(o.value)}>{o.label}</div>
+          <div key={o.value} className={`${o.value === selected.value && styles.selected}`} onClick={(event) => onChange(o.value, event)}>
+            {o.label}
+            {o.locked && <img src="/images/padlock.png" />}
+          </div>
         ))}
       </div>}
     </div>

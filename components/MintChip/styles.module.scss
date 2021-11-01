@@ -117,6 +117,7 @@
       line-height: 1.7em;
       padding-left: 0.2em;
       cursor: pointer;
+      position: relative;
 
       &:hover {
         background: #ccc;
@@ -124,6 +125,14 @@
 
       &.selected {
         background: #aaa;
+      }
+
+      img {
+        position: absolute;
+        right: 0.15em;
+        top: 0.2em;
+        width: 0.7706636501em;
+        height: 1.1em;
       }
     }
   }

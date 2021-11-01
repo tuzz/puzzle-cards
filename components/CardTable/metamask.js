@@ -38,7 +38,7 @@ Metamask.performActionOnStacks = async (PuzzleCard, actionName, cardStacks) => {
   Metamask.tryAgain = false;
 
   if (typeof ethereum === "undefined") {
-    alert("Please install the MetaMask browser extension to use this website.");
+    alert("Please install the MetaMask browser extension then try again.");
     return [];
   }
 

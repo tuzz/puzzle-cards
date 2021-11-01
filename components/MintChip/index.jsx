@@ -7,6 +7,7 @@ import Dropdown from "./dropdown";
 import styles from "./styles.module.scss";
 
 const TIER_PRICES = [1, 5, 20, 100, 700, 5000, 50000]; // TODO: add support to contract
+const maxMintTier = 0; // TODO
 
 const MintChip = ({ filters }) => {
   const { PuzzleCard } = useContext(AppContext);
@@ -37,6 +38,15 @@ const MintChip = ({ filters }) => {
     removeEventListener("scroll", zoomOut);
     setZoomed(false);
   };
+
+  const handleTierChange = (tier, event) => {
+    if (tier > maxMintTier) {
+      alert(`Promote a card to ${PuzzleCard.TIER_NAMES[tier]} tier to unlock minting at that tier.`);
+      event.stopPropagation();
+    } else {
+      setTier(tier);
+    }
+  }
 
   const rotation = { base: 0, random: 30, initial: -20 };
   const slidersOffScreen = filters.deck.length <= 6;
@@ -76,8 +86,10 @@ const MintChip = ({ filters }) => {
                   { label: "500 cards", value: 500 },
                 ]} />
 
-                <Dropdown object={dropdowns[1]} className={styles.tier_dropdown} value={tier} onChange={setTier} options={
-                  PuzzleCard.TIER_NAMES.map((label, value) => ({ label, value }))
+                <Dropdown object={dropdowns[1]} className={styles.tier_dropdown} value={tier} onChange={handleTierChange} options={
+                  PuzzleCard.TIER_NAMES.map((label, value) => (
+                    { label, value, locked: value > maxMintTier }
+                  ))
                 } />
               </div>
             </div>
