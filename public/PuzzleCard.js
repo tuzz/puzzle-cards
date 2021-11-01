@@ -192,13 +192,14 @@ class PuzzleCard {
     PuzzleCard.CONTRACT = contract;
   }
 
-  static mint(numberToMint, to) {
+  static mint(numberToMint, to, { wait = true }) {
     return PuzzleCard.pricePerCard().then(price => (
       PuzzleCard.inBatches(numberToMint, (batchSize) => {
         const gasLimit = PuzzleCard.gasLimitToMint(batchSize);
         const value = price * BigInt(batchSize);
 
-        return PuzzleCard.CONTRACT.mint(batchSize, to, { gasLimit, value }).then(PuzzleCard.fromBatchEvent);
+        const request = PuzzleCard.CONTRACT.mint(batchSize, to, { gasLimit, value });
+        return wait ? request.then(PuzzleCard.fromBatchEvent) : request;
       })
     ));
   }
@@ -352,10 +353,12 @@ class PuzzleCard {
 
   // onlyOwner contract methods
 
-  static gift(numberToGift, to) { // Only callable by the contract owner.
+  static gift(numberToGift, to, { wait = true }) { // Only callable by the contract owner.
     return PuzzleCard.inBatches(numberToGift, (batchSize) => {
       const gasLimit = PuzzleCard.gasLimitToMint(batchSize);
-      return PuzzleCard.CONTRACT.gift(batchSize, to, { gasLimit }).then(PuzzleCard.fromBatchEvent);
+
+      const request = PuzzleCard.CONTRACT.gift(batchSize, to, { gasLimit });
+      return wait ? request.then(PuzzleCard.fromBatchEvent) : request;
     });
   }
 
