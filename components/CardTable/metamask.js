@@ -1,12 +1,19 @@
 const Metamask = {};
 
-Metamask.actionsThatCanBeTaken = async (PuzzleCard, cards, address, preSwitchCallback = () => {}) => {
-  // If the user isn't connect the the only action they can take is to (re)connect.
+Metamask.actionsThatCanBeTaken = async (PuzzleCard, cards, mintChipActive, address, preSwitchCallback = () => {}) => {
+  const numCards = cards.filter(c => c).length;
+
+  // Don't allow an action to be taken if there are cards on the outline as well
+  // as the mint chip. Otherwise, it's ambigious what will happen.
+  if (numCards > 0 && mintChipActive) { return []; }
+
+  // Allow the user to mint prior to checking if we're connected. They will be
+  // prompted to first unlock metamask then mint immediately afterwards.
+  if (mintChipActive) { return ["mint"]; }
+
   if (!await Metamask.alreadyConnected(PuzzleCard)) {
     return [address ? "reconnectToMetamask" : "connectToMetamask"];
   }
-
-  const numCards = cards.filter(c => c).length;
 
   if (numCards < 2 || numCards > 7) { return []; }
   if (typeof ethereum === "undefined") { return []; }
@@ -34,7 +41,7 @@ Metamask.actionsThatCanBeTaken = async (PuzzleCard, cards, address, preSwitchCal
   return PuzzleCard.actionsThatCanBeTaken(cards);
 };
 
-Metamask.performActionOnStacks = async (PuzzleCard, actionName, cardStacks) => {
+Metamask.performAction = async (PuzzleCard, actionName, cardStacks, mintArgs) => {
   Metamask.tryAgain = false;
 
   if (typeof ethereum === "undefined") {
@@ -47,7 +54,11 @@ Metamask.performActionOnStacks = async (PuzzleCard, actionName, cardStacks) => {
   const quantityTimes = [...Array(quantity).keys()];
 
   if (!actionName.match(/connectToMetamask/) && await Metamask.alreadyConnected(PuzzleCard) && await Metamask.alreadyCorrectNetwork(PuzzleCard)) {
-    return quantityTimes.map(() => PuzzleCard.call(actionName, oneOfEachCard, true));
+    if (actionName === "mint") {
+      return [PuzzleCard.mint(...mintArgs, { wait: false })];
+    } else {
+      return quantityTimes.map(() => PuzzleCard.call(actionName, oneOfEachCard, true));
+    }
   }
 
   // Only allow the page to reload if the user won't lose the positions of their cards.
@@ -96,7 +107,11 @@ Metamask.performActionOnStacks = async (PuzzleCard, actionName, cardStacks) => {
   if (actionName === "reconnectToMetamask") { return [] }
 
   // Initiate the requests immediately after connect/switching since a popup will be shown.
-  return quantityTimes.map(() => PuzzleCard.call(actionName, oneOfEachCard, true));
+  if (actionName === "mint") {
+    return [PuzzleCard.mint(...mintArgs, { wait: false })];
+  } else {
+    return quantityTimes.map(() => PuzzleCard.call(actionName, oneOfEachCard, true));
+  }
 };
 
 Metamask.alreadyConnected = async (PuzzleCard) => {

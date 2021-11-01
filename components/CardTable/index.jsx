@@ -19,6 +19,7 @@ const CardTable = () => {
   const { PuzzleCard, decks, address, chainId, generation } = useContext(AppContext);
   const [chosenStacks, setChosenStacks] = useState([]);
   const [hourglassStacks, setHourglassStacks] = useState([]);
+  const [mintChipActive, setMintChipActive] = useState(true);
   const [buttonAction, setButtonAction] = useState();
   const [transactState, setTransactState] = useState(TransactState.INITIAL);
   const [filters, setFilters] = useState(new Filters());
@@ -28,6 +29,10 @@ const CardTable = () => {
   const handleStackMoved = ({ cardStack, movedTo }) => {
     updateStacksBasedOnPosition(cardStack, movedTo, chosenStacks, setChosenStacks, channel.overlapsOutline);
     updateStacksBasedOnPosition(cardStack, movedTo, hourglassStacks, setHourglassStacks, channel.overlapsYOfTheBottomOfOutline, updateExclusions);
+  };
+
+  const handleChipMoved = ({ movedTo }) => {
+    setMintChipActive(channel.overlapsOutline(movedTo));
   };
 
   const updateStacksBasedOnPosition = (cardStack, position, stacks, setStacks, shouldIncludeFn, callbackFn) => {
@@ -51,10 +56,10 @@ const CardTable = () => {
     setFilters(f => isInHourglassArea ? f.exclude(cardStack) : f.include(cardStack));
   };
 
-  const setButtonActionBasedOnChosenStacks = async (causedByNetworkChange) => {
+  const setButtonActionBasedOnPositions = async (causedByNetworkChange) => {
     const oneOfEachCard = chosenStacks.map(s => s.card);
 
-    const actionNames = await Metamask.actionsThatCanBeTaken(PuzzleCard, oneOfEachCard, address, () => {
+    const actionNames = await Metamask.actionsThatCanBeTaken(PuzzleCard, oneOfEachCard, mintChipActive, address, () => {
       setButtonAction(); // Disable the button while the switch network prompt is shown.
 
       if (causedByNetworkChange) {
@@ -68,26 +73,26 @@ const CardTable = () => {
     );
   }
 
-  useEffect(setButtonActionBasedOnChosenStacks, [chosenStacks, generation]);
-  useEffect(() => setButtonActionBasedOnChosenStacks(true), [chainId]);
+  useEffect(setButtonActionBasedOnPositions, [chosenStacks, mintChipActive, generation]);
+  useEffect(() => setButtonActionBasedOnPositions(true), [chainId]);
 
-  const performActionOnStacks = async () => {
-    const oneOfEachCard = chosenStacks.map(s => s.card);
-
-    const requests = await Metamask.performActionOnStacks(PuzzleCard, buttonAction, chosenStacks);
+  const performAction = async () => {
+    const requests = await Metamask.performAction(PuzzleCard, buttonAction, chosenStacks, channel.mintArgs());
     if (requests.length === 0) { return; } // No transaction requests initiated, e.g. Metamask locked.
 
     setTransactState(TransactState.REQUESTING);
 
     const results = await Promise.all(requests.map(async (request) => {
-      const transaction = await request.catch(() => {});
+      const transactions = await request.catch(() => {});
+      const transaction = Array.isArray(transactions) ? transactions[0] : transactions;
+
       if (!transaction) { return { state: "cancelled" }; } // The user rejected the request in Metamask.
 
       setTransactState(TransactState.PROCESSING);
 
       try {
-        const mintedCard = await PuzzleCard.fromTransferEvent(transaction);
-        return { state: "succeeded", mintedCard };
+        await transaction.wait();
+        return { state: "succeeded" };
       } catch (error) {
         return { state: "failed", error };
       }
@@ -132,7 +137,7 @@ const CardTable = () => {
 
   return (
     <div className={styles.card_table}>
-      <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={buttonEnabled} buttonFlashing={buttonFlashing} onButtonClick={performActionOnStacks} raised={stickRaised} className={styles.worship_stick} channel={channel} />
+      <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={buttonEnabled} buttonFlashing={buttonFlashing} onButtonClick={performAction} raised={stickRaised} className={styles.worship_stick} channel={channel} />
       <YellowSun stickRaised={stickRaised} channel={channel} />
 
       <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
@@ -140,7 +145,7 @@ const CardTable = () => {
 
         <DragRegion>
           <CardsInPlay onStackMoved={handleStackMoved} transactState={transactState} chosenStacks={chosenStacks} filters={filters} setFilters={setFilters} channel={channel} />
-          <MintChip filters={filters} />
+          <MintChip onMoved={handleChipMoved} filters={filters} channel={channel} />
         </DragRegion>
 
         <div className={styles.felt_cloth}>

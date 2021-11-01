@@ -23,7 +23,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
     const alreadyLoaded = address === loadedAddress;
 
     if (alreadyLoaded) { // The change was caused by new cards being minted.
-      updateTopArea(decks[address]);
+      updateTopArea(decks[address], 50);
     } else {
       setFilters(f => f.setDeck(decks[address]));
       setLoadedAddress(address);
@@ -220,17 +220,17 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
     });
   };
 
-  const updateTopArea = (deck) => {
-    // TODO: explicitly check if we're minting so it can be handled differently
-    if (!deck.justChanged || deck.justChanged.length > 2) { return; }
-
+  const updateTopArea = (deck, maxNumAtTop) => {
     setStackPositions(stackPositions => {
       const newStackPositions = [...stackPositions];
       newStackPositions.batchTokenIDs = stackPositions.batchTokenIDs;
 
       // Update quantities. If a stack is depleted, remove its stackPosition and
       // inform the parent that it has 'moved' so the parent can remove it too.
-      for (let cardStack of deck.justChanged) {
+      for (let i = 0; i < maxNumAtTop; i += 1) {
+        const cardStack = deck.justChanged[i];
+        if (!cardStack) { break; }
+
         const index = newStackPositions.findIndex(p => p.cardStack.tokenID === cardStack.tokenID);
         const visible = index !== -1;
 
@@ -273,6 +273,9 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
 
       return newStackPositions;
     });
+
+    // Update the main area as well if there are too many cards for the top.
+    if (deck.justChanged.length > maxNumAtTop) { setTimeout(updateMainArea, 1000); }
   };
 
   const handleStackMovedByDragging = ({ cardStack, movedTo }) => {

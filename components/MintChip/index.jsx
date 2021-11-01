@@ -6,16 +6,19 @@ import Flippable from "../Flippable";
 import Dropdown from "./dropdown";
 import styles from "./styles.module.scss";
 
-const TIER_PRICES = [1, 5, 20, 100, 700, 5000, 50000]; // TODO: add support to contract
-const maxMintTier = 0; // TODO
+const TIER_PRICES = [1, 5, 20, 100, 700, 5000, 50000]; // TODO: add support for price to contract
+const maxMintTier = 2; // TODO: restrict max mint tier per user address in the contract
 
-const MintChip = ({ filters }) => {
-  const { PuzzleCard } = useContext(AppContext);
+const MintChip = ({ filters, onMoved = () => {}, channel }) => {
+  const { PuzzleCard, address } = useContext(AppContext);
   const dropdowns = [{ ref: useRef() }, { ref: useRef() }];
 
   const [zoomed, setZoomed] = useState(false);
   const [numCards, setNumCards] = useState(1);
   const [tier, setTier] = useState(0);
+
+  //channel.mintArgs = () => [numCards, tier, address]; // TODO: add support for tier to contract
+  channel.mintArgs = () => [numCards, address];
 
   const zoomIn = () => {
     setZoomed(true);
@@ -51,6 +54,12 @@ const MintChip = ({ filters }) => {
     }
   }
 
+  const handleStop = (event) => {
+    if (!zoomed) {
+      onMoved({ movedTo: event.target.getBoundingClientRect() });
+    }
+  };
+
   const rotation = { base: 0, random: 30, initial: -20 };
   const slidersOffScreen = filters.deck.length <= 6;
 
@@ -59,7 +68,7 @@ const MintChip = ({ filters }) => {
   const displayPrice = price % 100 === 0 ? dollars : dollars.toFixed(2);
 
   return (
-    <Draggable bounds="parent" zoomed={zoomed} onClick={zoomIn} disabled={zoomed} className={`${styles.draggable} ${slidersOffScreen && styles.sliders_off_screen}`}>
+    <Draggable bounds="parent" zoomed={zoomed} onClick={zoomIn} disabled={zoomed} onStop={handleStop} className={`${styles.draggable} ${slidersOffScreen && styles.sliders_off_screen}`}>
       <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={rotation} duration={1.5} minWidth={800} minHeight={800}>
         <Flippable flipped={zoomed} direction={Math.random() < 0.5 ? 1 : -1} delay={zoomed ? 0 : 0.5} className={styles.flippable}>
           <div className={styles.front}>
