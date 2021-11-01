@@ -40,9 +40,11 @@ const MintChip = ({ filters }) => {
 
           <div className={styles.back}>
             <img src={`/images/poker_chip_white.png`} />
-            <div className={styles.content}>
-              <span className={styles.mint}>Mint</span>
-              <span className={styles.price}>$0.01</span>
+            <div className={styles.safari_blurry_text_fix}>
+              <div className={styles.content}>
+                <span className={styles.mint}>Mint</span>
+                <span className={styles.price}>$0.01</span>
+              </div>
             </div>
           </div>
         </Flippable>
