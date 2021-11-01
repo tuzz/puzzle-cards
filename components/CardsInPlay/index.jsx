@@ -88,6 +88,14 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
           stackPosition.withinY = layout.slidersYBounds();
           stackPosition.flipped = true;
           stackPosition.flipDirection = -1;
+
+          const rotation = stackPosition.startPosition.rotation;
+
+          // If the card is part of a card fan, rotate it back to 0 degrees so
+          // that it doesn't poke out from beneath the wooden sliders.
+          if (rotation && Math.abs(rotation.initial) > 4) {
+            stackPosition.startPosition.rotation = { degrees: 0 };
+          }
         }
       }
 
