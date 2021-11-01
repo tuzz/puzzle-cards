@@ -3,7 +3,6 @@ class Filters {
     this.filters = {};
     this.deck = [];
     this.filteredDeck = [];
-    this.filteredDeckWithExclusions = [];
     this.exclusions = {};
     this.pageOffset = 0;
     this.pageSize = 6;
@@ -13,10 +12,11 @@ class Filters {
     return Object.setPrototypeOf(Object.assign({}, this), Filters.prototype);
   }
 
-  setDeck(deck) {
+  setDeck(deck, propagate) {
     this.deck = deck || [];
     this.filterDeck();
-    return this.shallowCopy();
+
+    return propagate ? this.shallowCopy() : this;
   }
 
   set(key, value) {
@@ -28,14 +28,6 @@ class Filters {
       this.filters[key] = value;
     }
 
-    this.filterDeck();
-    return this.shallowCopy();
-  }
-
-  reset() {
-    if (Object.keys(this.filters).length === 0) { return this; }
-
-    this.filters = {};
     this.filterDeck();
     return this.shallowCopy();
   }
@@ -93,31 +85,35 @@ class Filters {
   }
 
   filterDeck() {
-    this.filteredDeckWithExclusions = [];
+    this.filteredDeck = [];
     this.countsForDropdownOptions = {};
-    const counts = this.countsForDropdownOptions;
 
     for (let cardStack of this.deck) {
       const matchObject = this.matchObject(cardStack);
 
-      for (let [key, value] of Object.entries(cardStack.card)) {
-        if (this.matchesAllIgnoring(key, matchObject)) {
-          counts[key] = counts[key] || {};
-          counts[key][value] = counts[key][value] || 0;
+      this.updateCounts(matchObject, cardStack);
 
-          counts[key][value] += cardStack.quantity;
-        }
-      }
-
-      if (this.matchesAll(matchObject)) {
-        this.filteredDeckWithExclusions.push(cardStack);
+      if (this.matchesAll(matchObject) && !this.exclusions[cardStack.tokenID]) {
+        this.filteredDeck.push(cardStack);
       }
     }
 
-    this.filteredDeck = this.filteredDeckWithExclusions.filter(c => !this.exclusions[c.tokenID]);
-
     this.pageOffset = 0;
     this.dealForwards = true;
+  }
+
+  updateCounts(matchObject, cardStack) {
+    const counts = this.countsForDropdownOptions;
+    const delta = typeof cardStack.lastDelta === "undefined" ? cardStack.quantity : cardStack.lastDelta;
+
+    for (let [key, value] of Object.entries(cardStack.card)) {
+      if (this.matchesAllIgnoring(key, matchObject)) {
+        counts[key] = counts[key] || {};
+        counts[key][value] = counts[key][value] || 0;
+
+        counts[key][value] += delta;
+      }
+    }
   }
 
   matchesAll(matchObject) {

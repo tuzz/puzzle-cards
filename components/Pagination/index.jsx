@@ -1,7 +1,16 @@
+import { useContext, useState, useEffect } from "react";
+import AppContext from "../AppRoot/context"
 import styles from "./styles.module.scss";
 
 const Pagination = ({ filters, setFilters }) => {
-  if (filters.deck.length <= 6) { return null; }
+  const { address, decks } = useContext(AppContext);
+  const [showing, setShowing] = useState(false);
+
+  useEffect(() => {
+    setShowing(bool => bool || address && decks[address].length > 6);
+  }, [address, decks]);
+
+  if (!showing) { return null; }
 
   return (
     <div className={styles.pagination}>

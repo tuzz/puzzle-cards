@@ -25,11 +25,13 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
     if (alreadyLoaded) { // The change was caused by new cards being minted.
       updateTopArea(decks[address], 50);
     } else {
-      setFilters(f => f.setDeck(decks[address]));
       setLoadedAddress(address);
-
       updateMainArea();
     }
+
+    // Don't propagate changes so that the main area doesn't re-render when the
+    // deck changes, e.g. when a new card is minted or cards or combined.
+    setFilters(f => f.setDeck(decks[address], !alreadyLoaded));
   }, [address, decks]);
 
   // If the filters change, update the main area but leave the top alone.
@@ -274,7 +276,13 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
       return newStackPositions;
     });
 
-    // Update the main area as well if there are too many cards for the top.
+    // Update the counts in the dropdown options by the cardStack.lastDelta amounts.
+    for (let cardStack of deck.justChanged) {
+      filters.updateCounts(filters.matchObject(cardStack), cardStack);
+    }
+
+    // Update the main area if we've exceeded a maximum, otherwise we'd
+    // overwhelm the browser by trying to load 500 CardStack iframes.
     if (deck.justChanged.length > maxNumAtTop) { setTimeout(updateMainArea, 1000); }
   };
 

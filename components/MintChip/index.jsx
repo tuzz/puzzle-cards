@@ -61,14 +61,13 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
   };
 
   const rotation = { base: 0, random: 30, initial: -20 };
-  const slidersOffScreen = filters.deck.length <= 6;
 
   const price = numCards * TIER_PRICES[tier];
   const dollars = price / 100;
   const displayPrice = price % 100 === 0 ? dollars : dollars.toFixed(2);
 
   return (
-    <Draggable bounds="parent" zoomed={zoomed} onClick={zoomIn} disabled={zoomed} onStop={handleStop} className={`${styles.draggable} ${slidersOffScreen && styles.sliders_off_screen}`}>
+    <Draggable bounds="parent" zoomed={zoomed} onClick={zoomIn} disabled={zoomed} onStop={handleStop} className={styles.draggable}>
       <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={rotation} duration={1.5} minWidth={800} minHeight={800}>
         <Flippable flipped={zoomed} direction={Math.random() < 0.5 ? 1 : -1} delay={zoomed ? 0 : 0.5} className={styles.flippable}>
           <div className={styles.front}>

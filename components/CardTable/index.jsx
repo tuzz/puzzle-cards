@@ -150,7 +150,7 @@ const CardTable = () => {
 
         <div className={styles.felt_cloth}>
           <CardOutline channel={channel} />
-          <WoodSliders filters={filters} transactState={transactState} onButtonClick={alignCardsWithSliders} onSlidersClosed={clearHourglassStacks} />
+          <WoodSliders transactState={transactState} onButtonClick={alignCardsWithSliders} onSlidersClosed={clearHourglassStacks} />
           <Pagination filters={filters} setFilters={setFilters} />
         </div>
       </TableEdge>

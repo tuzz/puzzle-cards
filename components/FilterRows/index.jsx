@@ -5,9 +5,10 @@ import styles from "./styles.module.scss";
 
 const FilterRows = ({ filters, setFilters }) => {
   const [showingFilters, setShowingFilters] = useState(false);
-  const { PuzzleCard } = useContext(AppContext);
+  const { PuzzleCard, address, decks } = useContext(AppContext);
 
-  if (filters.deck.length <= 6) { return null; }
+  const unnecessary = !address || decks[address].length <= 6;
+  if (!showingFilters && unnecessary) { return null; }
 
   if (!showingFilters) {
     return (
