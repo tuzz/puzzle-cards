@@ -10,7 +10,7 @@ const TIER_PRICES = [1, 5, 20, 100, 700, 5000, 50000]; // TODO: add support to c
 
 const MintChip = ({ filters }) => {
   const { PuzzleCard } = useContext(AppContext);
-  const dropdowns = [useRef(), useRef()];
+  const dropdowns = [{ ref: useRef() }, { ref: useRef() }];
 
   const [zoomed, setZoomed] = useState(false);
   const [numCards, setNumCards] = useState(1);
@@ -25,8 +25,13 @@ const MintChip = ({ filters }) => {
   };
 
   const zoomOut = (event) => {
+    // Don't zoom out if the user clicked on either of the dropdowns.
     const path = event.path || (event.composedPath && event.composedPath());
-    if (path.some(node => dropdowns.some(ref => node === ref.current))) { return; }
+    if (path.some(node => dropdowns.some(d => node === d.ref.current))) { return; }
+
+    // Don't zoom out if the user clicked on the chip while either dropdown was open.
+    const isOpen = dropdowns.some(d => d.ref.current.children.length === 3);
+    if (isOpen) { dropdowns.forEach(d => d.setShowMenu(false)); return; }
 
     removeEventListener("mousedown", zoomOut);
     removeEventListener("scroll", zoomOut);
@@ -59,7 +64,7 @@ const MintChip = ({ filters }) => {
                 <span className={styles.mint}>Mint</span>
                 <span className={styles.price}>${displayPrice}</span>
 
-                <Dropdown _ref={dropdowns[0]} className={styles.number_dropdown} value={numCards} onChange={setNumCards} options={[
+                <Dropdown object={dropdowns[0]} className={styles.number_dropdown} value={numCards} onChange={setNumCards} options={[
                   { label: "1 card", value: 1 },
                   { label: "2 cards", value: 2 },
                   { label: "5 cards", value: 5 },
@@ -71,7 +76,7 @@ const MintChip = ({ filters }) => {
                   { label: "500 cards", value: 500 },
                 ]} />
 
-                <Dropdown _ref={dropdowns[1]} className={styles.tier_dropdown} value={tier} onChange={setTier} options={
+                <Dropdown object={dropdowns[1]} className={styles.tier_dropdown} value={tier} onChange={setTier} options={
                   PuzzleCard.TIER_NAMES.map((label, value) => ({ label, value }))
                 } />
               </div>

@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import styles from "./styles.module.scss";
 
-const Dropdown = ({ _ref, className, value, onChange, options }) => {
+const Dropdown = ({ object, className, value, onChange, options }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [selected, setSelected] = useState(options[0]);
+
+  object.setShowMenu = setShowMenu;
 
   useEffect(() => {
     setSelected(options.find(o => o.value === value));
   }, [value]);
 
   return (
-    <div ref={_ref} onClick={() => setShowMenu(b => !b)} className={`${styles.dropdown} ${className}`}>
+    <div ref={object.ref} onClick={() => setShowMenu(b => !b)} className={`${styles.dropdown} ${className}`}>
       <span className={styles.placeholder}>{selected.label}</span>
       <span className={styles.chevron}>⌄</span>
 
