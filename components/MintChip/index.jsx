@@ -8,6 +8,8 @@ import styles from "./styles.module.scss";
 
 const MintChip = ({ filters }) => {
   const { PuzzleCard } = useContext(AppContext);
+  const dropdowns = [useRef(), useRef()];
+
   const [zoomed, setZoomed] = useState(false);
   const [numCards, setNumCards] = useState(1);
   const [tier, setTier] = useState(0);
@@ -21,6 +23,9 @@ const MintChip = ({ filters }) => {
   };
 
   const zoomOut = (event) => {
+    const path = event.path || (event.composedPath && event.composedPath());
+    if (path.some(node => dropdowns.some(ref => node === ref.current))) { return; }
+
     removeEventListener("mousedown", zoomOut);
     removeEventListener("scroll", zoomOut);
     setZoomed(false);
@@ -48,7 +53,7 @@ const MintChip = ({ filters }) => {
                 <span className={styles.mint}>Mint</span>
                 <span className={styles.price}>$0.01</span>
 
-                <Dropdown className={styles.number_dropdown} value={numCards} onChange={setNumCards} options={[
+                <Dropdown _ref={dropdowns[0]} className={styles.number_dropdown} value={numCards} onChange={setNumCards} options={[
                   { label: "1 card", value: 1 },
                   { label: "2 cards", value: 2 },
                   { label: "5 cards", value: 5 },
@@ -60,7 +65,7 @@ const MintChip = ({ filters }) => {
                   { label: "500 cards", value: 500 },
                 ]} />
 
-                <Dropdown className={styles.tier_dropdown} value={tier} onChange={setTier} options={
+                <Dropdown _ref={dropdowns[1]} className={styles.tier_dropdown} value={tier} onChange={setTier} options={
                   PuzzleCard.TIER_NAMES.map((label, value) => ({ label, value }))
                 } />
               </div>
