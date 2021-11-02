@@ -151,6 +151,8 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
 
       for (let i = 0; i < positions.length; i += 1) {
         const cardStack = filters.filteredDeck[pageOffset + i];
+        if (!cardStack) { break; } // In case it changed before the async call.
+
         const startPosition = positions[i];
         const flipDirection = filters.dealForwards ? 1 : -1;
         const dealDelay = (filters.dealForwards ? i : (positions.length - i - 1)) * 100;

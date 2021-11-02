@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import ReactSelect from "react-select";
 import styles from "./styles.module.scss";
 
-const Dropdown = ({ placeholder, onChange, names, counts, alphabetic, disabled, alertText, ...props }) => {
+const Dropdown = ({ placeholder, onChange, names, counts, alphabetic, disabled, hidden, alertText, ...props }) => {
   const ref = useRef();
 
   names = names.filter(s => s !== "None");
@@ -20,12 +20,12 @@ const Dropdown = ({ placeholder, onChange, names, counts, alphabetic, disabled, 
   // Hide the dropdown when it is disabled, but preserve its value so that when
   // it becomes enabled again, it continues to have an effect.
   useEffect(() => {
-    if (disabled) {
+    if (disabled || hidden) {
       onChange(null);
     } else {
       ref.current && onChange(ref.current.getValue()[0]);
     }
-  }, [disabled]);
+  }, [disabled, hidden]);
 
   // If the user selects a variant then switches to a different type with
   // variants then clear the filter. Its value is no longer preserved.
@@ -38,7 +38,7 @@ const Dropdown = ({ placeholder, onChange, names, counts, alphabetic, disabled, 
   }, [names]);
 
   return (
-    <div className={styles.full_height}>
+    <div className={`${styles.full_height} ${hidden && styles.display_none}`}>
       <ReactSelect
         ref={ref}
         placeholder={placeholder}

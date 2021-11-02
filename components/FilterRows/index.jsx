@@ -26,6 +26,7 @@ const FilterRows = ({ filters, setFilters }) => {
   const typeIndex = PuzzleCard.TYPE_NAMES.findIndex(s => s === type);
 
   const numColorSlots = typeIndex === -1 ? 2 : PuzzleCard.NUM_COLOR_SLOTS_PER_TYPE[typeIndex];
+  const isMasterTier = filters.filters["tier"] === "Master";
 
   let numVariants, variantOffset;
 
@@ -35,7 +36,7 @@ const FilterRows = ({ filters, setFilters }) => {
   if (typeIndex !== -1) {
     numVariants = PuzzleCard.NUM_VARIANTS_PER_TYPE[typeIndex];
     variantOffset = PuzzleCard.VARIANT_OFFSET_PER_TYPE[typeIndex];
-  } else if (filters.filters["tier"] === "Master") {
+  } else if (isMasterTier) {
     const artworkIndex = PuzzleCard.TYPE_NAMES.findIndex(n => n === "Artwork");
     numVariants = PuzzleCard.NUM_VARIANTS_PER_TYPE[artworkIndex];
     variantOffset = PuzzleCard.VARIANT_OFFSET_PER_TYPE[artworkIndex]
@@ -77,7 +78,15 @@ const FilterRows = ({ filters, setFilters }) => {
         counts={filters.countsForDropdownOptions["color2"]}
         alphabetic={true}
         disabled={numColorSlots < 2}
+        hidden={isMasterTier}
         alertText={colorAlert} />
+
+      <Dropdown
+        placeholder="Puzzle…"
+        onChange={handleChange("puzzle")}
+        names={PuzzleCard.PUZZLE_NAMES}
+        counts={filters.countsForDropdownOptions["puzzle"]}
+        hidden={!isMasterTier} />
     </div>
 
     <div className={`${styles.filter_row} ${styles.bottom}`}>
