@@ -27,6 +27,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     }
 
     mapping(uint256 => uint256) public totalSupply;
+    mapping(address => uint8) public maxTierUnlocked;
     mapping(uint256 => uint256) public limitedEditions;
     mapping(uint16 => bool) public masterCopiesClaimed;
 
@@ -54,6 +55,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
 
     function mint(uint256 numberToMint, uint8 tier, address to) external payable {
         if (to == address(0)) { to = msg.sender; }
+        require(tier <= maxTierUnlocked[to]);
 
         payable(owner()).transfer(numberToMint * pricePerTierInWei[tier]);
         mintStarterCards(numberToMint, tier, to);
@@ -230,6 +232,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         uint8 tier = tierForTokenID(tokenIDs[0]);
         uint8 condition = randomlyDegrade(tokenIDs, tier);
 
+        unlockMintingAtTier(tier + 1);
         replace(tokenIDs, starterCardForTier(tier + 1, condition));
     }
 
@@ -244,6 +247,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         uint8 tier = tierForTokenID(tokenIDs[0]);
         uint8 condition = randomlyDegrade(tokenIDs, tier);
 
+        unlockMintingAtTier(tier + 1);
         replace(tokenIDs, starterCardForTier(tier + 1, condition));
     }
 
@@ -516,6 +520,12 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         uint256 newCardID = tokenIDForCard(newCard);
         _mint(msg.sender, newCardID, 1, "");
         totalSupply[newCardID] += 1;
+    }
+
+    function unlockMintingAtTier(uint8 tier) private {
+        if (tier > maxTierUnlocked[msg.sender]) {
+            maxTierUnlocked[msg.sender] = tier;
+        }
     }
 
     // randomness

@@ -192,11 +192,19 @@ class PuzzleCard {
     PuzzleCard.CONTRACT = contract;
   }
 
-  static mint(numberToMint, tierName, recipient, { wait = true } = {}) {
+  static async maxTierUnlocked(address) {
+    const maxTier = await PuzzleCard.CONTRACT.maxTierUnlocked(address);
+    return PuzzleCard.TIER_NAMES[maxTier];
+  }
+
+  static async mint(numberToMint, tierName, recipient, { wait = true } = {}) {
     const tier = PuzzleCard.TIER_NAMES.findIndex(n => n === tierName);
     if (tier === -1) { throw new Error(`Invalid tier ${tierName}`); }
 
     const to = recipient || PuzzleCard.ZERO_ADDRESS; // Cards are minted to the msg.sender if address(0).
+
+    const maxTier = await PuzzleCard.maxTierUnlocked(to);
+    if (tier > maxTier) { throw new Error(`Minting at ${tierName} is locked.`); }
 
     return PuzzleCard.CONTRACT.pricePerTierInWei(tier).then(price => (
       PuzzleCard.inBatches(numberToMint, (batchSize) => {
@@ -718,8 +726,8 @@ PuzzleCard.ERROR_STRINGS = [
   "[a color was repeated]",
 ];
 
-PuzzleCard.CONTRACT_ADDRESS = "0x8aa8AfE3EBAd37b69da4ff3285Ab561B1eb2d1ec";
-PuzzleCard.CONTRACT_BLOCK = 20955494;
+PuzzleCard.CONTRACT_ADDRESS = "0x5EC9ea7785fb46A5295b5035a474b8e57aFCa5db";
+PuzzleCard.CONTRACT_BLOCK = 20959676;
 PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
 
 PuzzleCard.CONTRACT_ABI = [
@@ -761,6 +769,7 @@ PuzzleCard.CONTRACT_ABI = [
   "function lookThroughGlasses(uint256[] tokenIDs)",
   "function lookThroughTelescope(uint256[] tokenIDs)",
   "function masterCopiesClaimed(uint16) view returns (bool)",
+  "function maxTierUnlocked(address) view returns (uint8)",
   "function mint(uint256 numberToMint, uint8 tier, address to) payable",
   "function name() view returns (string)",
   "function owner() view returns (address)",

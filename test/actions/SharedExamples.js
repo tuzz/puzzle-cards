@@ -319,6 +319,22 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
         }
       });
 
+      it("does not unlock minting at the next tier", async () => {
+        for (let tier of PuzzleCard.TIER_NAMES) {
+          const cards = [];
+
+          for (const card of validCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier }), owner.address));
+          }
+
+          const tierBefore = await PuzzleCard.CONTRACT.maxTierUnlocked(owner.address);
+          const mintedCard = await PuzzleCard[actionName](cards);
+          const tierAfter = await PuzzleCard.CONTRACT.maxTierUnlocked(owner.address);
+
+          expect(tierAfter - tierBefore).to.equal(0);
+        }
+      });
+
       virtualRulesTiers = ["Virtual", "Godly"];
       masterRulesTiers = ["Master"];
       standardRulesTiers = ["Mortal", "Immortal", "Ethereal"];
@@ -337,6 +353,22 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
           const mintedCard = await PuzzleCard[actionName](cards);
 
           expect(mintedCard.tier).to.equal(after);
+        }
+      });
+
+      it("unlocks minting at the next tier", async () => {
+        for (let tier of PuzzleCard.TIER_NAMES) {
+          const cards = [];
+
+          for (const card of validCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier }), owner.address));
+          }
+
+          const tierBefore = await PuzzleCard.CONTRACT.maxTierUnlocked(owner.address);
+          const mintedCard = await PuzzleCard[actionName](cards);
+          const tierAfter = await PuzzleCard.CONTRACT.maxTierUnlocked(owner.address);
+
+          expect(tierAfter - tierBefore).to.equal(1);
         }
       });
 

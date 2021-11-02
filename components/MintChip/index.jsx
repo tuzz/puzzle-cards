@@ -6,10 +6,8 @@ import Flippable from "../Flippable";
 import Dropdown from "./dropdown";
 import styles from "./styles.module.scss";
 
-const maxMintTier = 2; // TODO: restrict max mint tier per user address in the contract
-
 const MintChip = ({ filters, onMoved = () => {}, channel }) => {
-  const { PuzzleCard } = useContext(AppContext);
+  const { PuzzleCard, address, maxTier } = useContext(AppContext);
   const dropdowns = [{ ref: useRef() }, { ref: useRef() }];
 
   const [zoomed, setZoomed] = useState(false);
@@ -43,10 +41,15 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
     setZoomed(false);
   };
 
-  const handleTierChange = (tierName, event) => {
+  const isLocked = (tierName) => {
     const tierIndex = PuzzleCard.TIER_NAMES.findIndex(n => n === tierName);
+    const maxIndex = PuzzleCard.TIER_NAMES.findIndex(n => n === maxTier);
 
-    if (tierIndex > maxMintTier) {
+    return tierIndex > maxIndex;
+  };
+
+  const handleTierChange = (tierName, event) => {
+    if (isLocked(tierName)) {
       alert(`Promote a card to ${tierName} tier to unlock minting at that tier.`);
       event.stopPropagation();
     } else {
@@ -100,7 +103,7 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
                 ]} />
 
                 <Dropdown object={dropdowns[1]} className={styles.tier_dropdown} value={tierName} onChange={handleTierChange} options={
-                  PuzzleCard.TIER_NAMES.map((n, i) => ({ label: n, value: n, locked: i > maxMintTier }))
+                  PuzzleCard.TIER_NAMES.map(n => ({ label: n, value: n, locked: isLocked(n) }))
                 } />
               </div>
             </div>

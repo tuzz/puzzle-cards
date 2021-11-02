@@ -5,7 +5,7 @@ import PuzzleCard from "../../public/PuzzleCard";
 import AppContext from "./context";
 
 const AppRoot = ({ Component, pageProps }) => {
-  const [appContext, setAppContext] = useState({ PuzzleCard, decks: {}, generation: 0 });
+  const [appContext, setAppContext] = useState({ PuzzleCard, decks: {}, maxTier: "Mortal", generation: 0 });
   const [connectPoller, setConnectPoller] = useState();
 
   useEffect(async () => {
@@ -51,8 +51,10 @@ const AppRoot = ({ Component, pageProps }) => {
   const ensureDeck = async (address, chainId) => {
     address = address.toLowerCase();
 
+    const maxTier = await PuzzleCard.maxTierUnlocked(address);
+
     setAppContext(c => {
-      const newContext = { ...c, address, generation: c.generation + 1 };
+      const newContext = { ...c, address, maxTier, generation: c.generation + 1 };
 
       if (chainId) {
         newContext.chainId = chainId;
@@ -91,7 +93,17 @@ const AppRoot = ({ Component, pageProps }) => {
       deck.fetched = true;
       deck.justChanged = PuzzleCard.updateFetchedDeck(deck, changes);
 
-      return { ...c, decks: { ...c.decks, [address]: deck } };
+      let maxIndex = PuzzleCard.TIER_NAMES.findIndex(n => n === c.maxTier);
+
+      for (let { card, delta } of changes) {
+        if (delta > 0 && card.tierIndex() > maxIndex) {
+          maxIndex = card.tierIndex();
+        }
+      }
+
+      const maxTier = PuzzleCard.TIER_NAMES[maxIndex];
+
+      return { ...c, maxTier, decks: { ...c.decks, [address]: deck } };
     });
   };
 

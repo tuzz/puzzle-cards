@@ -39,15 +39,15 @@ describe("Constants", () => {
       6666666666666667n,
       33333333333333332n,
       133333333333333328n,
-      666666666666666624n, // <-- Mint at this tier below.
+      666666666666666624n,
       4666666666666667008n,
       33333333333333336064n,
       333333333333333311488n
     ]);
 
     // Verify that the price for minting has actually been taken into account.
-    await contract.mint(1, 3, owner.address, { value: 666666666666666624n });
-    await expectRevert.unspecified(contract.mint(1, 3, owner.address, { value: 666666666666666623n }));
+    await contract.mint(1, 0, owner.address, { value: 6666666666666667n });
+    await expectRevert.unspecified(contract.mint(1, 0, owner.address, { value: 6666666666666666n }));
   });
 
   it("allows the contract owner to update METADATA_URI", async () => {
