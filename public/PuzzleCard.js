@@ -659,9 +659,6 @@ PuzzleCard.STANDARD_TYPE_PROBABILITIES = [300, 100, 100, 200, 100, 100, 20, 20, 
 PuzzleCard.VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
 PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
-PuzzleCard.ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-PuzzleCard.PROXY_REGISTRY_ADDRESS = "0x58807bad0b376efc12f5ad86aac70e78ed67deae";
-
 PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
 PuzzleCard.EMBED_URI = "https://puzzlecards.github.io/embed";
 PuzzleCard.DECKS_URI = "https://puzzlecards.github.io/decks";
@@ -729,6 +726,9 @@ PuzzleCard.ERROR_STRINGS = [
 PuzzleCard.CONTRACT_ADDRESS = "0x5ec9ea7785fb46a5295b5035a474b8e57afca5db";
 PuzzleCard.CONTRACT_BLOCK = 20959676;
 PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
+
+PuzzleCard.PROXY_REGISTRY_ADDRESS = "0xff7ca10af37178bdd056628ef42fd7f799fac77c";
+PuzzleCard.ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 PuzzleCard.CONTRACT_ABI = [
   "event ApprovalForAll(address indexed account, address indexed operator, bool approved)",

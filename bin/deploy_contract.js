@@ -1,5 +1,5 @@
 const fs = require("fs")
-const config = require("../hardhat.config.js");
+const config = require("../hardhat.config");
 const network = hardhatArguments.network;
 const metadata = config.networks[network];
 
@@ -9,7 +9,8 @@ const main = async () => {
   const [owner] = await ethers.getSigners();
   const factory = await ethers.getContractFactory("PuzzleCard");
 
-  const contract = await factory.deploy(metadata.openseaProxyAddress || owner.address);
+  const proxyAddress = metadata.openseaProxyAddress || owner.address;
+  const contract = await factory.deploy(proxyAddress);
   console.log(`Contract address: ${contract.address}`);
 
   const transaction = await contract.gift(400, 0, owner.address, { gasLimit: 20000000 });
@@ -26,10 +27,10 @@ const main = async () => {
     }
   }
 
-  updateConstants("public/PuzzleCard.js", contract.address, blockNumber);
-}
+  updateConstants("public/PuzzleCard.js", contract.address, blockNumber, proxyAddress);
+};
 
-const updateConstants = (filename, contractAddress, blockNumber) => {
+const updateConstants = (filename, contractAddress, blockNumber, proxyAddress) => {
   const network = {
     name: metadata.name,
     url: metadata.url,
@@ -42,6 +43,7 @@ const updateConstants = (filename, contractAddress, blockNumber) => {
     .replaceAll(/CONTRACT_NETWORK = .*;/g, `CONTRACT_NETWORK = ${JSON.stringify(network)};`)
     .replaceAll(/CONTRACT_ADDRESS = .*;/g, `CONTRACT_ADDRESS = "${contractAddress.toLowerCase()}";`)
     .replaceAll(/CONTRACT_BLOCK = .*;/g, `CONTRACT_BLOCK = ${blockNumber};`)
+    .replaceAll(/PROXY_REGISTRY_ADDRESS = .*;/g, `PROXY_REGISTRY_ADDRESS = "${proxyAddress}";`);
 
   fs.writeFileSync(filename, content);
 };

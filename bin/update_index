@@ -9,6 +9,7 @@
 
 if [ "$#" -ne 1 ]; then
   echo "Usage: ./bin/update_index network"
+  exit 1
 fi
 
 yarn hardhat run bin/update_index.js --network $1
