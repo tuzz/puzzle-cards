@@ -27,10 +27,24 @@ const FilterRows = ({ filters, setFilters }) => {
 
   const numColorSlots = typeIndex === -1 ? 2 : PuzzleCard.NUM_COLOR_SLOTS_PER_TYPE[typeIndex];
 
-  // If no type is specified, show the Sun, Moon, Open, Closed variants but not those for Artwork.
-  const numVariants = typeIndex === -1 ? 4 : PuzzleCard.NUM_VARIANTS_PER_TYPE[typeIndex];
-  const variantOffset = typeIndex === -1 ? 1 : PuzzleCard.VARIANT_OFFSET_PER_TYPE[typeIndex];
-  const variantNamesForType = PuzzleCard.VARIANT_NAMES.slice(variantOffset, variantOffset + numVariants);
+  let numVariants, variantOffset;
+
+  // Show the variants for the currently selected type. If not type is specified
+  // and we're at master tier, only show Artwork variants. Otherwise, show the
+  // non-Artwork variants (skipping the 0th element 'None').
+  if (typeIndex !== -1) {
+    numVariants = PuzzleCard.NUM_VARIANTS_PER_TYPE[typeIndex];
+    variantOffset = PuzzleCard.VARIANT_OFFSET_PER_TYPE[typeIndex];
+  } else if (filters.filters["tier"] === "Master") {
+    const artworkIndex = PuzzleCard.TYPE_NAMES.findIndex(n => n === "Artwork");
+    numVariants = PuzzleCard.NUM_VARIANTS_PER_TYPE[artworkIndex];
+    variantOffset = PuzzleCard.VARIANT_OFFSET_PER_TYPE[artworkIndex]
+  } else {
+    numVariants = 4;
+    variantOffset = 1;
+  }
+
+  const variantNames = PuzzleCard.VARIANT_NAMES.slice(variantOffset, variantOffset + numVariants);
 
   const colorAlert = numColorSlots === 0 ?
     `Not applicable because the '${type}' type does not have color.` :
@@ -86,7 +100,7 @@ const FilterRows = ({ filters, setFilters }) => {
         placeholder="Variant…"
         onChange={handleChange("variant")}
         counts={filters.countsForDropdownOptions["variant"]}
-        names={variantNamesForType}
+        names={variantNames}
         disabled={numVariants === 0}
         alertText={variantAlert} />
     </div>
