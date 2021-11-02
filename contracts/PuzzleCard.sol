@@ -30,8 +30,6 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     mapping(uint256 => uint256) public limitedEditions;
     mapping(uint16 => bool) public masterCopiesClaimed;
 
-    uint256 public pricePerCard = 70000000000000000; // $0.10 in Polygon Wei.
-
     constructor(address proxyRegistryAddress) ERC1155("") {
         PROXY_REGISTRY_ADDRESS = proxyRegistryAddress;
 
@@ -57,7 +55,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     function mint(uint256 numberToMint, uint8 tier, address to) external payable {
         if (to == address(0)) { to = msg.sender; }
 
-        payable(owner()).transfer(numberToMint * pricePerCard);
+        payable(owner()).transfer(numberToMint * pricePerTierInWei[tier]);
         mintStarterCards(numberToMint, tier, to);
     }
 
@@ -702,7 +700,18 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         _setURI(metadataURI);
     }
 
-    function updatePrice(uint256 price) external onlyOwner {
-        pricePerCard = price;
+    function updatePricePerTierInWei(uint256[7] memory _pricePerTierInWei) external onlyOwner {
+        pricePerTierInWei = _pricePerTierInWei;
     }
+
+   // These initial prices are based on $1.90 per matic, as of 2021-11-02.
+    uint256[7] public pricePerTierInWei = [
+      5263157894736843, // $0.01
+      26315789473684212, // $0.05
+      105263157894736850, // $0.20
+      526315789473684160, // $1.00
+      3684210526315790000, // $7.00
+      26315789473684214000, // $50.00
+      263157894736842130000 // $500.00
+    ];
 }

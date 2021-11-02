@@ -14,7 +14,6 @@ TestUtils.addHelpfulMethodsTo = (contract) => {
   contract.editionName = (tokenID) => PuzzleCard.fromTokenID(tokenID).edition;
 
   contract.actionsThatCanBeTaken = (tokenIDs) => PuzzleCard.actionsThatCanBeTaken(contract, tokenIDs);
-  contract.priceToMint = (numberToMint) => PuzzleCard.priceToMint(numberToMint);
 };
 
 TestUtils.baseCard = {

@@ -16,20 +16,38 @@ describe("Constants", () => {
     PuzzleCard.setContract(contract);
   });
 
-  it("can get the price per card", async () => {
-    const pricePerCard = await PuzzleCard.pricePerCard();
-    expect(pricePerCard).to.equal(70000000000000000n);
+  it("can get the price per tier", async () => {
+    const pricePerTierInWei = await PuzzleCard.pricePerTierInWei();
+
+    expect(pricePerTierInWei).to.deep.equal([
+      5263157894736843n, // $0.01
+      26315789473684212n, // $0.05
+      105263157894736850n, // $0.20
+      526315789473684160n, // $1.00
+      3684210526315790000n, // $7.00
+      26315789473684214000n, // $50.00
+      263157894736842130000n // $500.00
+    ]);
   });
 
   it("allows the contract owner to update the price when the exchange rate changes", async () => {
-    await PuzzleCard.updatePrice(60000000000000000n);
+    await PuzzleCard.updatePrices(1.50);
 
-    const pricePerCard = await PuzzleCard.pricePerCard();
-    expect(pricePerCard).to.equal(60000000000000000n);
+    const pricePerTierInWei = await PuzzleCard.pricePerTierInWei();
+
+    expect(pricePerTierInWei).to.deep.equal([
+      6666666666666667n,
+      33333333333333332n,
+      133333333333333328n,
+      666666666666666624n, // <-- Mint at this tier below.
+      4666666666666667008n,
+      33333333333333336064n,
+      333333333333333311488n
+    ]);
 
     // Verify that the price for minting has actually been taken into account.
-    await contract.mint(1, 0, owner.address, { value: 60000000000000000n });
-    await expectRevert.unspecified(contract.mint(1, 0, owner.address, { value: 59999999999999999n }));
+    await contract.mint(1, 3, owner.address, { value: 666666666666666624n });
+    await expectRevert.unspecified(contract.mint(1, 3, owner.address, { value: 666666666666666623n }));
   });
 
   it("allows the contract owner to update METADATA_URI", async () => {

@@ -198,10 +198,10 @@ class PuzzleCard {
 
     const to = recipient || PuzzleCard.ZERO_ADDRESS; // Cards are minted to the msg.sender if address(0).
 
-    return PuzzleCard.pricePerCard().then(price => (
+    return PuzzleCard.CONTRACT.pricePerTierInWei(tier).then(price => (
       PuzzleCard.inBatches(numberToMint, (batchSize) => {
         const gasLimit = PuzzleCard.gasLimitToMint(batchSize);
-        const value = price * BigInt(batchSize);
+        const value = price.toBigInt() * BigInt(batchSize);
 
         const request = PuzzleCard.CONTRACT.mint(batchSize, tier, to, { gasLimit, value });
         return wait ? request.then(PuzzleCard.fromBatchEvent) : request;
@@ -221,8 +221,10 @@ class PuzzleCard {
     return Math.min(totalGas, PuzzleCard.GAS_LIMIT_MAXIMUM);
   }
 
-  static pricePerCard() {
-    return PuzzleCard.CONTRACT.pricePerCard().then(p => p.toBigInt());
+  static pricePerTierInWei() {
+    return Promise.all(PuzzleCard.TIER_NAMES.map((_, i) => (
+      PuzzleCard.CONTRACT.pricePerTierInWei(i).then(p => p.toBigInt())
+    )));
   }
 
   static numberOwned(card, address) {
@@ -381,8 +383,17 @@ class PuzzleCard {
     );
   }
 
-  static updatePrice(newPrice) {
-    return PuzzleCard.CONTRACT.updatePrice(newPrice);
+  static updatePrices(dollarsPerMatic) {
+    const pricePerTierInWei = PuzzleCard.DOLLAR_PRICE_PER_TIER.map(dollars => {
+      if (dollarsPerMatic === 0) { return 0; } // For testing purposes.
+
+      const matic = dollars / dollarsPerMatic;
+      const wei = matic * PuzzleCard.WEI_PER_MATIC;
+
+      return BigInt(Math.round(wei));
+    });
+
+    return PuzzleCard.CONTRACT.updatePricePerTierInWei(pricePerTierInWei);
   }
 
   // private methods
@@ -650,6 +661,11 @@ PuzzleCard.DECKS_URI = "https://puzzlecards.github.io/decks";
 PuzzleCard.EMBED_URI = "http://localhost:3000/embed"; // TMP
 PuzzleCard.DECKS_URI = "http://localhost:3000/decks"; // TMP
 
+// The intention is that these prices remain fixed but the price in Wei is
+// updated as the dollar/matic exchange rate changes over time.
+PuzzleCard.DOLLAR_PRICE_PER_TIER = [0.01, 0.05, 0.20, 1.00, 7.00, 50.00, 500.00];
+PuzzleCard.WEI_PER_MATIC = 1000000000000000000;
+
 // Set a minimum gas limit that provides enough headroom for all actions.
 // Set a maximum gas limit that matches the limit for the polygon network.
 PuzzleCard.GAS_LIMIT_MINIMUM = 350000;
@@ -702,8 +718,8 @@ PuzzleCard.ERROR_STRINGS = [
   "[a color was repeated]",
 ];
 
-PuzzleCard.CONTRACT_ADDRESS = "0xaC2dE11051303668451174F4e5db7eEc799184BB";
-PuzzleCard.CONTRACT_BLOCK = 20952997;
+PuzzleCard.CONTRACT_ADDRESS = "0x8aa8AfE3EBAd37b69da4ff3285Ab561B1eb2d1ec";
+PuzzleCard.CONTRACT_BLOCK = 20955494;
 PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
 
 PuzzleCard.CONTRACT_ABI = [
@@ -748,7 +764,7 @@ PuzzleCard.CONTRACT_ABI = [
   "function mint(uint256 numberToMint, uint8 tier, address to) payable",
   "function name() view returns (string)",
   "function owner() view returns (address)",
-  "function pricePerCard() view returns (uint256)",
+  "function pricePerTierInWei(uint256) view returns (uint256)",
   "function puzzleMastery1(uint256[] tokenIDs)",
   "function puzzleMastery2(uint256[] tokenIDs)",
   "function renounceOwnership()",
@@ -762,7 +778,7 @@ PuzzleCard.CONTRACT_ABI = [
   "function totalSupply(uint256) view returns (uint256)",
   "function transferOwnership(address newOwner)",
   "function updateConstants(uint8[] numPuzzlesPerSeries, uint16[] puzzleOffsetPerSeries, uint8[] numVariantsPerType, uint16[] variantOffsetPerType, string metadataURI, address proxyRegistryAddress)",
-  "function updatePrice(uint256 price)",
+  "function updatePricePerTierInWei(uint256[7] _pricePerTierInWei)",
   "function uri(uint256) view returns (string)"
 ];
 

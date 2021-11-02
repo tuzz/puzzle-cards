@@ -50,7 +50,7 @@ describe("Minting", () => {
       const balanceAfter = await ethers.provider.getBalance(owner.address);
       const delta = balanceAfter.toBigInt() - balanceBefore.toBigInt();
 
-      const pricePerCard = await PuzzleCard.pricePerCard();
+      const pricePerCard = (await PuzzleCard.pricePerTierInWei())[0];
       const expectedPayment = BigInt(3) * pricePerCard;
 
       expect(delta).to.equal(expectedPayment);
@@ -62,7 +62,7 @@ describe("Minting", () => {
     });
 
     it("reverts if insufficient payment is provided", async () => {
-      const pricePerCard = await PuzzleCard.pricePerCard();
+      const pricePerCard = (await PuzzleCard.pricePerTierInWei())[0];
       const notEnough = BigInt(3) * pricePerCard - BigInt(1);
 
       const promise = PuzzleCard.CONTRACT.mint(3, 0, user2.address, { ...PuzzleCard.GAS_OPTIONS, value: notEnough });
@@ -73,7 +73,7 @@ describe("Minting", () => {
       await user2.sendTransaction({ to: owner.address, value: 999999999960000000000000n });
       PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user2));
 
-      const pricePerCard = await PuzzleCard.pricePerCard();
+      const pricePerCard = (await PuzzleCard.pricePerTierInWei())[0];
       const promise = PuzzleCard.mint(3, "Mortal", user2.address);
 
       expect(promise).to.eventually.be.rejectedWith(/doesn't have enough funds/);
