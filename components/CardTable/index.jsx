@@ -32,7 +32,7 @@ const CardTable = () => {
   };
 
   const handleChipMoved = ({ movedTo }) => {
-    setMintChipActive(channel.overlapsOutline(movedTo));
+    setMintChipActive(channel.circleOverlapsOutline(movedTo));
   };
 
   const updateStacksBasedOnPosition = (cardStack, position, stacks, setStacks, shouldIncludeFn, callbackFn) => {

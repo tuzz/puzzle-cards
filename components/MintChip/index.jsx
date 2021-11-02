@@ -9,6 +9,7 @@ import styles from "./styles.module.scss";
 const MintChip = ({ filters, onMoved = () => {}, channel }) => {
   const { PuzzleCard, address, maxTier } = useContext(AppContext);
   const dropdowns = [{ ref: useRef() }, { ref: useRef() }];
+  const chipRef = useRef();
 
   const [zoomed, setZoomed] = useState(false);
   const [numCards, setNumCards] = useState(1);
@@ -72,7 +73,7 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
 
   const handleStop = (event) => {
     if (!zoomed) {
-      onMoved({ movedTo: event.target.getBoundingClientRect() });
+      onMoved({ movedTo: chipRef.current.getBoundingClientRect() });
     }
   };
 
@@ -85,7 +86,7 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
   const displayPrice = priceInCents % 100 === 0 ? priceInDollars.toFixed(0) : priceInDollars.toFixed(2);
 
   return (
-    <Draggable bounds="parent" zoomed={zoomed} onClick={zoomIn} disabled={zoomed} onStop={handleStop} className={styles.draggable}>
+    <Draggable nodeRef={chipRef} bounds="parent" zoomed={zoomed} onClick={zoomIn} disabled={zoomed} onStop={handleStop} className={styles.draggable}>
       <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={rotation} duration={1.5} minWidth={800} minHeight={800}>
         <Flippable flipped={zoomed} direction={Math.random() < 0.5 ? 1 : -1} delay={zoomed ? 0 : 0.5} className={styles.flippable}>
           <div className={styles.front}>
