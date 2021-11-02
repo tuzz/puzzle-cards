@@ -54,23 +54,24 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
 
     // minting
 
-    function mint(uint256 numberToMint, address to) external payable {
+    function mint(uint256 numberToMint, uint8 tier, address to) external payable {
         if (to == address(0)) { to = msg.sender; }
 
         payable(owner()).transfer(numberToMint * pricePerCard);
-        mintStarterCards(numberToMint, to);
+        mintStarterCards(numberToMint, tier, to);
     }
 
-    function gift(uint256 numberToGift, address to) external onlyOwner {
-        mintStarterCards(numberToGift, to);
+    function gift(uint256 numberToGift, uint8 tier, address to) external onlyOwner {
+        mintStarterCards(numberToGift, tier, to);
     }
 
-    function mintStarterCards(uint256 numberToMint, address to) private {
+    function mintStarterCards(uint256 numberToMint, uint8 tier, address to) private {
         uint256[] memory tokenIDs = new uint256[](numberToMint);
         uint256[] memory oneOfEach = new uint256[](numberToMint);
 
         for (uint256 i = 0; i < numberToMint; i += 1) {
-            uint256 newCardID = tokenIDForCard(starterCard());
+            uint8 condition = PRISTINE_CONDITION - uint8(randomNumber() % 2);
+            uint256 newCardID = tokenIDForCard(starterCardForTier(tier, condition));
 
             tokenIDs[i] = newCardID;
             oneOfEach[i] = 1;
@@ -78,13 +79,6 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         }
 
         _mintBatch(to, tokenIDs, oneOfEach, "");
-    }
-
-    function starterCard() private returns (Attributes memory) {
-        uint8 tier = pickRandom(TIER_PROBABILITIES);
-        uint8 condition = PRISTINE_CONDITION - pickRandom(CONDITION_PROBABILITIES);
-
-        return randomCard(tier, condition, STANDARD_TYPE_PROBABILITIES);
     }
 
     function starterCardForTier(uint8 tier, uint8 condition) private returns (Attributes memory) {
@@ -681,8 +675,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     uint8[] private NUM_VARIANTS_PER_TYPE = [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2];
     uint16[] private VARIANT_OFFSET_PER_TYPE = [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 5];
 
-    uint256[] private TIER_PROBABILITIES = [90, 10];
-    uint256[] private CONDITION_PROBABILITIES = [80, 20];
+    uint256[] private CONDITION_PROBABILITIES = [90, 10];
     uint256[] private STANDARD_TYPE_PROBABILITIES = [300, 100, 100, 200, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
     uint256[] private VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
     uint256[] private MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];

@@ -28,8 +28,8 @@ describe("Constants", () => {
     expect(pricePerCard).to.equal(60000000000000000n);
 
     // Verify that the price for minting has actually been taken into account.
-    await contract.mint(1, owner.address, { value: 60000000000000000n });
-    await expectRevert.unspecified(contract.mint(1, owner.address, { value: 59999999999999999n }));
+    await contract.mint(1, 0, owner.address, { value: 60000000000000000n });
+    await expectRevert.unspecified(contract.mint(1, 0, owner.address, { value: 59999999999999999n }));
   });
 
   it("allows the contract owner to update METADATA_URI", async () => {
@@ -48,7 +48,7 @@ describe("Constants", () => {
 
     await PuzzleCard.updateConstants();
 
-    const tokenIDs = await TestUtils.batchTokenIDs(contract.gift(100, owner.address));
+    const tokenIDs = await TestUtils.batchTokenIDs(contract.gift(100, 0, owner.address));
     const names = [];
 
     for (const tokenID of tokenIDs) {
@@ -73,7 +73,7 @@ describe("Constants", () => {
     let tokenIDs = [];
 
     for (let i = 0; i < 5; i += 1) {
-      const batch = await TestUtils.batchTokenIDs(contract.gift(100, owner.address));
+      const batch = await TestUtils.batchTokenIDs(contract.gift(100, 0, owner.address));
       tokenIDs = tokenIDs.concat(batch);
     }
 

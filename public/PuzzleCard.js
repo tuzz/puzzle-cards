@@ -192,15 +192,18 @@ class PuzzleCard {
     PuzzleCard.CONTRACT = contract;
   }
 
-  static mint(numberToMint, to, { wait = true } = {}) {
-    to = to || PuzzleCard.ZERO_ADDRESS; // Cards are minted to the msg.sender if address(0).
+  static mint(numberToMint, tierName, recipient, { wait = true } = {}) {
+    const tier = PuzzleCard.TIER_NAMES.findIndex(n => n === tierName);
+    if (tier === -1) { throw new Error(`Invalid tier ${tierName}`); }
+
+    const to = recipient || PuzzleCard.ZERO_ADDRESS; // Cards are minted to the msg.sender if address(0).
 
     return PuzzleCard.pricePerCard().then(price => (
       PuzzleCard.inBatches(numberToMint, (batchSize) => {
         const gasLimit = PuzzleCard.gasLimitToMint(batchSize);
         const value = price * BigInt(batchSize);
 
-        const request = PuzzleCard.CONTRACT.mint(batchSize, to, { gasLimit, value });
+        const request = PuzzleCard.CONTRACT.mint(batchSize, tier, to, { gasLimit, value });
         return wait ? request.then(PuzzleCard.fromBatchEvent) : request;
       })
     ));
@@ -355,11 +358,14 @@ class PuzzleCard {
 
   // onlyOwner contract methods
 
-  static gift(numberToGift, to, { wait = true } = {}) { // Only callable by the contract owner.
+  static gift(numberToGift, tierName, to, { wait = true } = {}) { // Only callable by the contract owner.
+    const tier = PuzzleCard.TIER_NAMES.findIndex(n => n === tierName);
+    if (tier === -1) { throw new Error(`Invalid tier ${tierName}`); }
+
     return PuzzleCard.inBatches(numberToGift, (batchSize) => {
       const gasLimit = PuzzleCard.gasLimitToMint(batchSize);
 
-      const request = PuzzleCard.CONTRACT.gift(batchSize, to, { gasLimit });
+      const request = PuzzleCard.CONTRACT.gift(batchSize, tier, to, { gasLimit });
       return wait ? request.then(PuzzleCard.fromBatchEvent) : request;
     });
   }
@@ -696,8 +702,8 @@ PuzzleCard.ERROR_STRINGS = [
   "[a color was repeated]",
 ];
 
-PuzzleCard.CONTRACT_ADDRESS = "0xD937Eeb2eD57Cb87678aBbD98d3Fa0a3864B83Fd";
-PuzzleCard.CONTRACT_BLOCK = 20922860;
+PuzzleCard.CONTRACT_ADDRESS = "0xaC2dE11051303668451174F4e5db7eEc799184BB";
+PuzzleCard.CONTRACT_BLOCK = 20952997;
 PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
 
 PuzzleCard.CONTRACT_ABI = [
@@ -730,7 +736,7 @@ PuzzleCard.CONTRACT_ABI = [
   "function getChainId() view returns (uint256)",
   "function getDomainSeperator() view returns (bytes32)",
   "function getNonce(address user) view returns (uint256 nonce)",
-  "function gift(uint256 numberToGift, address to)",
+  "function gift(uint256 numberToGift, uint8 tier, address to)",
   "function goThroughStarDoor(uint256[] tokenIDs)",
   "function isApprovedForAll(address owner, address operator) view returns (bool)",
   "function jumpIntoBeacon(uint256[] tokenIDs)",
@@ -739,7 +745,7 @@ PuzzleCard.CONTRACT_ABI = [
   "function lookThroughGlasses(uint256[] tokenIDs)",
   "function lookThroughTelescope(uint256[] tokenIDs)",
   "function masterCopiesClaimed(uint16) view returns (bool)",
-  "function mint(uint256 numberToMint, address to) payable",
+  "function mint(uint256 numberToMint, uint8 tier, address to) payable",
   "function name() view returns (string)",
   "function owner() view returns (address)",
   "function pricePerCard() view returns (uint256)",

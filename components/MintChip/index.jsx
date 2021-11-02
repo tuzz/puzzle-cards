@@ -6,7 +6,15 @@ import Flippable from "../Flippable";
 import Dropdown from "./dropdown";
 import styles from "./styles.module.scss";
 
-const TIER_PRICES = [1, 5, 20, 100, 700, 5000, 50000]; // TODO: add support for price to contract
+const TIER_PRICES = {
+  Mortal: 1,
+  Immortal: 5,
+  Ethereal: 20,
+  Virtual: 100,
+  Celestial: 700,
+  Godly: 5000,
+  Master: 50000,
+}; // TODO: add support for price to contract
 const maxMintTier = 2; // TODO: restrict max mint tier per user address in the contract
 
 const MintChip = ({ filters, onMoved = () => {}, channel }) => {
@@ -15,10 +23,11 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
 
   const [zoomed, setZoomed] = useState(false);
   const [numCards, setNumCards] = useState(1);
-  const [tier, setTier] = useState(0);
+  const [tierName, setTierName] = useState("Mortal");
 
-  //channel.mintArgs = () => [numCards, tier, PuzzleCard.ZERO_ADDRESS]; // TODO
-  channel.mintArgs = () => [numCards, PuzzleCard.ZERO_ADDRESS]; // Mint to the msg.sender.
+  channel.mintArgs = () => [numCards, tierName, PuzzleCard.ZERO_ADDRESS]; // Mint to the msg.sender.
+
+  const isLocked = (tierName) => PuzzleCard.TIER_NAMES.findIndex(n => n === tierName) > maxMintTier;
 
   const zoomIn = () => {
     setZoomed(true);
@@ -45,12 +54,12 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
     setZoomed(false);
   };
 
-  const handleTierChange = (tier, event) => {
-    if (tier > maxMintTier) {
-      alert(`Promote a card to ${PuzzleCard.TIER_NAMES[tier]} tier to unlock minting at that tier.`);
+  const handleTierChange = (tierName, event) => {
+    if (isLocked(tierName)) {
+      alert(`Promote a card to ${tierName} tier to unlock minting at that tier.`);
       event.stopPropagation();
     } else {
-      setTier(tier);
+      setTierName(tierName);
     }
   }
 
@@ -62,7 +71,7 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
 
   const rotation = { base: 0, random: 30, initial: -20 };
 
-  const price = numCards * TIER_PRICES[tier];
+  const price = numCards * TIER_PRICES[tierName];
   const dollars = price / 100;
   const displayPrice = price % 100 === 0 ? dollars : dollars.toFixed(2);
 
@@ -97,10 +106,8 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
                   { label: "500 cards", value: 500 },
                 ]} />
 
-                <Dropdown object={dropdowns[1]} className={styles.tier_dropdown} value={tier} onChange={handleTierChange} options={
-                  PuzzleCard.TIER_NAMES.map((label, value) => (
-                    { label, value, locked: value > maxMintTier }
-                  ))
+                <Dropdown object={dropdowns[1]} className={styles.tier_dropdown} value={tierName} onChange={handleTierChange} options={
+                  PuzzleCard.TIER_NAMES.map(n => ({ label: n, value: n, locked: isLocked(n) }))
                 } />
               </div>
             </div>

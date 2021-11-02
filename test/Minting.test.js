@@ -24,7 +24,7 @@ describe("Minting", () => {
     it("allows a user to mint cards", async () => {
       PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
 
-      const cards = await PuzzleCard.mint(1, user2.address);
+      const cards = await PuzzleCard.mint(1, "Mortal", user2.address);
       expect(cards.length).to.equal(1);
 
       const numOwned = await PuzzleCard.numberOwned(cards[0], user2.address);
@@ -34,7 +34,7 @@ describe("Minting", () => {
     it("mints to the msg.sender if no address is given", async () => {
       PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
 
-      const cards = await PuzzleCard.mint(1);
+      const cards = await PuzzleCard.mint(1, "Mortal");
       expect(cards.length).to.equal(1);
 
       const numOwned = await PuzzleCard.numberOwned(cards[0], user1.address);
@@ -45,7 +45,7 @@ describe("Minting", () => {
       const balanceBefore = await ethers.provider.getBalance(owner.address);
 
       PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
-      await PuzzleCard.mint(3, user2.address);
+      await PuzzleCard.mint(3, "Mortal", user2.address);
 
       const balanceAfter = await ethers.provider.getBalance(owner.address);
       const delta = balanceAfter.toBigInt() - balanceBefore.toBigInt();
@@ -57,7 +57,7 @@ describe("Minting", () => {
     });
 
     it("reverts if no payment is provided", async () => {
-      const promise = PuzzleCard.CONTRACT.mint(3, user2.address, { ...PuzzleCard.GAS_OPTIONS });
+      const promise = PuzzleCard.CONTRACT.mint(3, 0, user2.address, { ...PuzzleCard.GAS_OPTIONS });
       await expectRevert.unspecified(promise);
     });
 
@@ -65,7 +65,7 @@ describe("Minting", () => {
       const pricePerCard = await PuzzleCard.pricePerCard();
       const notEnough = BigInt(3) * pricePerCard - BigInt(1);
 
-      const promise = PuzzleCard.CONTRACT.mint(3, user2.address, { ...PuzzleCard.GAS_OPTIONS, value: notEnough });
+      const promise = PuzzleCard.CONTRACT.mint(3, 0, user2.address, { ...PuzzleCard.GAS_OPTIONS, value: notEnough });
       await expectRevert.unspecified(promise);
     });
 
@@ -74,7 +74,7 @@ describe("Minting", () => {
       PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user2));
 
       const pricePerCard = await PuzzleCard.pricePerCard();
-      const promise = PuzzleCard.mint(3, user2.address);
+      const promise = PuzzleCard.mint(3, "Mortal", user2.address);
 
       expect(promise).to.eventually.be.rejectedWith(/doesn't have enough funds/);
     });
@@ -82,7 +82,7 @@ describe("Minting", () => {
 
   describe("#gift", () => {
     it("allows the contract owner to mint cards as a gift to a user", async () => {
-      const cards = await PuzzleCard.gift(1, user1.address);
+      const cards = await PuzzleCard.gift(1, "Mortal", user1.address);
       expect(cards.length).to.equal(1);
 
       const balance = await PuzzleCard.numberOwned(cards[0], user1.address);
@@ -91,7 +91,7 @@ describe("Minting", () => {
 
     it("does not allow other users to gift cards", async () => {
       PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
-      await expectRevert.unspecified(PuzzleCard.gift(3, user1.address));
+      await expectRevert.unspecified(PuzzleCard.gift(3, "Mortal", user1.address));
     });
 
     it("estimates the gas limit reasonably well for different numbers of cards minted", async () => {
@@ -104,7 +104,7 @@ describe("Minting", () => {
         const sampleSize = Math.max((100 - numberToGift / 2), 3);
 
         for (let i = 0; i < sampleSize; i += 1) {
-          const transaction = await contract.gift(numberToGift, owner.address, { gasLimit: PuzzleCard.GAS_LIMIT_MAXIMUM });
+          const transaction = await contract.gift(numberToGift, 0, owner.address, { gasLimit: PuzzleCard.GAS_LIMIT_MAXIMUM });
           const gasUsed = (await transaction.wait()).gasUsed.toNumber();
 
           maxGas = Math.max(maxGas, gasUsed);

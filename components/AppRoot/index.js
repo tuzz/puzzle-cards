@@ -33,6 +33,9 @@ const AppRoot = ({ Component, pageProps }) => {
       const href = window.location.href.replaceAll(/[?&]connectOnLoad=true/g, "");
       history.replaceState(null, "", href);
     }
+
+    // Make it so you can use PuzzleCard in the JavaScript console for convenience.
+    window.PuzzleCard = PuzzleCard;
   }, []);
 
   const pollForConnect = () => {
