@@ -723,8 +723,8 @@ PuzzleCard.ERROR_STRINGS = [
   "[a color was repeated]",
 ];
 
-PuzzleCard.CONTRACT_ADDRESS = "0x5ec9ea7785fb46a5295b5035a474b8e57afca5db";
-PuzzleCard.CONTRACT_BLOCK = 20959676;
+PuzzleCard.CONTRACT_ADDRESS = "0xa7fc94e331e972ff74efafca128389295282fd60";
+PuzzleCard.CONTRACT_BLOCK = 20971153;
 PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
 
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0xff7ca10af37178bdd056628ef42fd7f799fac77c";

@@ -1,4 +1,25 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICENSED
+
+// This is an ERC1155-compliant smart contract that manages 'Puzzle Cards'.
+//
+// Puzzle Cards are a collection of semi-fungible and non-fungible tokens that
+// can be minted and combined in various ways according to 'recipes'.
+//
+// This collection was created by Chris Patuzzo and is an accompaniment to his
+// upcoming puzzle/platform video game 'Worship the Sun'. All proceeds go to
+// supporting Chris's work and towards making the game as enjoyable as possible.
+//
+// All of the contract and website code is fully auditable and open on GitHub.
+// Puzzle Card imagery can be freely shared on social media, OpenSea, etc.
+//
+// Many ERC1155 extensions are supported, e.g, ERC1155MetadataURI, ERC1155Supply.
+// A JavaScript library is provided to make it easier to work with the contract.
+//
+// - Website: https://puzzlecards.github.io/
+// - Library: https://puzzlecards.github.io/PuzzleCard.js
+// - GitHub: https://github.com/tuzz/puzzle-cards
+// - Twitter: https://twitter.com/chrispatuzzo
+// - License: Copyright 2021, Chris Patuzzo, All Rights Reserved
 
 pragma solidity ^0.8.0;
 

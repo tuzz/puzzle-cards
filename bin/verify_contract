@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Verifies the contract after it has been deployed so that the source code can
+# be viewed on Polygonscan and methods called against the contract.
+
+if [ "$#" -ne 1 ]; then
+  echo "Usage: ./bin/verify_contract network"
+  exit 1
+fi
+
+contract_address=$(cat public/PuzzleCard.js | grep 'CONTRACT_ADDRESS =' | cut -d '"' -f 2)
+proxy_address=$(cat public/PuzzleCard.js | grep 'PROXY_REGISTRY_ADDRESS =' | cut -d '"' -f 2)
+
+yarn hardhat verify --network $1 $contract_address $proxy_address

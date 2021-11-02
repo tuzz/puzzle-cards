@@ -1,4 +1,5 @@
 require("@nomiclabs/hardhat-ethers");
+require("@nomiclabs/hardhat-etherscan");
 require("hardhat-contract-sizer");
 require("hardhat-abi-exporter");
 
@@ -6,8 +7,9 @@ const PuzzleCard = require("./public/PuzzleCard");
 const liveProxyAddress = PuzzleCard.PROXY_REGISTRY_ADDRESS;
 
 const system = (command) => require("child_process").execSync(command).toString().trim();
+
 const privateKey = system("gpg --decrypt ~/Dropbox/Secrets/metamask/private-key.gpg 2>/dev/null");
-const u32MaxValue = Math.pow(2, 32) - 1;
+const apiKey = system("gpg --decrypt ~/Dropbox/Secrets/polygonscan/api-key.gpg 2>/dev/null");
 
 module.exports = {
   solidity: {
@@ -15,7 +17,7 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: u32MaxValue,
+        runs: 1000000,
       },
     },
   },
@@ -54,7 +56,11 @@ module.exports = {
       explorer: "https://polygonscan.com",
       openseaProxyAddress: "0x58807bad0b376efc12f5ad86aac70e78ed67deae",
       accounts: [`0x${privateKey}`],
+      polygonscanApiKey: apiKey,
     },
+  },
+  etherscan: {
+    apiKey,
   },
   mocha: {
     timeout: 0,

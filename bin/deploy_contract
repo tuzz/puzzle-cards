@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Deploys the PuzzleCard contract to the given network (see hardhat.config.js).
+# Deploys and verifies the PuzzleCard contract to the given network.
 
 if [ "$#" -ne 1 ]; then
   echo "Usage: ./bin/deploy network"
@@ -8,4 +8,5 @@ if [ "$#" -ne 1 ]; then
 fi
 
 rm -f contracts/test_utils/TestUtils.sol && \
-yarn hardhat run bin/deploy_contract.js --network $1
+yarn hardhat run bin/deploy_contract.js --network $1 && \
+./bin/verify_contract $1
