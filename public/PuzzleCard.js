@@ -726,7 +726,7 @@ PuzzleCard.ERROR_STRINGS = [
   "[a color was repeated]",
 ];
 
-PuzzleCard.CONTRACT_ADDRESS = "0x5EC9ea7785fb46A5295b5035a474b8e57aFCa5db";
+PuzzleCard.CONTRACT_ADDRESS = "0x5ec9ea7785fb46a5295b5035a474b8e57afca5db";
 PuzzleCard.CONTRACT_BLOCK = 20959676;
 PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
 

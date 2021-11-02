@@ -40,7 +40,7 @@ const updateConstants = (filename, contractAddress, blockNumber) => {
 
   const content = fs.readFileSync(filename, "utf8")
     .replaceAll(/CONTRACT_NETWORK = .*;/g, `CONTRACT_NETWORK = ${JSON.stringify(network)};`)
-    .replaceAll(/CONTRACT_ADDRESS = .*;/g, `CONTRACT_ADDRESS = "${contractAddress}";`)
+    .replaceAll(/CONTRACT_ADDRESS = .*;/g, `CONTRACT_ADDRESS = "${contractAddress.toLowerCase()}";`)
     .replaceAll(/CONTRACT_BLOCK = .*;/g, `CONTRACT_BLOCK = ${blockNumber};`)
 
   fs.writeFileSync(filename, content);
