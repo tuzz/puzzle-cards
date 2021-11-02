@@ -93,19 +93,32 @@ const AppRoot = ({ Component, pageProps }) => {
       deck.fetched = true;
       deck.justChanged = PuzzleCard.updateFetchedDeck(deck, changes);
 
-      let maxIndex = PuzzleCard.TIER_NAMES.findIndex(n => n === c.maxTier);
+      const maxIndex = PuzzleCard.TIER_NAMES.findIndex(n => n === c.maxTier);
+      let maxTierIncreased = false;
 
       for (let { card, delta } of changes) {
         if (delta > 0 && card.tierIndex() > maxIndex) {
-          maxIndex = card.tierIndex();
+          maxTierIncreased = true;
         }
       }
 
-      const maxTier = PuzzleCard.TIER_NAMES[maxIndex];
+      if (maxTierIncreased) {
+        setTimeout(updateMaxTier, 0);
+      }
 
-      return { ...c, maxTier, decks: { ...c.decks, [address]: deck } };
+      return { ...c, decks: { ...c.decks, [address]: deck } };
     });
   };
+
+  // Double check the max tier has actually increased by calling the contract
+  // method in case the user was gifted cards which doesn't count as promoting.
+  const updateMaxTier = async () => {
+    const maxTier = await PuzzleCard.maxTierUnlocked(appContext.address);
+
+    if (maxTier !== appContext.maxTier) {
+      setAppContext(c => ({ ...c, maxTier }));
+    }
+  }
 
   return <>
     <Head>
