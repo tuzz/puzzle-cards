@@ -181,6 +181,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
 
       stackPosition.position = layout.outlinePosition();
       stackPosition.flipped = true;
+      stackPosition.flipDirection = 1;
     }
   };
 
