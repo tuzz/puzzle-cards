@@ -9,7 +9,7 @@ import ReactDraggable from "react-draggable";
 import DragContext from "../DragRegion/context";
 import styles from "./styles.module.scss";
 
-const Draggable = ({ nodeRef, startPosition = {}, position, withinY, zoomed, disabled, className, children, ...props }) => {
+const Draggable = ({ nodeRef, startPosition = {}, position, withinY, zoomed, zoomDuration = 0.5, disabled, className, children, ...props }) => {
   const { maxZIndex, setMaxZIndex } = useContext(DragContext);
   const initialZIndex = startPosition.zIndex || maxZIndex + 1;
 
@@ -37,7 +37,8 @@ const Draggable = ({ nodeRef, startPosition = {}, position, withinY, zoomed, dis
   useEffect(() => {
     const zoomedOut = prevZoomed && !zoomed;
     if (zoomedOut) { moveOnTopOfOtherDraggables(); }
-    setPrevZoomed(zoomed);
+
+    setTimeout(() => setPrevZoomed(zoomed), zoomDuration * 1000);
   }, [zoomed]);
 
   const triggerMouseEvent = (element, eventType) => {
@@ -87,7 +88,7 @@ const Draggable = ({ nodeRef, startPosition = {}, position, withinY, zoomed, dis
   };
 
   const detectClicks = props.onClick ? { onStart: handleStart, onStop: handleStop, onDrag: handleDrag } : {};
-  const zIndex = zoomed ? 999999 : currentZIndex;
+  const zIndex = zoomed || prevZoomed ? 999999 : currentZIndex;
 
   if (withinY) {
     const rect = ref.current.getBoundingClientRect();

@@ -86,7 +86,7 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
   const displayPrice = priceInCents % 100 === 0 ? priceInDollars.toFixed(0) : priceInDollars.toFixed(2);
 
   return (
-    <Draggable nodeRef={chipRef} bounds="parent" zoomed={zoomed} onClick={zoomIn} disabled={zoomed} onStop={handleStop} className={styles.draggable}>
+    <Draggable nodeRef={chipRef} bounds="parent" zoomed={zoomed} zoomDuration={1.5} onClick={zoomIn} disabled={zoomed} onStop={handleStop} className={styles.draggable}>
       <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={rotation} duration={1.5} minWidth={800} minHeight={800}>
         <Flippable flipped={zoomed} direction={Math.random() < 0.5 ? 1 : -1} delay={zoomed ? 0 : 0.5} className={styles.flippable}>
           <div className={styles.front}>
