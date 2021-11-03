@@ -27,6 +27,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
     } else {
       setLoadedAddress(address);
       updateMainArea();
+      filters.exclusions = {}; // Clear the top area when changing accounts.
     }
 
     // Don't propagate changes so that the main area doesn't re-render when the
