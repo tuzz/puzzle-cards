@@ -51,7 +51,7 @@ const AppRoot = ({ Component, pageProps }) => {
   const ensureDeck = async (address, chainId) => {
     address = address.toLowerCase();
 
-    const maxTier = await PuzzleCard.maxTierUnlocked(address);
+    const maxTier = await PuzzleCard.maxTierUnlocked(address).catch(() => "Mortal");
 
     setAppContext(c => {
       const newContext = { ...c, address, maxTier, generation: c.generation + 1 };
@@ -113,7 +113,7 @@ const AppRoot = ({ Component, pageProps }) => {
   // Double check the max tier has actually increased by calling the contract
   // method in case the user was gifted cards which doesn't count as promoting.
   const updateMaxTier = async () => {
-    const maxTier = await PuzzleCard.maxTierUnlocked(appContext.address);
+    const maxTier = await PuzzleCard.maxTierUnlocked(appContext.address).catch(() => "Mortal");
 
     if (maxTier !== appContext.maxTier) {
       setAppContext(c => ({ ...c, maxTier }));
