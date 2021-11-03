@@ -22,7 +22,7 @@ const AppRoot = ({ Component, pageProps }) => {
     if (address) { ensureDeck(address, network.chainId); } else { pollForConnect(); }
 
     ethereum.on("accountsChanged", ([address]) => address && ensureDeck(address));
-    ethereum.on("chainChanged", hex => setAppContext(c => ({ ...c, chainId: Number(hex) })));
+    ethereum.on("chainChanged", hex => ensureDeck(address, Number(hex)));
 
     if (!address) {
       const params = new URLSearchParams(window.location.search);
@@ -49,6 +49,9 @@ const AppRoot = ({ Component, pageProps }) => {
   };
 
   const ensureDeck = async (address, chainId) => {
+    address = address || appContext.address;
+    if (!address) { return; }
+
     address = address.toLowerCase();
 
     const maxTier = await PuzzleCard.maxTierUnlocked(address).catch(() => "Mortal");
@@ -71,6 +74,8 @@ const AppRoot = ({ Component, pageProps }) => {
   };
 
   useEffect(() => {
+    if (appContext.chainId !== PuzzleCard.CONTRACT_NETWORK.chainId) { return; }
+
     for (let [address, deck] of Object.entries(appContext.decks)) {
       if (!deck.fetching && !deck.fetched) {
         deck.fetching = true;
@@ -84,7 +89,7 @@ const AppRoot = ({ Component, pageProps }) => {
         });
       }
     }
-  }, [appContext.decks]);
+  }, [appContext.decks, appContext.chainId]);
 
   const updateFetchedDeck = (address) => (changes) => {
     setAppContext(c => {
