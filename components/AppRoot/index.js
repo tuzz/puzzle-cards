@@ -5,7 +5,7 @@ import PuzzleCard from "../../public/PuzzleCard";
 import AppContext from "./context";
 
 const AppRoot = ({ Component, pageProps }) => {
-  const [appContext, setAppContext] = useState({ PuzzleCard, decks: {}, maxTier: "Mortal", generation: 0 });
+  const [appContext, setAppContext] = useState({ PuzzleCard, decks: {}, maxTiers: {}, generation: 0 });
   const [connectPoller, setConnectPoller] = useState();
 
   useEffect(async () => {
@@ -22,7 +22,7 @@ const AppRoot = ({ Component, pageProps }) => {
     if (address) { ensureDeck(address, network.chainId); } else { pollForConnect(); }
 
     ethereum.on("accountsChanged", ([address]) => address && ensureDeck(address));
-    ethereum.on("chainChanged", hex => ensureDeck(address, Number(hex)));
+    ethereum.on("chainChanged", hex => ensureDeck(null, Number(hex)));
 
     if (!address) {
       const params = new URLSearchParams(window.location.search);
@@ -49,15 +49,14 @@ const AppRoot = ({ Component, pageProps }) => {
   };
 
   const ensureDeck = async (address, chainId) => {
-    address = address || appContext.address;
-    if (!address) { return; }
-
-    address = address.toLowerCase();
-
-    const maxTier = await PuzzleCard.maxTierUnlocked(address).catch(() => "Mortal");
-
     setAppContext(c => {
-      const newContext = { ...c, address, maxTier, generation: c.generation + 1 };
+      address = address || c.address;
+      chainId = chainId || c.chainId;
+
+      if (!address || !chainId) { return c; }
+      address = address.toLowerCase();
+
+      const newContext = { ...c, address, generation: c.generation + 1 };
 
       if (chainId) {
         newContext.chainId = chainId;
@@ -67,6 +66,8 @@ const AppRoot = ({ Component, pageProps }) => {
         newContext.decks = { ...c.decks, [address]: [] };
       }
 
+      setTimeout(() => updateMaxTier(newContext.address, newContext.chainId), 0);
+
       return newContext;
     });
 
@@ -74,7 +75,7 @@ const AppRoot = ({ Component, pageProps }) => {
   };
 
   useEffect(() => {
-    if (appContext.chainId !== PuzzleCard.CONTRACT_NETWORK.chainId) { return; }
+    if (!correctNetwork(appContext.chainId)) { return; }
 
     for (let [address, deck] of Object.entries(appContext.decks)) {
       if (!deck.fetching && !deck.fetched) {
@@ -98,7 +99,7 @@ const AppRoot = ({ Component, pageProps }) => {
       deck.fetched = true;
       deck.justChanged = PuzzleCard.updateFetchedDeck(deck, changes);
 
-      const maxIndex = PuzzleCard.TIER_NAMES.findIndex(n => n === c.maxTier);
+      const maxIndex = PuzzleCard.TIER_NAMES.findIndex(n => n === c.maxTiers[address]);
       let maxTierIncreased = false;
 
       for (let { card, delta } of changes) {
@@ -108,7 +109,7 @@ const AppRoot = ({ Component, pageProps }) => {
       }
 
       if (maxTierIncreased) {
-        setTimeout(updateMaxTier, 0);
+        setTimeout(() => updateMaxTier(c.address, c.chainId), 0);
       }
 
       return { ...c, decks: { ...c.decks, [address]: deck } };
@@ -117,13 +118,19 @@ const AppRoot = ({ Component, pageProps }) => {
 
   // Double check the max tier has actually increased by calling the contract
   // method in case the user was gifted cards which doesn't count as promoting.
-  const updateMaxTier = async () => {
-    const maxTier = await PuzzleCard.maxTierUnlocked(appContext.address).catch(() => "Mortal");
+  const updateMaxTier = async (address, chainId) => {
+    if (!correctNetwork(chainId)) { return; }
 
-    if (maxTier !== appContext.maxTier) {
-      setAppContext(c => ({ ...c, maxTier }));
-    }
+    const maxTier = await PuzzleCard.maxTierUnlocked(address);
+
+    setAppContext(c => {
+      if (c.maxTiers[address] === maxTier) { return c; }
+
+      return { ...c, maxTiers: { ...c.maxTiers, [address]: maxTier } };
+    });
   }
+
+  const correctNetwork = (chainId) => chainId === PuzzleCard.CONTRACT_NETWORK.chainId;
 
   return <>
     <Head>

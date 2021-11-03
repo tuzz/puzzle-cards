@@ -7,26 +7,28 @@ import Dropdown from "./dropdown";
 import styles from "./styles.module.scss";
 
 const MintChip = ({ filters, onMoved = () => {}, channel }) => {
-  const { PuzzleCard, address, maxTier } = useContext(AppContext);
+  const { PuzzleCard, address, chainId, maxTiers } = useContext(AppContext);
+  const maxTier = maxTiers[address];
+
   const dropdowns = [{ ref: useRef() }, { ref: useRef() }];
   const chipRef = useRef();
 
   const [zoomed, setZoomed] = useState(false);
   const [numCards, setNumCards] = useState(1);
   const [tierName, setTierName] = useState("Mortal");
-  const [prevMaxTier, setPrevMaxTier] = useState([]);
+  const [prevPair, setPrevPair] = useState([]);
 
   useEffect(() => {
-    if (!address) { return; }
+    if (!address || !chainId || !maxTier) { return; }
 
-    if (address === prevMaxTier[0]) {
+    if (address === prevPair[0] && chainId === prevPair[1]) {
       alert(`Congratulations, you have successfully promoted a card to ${maxTier} tier and can now mint at that tier.`);
     } else if (isLocked(tierName)) {
       setTierName(maxTier);
     }
 
-    setPrevMaxTier([address, maxTier]);
-  }, [address, maxTier]);
+    setPrevPair([address, chainId]);
+  }, [address, chainId, maxTiers]);
 
   channel.mintArgs = () => [numCards, tierName, PuzzleCard.ZERO_ADDRESS]; // Mint to the msg.sender.
 
