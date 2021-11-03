@@ -41,7 +41,8 @@ module.exports = {
     },
     test: {
       name: "Polygon Test Network",
-      url: "https://rpc-mumbai.maticvigil.com",
+      url: "https://matic-mumbai.chainstacklabs.com",
+      url2: "https://rpc-mumbai.maticvigil.com",
       chainId: 80001,
       symbol: "MATIC",
       explorer: "https://mumbai.polygonscan.com",
@@ -50,7 +51,8 @@ module.exports = {
     },
     live: {
       name: "Polygon Mainnet",
-      url: "https://rpc-mainnet.maticvigil.com",
+      url: "https://matic-mainnet.chainstacklabs.com",
+      url2: "https://rpc-mainnet.maticvigil.com",
       chainId: 137,
       symbol: "MATIC",
       explorer: "https://polygonscan.com",

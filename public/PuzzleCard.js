@@ -726,6 +726,7 @@ PuzzleCard.ERROR_STRINGS = [
 PuzzleCard.CONTRACT_ADDRESS = "0xa7fc94e331e972ff74efafca128389295282fd60";
 PuzzleCard.CONTRACT_BLOCK = 20971153;
 PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
+PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://matic-mumbai.chainstacklabs.com","url2":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
 
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0xff7ca10af37178bdd056628ef42fd7f799fac77c";
 PuzzleCard.ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";

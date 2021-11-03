@@ -163,7 +163,7 @@ Metamask.switchNetwork = async (PuzzleCard) => {
   await ethereum.request({ method: "wallet_addEthereumChain", params: [{
     chainName: expectedNetwork.name,
     chainId: "0x" + expectedNetwork.chainId.toString(16),
-    rpcUrls: [expectedNetwork.url],
+    rpcUrls: [expectedNetwork.url, expectedNetwork.url2],
     nativeCurrency: { symbol: expectedNetwork.symbol, decimals: 18 },
     blockExplorerUrls: [expectedNetwork.explorer],
   }] }).then(() => Metamask.promptingToSwitch = false).catch(() => {});

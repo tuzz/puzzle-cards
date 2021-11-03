@@ -34,6 +34,7 @@ const updateConstants = (filename, contractAddress, blockNumber, proxyAddress) =
   const network = {
     name: metadata.name,
     url: metadata.url,
+    url2: metadata.url2,
     chainId: metadata.chainId,
     symbol: metadata.symbol,
     explorer: metadata.explorer,
