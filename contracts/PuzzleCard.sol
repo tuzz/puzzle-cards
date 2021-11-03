@@ -179,7 +179,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         uint8 tier = tierForTokenID(tokenIDs[0]);
         uint8 condition = randomlyDegrade(tokenIDs, tier);
 
-        replace(tokenIDs, starterCardForTier(tier, condition));
+        replace(tokenIDs, randomCard(tier, condition, POST_VIRTUAL_TYPE_PROBABILITIES));
     }
 
     function canLookThroughGlasses(uint256[] memory tokenIDs) public view returns (bool ok, bool[34] memory errors) {
@@ -707,6 +707,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     uint256[] private CONDITION_PROBABILITIES = [90, 10];
     uint256[] private STANDARD_TYPE_PROBABILITIES = [300, 100, 100, 200, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
     uint256[] private VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
+    uint256[] private POST_VIRTUAL_TYPE_PROBABILITIES = [0, 1, 100, 200, 100, 100, 20, 20, 20, 10, 10, 0, 4, 6];
     uint256[] private MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
     address private PROXY_REGISTRY_ADDRESS;
