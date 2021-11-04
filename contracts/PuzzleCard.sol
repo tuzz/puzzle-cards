@@ -427,24 +427,18 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         uint256 tokenID1 = tokenIDs[0];
         uint256 tokenID2 = tokenIDs[1];
 
-        (uint8 highestTier, uint8 lowestTier) = high_low(tierForTokenID(tokenID1), tierForTokenID(tokenID2));
-        (uint8 highestCond, uint8 lowestCond) = high_low(conditionForTokenID(tokenID1), conditionForTokenID(tokenID2));
-
-        (uint8 tier, uint8 cond) = randomNumber() % 10 == 0 ? (highestTier, highestCond)
-                                 : randomNumber() %  2 == 0 ? (highestTier, lowestCond)
-                                                            : (lowestTier, highestCond);
-
         removeLimitedOrMasterEdition(tokenID1);
         removeLimitedOrMasterEdition(tokenID2);
 
-        replace(tokenIDs, starterCardForTier(tier, cond));
+        uint8 tier = tierForTokenID(tokenID1);
+        uint8 condition = PRISTINE_CONDITION - uint8(randomNumber() % 2);
+
+        replace(tokenIDs, starterCardForTier(tier, condition));
     }
 
     function canDiscard2Pickup1(uint256[] memory tokenIDs) public view returns (bool ok, bool[34] memory errors) {
-        ok = true;
+        ok = basicChecksPassed(tokenIDs, 2, [ANY_TYPE, ANY_TYPE, 0, 0, 0, 0, 0], errors);
 
-        if (tokenIDs.length != 2)        { ok = false; errors[TWO_CARDS_REQUIRED] = true; }
-        if (!ownsAll(tokenIDs))          { ok = false; errors[DOESNT_OWN_CARDS] = true; }
         if (ok && doubleSpent(tokenIDs)) { ok = false; errors[SAME_CARD_USED_TWICE] = true; }
 
         return (ok, errors);
@@ -477,6 +471,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
             uint8 expected = types[i];
 
             bool isOK = expected == actual
+                     || expected == ANY_TYPE
                      || expected == LENS_TYPE && (actual == TORCH_TYPE || actual == GLASSES_TYPE)
                      || expected == ACTIVATOR_TYPE && actual <= CLOAK_TYPE;
 
@@ -514,10 +509,6 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         if (!cloakUsed && inaccessible) { ok = false; errors[CLOAK_REQUIRED_AT_TIER] = true; }
 
         return ok;
-    }
-
-    function high_low(uint8 option1, uint8 option2) private pure returns (uint8, uint8) {
-      return (option1 > option2) ? (option1, option2) : (option2, option1);
     }
 
     function removeLimitedOrMasterEdition(uint256 tokenID) private {
@@ -668,6 +659,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
 
     uint8 private constant ACTIVATOR_TYPE = 17;
     uint8 private constant LENS_TYPE = 18;
+    uint8 private constant ANY_TYPE = 19;
 
     uint8 private constant TWO_CARDS_REQUIRED = 19;
     uint8 private constant THREE_CARDS_REQUIRED = 20;

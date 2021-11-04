@@ -9,9 +9,9 @@ describe("Discard2Pickup1", () => {
   const playerCard = new PuzzleCard({ ...baseCard, type: "Player" });
   const doorCard = new PuzzleCard({ ...baseCard, type: "Door", variant: "Open" });
 
-  const anyType = ["Player", "Crab", "Inactive", "Active", "Cloak", "Telescope", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Door", "Hidden", "Star", "Artwork"];
+  const anyType = PuzzleCard.TYPE_NAMES;
 
-  itBehavesLikeAnAction("discard2Pickup1", [playerCard, doorCard], [anyType, anyType], "Mortal", { skipSameTierTest: true, skipDegradeTest: true });
+  itBehavesLikeAnAction("discard2Pickup1", [playerCard, doorCard], [anyType, anyType], "Mortal", { skipAllDegradeTests: true });
   itMintsATierStarterCard("discard2Pickup1", [playerCard, doorCard], false);
 
   describe("action specific behaviour", () => {
@@ -44,23 +44,25 @@ describe("Discard2Pickup1", () => {
       expect(isAllowed).to.equal(false);
     });
 
-    it("inherits the tier and condition from the discarded cards", async () => {
-      const tierConditionPairs = [];
+    it("has a 50/50 chance to mint the new card at Pristine/Excellent condition", async () => {
+      const conditions = [];
 
-      for (let i = 0; i < 200; i += 1) {
-        const card1 = await PuzzleCard.mintExact(new PuzzleCard({ ...playerCard, tier: "Immortal", condition: "Pristine" }), owner.address);
-        const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...doorCard, tier: "Master", condition: "Dire" }), owner.address);
+      for (let i = 0; i < 1000; i += 1) {
+        const card1 = await PuzzleCard.mintExact(playerCard, owner.address);
+        const card2 = await PuzzleCard.mintExact(doorCard, owner.address);
 
         const mintedCard = await PuzzleCard.discard2Pickup1([card1, card2]);
 
-        tierConditionPairs.push([mintedCard.tier, mintedCard.condition]);
+        conditions.push(mintedCard.condition);
       }
 
-      const frequencies = TestUtils.tallyFrequencies(tierConditionPairs);
+      const frequencies = TestUtils.tallyFrequencies(conditions);
 
-      expect(frequencies[["Master", "Pristine"]]).to.be.below(0.2);           // 10%
-      expect(frequencies[["Immortal", "Pristine"]]).to.be.within(0.35, 0.55); // 45%
-      expect(frequencies[["Master", "Dire"]]).to.be.within(0.35, 0.55);       // 45%
+      expect(frequencies["Dire"]).to.be.undefined;                // 0%
+      expect(frequencies["Poor"]).to.be.undefined;                // 0%
+      expect(frequencies["Reasonable"]).to.be.undefined;          // 0%
+      expect(frequencies["Excellent"]).to.be.within(0.47, 0.53);  // 50%
+      expect(frequencies["Pristine"]).to.be.within(0.47, 0.53);   // 50%
     });
   });
 });
