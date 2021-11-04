@@ -21,33 +21,33 @@ describe("Constants", () => {
 
     expect(pricePerTierInWei).to.deep.equal([
       5263157894736843n, // $0.01
-      26315789473684212n, // $0.05
-      105263157894736850n, // $0.20
-      526315789473684160n, // $1.00
-      3684210526315790000n, // $7.00
-      26315789473684214000n, // $50.00
-      263157894736842130000n // $500.00
+      10526315789473686n, // $0.02
+      26315789473684215n, // $0.05
+      52631578947368430n, // $0.10
+      105263157894736860n, // $0.20
+      263157894736842150n, // $0.50
+      526315789473684300n // $1.00
     ]);
   });
 
   it("allows the contract owner to update the price when the exchange rate changes", async () => {
-    await PuzzleCard.updatePrices(1.50);
+    await PuzzleCard.updatePrices(5.00);
 
     const pricePerTierInWei = await PuzzleCard.pricePerTierInWei();
 
     expect(pricePerTierInWei).to.deep.equal([
-      6666666666666667n,
-      33333333333333332n,
-      133333333333333328n,
-      666666666666666624n,
-      4666666666666667008n,
-      33333333333333336064n,
-      333333333333333311488n
+      2000000000000000n,
+      4000000000000000n,
+      10000000000000000n,
+      20000000000000000n,
+      40000000000000000n,
+      100000000000000000n,
+      200000000000000000n
     ]);
 
     // Verify that the price for minting has actually been taken into account.
-    await contract.mint(1, 0, owner.address, { value: 6666666666666667n });
-    await expectRevert.unspecified(contract.mint(1, 0, owner.address, { value: 6666666666666666n }));
+    await contract.mint(1, 0, owner.address, { value: 2000000000000000n });
+    await expectRevert.unspecified(contract.mint(1, 0, owner.address, { value: 1999999999999999n }));
   });
 
   it("allows the contract owner to update METADATA_URI", async () => {

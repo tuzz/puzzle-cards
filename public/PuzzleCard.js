@@ -668,7 +668,7 @@ PuzzleCard.DECKS_URI = "http://localhost:3000/decks"; // TMP
 
 // The intention is that these prices remain fixed but the price in Wei is
 // updated as the dollar/matic exchange rate changes over time.
-PuzzleCard.DOLLAR_PRICE_PER_TIER = [0.01, 0.05, 0.20, 1.00, 7.00, 50.00, 500.00];
+PuzzleCard.DOLLAR_PRICE_PER_TIER = [0.01, 0.02, 0.05, 0.10, 0.20, 0.50, 1.00];
 PuzzleCard.WEI_PER_MATIC = 1000000000000000000;
 
 // Set a minimum gas limit that provides enough headroom for all actions.
