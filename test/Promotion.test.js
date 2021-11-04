@@ -26,8 +26,10 @@ describe("Promotion", () => {
 
       const results = [];
       const actionsTaken = []
+      const lastConditions = [];
+
       for (let j = 0; j < numRuns; j += 1) {
-        const deck = { tier, actionsTaken };
+        const deck = { tier, actionsTaken, lastConditions };
         PuzzleCard.TYPE_NAMES.forEach(t => deck[t] = []);
 
         let numMinted = 0;
@@ -55,11 +57,18 @@ describe("Promotion", () => {
 
       console.log(`On average it takes ${avgNum} cards and costs $${avgPrice.toFixed(2)} (upper bound).`);
 
-      const frequencies = TestUtils.tallyFrequencies(actionsTaken);
-      const mostFrequentFirst = Object.entries(frequencies).sort(([, a], [, b]) => b - a);
-
-      for (let [actionName, frequency] of mostFrequentFirst) {
+      console.log("\nActions taken:")
+      const actionFrequencies = TestUtils.tallyFrequencies(actionsTaken);
+      for (let [actionName, frequency] of Object.entries(actionFrequencies).sort(([, a], [, b]) => b - a)) {
         console.log(`  - ${actionName} ${(frequency * 100).toFixed(2)}%`);
+      }
+
+      console.log("\nCondition of promoted card:")
+      const conditionFrequencies = TestUtils.tallyFrequencies(lastConditions);
+      const conditions = PuzzleCard.CONDITION_NAMES;
+
+      for (let i = PuzzleCard.CONDITION_NAMES.length - 1; i >= 0; i -= 1) {
+        console.log(`  - ${conditions[i]} ${((conditionFrequencies[conditions[i]] || 0) * 100).toFixed(2)}%`);
       }
     }
   });
@@ -292,6 +301,7 @@ const perform = async (actionName, cards, deck) => {
 
   if (mintedCard.tier !== deck.tier) {
     deck.promotionAction = actionName;
+    deck.lastConditions.push(mintedCard.condition);
   }
 
   deck.actionsTaken.push(actionName);

@@ -586,7 +586,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
 
         return worstCondition == DIRE_CONDITION || tier == IMMORTAL_TIER || tier == GODLY_TIER
              ? worstCondition
-             : worstCondition - pickRandom(CONDITION_PROBABILITIES);
+             : worstCondition - uint8(randomNumber() % 2);
     }
 
     function pickRandom(uint256[] memory probabilities) private returns (uint8 index) {
@@ -704,7 +704,6 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     uint8[] private NUM_VARIANTS_PER_TYPE = [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2];
     uint16[] private VARIANT_OFFSET_PER_TYPE = [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 5];
 
-    uint256[] private CONDITION_PROBABILITIES = [90, 10];
     uint256[] private STANDARD_TYPE_PROBABILITIES = [300, 100, 100, 200, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
     uint256[] private VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
     uint256[] private POST_VIRTUAL_TYPE_PROBABILITIES = [0, 1, 100, 200, 100, 100, 20, 20, 20, 10, 10, 0, 4, 6];

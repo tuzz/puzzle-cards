@@ -201,7 +201,7 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
     });
 
     if (!skipDegradeTest) {
-      it("has a chance to degrade the condition of the minted card", async () => {
+      it("has a 50/50 chance to degrade the condition of the minted card", async () => {
         const conditionNames = [];
 
         for (let i = 0; i < 100; i += 1) {
@@ -223,7 +223,8 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
         const numExcellent = conditionNames.filter(s => s === "Excellent").length;
         const numReasonable = conditionNames.filter(s => s === "Reasonable").length;
 
-        expect(numExcellent).to.be.above(numReasonable * 2);
+        expect(numExcellent).to.be.within(35, 65);
+        expect(numReasonable).to.be.within(35, 65);
       });
     }
 
