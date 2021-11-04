@@ -27,6 +27,7 @@ describe("Promotion", () => {
       const results = [];
       const actionsTaken = []
       const lastConditions = [];
+      let leftovers = [];
 
       for (let j = 0; j < numRuns; j += 1) {
         const deck = { tier, actionsTaken, lastConditions };
@@ -50,6 +51,7 @@ describe("Promotion", () => {
         console.log(`  - ${numMinted} minted cards: $${totalPrice.toFixed(2)}     (${deck.promotionAction})`);
 
         results.push([numMinted, totalPrice]);
+        PuzzleCard.TYPE_NAMES.forEach(t => leftovers = leftovers.concat(deck[t]));
       }
 
       const avgNum = results.map(([n, _]) => n).reduce((a, b) => a + b) / results.length;
@@ -69,6 +71,12 @@ describe("Promotion", () => {
 
       for (let i = PuzzleCard.CONDITION_NAMES.length - 1; i >= 0; i -= 1) {
         console.log(`  - ${conditions[i]} ${((conditionFrequencies[conditions[i]] || 0) * 100).toFixed(2)}%`);
+      }
+
+      console.log("\nLeftover cards:");
+      const leftoverFrequencies = TestUtils.tallyFrequencies(leftovers.map(c => c.type));
+      for (let [type, frequency] of Object.entries(leftoverFrequencies).sort(([, a], [, b]) => b - a)) {
+        console.log(`  - ${type} ${(frequency * 100).toFixed(2)}%`);
       }
     }
   });
