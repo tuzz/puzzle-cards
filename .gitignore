@@ -3,6 +3,7 @@
 .cache/
 .next
 .gh-pages
+.sentryclirc
 node_modules/
 contracts/TestUtils.sol
 test-output.txt
