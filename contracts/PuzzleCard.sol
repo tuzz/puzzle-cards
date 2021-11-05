@@ -438,7 +438,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         removeLimitedOrMasterEdition(tokenID2);
 
         uint8 tier = tierForTokenID(tokenID1);
-        uint8 condition = PRISTINE_CONDITION - uint8(randomNumber() % 2);
+        uint8 condition = randomlyDegrade(tokenIDs, tier);
 
         replace(tokenIDs, starterCardForTier(tier, condition));
     }

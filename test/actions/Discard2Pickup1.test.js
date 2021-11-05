@@ -11,7 +11,7 @@ describe("Discard2Pickup1", () => {
 
   const anyType = PuzzleCard.TYPE_NAMES;
 
-  itBehavesLikeAnAction("discard2Pickup1", [playerCard, doorCard], [anyType, anyType], "Mortal", { skipAllDegradeTests: true });
+  itBehavesLikeAnAction("discard2Pickup1", [playerCard, doorCard], [anyType, anyType], "Mortal");
   itMintsATierStarterCard("discard2Pickup1", [playerCard, doorCard], false);
 
   describe("action specific behaviour", () => {
@@ -42,27 +42,6 @@ describe("Discard2Pickup1", () => {
       const [isAllowed, reasons] = await PuzzleCard.canDiscard2Pickup1([playerCard, playerCard]);
 
       expect(isAllowed).to.equal(false);
-    });
-
-    it("has a 50/50 chance to mint the new card at Pristine/Excellent condition", async () => {
-      const conditions = [];
-
-      for (let i = 0; i < 1000; i += 1) {
-        const card1 = await PuzzleCard.mintExact(playerCard, owner.address);
-        const card2 = await PuzzleCard.mintExact(doorCard, owner.address);
-
-        const mintedCard = (await PuzzleCard.discard2Pickup1([card1, card2]))[0];
-
-        conditions.push(mintedCard.condition);
-      }
-
-      const frequencies = TestUtils.tallyFrequencies(conditions);
-
-      expect(frequencies["Dire"]).to.be.undefined;                // 0%
-      expect(frequencies["Poor"]).to.be.undefined;                // 0%
-      expect(frequencies["Reasonable"]).to.be.undefined;          // 0%
-      expect(frequencies["Excellent"]).to.be.within(0.47, 0.53);  // 50%
-      expect(frequencies["Pristine"]).to.be.within(0.47, 0.53);   // 50%
     });
   });
 });

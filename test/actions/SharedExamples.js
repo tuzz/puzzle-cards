@@ -4,7 +4,7 @@ const TestUtils = require("../test_utils/TestUtils");
 const card = TestUtils.card;
 const PuzzleCard = require("../../public/PuzzleCard");
 
-const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier, { skipAllDegradeTests, skipNoDegradeTest } = {}) => {
+const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier, { skipNoDegradeTest } = {}) => {
   const titleized = actionName[0].toUpperCase() + actionName.slice(1);
   const canAction = `can${titleized}`;
   const numCards = validCards.length;
@@ -198,71 +198,69 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
       expect(mintedCard.tier).to.equal(expectedTier);
     });
 
-    if (!skipAllDegradeTests) {
-      it("has a 50/50 chance to degrade the condition of the minted card", async () => {
-        const conditionNames = [];
+    it("has a 50/50 chance to degrade the condition of the minted card", async () => {
+      const conditionNames = [];
 
-        for (let i = 0; i < 100; i += 1) {
-          for (const card of validCards) {
-            await PuzzleCard.mintExact(card, owner.address)
-          }
-
-          const mintedCard = (await PuzzleCard[actionName](validCards))[0];
-
-          conditionNames.push(mintedCard.condition);
+      for (let i = 0; i < 100; i += 1) {
+        for (const card of validCards) {
+          await PuzzleCard.mintExact(card, owner.address)
         }
 
-        const set = new Set(conditionNames);
-        expect(set.size).to.equal(2);
+        const mintedCard = (await PuzzleCard[actionName](validCards))[0];
 
-        expect(set.has("Excellent")).to.equal(true);
-        expect(set.has("Reasonable")).to.equal(true);
+        conditionNames.push(mintedCard.condition);
+      }
 
-        const numExcellent = conditionNames.filter(s => s === "Excellent").length;
-        const numReasonable = conditionNames.filter(s => s === "Reasonable").length;
+      const set = new Set(conditionNames);
+      expect(set.size).to.equal(2);
 
-        expect(numExcellent).to.be.within(35, 65);
-        expect(numReasonable).to.be.within(35, 65);
-      });
+      expect(set.has("Excellent")).to.equal(true);
+      expect(set.has("Reasonable")).to.equal(true);
 
-      it("doesn't degrade cards that are already the lowest condition", async () => {
-        const conditionNames = new Set();
+      const numExcellent = conditionNames.filter(s => s === "Excellent").length;
+      const numReasonable = conditionNames.filter(s => s === "Reasonable").length;
 
-        for (let i = 0; i < 20; i += 1) {
-          const cards = [];
+      expect(numExcellent).to.be.within(35, 65);
+      expect(numReasonable).to.be.within(35, 65);
+    });
 
-          for (const card of validCards) {
-            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, condition: "Dire" }), owner.address));
-          }
+    it("doesn't degrade cards that are already the lowest condition", async () => {
+      const conditionNames = new Set();
 
-          const mintedCard = (await PuzzleCard[actionName](cards))[0];
+      for (let i = 0; i < 20; i += 1) {
+        const cards = [];
 
-          conditionNames.add(mintedCard.condition);
+        for (const card of validCards) {
+          cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, condition: "Dire" }), owner.address));
         }
 
-        expect(conditionNames.size).to.equal(1);
-      });
+        const mintedCard = (await PuzzleCard[actionName](cards))[0];
 
-      if (!skipNoDegradeTest) {
-        for (const tier of ["Immortal", "Godly"]) {
-          it(`doesn't degrade cards at ${tier} tier`, async () => {
-            const conditionNames = new Set();
+        conditionNames.add(mintedCard.condition);
+      }
 
-            for (let i = 0; i < 20; i += 1) {
-              const cards = [];
+      expect(conditionNames.size).to.equal(1);
+    });
 
-              for (const card of validCards) {
-                cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier }), owner.address));
-              }
+    if (!skipNoDegradeTest) {
+      for (const tier of ["Immortal", "Godly"]) {
+        it(`doesn't degrade cards at ${tier} tier`, async () => {
+          const conditionNames = new Set();
 
-              const mintedCard = (await PuzzleCard[actionName](cards))[0];
+          for (let i = 0; i < 20; i += 1) {
+            const cards = [];
 
-              conditionNames.add(mintedCard.condition);
+            for (const card of validCards) {
+              cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier }), owner.address));
             }
 
-            expect(conditionNames.size).to.equal(1);
-          });
-        }
+            const mintedCard = (await PuzzleCard[actionName](cards))[0];
+
+            conditionNames.add(mintedCard.condition);
+          }
+
+          expect(conditionNames.size).to.equal(1);
+        });
       }
     }
   });
