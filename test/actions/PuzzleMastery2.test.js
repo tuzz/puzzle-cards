@@ -97,7 +97,7 @@ describe("PuzzleMastery2", () => {
         }
       });
 
-      it("mints a limited edition card if it is one of the first 100 minted for that puzzle", async () => {
+      it("mints a limited edition card if it is one of the first 151 minted for that puzzle", async () => {
         const editionNames = [];
 
         for (let i = 0; i < 200; i += 1) {
@@ -115,7 +115,7 @@ describe("PuzzleMastery2", () => {
         // Master copies are limited edition cards (it's a containment hierarchy).
         const limitedNames = editionNames.filter(s => s === "Limited" || s === "Master Copy");
 
-        expect(limitedNames.length).to.equal(100);
+        expect(limitedNames.length).to.equal(151);
 
         // Check that cards for other puzzles still receive limited editions.
         const cards = [];
@@ -133,7 +133,7 @@ describe("PuzzleMastery2", () => {
         const numberOfRuns = 50;
 
         for (let i = 0; i < numberOfRuns; i += 1) {
-          for (let j = 1; j <= 100; j += 1) {
+          for (let j = 1; j <= 151; j += 1) {
             const cards = [];
 
             for (const card of pristineCards) {
@@ -157,7 +157,7 @@ describe("PuzzleMastery2", () => {
         const average = mintPositions.reduce((a, b) => a + b) / mintPositions.length;
         console.log(average);
 
-        expect(average).to.be.within(40.5, 60.5);  // The average should be: (1 + 100) / 2
+        expect(average).to.be.within(60, 92);  // The average should be: (1 + 151) / 2 = 76
       });
 
       it("provides a method to get the number of limited edition cards for a puzzle", async () => {
@@ -174,7 +174,7 @@ describe("PuzzleMastery2", () => {
         const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
         const numLimited = await PuzzleCard.numLimitedEditions(card);
 
-        expect(numLimited.toNumber()).to.equal(100);
+        expect(numLimited.toNumber()).to.equal(151);
       });
 
       it("provides a method to get whether the master copy has been claimed for a puzzle", async () => {
@@ -201,7 +201,7 @@ describe("PuzzleMastery2", () => {
         const card = new PuzzleCard({ ...pristineCards[0], puzzle: "Puzzle 1-1" });
         expect(await PuzzleCard.numOfTheLimitedEditionWhenMasterCopyClaimed(card)).to.equal(null);
 
-        for (let i = 0; i < 100; i += 1) {
+        for (let i = 0; i < 151; i += 1) {
           const cards = [];
 
           for (const card of pristineCards) {
@@ -212,7 +212,7 @@ describe("PuzzleMastery2", () => {
         }
 
         const number = await PuzzleCard.numOfTheLimitedEditionWhenMasterCopyClaimed(card);
-        expect(number).to.be.within(1, 100);
+        expect(number).to.be.within(1, 151);
       });
 
       it("can mint limited editions and the master copy again if others are discarded", async () => {
@@ -232,11 +232,11 @@ describe("PuzzleMastery2", () => {
         const numLimited = await PuzzleCard.numLimitedEditions(card);
         const isClaimed = await PuzzleCard.masterCopyClaimed(card);
 
-        expect(numLimited.toNumber()).to.equal(100);
+        expect(numLimited.toNumber()).to.equal(151);
         expect(isClaimed).to.equal(true);
 
         // Discard all the minted limited edition cards.
-        for (let i = 0; i < 100; i += 2) {
+        for (let i = 0; i < 151; i += 2) {
           const card1 = mintedCards[i];
           const card2 = mintedCards[i + 1];
 
@@ -249,8 +249,8 @@ describe("PuzzleMastery2", () => {
         expect(numLimitedAfterDiscard.toNumber()).to.equal(0);
         expect(isClaimedAfterDiscard).to.equal(false)
 
-        // Mint another 100 cards.
-        for (let i = 0; i < 100; i += 1) {
+        // Mint another 151 cards.
+        for (let i = 0; i < 151; i += 1) {
           const cards = [];
 
           for (const card of pristineCards) {
@@ -263,7 +263,7 @@ describe("PuzzleMastery2", () => {
         const numLimitedAfterReMint = await PuzzleCard.numLimitedEditions(card);
         const isClaimedAfterReMint = await PuzzleCard.masterCopyClaimed(card);
 
-        expect(numLimitedAfterReMint.toNumber()).to.equal(100);
+        expect(numLimitedAfterReMint.toNumber()).to.equal(151);
         expect(isClaimedAfterReMint).to.equal(true)
       });
     });

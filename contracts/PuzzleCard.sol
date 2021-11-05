@@ -699,7 +699,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     uint8 private constant MASTER_COPY_EDITION = 3;
 
     uint8 private constant NUM_COLORS = 7;
-    uint8 private constant MAX_LIMITED_EDITIONS = 100;
+    uint8 private constant MAX_LIMITED_EDITIONS = 151;
 
     uint8[] private NUM_PUZZLES_PER_SERIES = [2, 3];
     uint16[] private PUZZLE_OFFSET_PER_SERIES = [0, 2];
