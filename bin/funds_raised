@@ -1,0 +1,75 @@
+#!/usr/bin/env ruby
+
+# This script tries to calculate how much money would be raised by minting
+# master copy cards, assuming they all sell (wildly optimistic). Ideally, these
+# prices should be as low as possible so that lots of people can enjoy the game
+# with it still being financially viable for me.
+
+# Fairly conservative numbers:
+NUM_PUZZLES = 100
+YEARS_TO_MAKE_GAME = 3
+CORPORATION_TAX = 0.19
+INCOME_TAX = 0.4
+TAX_RATE = (1 - CORPORATION_TAX) * (1 - INCOME_TAX)
+
+# Play with these:
+MAX_LIMITED_EDITIONS = 100
+PRISTINE_MINT_PROBABILITY = 50.to_f / 100
+DEGRADE_PROBABILITY = 50.to_f / 100
+DISCARD_RESETS_CONDITION = true
+
+numMinted = 0
+numPristine = 0
+numNonPristine = 0
+numStars = 0
+
+10_000_000.times do
+  if DISCARD_RESETS_CONDITION && numNonPristine == 2
+    # Pay for a new card by discarding.
+    numNonPristine -= 2
+  else
+    # Pay for a new card by minting.
+    numMinted += 1
+  end
+
+  isPristine = rand < PRISTINE_MINT_PROBABILITY
+
+  if isPristine
+    numPristine += 1
+  else
+    numNonPristine += 1
+  end
+
+  # Combine the puzzles if we have two pristine cards.
+  if numPristine == 2
+    numPristine = 0
+    isPristineStar = rand > DEGRADE_PROBABILITY
+
+    if isPristineStar
+      numStars += 1
+    else
+      # Recycle the Star card if it isn't pristine.
+      numNonPristine += 1
+    end
+  end
+
+  fail if numPristine > 2
+end
+
+pricePerStar = numMinted.to_f / numStars
+pricePerLimited = pricePerStar * 7
+pricePerMaster = pricePerLimited * MAX_LIMITED_EDITIONS / 2
+priceForAll = pricePerMaster * NUM_PUZZLES
+priceInGBP = 0.74 * priceForAll
+grossPerYear = priceInGBP / YEARS_TO_MAKE_GAME
+netPerYear = grossPerYear * (1 - TAX_RATE)
+
+puts
+puts "Price per Pristine Star: $#{pricePerStar.round(2)}"
+puts "Price per Limited: $#{pricePerLimited.round(2)}"
+puts "Price per Master: $#{pricePerMaster.round}"
+puts "Price for all: $#{priceForAll.round}"
+puts "Price in pounds: £#{priceInGBP.round}"
+puts "Gross per year of game dev: £#{grossPerYear.round}"
+puts "Net per year of game dev: £#{netPerYear.round}"
+puts
