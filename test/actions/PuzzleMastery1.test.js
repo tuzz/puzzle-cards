@@ -70,7 +70,7 @@ describe("PuzzleMastery1", () => {
       const card1 = await PuzzleCard.mintExact(artworkCard1, owner.address);
       const card2 = await PuzzleCard.mintExact(artworkCard2, owner.address);
 
-      const mintedCard = await PuzzleCard.puzzleMastery1([card1, card2]);
+      const mintedCard = (await PuzzleCard.puzzleMastery1([card1, card2]))[0];
 
       expect(mintedCard.type).to.equal("Star");
       expect(TestUtils.isRealColor(mintedCard.color1)).to.equal(true);

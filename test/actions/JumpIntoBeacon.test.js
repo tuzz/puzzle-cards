@@ -31,7 +31,7 @@ describe("JumpIntoBeacon", () => {
       await PuzzleCard.mintExact(torchCard, owner.address);
       await PuzzleCard.mintExact(beaconCard, owner.address);
 
-      const mintedCard = await PuzzleCard.jumpIntoBeacon([playerCard, torchCard, beaconCard]);
+      const mintedCard = (await PuzzleCard.jumpIntoBeacon([playerCard, torchCard, beaconCard]))[0];
 
       expect(mintedCard.type).to.equal("Torch");
       expect(mintedCard.color1).to.equal("Blue");
@@ -44,7 +44,7 @@ describe("JumpIntoBeacon", () => {
       await PuzzleCard.mintExact(glassesCard, owner.address);
       await PuzzleCard.mintExact(beaconCard, owner.address);
 
-      const mintedCard = await PuzzleCard.jumpIntoBeacon([playerCard, glassesCard, beaconCard]);
+      const mintedCard = (await PuzzleCard.jumpIntoBeacon([playerCard, glassesCard, beaconCard]))[0];
 
       expect(mintedCard.type).to.equal("Glasses");
       expect(mintedCard.color1).to.equal("Blue");

@@ -68,7 +68,7 @@ describe("LookThroughTelescope", () => {
         const card2 = await PuzzleCard.mintExact(telescopeCard, owner.address);
         const card3 = await PuzzleCard.mintExact(activeCard, owner.address);
 
-        const mintedCard = await PuzzleCard.lookThroughTelescope([card1, card2, card3]);
+        const mintedCard = (await PuzzleCard.lookThroughTelescope([card1, card2, card3]))[0];
         const type = mintedCard.type;
 
         expect(["Helix", "Torch", "Beacon"]).to.include(type);
@@ -114,7 +114,7 @@ describe("LookThroughTelescope", () => {
           const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...telescopeCard, tier }), owner.address);
           const card3 = await PuzzleCard.mintExact(new PuzzleCard({ ...activeCard, tier }), owner.address);
 
-          const mintedCard = await PuzzleCard.lookThroughTelescope([card1, card2, card3]);
+          const mintedCard = (await PuzzleCard.lookThroughTelescope([card1, card2, card3]))[0];
           if (mintedCard.type !== "Helix") { continue; }
 
           expect(mintedCard.color1).to.equal(mintedCard.color2);

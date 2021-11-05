@@ -55,7 +55,7 @@ describe("ShineTorchOnBasePair", () => {
         const card2 = await PuzzleCard.mintExact(torchCard, owner.address);
         const card3 = await PuzzleCard.mintExact(helixCard, owner.address);
 
-        const mintedCard = await PuzzleCard.shineTorchOnBasePair([card1, card2, card3]);
+        const mintedCard = (await PuzzleCard.shineTorchOnBasePair([card1, card2, card3]))[0];
 
         expect(["Map", "Teleport"]).to.include(mintedCard.type);
         expect(mintedCard.color1).to.equal("None");

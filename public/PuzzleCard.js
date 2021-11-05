@@ -460,8 +460,8 @@ class PuzzleCard {
 
   static fromTransferEvent(transaction) {
     return transaction.wait().then(receiver => {
-      const event = receiver.events.filter(e => e.event === "TransferSingle")[0];
-      return PuzzleCard.fromTokenID(event.args.id.toBigInt());
+      const events = receiver.events.filter(e => e.event === "TransferSingle");
+      return events.map(e => PuzzleCard.fromTokenID(e.args.id.toBigInt()));
     });
   }
 

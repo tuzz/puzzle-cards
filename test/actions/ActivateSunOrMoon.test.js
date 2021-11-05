@@ -51,7 +51,7 @@ describe("ActivateSunOrMoon", () => {
       await PuzzleCard.mintExact(playerCard, owner.address);
       await PuzzleCard.mintExact(inactiveCard, owner.address);
 
-      const mintedCard = await PuzzleCard.activateSunOrMoon([playerCard, inactiveCard]);
+      const mintedCard = (await PuzzleCard.activateSunOrMoon([playerCard, inactiveCard]))[0];
 
       expect(mintedCard.type).to.equal("Active");
       expect(mintedCard.color1).to.equal("Black");

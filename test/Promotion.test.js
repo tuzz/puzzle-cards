@@ -296,10 +296,10 @@ const combine = (cardsForType, filter, callback) => {
 const perform = async (actionName, cards, deck) => {
   if (deck.promotionAction) { return true; } // Short circuit if we've already promoted.
 
-  let mintedCard;
+  let mintedCards
 
   try {
-    mintedCard = await PuzzleCard[actionName](cards);
+    mintedCards = await PuzzleCard[actionName](cards);
   } catch { // TODO: move this (pre/post?) mechanism into PuzzleCard
     const titleized = actionName[0].toUpperCase() + actionName.slice(1);
     const [_, reasons] = await PuzzleCard[`can${titleized}`](cards);
@@ -307,13 +307,13 @@ const perform = async (actionName, cards, deck) => {
     throw new Error([actionName, cards, reasons]);
   }
 
-  if (mintedCard.tier !== deck.tier) {
+  if (mintedCards[0].tier !== deck.tier) {
     deck.promotionAction = actionName;
-    deck.lastConditions.push(mintedCard.condition);
+    deck.lastConditions.push(mintedCards[0].condition);
   }
 
   deck.actionsTaken.push(actionName);
-  deck[mintedCard.type].push(mintedCard);
+  mintedCards.forEach(c => deck[c.type].push(c));
 
-  return mintedCard;
+  return mintedCards;
 };

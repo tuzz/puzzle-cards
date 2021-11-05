@@ -33,7 +33,7 @@ describe("LookThroughGlasses", () => {
         const card2 = await PuzzleCard.mintExact(glassesCard, owner.address);
         const card3 = await PuzzleCard.mintExact(hiddenCard, owner.address);
 
-        const mintedCard = await PuzzleCard.lookThroughGlasses([card1, card2, card3]);
+        const mintedCard = (await PuzzleCard.lookThroughGlasses([card1, card2, card3]))[0];
 
         typeNames.push(mintedCard.type);
       }

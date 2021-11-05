@@ -146,7 +146,7 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
         expect(balance.toNumber()).to.equal(1);
       }
 
-      const mintedCard = await PuzzleCard[actionName](validCards);
+      const mintedCard = (await PuzzleCard[actionName](validCards))[0];
 
       for (const card of validCards) {
         const balance = await contract.balanceOf(owner.address, card.tokenID());
@@ -180,7 +180,7 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
           await PuzzleCard.mintExact(card, owner.address);
         }
 
-        const mintedCard = await PuzzleCard[actionName](validCards);
+        const mintedCard = (await PuzzleCard[actionName](validCards))[0];
 
         puzzleNames.push(mintedCard.puzzle);
       }
@@ -193,7 +193,7 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
         await PuzzleCard.mintExact(card, owner.address);
       }
 
-      const mintedCard = await PuzzleCard[actionName](validCards);
+      const mintedCard = (await PuzzleCard[actionName](validCards))[0];
 
       expect(mintedCard.tier).to.equal(expectedTier);
     });
@@ -207,7 +207,7 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
             await PuzzleCard.mintExact(card, owner.address)
           }
 
-          const mintedCard = await PuzzleCard[actionName](validCards);
+          const mintedCard = (await PuzzleCard[actionName](validCards))[0];
 
           conditionNames.push(mintedCard.condition);
         }
@@ -235,7 +235,7 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
             cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, condition: "Dire" }), owner.address));
           }
 
-          const mintedCard = await PuzzleCard[actionName](cards);
+          const mintedCard = (await PuzzleCard[actionName](cards))[0];
 
           conditionNames.add(mintedCard.condition);
         }
@@ -255,7 +255,7 @@ const itBehavesLikeAnAction = (actionName, validCards, validTypes, expectedTier,
                 cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier }), owner.address));
               }
 
-              const mintedCard = await PuzzleCard[actionName](cards);
+              const mintedCard = (await PuzzleCard[actionName](cards))[0];
 
               conditionNames.add(mintedCard.condition);
             }
@@ -312,7 +312,7 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
             cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier: before }), owner.address));
           }
 
-          const mintedCard = await PuzzleCard[actionName](cards);
+          const mintedCard = (await PuzzleCard[actionName](cards))[0];
 
           expect(mintedCard.tier).to.equal(before);
         }
@@ -327,7 +327,7 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
           }
 
           const tierBefore = await PuzzleCard.CONTRACT.maxTierUnlocked(owner.address);
-          const mintedCard = await PuzzleCard[actionName](cards);
+          const mintedCard = (await PuzzleCard[actionName](cards))[0];
           const tierAfter = await PuzzleCard.CONTRACT.maxTierUnlocked(owner.address);
 
           expect(tierAfter - tierBefore).to.equal(0);
@@ -349,7 +349,7 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
             cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier: before }), owner.address));
           }
 
-          const mintedCard = await PuzzleCard[actionName](cards);
+          const mintedCard = (await PuzzleCard[actionName](cards))[0];
 
           expect(mintedCard.tier).to.equal(after);
         }
@@ -364,7 +364,7 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
           }
 
           const tierBefore = await PuzzleCard.CONTRACT.maxTierUnlocked(owner.address);
-          const mintedCard = await PuzzleCard[actionName](cards);
+          const mintedCard = (await PuzzleCard[actionName](cards))[0];
           const tierAfter = await PuzzleCard.CONTRACT.maxTierUnlocked(owner.address);
 
           expect(tierAfter - tierBefore).to.equal(1);
@@ -389,7 +389,7 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
             cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier }), owner.address));
           }
 
-          const mintedCard = await PuzzleCard[actionName](cards);
+          const mintedCard = (await PuzzleCard[actionName](cards))[0];
 
           typeNames.push(mintedCard.type);
         }
@@ -417,7 +417,7 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
             cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier }), owner.address));
           }
 
-          const mintedCard = await PuzzleCard[actionName](cards);
+          const mintedCard = (await PuzzleCard[actionName](cards))[0];
 
           expect(["Player", "Glasses", "Hidden"]).to.include(mintedCard.type);
           expect(mintedCard.variant).to.equal("None");
@@ -454,7 +454,7 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
             cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, tier }), owner.address));
           }
 
-          const mintedCard = await PuzzleCard[actionName](cards);
+          const mintedCard = (await PuzzleCard[actionName](cards))[0];
 
           expect(mintedCard.type).to.equal("Artwork");
           expect(mintedCard.color1).to.equal("None");

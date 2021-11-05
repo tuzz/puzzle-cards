@@ -51,7 +51,7 @@ describe("Discard2Pickup1", () => {
         const card1 = await PuzzleCard.mintExact(playerCard, owner.address);
         const card2 = await PuzzleCard.mintExact(doorCard, owner.address);
 
-        const mintedCard = await PuzzleCard.discard2Pickup1([card1, card2]);
+        const mintedCard = (await PuzzleCard.discard2Pickup1([card1, card2]))[0];
 
         conditions.push(mintedCard.condition);
       }

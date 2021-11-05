@@ -41,7 +41,7 @@ describe("JumpIntoEclipse", () => {
       const card2 = await PuzzleCard.mintExact(doorCard, owner.address);
       const card3 = await PuzzleCard.mintExact(eclipseCard, owner.address);
 
-      const mintedCard = await PuzzleCard.jumpIntoEclipse([card1, card2, card3]);
+      const mintedCard = (await PuzzleCard.jumpIntoEclipse([card1, card2, card3]))[0];
 
       expect(mintedCard.type).to.equal("Door");
       expect(mintedCard.color1).to.equal("None");

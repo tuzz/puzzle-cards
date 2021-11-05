@@ -54,7 +54,7 @@ describe("PuzzleMastery2", () => {
         await PuzzleCard.mintExact(card, owner.address);
       }
 
-      const mintedCard = await PuzzleCard.puzzleMastery2(validCards);
+      const mintedCard = (await PuzzleCard.puzzleMastery2(validCards))[0];
 
       expect(mintedCard.type).to.equal("Artwork");
       expect(mintedCard.color1).to.equal("None");
@@ -70,7 +70,7 @@ describe("PuzzleMastery2", () => {
           await PuzzleCard.mintExact(card, owner.address);
         }
 
-        const mintedCard = await PuzzleCard.puzzleMastery2(validCards);
+        const mintedCard = (await PuzzleCard.puzzleMastery2(validCards))[0];
 
         puzzleNames.push([mintedCard.series, mintedCard.puzzle]);
       }
@@ -91,7 +91,7 @@ describe("PuzzleMastery2", () => {
             await PuzzleCard.mintExact(card, owner.address);
           }
 
-          const mintedCard = await PuzzleCard.puzzleMastery2(pristineCards);
+          const mintedCard = (await PuzzleCard.puzzleMastery2(pristineCards))[0];
 
           expect(mintedCard.condition).to.equal("Pristine");
         }
@@ -105,7 +105,7 @@ describe("PuzzleMastery2", () => {
             await PuzzleCard.mintExact(card, owner.address);
           }
 
-          const mintedCard = await PuzzleCard.puzzleMastery2(pristineCards);
+          const mintedCard = (await PuzzleCard.puzzleMastery2(pristineCards))[0];
 
           editionNames.push(mintedCard.edition);
         }
@@ -129,7 +129,7 @@ describe("PuzzleMastery2", () => {
             cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
           }
 
-          const mintedCard = await PuzzleCard.puzzleMastery2(cards);
+          const mintedCard = (await PuzzleCard.puzzleMastery2(cards))[0];
 
           editionNames.push(mintedCard.edition);
         }
@@ -150,7 +150,7 @@ describe("PuzzleMastery2", () => {
             cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
           }
 
-          const mintedCard = await PuzzleCard.puzzleMastery2(cards);
+          const mintedCard = (await PuzzleCard.puzzleMastery2(cards))[0];
 
           if (mintedCard.edition === "Master Copy") {
             expect(masterCopyMinted).to.equal(false);
@@ -206,7 +206,7 @@ describe("PuzzleMastery2", () => {
             cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
           }
 
-          mintedCards.push(await PuzzleCard.puzzleMastery2(cards));
+          mintedCards.push((await PuzzleCard.puzzleMastery2(cards))[0]);
         }
 
         const numLimited = await PuzzleCard.numLimitedEditions(card);
@@ -257,7 +257,7 @@ describe("PuzzleMastery2", () => {
             await PuzzleCard.mintExact(card, owner.address);
           }
 
-          const mintedCard = await PuzzleCard.puzzleMastery2(validCards);
+          const mintedCard = (await PuzzleCard.puzzleMastery2(validCards))[0];
 
           conditionNames.add(mintedCard.condition);
         }
@@ -271,7 +271,7 @@ describe("PuzzleMastery2", () => {
             await PuzzleCard.mintExact(card, owner.address);
           }
 
-          const mintedCard = await PuzzleCard.puzzleMastery2(validCards);
+          const mintedCard = (await PuzzleCard.puzzleMastery2(validCards))[0];
 
           expect(mintedCard.edition).to.equal("Signed");
         }

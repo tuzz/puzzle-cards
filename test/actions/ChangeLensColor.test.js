@@ -56,7 +56,7 @@ describe("ChangeLensColor", () => {
       await PuzzleCard.mintExact(torchCard, owner.address);
       await PuzzleCard.mintExact(inactiveCard, owner.address);
 
-      const mintedCard = await PuzzleCard.changeLensColor([cloakCard, torchCard, inactiveCard]);
+      const mintedCard = (await PuzzleCard.changeLensColor([cloakCard, torchCard, inactiveCard]))[0];
 
       expect(mintedCard.type).to.equal("Torch");
       expect(mintedCard.variant).to.equal("None");
@@ -67,7 +67,7 @@ describe("ChangeLensColor", () => {
       await PuzzleCard.mintExact(glassesCard, owner.address);
       await PuzzleCard.mintExact(inactiveCard, owner.address);
 
-      const mintedCard = await PuzzleCard.changeLensColor([cloakCard, glassesCard, inactiveCard]);
+      const mintedCard = (await PuzzleCard.changeLensColor([cloakCard, glassesCard, inactiveCard]))[0];
 
       expect(mintedCard.type).to.equal("Glasses");
       expect(mintedCard.variant).to.equal("None");
@@ -78,7 +78,7 @@ describe("ChangeLensColor", () => {
       const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...torchCard, color1: "Red", color2: "Green" }), owner.address);
       const card3 = await PuzzleCard.mintExact(new PuzzleCard({ ...inactiveCard, color1: "Red" }), owner.address);
 
-      const mintedCard = await PuzzleCard.changeLensColor([card1, card2, card3]);
+      const mintedCard = (await PuzzleCard.changeLensColor([card1, card2, card3]))[0];
 
       expect(mintedCard.color1).to.equal("Green");
       expect(mintedCard.color2).to.equal("Red");
@@ -92,7 +92,7 @@ describe("ChangeLensColor", () => {
         const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...torchCard, color1: "Red", color2: "Green" }), owner.address);
         const card3 = await PuzzleCard.mintExact(new PuzzleCard({ ...inactiveCard, color1: "Blue" }), owner.address);
 
-        const mintedCard = await PuzzleCard.changeLensColor([card1, card2, card3]);
+        const mintedCard = (await PuzzleCard.changeLensColor([card1, card2, card3]))[0];
 
         lensColors.push([mintedCard.color1, mintedCard.color2]);
       }
