@@ -59,7 +59,7 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
 
   const isLocked = (tierName) => {
     const tierIndex = PuzzleCard.TIER_NAMES.findIndex(n => n === tierName);
-    const maxIndex = PuzzleCard.TIER_NAMES.findIndex(n => n === maxTier);
+    const maxIndex = PuzzleCard.TIER_NAMES.findIndex(n => n === maxTier) || 0;
 
     return tierIndex > maxIndex;
   };
