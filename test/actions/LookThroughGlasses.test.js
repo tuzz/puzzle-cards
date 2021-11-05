@@ -10,7 +10,7 @@ describe("LookThroughGlasses", () => {
   const glassesCard = new PuzzleCard({ ...baseCard, tier: "Virtual", type: "Glasses", color1: "Red", color2: "Green" });
   const hiddenCard = new PuzzleCard({ ...baseCard, tier: "Virtual", type: "Hidden" });
 
-  itBehavesLikeAnAction("lookThroughGlasses", [playerCard, glassesCard, hiddenCard], [["Player"], ["Glasses"], ["Hidden"]], "Virtual");
+  //itBehavesLikeAnAction("lookThroughGlasses", [playerCard, glassesCard, hiddenCard], [["Player"], ["Glasses"], ["Hidden"]], "Virtual");
 
   describe("action specific behaviour", () => {
     let factory, contract, owner, user1;
@@ -23,6 +23,28 @@ describe("LookThroughGlasses", () => {
     beforeEach(async () => {
       contract = await factory.deploy(constants.ZERO_ADDRESS);
       PuzzleCard.setContract(contract);
+    });
+
+    it("mints one card if the lens colors are the same", async () => {
+      for (let i = 0; i < 100; i += 1) {
+        const card1 = await PuzzleCard.mintExact(playerCard, owner.address);
+        const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...glassesCard, color1: "Red", color2: "Red" }), owner.address);
+        const card3 = await PuzzleCard.mintExact(hiddenCard, owner.address);
+
+        const mintedCards = await PuzzleCard.lookThroughGlasses([card1, card2, card3]);
+        expect(mintedCards.length).to.equal(1);
+      }
+    });
+
+    it("mints two cards if the lens colors are different", async () => {
+      for (let i = 0; i < 100; i += 1) {
+        const card1 = await PuzzleCard.mintExact(playerCard, owner.address);
+        const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...glassesCard, color1: "Red", color2: "Green" }), owner.address);
+        const card3 = await PuzzleCard.mintExact(hiddenCard, owner.address);
+
+        const mintedCards = await PuzzleCard.lookThroughGlasses([card1, card2, card3]);
+        expect(mintedCards.length).to.equal(2);
+      }
     });
 
     it("mints using slightly friendlier type probabilities (no player cards, almost no crab cards)", async () => {

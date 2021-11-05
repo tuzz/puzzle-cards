@@ -176,10 +176,17 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     function lookThroughGlasses(uint256[] memory tokenIDs) external {
         (bool ok,) = canLookThroughGlasses(tokenIDs); require(ok);
 
-        uint8 tier = tierForTokenID(tokenIDs[0]);
+        uint256 glassesID = tokenIDs[1];
+
+        uint8 tier = tierForTokenID(glassesID);
         uint8 condition = randomlyDegrade(tokenIDs, tier);
 
         replace(tokenIDs, randomCard(tier, condition, POST_VIRTUAL_TYPE_PROBABILITIES));
+
+        if (color1ForTokenID(glassesID) != color2ForTokenID(glassesID)) {
+          condition = randomlyDegrade(tokenIDs, tier);
+          mintCard(randomCard(tier, condition, POST_VIRTUAL_TYPE_PROBABILITIES));
+        }
     }
 
     function canLookThroughGlasses(uint256[] memory tokenIDs) public view returns (bool ok, bool[34] memory errors) {
@@ -529,6 +536,10 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         for (uint8 i = 0; i < tokenIDs.length; i += 1) { oneOfEach[i] = 1; totalSupply[tokenIDs[i]] -= 1; }
         _burnBatch(msg.sender, tokenIDs, oneOfEach);
 
+        mintCard(newCard);
+    }
+
+    function mintCard(Attributes memory newCard) private {
         uint256 newCardID = tokenIDForCard(newCard);
         _mint(msg.sender, newCardID, 1, "");
         totalSupply[newCardID] += 1;
