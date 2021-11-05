@@ -97,29 +97,7 @@ describe("PuzzleMastery2", () => {
         }
       });
 
-      it("has a 90%/10% chance to mint a signed/limited edition card", async () => {
-        const editionNames = [];
-
-        for (let i = 0; i < 100; i += 1) {
-          for (const card of pristineCards) {
-            await PuzzleCard.mintExact(card, owner.address);
-          }
-
-          const mintedCard = (await PuzzleCard.puzzleMastery2(pristineCards))[0];
-
-          editionNames.push(mintedCard.edition);
-        }
-
-        // Master copies are limited edition cards (it's a containment hierarchy).
-        const adjustedNames = editionNames.map(s => s === "Master Copy" ? "Limited" : s);
-
-        const frequencies = TestUtils.tallyFrequencies(adjustedNames);
-
-        expect(frequencies["Signed"]).to.be.above(0.8);  // 90%
-        expect(frequencies["Limited"]).to.be.below(0.2); // 10%
-      });
-
-      it("limits the total supply of limited edition cards for each puzzle to 10", async () => {
+      it("mints a limited edition card if it is one of the first 100 minted for that puzzle", async () => {
         const editionNames = [];
 
         for (let i = 0; i < 200; i += 1) {
@@ -137,28 +115,49 @@ describe("PuzzleMastery2", () => {
         // Master copies are limited edition cards (it's a containment hierarchy).
         const limitedNames = editionNames.filter(s => s === "Limited" || s === "Master Copy");
 
-        expect(limitedNames.length).to.equal(10);
-      });
+        expect(limitedNames.length).to.equal(100);
 
-      it("mints the master copy of the puzzle if no other limited editions exist", async () => {
-        let masterCopyMinted = false;
+        // Check that cards for other puzzles still receive limited editions.
+        const cards = [];
 
-        for (let i = 0; i < 100; i += 1) {
-          const cards = [];
-
-          for (const card of pristineCards) {
-            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
-          }
-
-          const mintedCard = (await PuzzleCard.puzzleMastery2(cards))[0];
-
-          if (mintedCard.edition === "Master Copy") {
-            expect(masterCopyMinted).to.equal(false);
-            masterCopyMinted = true;
-          }
+        for (const card of pristineCards) {
+          cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-2" }), owner.address));
         }
 
-        expect(masterCopyMinted).to.equal(true);
+        const mintedCard = (await PuzzleCard.puzzleMastery2(cards))[0];
+        expect(["Limited", "Master Copy"]).to.deep.include(mintedCard.edition);
+      });
+
+      it("mints the master copy edition, on average, half way through the limited editions", async () => {
+        const mintPositions = [];
+        const numberOfRuns = 50;
+
+        for (let i = 0; i < numberOfRuns; i += 1) {
+          for (let j = 1; j <= 100; j += 1) {
+            const cards = [];
+
+            for (const card of pristineCards) {
+              cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+            }
+
+            const mintedCard = (await PuzzleCard.puzzleMastery2(cards))[0];
+
+            if (mintedCard.edition === "Master Copy") {
+              mintPositions.push(j);
+              //console.log(`Limited Edition ${j} was selected as the Master Copy`);
+              break;
+            }
+          }
+
+          // Redeploy the contract so that all limited editions/master copies are reset.
+          contract = await factory.deploy(constants.ZERO_ADDRESS);
+          PuzzleCard.setContract(contract);
+        }
+
+        const average = mintPositions.reduce((a, b) => a + b) / mintPositions.length;
+        console.log(average);
+
+        expect(average).to.be.within(40.5, 60.5);  // The average should be: (1 + 100) / 2
       });
 
       it("provides a method to get the number of limited edition cards for a puzzle", async () => {
@@ -175,11 +174,14 @@ describe("PuzzleMastery2", () => {
         const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
         const numLimited = await PuzzleCard.numLimitedEditions(card);
 
-        expect(numLimited.toNumber()).to.equal(10);
+        expect(numLimited.toNumber()).to.equal(100);
       });
 
       it("provides a method to get whether the master copy has been claimed for a puzzle", async () => {
-        for (let i = 0; i < 50; i += 1) {
+        const claimedBefore = await PuzzleCard.masterCopyClaimed(new PuzzleCard({ ...pristineCards[0], puzzle: "Puzzle 1-1" }));
+        expect(claimedBefore).to.equal(false);
+
+        for (let i = 0; i < 200; i += 1) {
           const cards = [];
 
           for (const card of pristineCards) {
@@ -190,16 +192,34 @@ describe("PuzzleMastery2", () => {
         }
 
         const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
-        const isClaimed = await PuzzleCard.masterCopyClaimed(card);
+        const claimedAfter = await PuzzleCard.masterCopyClaimed(card);
 
-        expect(isClaimed).to.equal(true);
+        expect(claimedAfter).to.equal(true);
+      });
+
+      it("provides a method to get the number of the limited edition when the master copy was claimed", async () => {
+        const card = new PuzzleCard({ ...pristineCards[0], puzzle: "Puzzle 1-1" });
+        expect(await PuzzleCard.numOfTheLimitedEditionWhenMasterCopyClaimed(card)).to.equal(null);
+
+        for (let i = 0; i < 100; i += 1) {
+          const cards = [];
+
+          for (const card of pristineCards) {
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+          }
+
+          await PuzzleCard.puzzleMastery2(cards);
+        }
+
+        const number = await PuzzleCard.numOfTheLimitedEditionWhenMasterCopyClaimed(card);
+        expect(number).to.be.within(1, 100);
       });
 
       it("can mint limited editions and the master copy again if others are discarded", async () => {
         const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
         const mintedCards = [];
 
-        for (let i = 0; i < 300; i += 1) {
+        for (let i = 0; i < 200; i += 1) {
           const cards = [];
 
           for (const card of pristineCards) {
@@ -212,11 +232,11 @@ describe("PuzzleMastery2", () => {
         const numLimited = await PuzzleCard.numLimitedEditions(card);
         const isClaimed = await PuzzleCard.masterCopyClaimed(card);
 
-        expect(numLimited.toNumber()).to.equal(10);
+        expect(numLimited.toNumber()).to.equal(100);
         expect(isClaimed).to.equal(true);
 
-        // Discard the first half of the cards.
-        for (let i = 0; i < 150; i += 2) {
+        // Discard all the minted limited edition cards.
+        for (let i = 0; i < 100; i += 2) {
           const card1 = mintedCards[i];
           const card2 = mintedCards[i + 1];
 
@@ -226,11 +246,11 @@ describe("PuzzleMastery2", () => {
         const numLimitedAfterDiscard = await PuzzleCard.numLimitedEditions(card);
         const isClaimedAfterDiscard = await PuzzleCard.masterCopyClaimed(card);
 
-        expect(numLimitedAfterDiscard.toNumber()).not.to.equal(10);
+        expect(numLimitedAfterDiscard.toNumber()).to.equal(0);
         expect(isClaimedAfterDiscard).to.equal(false)
 
-        // Mint another 150 cards.
-        for (let i = 0; i < 150; i += 1) {
+        // Mint another 100 cards.
+        for (let i = 0; i < 100; i += 1) {
           const cards = [];
 
           for (const card of pristineCards) {
@@ -243,7 +263,7 @@ describe("PuzzleMastery2", () => {
         const numLimitedAfterReMint = await PuzzleCard.numLimitedEditions(card);
         const isClaimedAfterReMint = await PuzzleCard.masterCopyClaimed(card);
 
-        expect(numLimitedAfterReMint.toNumber()).to.equal(10);
+        expect(numLimitedAfterReMint.toNumber()).to.equal(100);
         expect(isClaimedAfterReMint).to.equal(true)
       });
     });

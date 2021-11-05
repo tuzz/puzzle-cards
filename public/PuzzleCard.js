@@ -244,7 +244,11 @@ class PuzzleCard {
   }
 
   static masterCopyClaimed(card) { // The card only requires a series and puzzle.
-    return PuzzleCard.CONTRACT.masterCopiesClaimed(card.editionsKey());
+    return PuzzleCard.CONTRACT.masterCopyClaimedAt(card.editionsKey()).then(n => n !== 0);
+  }
+
+  static numOfTheLimitedEditionWhenMasterCopyClaimed(card) {// The card only requires a series and puzzle.
+    return PuzzleCard.CONTRACT.masterCopyClaimedAt(card.editionsKey()).then(n => n === 0 ? null : n);
   }
 
   static actionsThatCanBeTaken(puzzleCards) {
@@ -768,7 +772,7 @@ PuzzleCard.CONTRACT_ABI = [
   "function limitedEditions(uint256) view returns (uint256)",
   "function lookThroughGlasses(uint256[] tokenIDs)",
   "function lookThroughTelescope(uint256[] tokenIDs)",
-  "function masterCopiesClaimed(uint16) view returns (bool)",
+  "function masterCopyClaimedAt(uint16) view returns (uint8)",
   "function maxTierUnlocked(address) view returns (uint8)",
   "function mint(uint256 numberToMint, uint8 tier, address to) payable",
   "function name() view returns (string)",

@@ -50,7 +50,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     mapping(uint256 => uint256) public totalSupply;
     mapping(address => uint8) public maxTierUnlocked;
     mapping(uint256 => uint256) public limitedEditions;
-    mapping(uint16 => bool) public masterCopiesClaimed;
+    mapping(uint16 => uint8) public masterCopyClaimedAt;
 
     constructor(address proxyRegistryAddress) ERC1155("") {
         PROXY_REGISTRY_ADDRESS = proxyRegistryAddress;
@@ -392,21 +392,21 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         if (allPristine) {
             condition = PRISTINE_CONDITION;
 
-            bool tryLimitedEdition = randomNumber() % 10 == 0;
+            uint16 editionsKey_ = editionsKey(series, puzzle);
+            uint256 numOthers = limitedEditions[editionsKey_];
 
-            if (tryLimitedEdition) {
-              uint16 editionsKey_ = editionsKey(series, puzzle);
-              uint256 numOthers = limitedEditions[editionsKey_];
+            if (numOthers < MAX_LIMITED_EDITIONS) {
+                edition = LIMITED_EDITION;
+                limitedEditions[editionsKey_] += 1;
 
-              if (numOthers < MAX_LIMITED_EDITIONS) {
-                  edition = LIMITED_EDITION;
-                  limitedEditions[editionsKey_] += 1;
+                if (masterCopyClaimedAt[editionsKey_] == 0) {
+                  uint256 shortenedOdds = MAX_LIMITED_EDITIONS - numOthers;
 
-                  if (!masterCopiesClaimed[editionsKey_]) {
+                  if (randomNumber() % shortenedOdds == 0) {
                     edition = MASTER_COPY_EDITION;
-                    masterCopiesClaimed[editionsKey_] = true;
+                    masterCopyClaimedAt[editionsKey_] = uint8(numOthers + 1);
                   }
-              }
+                }
             }
         }
 
@@ -526,7 +526,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
             limitedEditions[editionsKey_] -= 1;
 
             if (edition == MASTER_COPY_EDITION) {
-                masterCopiesClaimed[editionsKey_] = false;
+                masterCopyClaimedAt[editionsKey_] = 0;
             }
         }
     }
@@ -699,7 +699,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     uint8 private constant MASTER_COPY_EDITION = 3;
 
     uint8 private constant NUM_COLORS = 7;
-    uint8 private constant MAX_LIMITED_EDITIONS = 10;
+    uint8 private constant MAX_LIMITED_EDITIONS = 100;
 
     uint8[] private NUM_PUZZLES_PER_SERIES = [2, 3];
     uint16[] private PUZZLE_OFFSET_PER_SERIES = [0, 2];
