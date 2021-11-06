@@ -11,4 +11,5 @@ fi
 contract_address=$(cat public/PuzzleCard.js | grep 'CONTRACT_ADDRESS =' | cut -d '"' -f 2)
 proxy_address=$(cat public/PuzzleCard.js | grep 'PROXY_REGISTRY_ADDRESS =' | cut -d '"' -f 2)
 
+rm -rf .artifacts/contracts && \
 yarn hardhat verify --network $1 $contract_address $proxy_address
