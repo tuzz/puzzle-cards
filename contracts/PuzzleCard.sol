@@ -458,31 +458,26 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
 
         uint256 length = tokenIDs.length;
 
-        if (numCards == 2 && length != 2) { ok = false; errors[TWO_CARDS_REQUIRED] = true; }
-        if (numCards == 3 && length != 3) { ok = false; errors[THREE_CARDS_REQUIRED] = true; }
-        if (numCards == 7 && length != 7) { ok = false; errors[SEVEN_CARDS_REQUIRED] = true; }
+        if (numCards != length) { ok = false; errors[NUM_CARDS_REQUIRED + length] = true; }
 
         if (!ownsAll(tokenIDs))           { ok = false; errors[DOESNT_OWN_CARDS] = true; }
         if (!ok)                          { return false; }
 
         uint8 tier = tierForTokenID(tokenIDs[0]);
 
-        for (uint8 i = 1; i < tokenIDs.length; i += 1) {
-            bool isOK = tier == tierForTokenID(tokenIDs[i]);
-
-            if (!isOK) { ok = false; errors[TIERS_DONT_MATCH] = true; }
-        }
-
         for (uint8 i = 0; i < tokenIDs.length; i += 1) {
-            uint8 actual = typeForTokenID(tokenIDs[i]);
+            bool tierOk = tier == tierForTokenID(tokenIDs[i]);
+
+            uint8 type_ = typeForTokenID(tokenIDs[i]);
             uint8 expected = types[i];
 
-            bool isOK = expected == actual
-                     || expected == ANY_TYPE
-                     || expected == LENS_TYPE && (actual == TORCH_TYPE || actual == GLASSES_TYPE)
-                     || expected == ACTIVATOR_TYPE && actual <= CLOAK_TYPE;
+            bool typeOk = expected == type_
+                       || expected == ANY_TYPE
+                       || expected == LENS_TYPE && (type_ == TORCH_TYPE || type_ == GLASSES_TYPE)
+                       || expected == ACTIVATOR_TYPE && type_ <= CLOAK_TYPE;
 
-            if (!isOK) { ok = false; errors[expected] = true; }
+            if (!tierOk) { ok = false; errors[TIERS_DONT_MATCH] = true; }
+            if (!typeOk) { ok = false; errors[expected] = true; }
         }
 
         return ok;
@@ -672,12 +667,14 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     uint8 private constant LENS_TYPE = 18;
     uint8 private constant ANY_TYPE = 19;
 
-    uint8 private constant TWO_CARDS_REQUIRED = 19;
-    uint8 private constant THREE_CARDS_REQUIRED = 20;
-    uint8 private constant SEVEN_CARDS_REQUIRED = 21;
-    uint8 private constant TIERS_DONT_MATCH = 22;
-    uint8 private constant DOESNT_OWN_CARDS = 23;
-    uint8 private constant CLOAK_REQUIRED_AT_TIER = 24;
+    uint8 private constant NUM_CARDS_REQUIRED = 17;
+
+    // TWO_CARDS_REQUIRED = NUM_CARDS_REQUIRED + 2 = 19
+    // THREE_CARDS_REQUIRED = NUM_CARDS_REQUIRED + 3 = 20
+    uint8 private constant TIERS_DONT_MATCH = 21;
+    uint8 private constant DOESNT_OWN_CARDS = 22;
+    uint8 private constant CLOAK_REQUIRED_AT_TIER = 23;
+    // SEVEN_CARDS_REQUIRED = NUM_CARDS_REQUIRED + 7 = 24
     uint8 private constant CLOAK_DOESNT_MATCH = 25;
     uint8 private constant TELESCOPE_DOESNT_MATCH = 26;
     uint8 private constant TORCH_DOESNT_MATCH = 27;
