@@ -202,6 +202,7 @@ class PuzzleCard {
     if (tier === -1) { throw new Error(`Invalid tier ${tierName}`); }
 
     const to = recipient || PuzzleCard.ZERO_ADDRESS; // Cards are minted to the msg.sender if address(0).
+    const isOwner = PuzzleCard.CONTRACT.signer.address === PuzzleCard.CONTRACT_OWNER;
 
     const maxTier = await PuzzleCard.maxTierUnlocked(to);
     if (tier > maxTier) { throw new Error(`Minting at ${tierName} is locked.`); }
@@ -211,7 +212,7 @@ class PuzzleCard {
 
     return PuzzleCard.inBatches(numberToMint, (batchSize) => {
       const gasLimit = PuzzleCard.gasLimitToMint(batchSize);
-      const value = basePrice * BigInt(batchSize) * BigInt(tierMultiplier);
+      const value = isOwner ? 0 : basePrice * BigInt(batchSize) * BigInt(tierMultiplier);
 
       const request = PuzzleCard.CONTRACT.mint(batchSize, tier, to, { gasLimit, value });
       return wait ? request.then(PuzzleCard.fromBatchEvent) : request;
@@ -392,18 +393,6 @@ class PuzzleCard {
   }
 
   // onlyOwner contract methods
-
-  static gift(numberToGift, tierName, to, { wait = true } = {}) { // Only callable by the contract owner.
-    const tier = PuzzleCard.TIER_NAMES.findIndex(n => n === tierName);
-    if (tier === -1) { throw new Error(`Invalid tier ${tierName}`); }
-
-    return PuzzleCard.inBatches(numberToGift, (batchSize) => {
-      const gasLimit = PuzzleCard.gasLimitToMint(batchSize);
-
-      const request = PuzzleCard.CONTRACT.gift(batchSize, tier, to, { gasLimit });
-      return wait ? request.then(PuzzleCard.fromBatchEvent) : request;
-    });
-  }
 
   static updateConstants() {
     return PuzzleCard.CONTRACT.updateConstants(
@@ -790,7 +779,6 @@ PuzzleCard.CONTRACT_ABI = [
   "function getChainId() view returns (uint256)",
   "function getDomainSeperator() view returns (bytes32)",
   "function getNonce(address user) view returns (uint256 nonce)",
-  "function gift(uint256 numberToGift, uint8 tier, address to)",
   "function goThroughStarDoor(uint256[] tokenIDs)",
   "function isApprovedForAll(address owner, address operator) view returns (bool)",
   "function jumpIntoBeacon(uint256[] tokenIDs)",

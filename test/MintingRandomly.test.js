@@ -25,14 +25,14 @@ describe("MintingRandomly", () => {
 
     // Prevent these tests from running out of gas. For some reason the first
     // few calls to the contract require more gas than they do in the long run.
-    // Gifting the maximum number of cards doesn't run out of gas in production.
+    // Minting the maximum number of cards doesn't run out of gas in production.
     PuzzleCard.GAS_LIMIT_MINIMUM = 30000000;
     PuzzleCard.GAS_LIMIT_MAXIMUM = 30000000;
   });
 
   describe("series", () => {
     it(0)("picks randomly", async () => {
-      const cards = await PuzzleCard.gift(1000, "Mortal", owner.address);
+      const cards = await PuzzleCard.mint(1000, "Mortal", owner.address);
       const frequencies = TestUtils.tallyFrequencies(cards.map(c => c.series));
 
       expect(frequencies["Series 0"]).to.be.within(0.47, 0.53); // 50%
@@ -42,7 +42,7 @@ describe("MintingRandomly", () => {
 
   describe("puzzle", () => {
     it(1)("picks randomly within the series", async () => {
-      const cards = await PuzzleCard.gift(2500, "Mortal", owner.address);
+      const cards = await PuzzleCard.mint(2500, "Mortal", owner.address);
       const frequencies = TestUtils.tallyFrequenciesInGroups(cards.map(c => [c.series, c.puzzle]));
 
       expect(frequencies["Series 0"]["Puzzle 0-0"]).to.be.within(0.47, 0.53); // 50%
@@ -56,32 +56,32 @@ describe("MintingRandomly", () => {
 
   describe("tier", () => {
     it(2)("sets the tier to the one specified", async () => {
-      const mortalCards = await PuzzleCard.gift(100, "Mortal", owner.address);
+      const mortalCards = await PuzzleCard.mint(100, "Mortal", owner.address);
       for (let card of mortalCards) { expect(card.tier).to.equal("Mortal"); }
 
-      const immortalCards = await PuzzleCard.gift(100, "Immortal", owner.address);
+      const immortalCards = await PuzzleCard.mint(100, "Immortal", owner.address);
       for (let card of immortalCards) { expect(card.tier).to.equal("Immortal"); }
 
-      const etherealCards = await PuzzleCard.gift(100, "Ethereal", owner.address);
+      const etherealCards = await PuzzleCard.mint(100, "Ethereal", owner.address);
       for (let card of etherealCards) { expect(card.tier).to.equal("Ethereal"); }
 
-      const virtualCards = await PuzzleCard.gift(100, "Virtual", owner.address);
+      const virtualCards = await PuzzleCard.mint(100, "Virtual", owner.address);
       for (let card of virtualCards) { expect(card.tier).to.equal("Virtual"); }
 
-      const celestialCards = await PuzzleCard.gift(100, "Celestial", owner.address);
+      const celestialCards = await PuzzleCard.mint(100, "Celestial", owner.address);
       for (let card of celestialCards) { expect(card.tier).to.equal("Celestial"); }
 
-      const godlyCards = await PuzzleCard.gift(100, "Godly", owner.address);
+      const godlyCards = await PuzzleCard.mint(100, "Godly", owner.address);
       for (let card of godlyCards) { expect(card.tier).to.equal("Godly"); }
 
-      const masterCards = await PuzzleCard.gift(100, "Master", owner.address);
+      const masterCards = await PuzzleCard.mint(100, "Master", owner.address);
       for (let card of masterCards) { expect(card.tier).to.equal("Master"); }
     });
   });
 
   describe("type", () => {
     it(3)("picks according to the probability distribution", async () => {
-      const cards = await PuzzleCard.gift(2000, "Mortal", owner.address);
+      const cards = await PuzzleCard.mint(2000, "Mortal", owner.address);
       const frequencies = TestUtils.tallyFrequencies(cards.map(c => c.type));
 
       expect(frequencies["Player"]).to.be.within(0.27, 0.33);    // 30%
@@ -106,7 +106,7 @@ describe("MintingRandomly", () => {
 
   describe("color1", () => {
     it(4)("picks according to the probability distribution for types with one or more colors", async () => {
-      const cards = await PuzzleCard.gift(2000, "Mortal", owner.address);
+      const cards = await PuzzleCard.mint(2000, "Mortal", owner.address);
 
       const uncoloredTypes = ["Player", "Crab", "Map", "Teleport", "Eclipse", "Door", "Hidden", "Artwork"];
       const coloredTypes = ["Inactive", "Active", "Cloak", "Telescope", "Helix", "Torch", "Beacon", "Glasses", "Star"];
@@ -132,7 +132,7 @@ describe("MintingRandomly", () => {
 
   describe("color2", () => {
     it(5)("picks according to the probability distribution for types with two colors", async () => {
-      const cards = await PuzzleCard.gift(15000, "Mortal", owner.address);
+      const cards = await PuzzleCard.mint(15000, "Mortal", owner.address);
 
       const uncoloredTypes = ["Player", "Crab", "Map", "Teleport", "Inactive", "Active", "Cloak", "Telescope", "Beacon", "Eclipse", "Door", "Hidden", "Artwork", "Star"];
       const coloredTypes = ["Helix", "Torch", "Glasses"];
@@ -158,7 +158,7 @@ describe("MintingRandomly", () => {
 
   describe("variant", () => {
     it(6)("picks according to the probability distribution for types with variants", async () => {
-      const cards = await PuzzleCard.gift(2500, "Mortal", owner.address);
+      const cards = await PuzzleCard.mint(5000, "Mortal", owner.address);
 
       const nonVaryingTypes = ["Player", "Crab", "Cloak", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Hidden", "Artwork", "Star"];
       const varyingTypes = ["Inactive", "Active", "Telescope", "Door"];
@@ -182,7 +182,7 @@ describe("MintingRandomly", () => {
 
   describe("condition", () => {
     it(7)("picks according to the probability distribution", async () => {
-      const cards = await PuzzleCard.gift(1000, "Mortal", owner.address);
+      const cards = await PuzzleCard.mint(1000, "Mortal", owner.address);
       const frequencies = TestUtils.tallyFrequencies(cards.map(c => c.condition));
 
       expect(frequencies["Dire"]).to.be.undefined;                // 0%

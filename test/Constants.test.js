@@ -23,13 +23,14 @@ describe("Constants", () => {
     expect(basePriceInWei).to.deep.equal(2000000000000000n);
 
     // Verify that the price for minting has actually been taken into account.
-    for (let tier = 0; tier < PuzzleCard.TIER_NAMES.length; tier += 1) {
-      const tierMultiplier = BigInt(PuzzleCard.MINT_PRICE_MULTIPLERS[tier]);
-      const price = basePriceInWei * tierMultiplier;
+    // We need to switch to user1 since payment isn't taken from the contract owner.
+    const contractAsUser1 = contract.connect(user1);
 
-      await contract.mint(1, tier, owner.address, { value: price });
-      await expectRevert.unspecified(contract.mint(1, tier, owner.address, { value: price - BigInt(1) }));
-    }
+    const tierMultiplier = BigInt(PuzzleCard.MINT_PRICE_MULTIPLERS[0]);
+    const price = basePriceInWei * tierMultiplier;
+
+    await contractAsUser1.mint(1, 0, user1.address, { value: price });
+    await expectRevert.unspecified(contractAsUser1.mint(1, 0, user1.address, { value: price - BigInt(1) }));
   });
 
   it("can get the price per card at a given tier", async () => {
@@ -43,18 +44,21 @@ describe("Constants", () => {
   });
 
   it("allows the contract owner to update MINT_PRICE_MULTIPLERS", async () => {
-    const priceBefore = await PuzzleCard.priceToMint("Godly");
-    expect(priceBefore).to.equal(263157894736842150n);
+    const priceBefore = await PuzzleCard.priceToMint("Mortal");
+    expect(priceBefore).to.equal(5263157894736843n);
 
-    PuzzleCard.MINT_PRICE_MULTIPLERS = [0, 0, 0, 0, 0, 1000, 0]
+    PuzzleCard.MINT_PRICE_MULTIPLERS = [1000, 0, 0, 0, 0, 0, 0]
     await PuzzleCard.updateConstants();
 
-    const priceAfter = await PuzzleCard.priceToMint("Godly");
-    expect(priceAfter).to.deep.equal(5263157894736843000n);
+    const priceAfter = await PuzzleCard.priceToMint("Mortal");
+    expect(priceAfter).to.equal(5263157894736843000n);
 
     // Verify that the multiplier has actually been taken into account.
-    await contract.mint(1, 5, owner.address, { value: priceAfter });
-    await expectRevert.unspecified(contract.mint(1, 5, owner.address, { value: priceAfter - BigInt(1) }));
+    // We need to switch to user1 since payment isn't taken from the contract owner.
+    const contractAsUser1 = contract.connect(user1);
+
+    await contractAsUser1.mint(1, 0, user1.address, { value: priceAfter });
+    await expectRevert.unspecified(contractAsUser1.mint(1, 0, user1.address, { value: priceAfter - BigInt(1) }));
   });
 
   it("allows the contract owner to update UNLOCK_PRICE_MULTIPLIER", async () => {
@@ -68,8 +72,11 @@ describe("Constants", () => {
     expect(priceAfter).to.equal(5263157894736843n);
 
     // Verify that the multiplier has actually been taken into account.
-    await contract.unlockMintingAtAllTiers(owner.address, { value: priceAfter });
-    await expectRevert.unspecified(contract.unlockMintingAtAllTiers(owner.address, { value: priceAfter - BigInt(1) }));
+    // We need to switch to user1 since payment isn't taken from the contract owner.
+    const contractAsUser1 = contract.connect(user1);
+
+    await contractAsUser1.unlockMintingAtAllTiers(user1.address, { value: priceAfter });
+    await expectRevert.unspecified(contractAsUser1.unlockMintingAtAllTiers(user1.address, { value: priceAfter - BigInt(1) }));
   });
 
   it("allows the contract owner to update METADATA_URI", async () => {
@@ -88,7 +95,7 @@ describe("Constants", () => {
 
     await PuzzleCard.updateConstants();
 
-    const tokenIDs = await TestUtils.batchTokenIDs(contract.gift(100, 0, owner.address));
+    const tokenIDs = await TestUtils.batchTokenIDs(contract.mint(100, 0, owner.address));
     const names = [];
 
     for (const tokenID of tokenIDs) {
@@ -113,7 +120,7 @@ describe("Constants", () => {
     let tokenIDs = [];
 
     for (let i = 0; i < 5; i += 1) {
-      const batch = await TestUtils.batchTokenIDs(contract.gift(100, 0, owner.address));
+      const batch = await TestUtils.batchTokenIDs(contract.mint(100, 0, owner.address));
       tokenIDs = tokenIDs.concat(batch);
     }
 

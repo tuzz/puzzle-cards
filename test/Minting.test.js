@@ -80,7 +80,15 @@ describe("Minting", () => {
 
     it("allows users to pay to unlock minting at all tiers", async () => {
       PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
-      await PuzzleCard.unlockMintingAtAllTiers(user1.address);
+      await PuzzleCard.unlockMintingAtAllTiers(user1.address); // Called as user1.
+
+      await PuzzleCard.mint(1, "Immortal", user1.address);
+      await PuzzleCard.mint(1, "Master", user1.address);
+    });
+
+    it("allows the contract owner to unlock minting for a user without having to pay themself", async () => {
+      await PuzzleCard.unlockMintingAtAllTiers(user1.address); // Called as owner.
+      PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
 
       await PuzzleCard.mint(1, "Immortal", user1.address);
       await PuzzleCard.mint(1, "Master", user1.address);
@@ -104,7 +112,9 @@ describe("Minting", () => {
     });
 
     it("reverts if no payment is provided", async () => {
-      const promise = PuzzleCard.CONTRACT.mint(3, 0, user2.address, { ...PuzzleCard.GAS_OPTIONS });
+      const contractAsUser1 = contract.connect(user1);
+
+      const promise = contractAsUser1.mint(3, 0, user1.address, { ...PuzzleCard.GAS_OPTIONS });
       await expectRevert.unspecified(promise);
     });
 
@@ -112,61 +122,56 @@ describe("Minting", () => {
       const pricePerCard = await PuzzleCard.priceToMint("Mortal");
       const notEnough = BigInt(3) * pricePerCard - BigInt(1);
 
-      const promise = PuzzleCard.CONTRACT.mint(3, 0, user2.address, { ...PuzzleCard.GAS_OPTIONS, value: notEnough });
+      const contractAsUser1 = contract.connect(user1);
+
+      const promise = contractAsUser1.mint(3, 0, user1.address, { ...PuzzleCard.GAS_OPTIONS, value: notEnough });
       await expectRevert.unspecified(promise);
     });
 
     it("reverts if the purchaser doesn't have enough funds", async () => {
-      await user2.sendTransaction({ to: owner.address, value: 999999999960000000000000n });
-      PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user2));
+      await user1.sendTransaction({ to: owner.address, value: 999999999940000000000000n });
+      PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
 
       const pricePerCard = await PuzzleCard.priceToMint("Mortal");
-      const promise = PuzzleCard.mint(3, "Mortal", user2.address);
+      const promise = PuzzleCard.mint(3, "Mortal", user1.address);
 
       expect(promise).to.eventually.be.rejectedWith(/doesn't have enough funds/);
     });
   });
 
-  describe("#gift", () => {
-    it("allows the contract owner to mint cards as a gift to a user", async () => {
-      const cards = await PuzzleCard.gift(1, "Mortal", user1.address);
-      expect(cards.length).to.equal(1);
+  it("allows the contract owner to mint cards without having to pay themself", async () => {
+    const cards = await PuzzleCard.mint(1, "Mortal", user1.address);
+    expect(cards.length).to.equal(1);
 
-      const balance = await PuzzleCard.numberOwned(cards[0], user1.address);
-      expect(balance).to.equal(1);
-    });
+    const balance = await PuzzleCard.numberOwned(cards[0], user1.address);
+    expect(balance).to.equal(1);
+  });
 
-    it("does not allow other users to gift cards", async () => {
-      PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
-      await expectRevert.unspecified(PuzzleCard.gift(3, "Mortal", user1.address));
-    });
+  it("estimates the gas limit reasonably well for different numbers of cards minted", async () => {
+    for (let numberToMint = 1; numberToMint <= PuzzleCard.MAX_BATCH_SIZE; numberToMint += 1) {
+      const gasLimit = PuzzleCard.gasLimitToMint(numberToMint);
+      let maxGas = -Infinity;
 
-    it("estimates the gas limit reasonably well for different numbers of cards minted", async () => {
-      for (let numberToGift = 1; numberToGift <= PuzzleCard.MAX_BATCH_SIZE; numberToGift += 1) {
-        const gasLimit = PuzzleCard.gasLimitToMint(numberToGift);
-        let maxGas = -Infinity;
+      // Decrease the sample size being tested as gas usage certainty increases.
+      // Otherwise, the test would take too long.
+      const sampleSize = Math.max((100 - numberToMint / 2), 3);
 
-        // Decrease the sample size being tested as gas usage certainty increases.
-        // Otherwise, the test would take too long.
-        const sampleSize = Math.max((100 - numberToGift / 2), 3);
+      for (let i = 0; i < sampleSize; i += 1) {
+        const transaction = await contract.mint(numberToMint, 0, owner.address, { gasLimit: PuzzleCard.GAS_LIMIT_MAXIMUM });
+        const gasUsed = (await transaction.wait()).gasUsed.toNumber();
 
-        for (let i = 0; i < sampleSize; i += 1) {
-          const transaction = await contract.gift(numberToGift, 0, owner.address, { gasLimit: PuzzleCard.GAS_LIMIT_MAXIMUM });
-          const gasUsed = (await transaction.wait()).gasUsed.toNumber();
-
-          maxGas = Math.max(maxGas, gasUsed);
-        }
-
-        //console.log(numberToGift, maxGas, gasLimit, maxGas / gasLimit);
-        expect(maxGas / gasLimit).to.be.within(0.3, 0.85, `The gas limit prediction was poor for ${numberToGift} cards.`);
-
-        // Don't check every numberToGift as the number increases.
-        // Otherwise, the test would take too long.
-        if (numberToGift >= 10) { numberToGift += 1; }
-        if (numberToGift >= 20) { numberToGift += 3; }
-        if (numberToGift >= 70) { numberToGift += 10; }
-        if (numberToGift >= 120) { numberToGift += 20; }
+        maxGas = Math.max(maxGas, gasUsed);
       }
-    });
+
+      //console.log(numberToMint, maxGas, gasLimit, maxGas / gasLimit);
+      expect(maxGas / gasLimit).to.be.within(0.3, 0.85, `The gas limit prediction was poor for ${numberToMint} cards.`);
+
+      // Don't check every numberToMint as the number increases.
+      // Otherwise, the test would take too long.
+      if (numberToMint >= 10) { numberToMint += 1; }
+      if (numberToMint >= 20) { numberToMint += 3; }
+      if (numberToMint >= 70) { numberToMint += 10; }
+      if (numberToMint >= 120) { numberToMint += 20; }
+    }
   });
 });

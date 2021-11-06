@@ -78,9 +78,8 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     function mint(uint256 numberToMint, uint8 tier, address to) external payable {
         if (msg.sender != owner()) {
           require(tier <= maxTierUnlocked[msg.sender]);
+          payable(owner()).transfer(basePriceInWei * numberToMint * MINT_PRICE_MULTIPLERS[tier]);
         }
-
-        payable(owner()).transfer(basePriceInWei * numberToMint * MINT_PRICE_MULTIPLERS[tier]);
 
         if (to == address(0)) { to = msg.sender; }
         mintStarterCards(numberToMint, tier, to);
@@ -90,13 +89,11 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         if (address_ == address(0)) { address_ = msg.sender; }
         require(maxTierUnlocked[address_] < MASTER_TIER);
 
-        payable(owner()).transfer(basePriceInWei * UNLOCK_PRICE_MULTIPLIER);
-        maxTierUnlocked[address_] = MASTER_TIER;
-    }
+        if (msg.sender != owner()) {
+          payable(owner()).transfer(basePriceInWei * UNLOCK_PRICE_MULTIPLIER);
+        }
 
-    // TODO: remove this function
-    function gift(uint256 numberToGift, uint8 tier, address to) external onlyOwner {
-        mintStarterCards(numberToGift, tier, to);
+        maxTierUnlocked[address_] = MASTER_TIER;
     }
 
     function mintStarterCards(uint256 numberToMint, uint8 tier, address to) private {

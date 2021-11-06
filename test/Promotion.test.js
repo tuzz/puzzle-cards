@@ -36,7 +36,7 @@ describe("Promotion", () => {
         let numMinted = 0;
 
         while (!deck.promotionAction) {
-          const mintedCards = await PuzzleCard.gift(mintSize, tier, owner.address);
+          const mintedCards = await PuzzleCard.mint(mintSize, tier, owner.address);
           numMinted += mintSize;
 
           for (let card of mintedCards) {
