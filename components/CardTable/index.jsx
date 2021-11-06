@@ -57,9 +57,9 @@ const CardTable = () => {
   };
 
   const setButtonActionBasedOnPositions = async (causedByNetworkChange) => {
-    const oneOfEachCard = chosenStacks.map(s => s.card);
+    const [cards, _maxQuantity] = chosenCardsWithMaxQuantity();
 
-    const actionNames = await Metamask.actionsThatCanBeTaken(PuzzleCard, oneOfEachCard, mintChipActive, address, () => {
+    const actionNames = await Metamask.actionsThatCanBeTaken(PuzzleCard, cards, mintChipActive, address, () => {
       setButtonAction(); // Disable the button while the switch network prompt is shown.
 
       if (causedByNetworkChange) {
@@ -73,11 +73,29 @@ const CardTable = () => {
     );
   }
 
+  // If only one stack of cards is over the card outline, we may still be able
+  // to perform actions if there are multiple cards in the stack.
+  const chosenCardsWithMaxQuantity = () => {
+    if (chosenStacks.length === 0) { return [[], 0]; }
+
+    let chosenCards = chosenStacks.map(s => s.card);
+    let maxQuantity = Math.min(...chosenStacks.map(s => s.quantity));
+
+    if (chosenStacks.length === 1 && chosenStacks[0].quantity >= 2) {
+      chosenCards = [chosenCards[0], chosenCards[0]];
+      maxQuantity = Math.floor(maxQuantity / 2);
+    }
+
+    return [chosenCards, maxQuantity];
+  };
+
   useEffect(setButtonActionBasedOnPositions, [chosenStacks, mintChipActive, generation]);
   useEffect(() => setButtonActionBasedOnPositions(true), [chainId]);
 
   const performAction = async () => {
-    const requests = await Metamask.performAction(PuzzleCard, buttonAction, chosenStacks, channel.mintArgs());
+    const [cards, maxQuantity] = chosenCardsWithMaxQuantity();
+
+    const requests = await Metamask.performAction(PuzzleCard, buttonAction, cards, maxQuantity, channel.mintArgs());
     if (requests.length === 0) { return; } // No transaction requests initiated, e.g. Metamask locked.
 
     setTransactState(TransactState.REQUESTING);

@@ -1,11 +1,9 @@
 const Metamask = {};
 
 Metamask.actionsThatCanBeTaken = async (PuzzleCard, cards, mintChipActive, address, preSwitchCallback = () => {}) => {
-  const numCards = cards.filter(c => c).length;
-
   // Don't allow an action to be taken if there are cards on the outline as well
   // as the mint chip. Otherwise, it's ambigious what will happen.
-  if (numCards > 0 && mintChipActive) { return []; }
+  if (cards.length > 0 && mintChipActive) { return []; }
 
   // Allow the user to mint prior to checking if we're connected. They will be
   // prompted to first unlock metamask then mint immediately afterwards.
@@ -15,7 +13,7 @@ Metamask.actionsThatCanBeTaken = async (PuzzleCard, cards, mintChipActive, addre
     return [address ? "reconnectToMetamask" : "connectToMetamask"];
   }
 
-  if (numCards < 2 || numCards > 7) { return []; }
+  if (cards.length < 2 || cards.length > 7) { return []; }
   if (typeof ethereum === "undefined") { return []; }
 
   // Give the calling code the opportunity to run something before the switch
@@ -41,7 +39,7 @@ Metamask.actionsThatCanBeTaken = async (PuzzleCard, cards, mintChipActive, addre
   return PuzzleCard.actionsThatCanBeTaken(cards);
 };
 
-Metamask.performAction = async (PuzzleCard, actionName, cardStacks, mintArgs) => {
+Metamask.performAction = async (PuzzleCard, actionName, cards, maxQuantity, mintArgs) => {
   Metamask.tryAgain = false;
 
   if (typeof ethereum === "undefined") {
@@ -49,15 +47,13 @@ Metamask.performAction = async (PuzzleCard, actionName, cardStacks, mintArgs) =>
     return [];
   }
 
-  const oneOfEachCard = cardStacks.map(c => c.card);
-  const quantity = Math.min(...cardStacks.map(s => s.quantity), 1000);
-  const quantityTimes = [...Array(quantity).keys()];
+  const quantityTimes = [...Array(maxQuantity).keys()];
 
   if (!actionName.match(/connectToMetamask/) && await Metamask.alreadyConnected(PuzzleCard) && await Metamask.alreadyCorrectNetwork(PuzzleCard)) {
     if (actionName === "mint") {
       return [PuzzleCard.mint(...mintArgs, { wait: false })];
     } else {
-      return quantityTimes.map(() => PuzzleCard.call(actionName, oneOfEachCard, true));
+      return quantityTimes.map(() => PuzzleCard.call(actionName, cards, true));
     }
   }
 
@@ -110,7 +106,7 @@ Metamask.performAction = async (PuzzleCard, actionName, cardStacks, mintArgs) =>
   if (actionName === "mint") {
     return [PuzzleCard.mint(...mintArgs, { wait: false })];
   } else {
-    return quantityTimes.map(() => PuzzleCard.call(actionName, oneOfEachCard, true));
+    return quantityTimes.map(() => PuzzleCard.call(actionName, cards, true));
   }
 };
 
