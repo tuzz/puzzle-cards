@@ -69,7 +69,15 @@ const FilterRows = ({ filters, setFilters }) => {
         counts={filters.countsForDropdownOptions["color1"]}
         alphabetic={true}
         disabled={numColorSlots < 1}
+        hidden={type === "Artwork"}
         alertText={colorAlert} />
+
+      <Dropdown
+        placeholder="Edition…"
+        onChange={handleChange("edition")}
+        names={PuzzleCard.EDITION_NAMES}
+        counts={filters.countsForDropdownOptions["edition"]}
+        hidden={type !== "Artwork"} />
 
       <Dropdown
         placeholder="Color 2…"

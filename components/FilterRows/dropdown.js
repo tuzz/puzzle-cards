@@ -72,16 +72,24 @@ const optionColors = (name) => {
     "Black":  { selectedForeground: "#fff", selectedBorder: "#97f", optionForeground: "#000", selectedBackground: "#111" },
 
     "Godly":  { selectedForeground: "#000", selectedBorder: "#ff0", selectedBackground: "#fff" },
-    "Master":  { selectedForeground: "#fff", selectedBorder: "#97f", selectedBackground: "#111" },
+    "Master": { selectedForeground: "#fff", selectedBorder: "#97f", selectedBackground: "#111" },
+
+    "Signed": { selectedForeground: "black", optionForeground: "#070", selectedBackground: "white", selectedFont: "Brush Script MT", selectedFontSize: "1.25em" },
+    "Limited": { selectedForeground: "#fff", selectedBorder: "#b00", optionForeground: "#c24", selectedBackground: "#111" },
+    "Master Copy": { selectedForeground: "#fff", selectedBorder: "#97f", optionForeground: "#53f", selectedBackground: "#111" },
   }[name]  || { selectedForeground: "white", selectedBorder: "orange" };
 };
+
+const widths = { "Reasonable": "12rem", "Master Copy": "12.3rem" };
 
 const customStyles = {
   control: (styles, { selectProps }) => ({ ...styles,
     backgroundColor: (selectProps.value || {}).selectedBackground || "#38261b",
     borderColor: (selectProps.value || {}).selectedBorder || "rgba(0, 0, 0, 0.5)",
     borderWidth: "2px",
-    width: (selectProps.value || {}).value === "Reasonable" ? "12rem" : styles.width,
+    width: widths[(selectProps.value || {}).value] || styles.width,
+    fontFamily: (selectProps.value || {}).selectedFont || styles.fontFamily,
+    fontSize: (selectProps.value || {}).selectedFontSize || styles.fontSize,
   }),
   singleValue: (styles, { selectProps }) => ({ ...styles,
     color: (selectProps.value || {}).selectedForeground || styles.color,
