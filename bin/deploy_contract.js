@@ -27,10 +27,10 @@ const main = async () => {
     }
   }
 
-  updateConstants("public/PuzzleCard.js", contract.address, blockNumber, proxyAddress);
+  updateConstants("public/PuzzleCard.js", contract.address, owner.address, blockNumber, proxyAddress);
 };
 
-const updateConstants = (filename, contractAddress, blockNumber, proxyAddress) => {
+const updateConstants = (filename, contractAddress, ownerAddress, blockNumber, proxyAddress) => {
   const network = {
     name: metadata.name,
     url: metadata.url,
@@ -43,6 +43,7 @@ const updateConstants = (filename, contractAddress, blockNumber, proxyAddress) =
   const content = fs.readFileSync(filename, "utf8")
     .replaceAll(/CONTRACT_NETWORK = .*;/g, `CONTRACT_NETWORK = ${JSON.stringify(network)};`)
     .replaceAll(/CONTRACT_ADDRESS = .*;/g, `CONTRACT_ADDRESS = "${contractAddress.toLowerCase()}";`)
+    .replaceAll(/CONTRACT_OWNER = .*;/g, `CONTRACT_OWNER = "${ownerAddress.toLowerCase()}";`)
     .replaceAll(/CONTRACT_BLOCK = .*;/g, `CONTRACT_BLOCK = ${blockNumber};`)
     .replaceAll(/PROXY_REGISTRY_ADDRESS = .*;/g, `PROXY_REGISTRY_ADDRESS = "${proxyAddress}";`);
 

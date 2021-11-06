@@ -751,12 +751,13 @@ PuzzleCard.ERROR_STRINGS = [
   "[a color was repeated]",
 ];
 
-PuzzleCard.CONTRACT_ADDRESS = "0x40c16d63504618b1ddc004b0e247f0113f01d270";
-PuzzleCard.CONTRACT_BLOCK = 21079668;
-PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://matic-mumbai.chainstacklabs.com","url2":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
-
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0xff7ca10af37178bdd056628ef42fd7f799fac77c";
 PuzzleCard.ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
+PuzzleCard.CONTRACT_ADDRESS = "0xbbc54cca9d40ed06130edb99541b478e1704915e";
+PuzzleCard.CONTRACT_OWNER = "0xbc50c6815ff8c11fb35ea70d9f79f90d5744182a";
+PuzzleCard.CONTRACT_BLOCK = 21120718;
+PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://matic-mumbai.chainstacklabs.com","url2":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
 
 PuzzleCard.CONTRACT_ABI = [
   "event ApprovalForAll(address indexed account, address indexed operator, bool approved)",
