@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import ReactSelect from "react-select";
 import styles from "./styles.module.scss";
 
-const Dropdown = ({ placeholder, onChange, names, counts, alphabetic, disabled, hidden, alertText, ...props }) => {
+const Dropdown = ({ placeholder, onChange, names, counts, alphabetic, disabled, hidden, alertText, relevanceFn = () => true, ...props }) => {
   const ref = useRef();
 
   names = names.filter(s => s !== "None");
@@ -10,10 +10,12 @@ const Dropdown = ({ placeholder, onChange, names, counts, alphabetic, disabled, 
 
   const options = names.map(s => ({
     value: s,
-    label: <>
-      <span className={styles.option_name}>{s}</span>
-      <span className={styles.option_count}> ({(counts || {})[s] || 0})</span>
-    </>,
+    label: (
+      <span className={`${!relevanceFn(s) && styles.less_relevant}`}>
+        <span className={styles.option_name}>{s}</span>
+        <span className={styles.option_count}> ({(counts || {})[s] || 0})</span>
+      </span>
+    ),
     ...optionColors(s),
   }));
 

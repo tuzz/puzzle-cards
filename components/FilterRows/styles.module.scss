@@ -51,6 +51,16 @@
   .option_count {
     display: inline;
   }
+
+  .less_relevant {
+    .option_name {
+      color: #999;
+    }
+
+    .option_count {
+      display: none !important;
+    }
+  }
 }
 
 .fake_dropdown {
