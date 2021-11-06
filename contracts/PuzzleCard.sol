@@ -86,6 +86,14 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         mintStarterCards(numberToMint, tier, to);
     }
 
+    function unlockMintingAtAllTiers(address address_) external payable {
+        if (address_ == address(0)) { address_ = msg.sender; }
+        require(maxTierUnlocked[address_] < MASTER_TIER);
+
+        payable(owner()).transfer(basePriceInWei * UNLOCK_PRICE_MULTIPLIER);
+        maxTierUnlocked[address_] = MASTER_TIER;
+    }
+
     // TODO: remove this function
     function gift(uint256 numberToGift, uint8 tier, address to) external onlyOwner {
         mintStarterCards(numberToGift, tier, to);
@@ -710,6 +718,8 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     uint16[] private VARIANT_OFFSET_PER_TYPE = [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 5];
 
     uint256[7] private MINT_PRICE_MULTIPLERS = [1, 2, 5, 10, 20, 50, 100];
+    uint256 private UNLOCK_PRICE_MULTIPLIER = 10000;
+
     uint256[] private STANDARD_TYPE_PROBABILITIES = [300, 100, 100, 200, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
     uint256[] private VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
     uint256[] private POST_VIRTUAL_TYPE_PROBABILITIES = [0, 1, 100, 200, 100, 100, 20, 20, 20, 10, 10, 0, 4, 6];
@@ -726,6 +736,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         uint8[] memory numVariantsPerType,
         uint16[] memory variantOffsetPerType,
         uint256[7] memory mintPriceMultipliers,
+        uint256 unlockPriceMultiplier,
         address proxyRegistryAddress,
         string memory metadataURI
     ) external onlyOwner {
@@ -734,6 +745,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         NUM_VARIANTS_PER_TYPE = numVariantsPerType;
         VARIANT_OFFSET_PER_TYPE = variantOffsetPerType;
         MINT_PRICE_MULTIPLERS = mintPriceMultipliers;
+        UNLOCK_PRICE_MULTIPLIER = unlockPriceMultiplier;
         PROXY_REGISTRY_ADDRESS = proxyRegistryAddress;
         _setURI(metadataURI);
     }

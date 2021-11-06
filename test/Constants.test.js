@@ -56,6 +56,20 @@ describe("Constants", () => {
     await contract.mint(1, 5, owner.address, { value: priceAfter });
     await expectRevert.unspecified(contract.mint(1, 5, owner.address, { value: priceAfter - BigInt(1) }));
   });
+
+  it("allows the contract owner to update UNLOCK_PRICE_MULTIPLIER", async () => {
+    const priceBefore = await PuzzleCard.priceToUnlock();
+    expect(priceBefore).to.equal(52631578947368430000n);
+
+    PuzzleCard.UNLOCK_PRICE_MULTIPLIER = 1;
+    await PuzzleCard.updateConstants();
+
+    const priceAfter = await PuzzleCard.priceToUnlock();
+    expect(priceAfter).to.equal(5263157894736843n);
+
+    // Verify that the multiplier has actually been taken into account.
+    await contract.unlockMintingAtAllTiers(owner.address, { value: priceAfter });
+    await expectRevert.unspecified(contract.unlockMintingAtAllTiers(owner.address, { value: priceAfter - BigInt(1) }));
   });
 
   it("allows the contract owner to update METADATA_URI", async () => {

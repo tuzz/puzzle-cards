@@ -218,6 +218,16 @@ class PuzzleCard {
     });
   }
 
+  static async unlockMintingAtAllTiers(recipient, { wait = true } = {}) {
+    const address = recipient || PuzzleCard.ZERO_ADDRESS; // Unlocked for the msg.sender if address(0).
+
+    const gasLimit = PuzzleCard.GAS_LIMIT_MINIMUM;
+    const price = await PuzzleCard.priceToUnlock();
+
+    const request = PuzzleCard.CONTRACT.unlockMintingAtAllTiers(address, { gasLimit, value: price });
+    return wait ? request.then(t => t.wait()) : request;
+  }
+
   static priceToMint(tierName) {
     const tier = PuzzleCard.TIER_NAMES.findIndex(n => n === tierName);
     if (tier === -1) { throw new Error(`Invalid tier ${tierName}`); }
@@ -225,6 +235,9 @@ class PuzzleCard {
     const tierMultiplier = PuzzleCard.MINT_PRICE_MULTIPLERS[tier];
     return PuzzleCard.basePriceInWei().then(p => p * BigInt(tierMultiplier));
   }
+
+  static priceToUnlock() {
+    return PuzzleCard.basePriceInWei().then(p => p * BigInt(PuzzleCard.UNLOCK_PRICE_MULTIPLIER));
   }
 
   static gasLimitToMint(numberToMint) {
@@ -399,6 +412,7 @@ class PuzzleCard {
       PuzzleCard.NUM_VARIANTS_PER_TYPE,
       PuzzleCard.VARIANT_OFFSET_PER_TYPE,
       PuzzleCard.MINT_PRICE_MULTIPLERS,
+      PuzzleCard.UNLOCK_PRICE_MULTIPLIER,
       PuzzleCard.PROXY_REGISTRY_ADDRESS,
       PuzzleCard.METADATA_URI,
     );
@@ -668,6 +682,7 @@ PuzzleCard.VARIANT_OFFSET_PER_TYPE = [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 3, 
 // The intention is that these prices remain fixed but the base price in Wei is
 // updated as the dollar/matic exchange rate changes over time.
 PuzzleCard.MINT_PRICE_MULTIPLERS = [1, 2, 5, 10, 20, 50, 100];
+PuzzleCard.UNLOCK_PRICE_MULTIPLIER = 10000;
 PuzzleCard.BASE_PRICE_IN_DOLLARS = 0.01;
 PuzzleCard.WEI_PER_MATIC = 1000000000000000000;
 
@@ -800,7 +815,8 @@ PuzzleCard.CONTRACT_ABI = [
   "function teleportToNextArea(uint256[] tokenIDs)",
   "function totalSupply(uint256) view returns (uint256)",
   "function transferOwnership(address newOwner)",
-  "function updateConstants(uint8[] numPuzzlesPerSeries, uint16[] puzzleOffsetPerSeries, uint8[] numVariantsPerType, uint16[] variantOffsetPerType, uint256[7] mintPriceMultipliers, address proxyRegistryAddress, string metadataURI)",
+  "function unlockMintingAtAllTiers(address address_) payable",
+  "function updateConstants(uint8[] numPuzzlesPerSeries, uint16[] puzzleOffsetPerSeries, uint8[] numVariantsPerType, uint16[] variantOffsetPerType, uint256[7] mintPriceMultipliers, uint256 unlockPriceMultiplier, address proxyRegistryAddress, string metadataURI)",
   "function uri(uint256) view returns (string)"
 ];
 
