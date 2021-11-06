@@ -570,7 +570,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
 
         uint8 color1 = numSlots < 1 ? 0 : 1 + uint8(randomNumber() % NUM_COLORS);
         uint8 color2 = numSlots < 2 ? 0 :
-          (type_ == HELIX_TYPE && tier == CELESTIAL_TIER || tier == GODLY_TIER) ? color1 :
+          (type_ == HELIX_TYPE && (tier == CELESTIAL_TIER || tier == GODLY_TIER)) ? color1 :
           1 + uint8(randomNumber() % NUM_COLORS);
 
         return (color1, color2);
