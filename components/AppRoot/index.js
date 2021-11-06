@@ -136,7 +136,7 @@ const AppRoot = ({ Component, pageProps }) => {
     <Head>
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
     </Head>
-    <AppContext.Provider value={appContext}>
+    <AppContext.Provider value={{ ...appContext, updateMaxTier }}>
       <Component {...pageProps} />
     </AppContext.Provider>
   </>;

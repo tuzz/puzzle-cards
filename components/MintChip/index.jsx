@@ -7,7 +7,7 @@ import Dropdown from "./dropdown";
 import styles from "./styles.module.scss";
 
 const MintChip = ({ filters, onMoved = () => {}, channel }) => {
-  const { PuzzleCard, address, chainId, maxTiers } = useContext(AppContext);
+  const { PuzzleCard, address, chainId, maxTiers, updateMaxTier } = useContext(AppContext);
   const maxTier = maxTiers[address];
 
   const dropdowns = [{ ref: useRef() }, { ref: useRef() }];
@@ -17,12 +17,17 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
   const [numCards, setNumCards] = useState(1);
   const [tierName, setTierName] = useState("Mortal");
   const [prevPair, setPrevPair] = useState([]);
+  const [unlockState, setUnlockState] = useState("initial");
 
   useEffect(() => {
     if (!address || !chainId || !maxTier) { return; }
 
     if (address === prevPair[0] && chainId === prevPair[1]) {
-      alert(`Congratulations, you have successfully promoted a card to ${maxTier} tier and can now mint at that tier.`);
+      if (unlockState === "pending") {
+        setTimeout(() => alert(`Success! You can now mint at all tiers, including Master tier.`), 100);
+      } else {
+        alert(`Congratulations, you have successfully promoted a card to ${maxTier} tier and can now mint at that tier.`);
+      }
     } else if (isLocked(tierName)) {
       setTierName(maxTier);
     }
@@ -59,12 +64,29 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
 
   const isLocked = (tierName) => {
     const tierIndex = PuzzleCard.TIER_NAMES.findIndex(n => n === tierName);
-    const maxIndex = PuzzleCard.TIER_NAMES.findIndex(n => n === maxTier) || 0;
+    const maxIndex = PuzzleCard.TIER_NAMES.findIndex(n => n === maxTier)
 
-    return tierIndex > maxIndex;
+    return tierIndex !== 0 && tierIndex > maxIndex;
   };
 
-  const handleTierChange = (tierName, event) => {
+  const handleTierChange = async (tierName, event) => {
+    if (tierName === "unlock") {
+      event.stopPropagation();
+
+      if (unlockState === "initial" && confirmUnlock()) {
+        if (typeof ethereum === "undefined") {
+          alert("Please install the MetaMask browser extension then try again.");
+          return;
+        }
+
+        setUnlockState("pending");
+        await PuzzleCard.unlockMintingAtAllTiers().then(() => updateMaxTier(address, chainId)).catch(() => {});
+        setUnlockState("initial");
+      }
+
+      return;
+    }
+
     if (isLocked(tierName)) {
       alert(`Promote a card to ${tierName} tier to unlock minting at that tier.`);
       event.stopPropagation();
@@ -72,6 +94,11 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
       setTierName(tierName);
     }
   }
+
+  const confirmUnlock = () => {
+    const price = PuzzleCard.BASE_PRICE_IN_DOLLARS * PuzzleCard.UNLOCK_PRICE_MULTIPLIER;
+    return confirm(`Do you want to pay $${price} to unlock minting at all tiers?`);
+  };
 
   const handleStop = (event) => {
     if (!zoomed) {
@@ -82,10 +109,13 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
   const rotation = { base: 0, random: 30, initial: -20 };
 
   const tierIndex = PuzzleCard.TIER_NAMES.findIndex(n => n === tierName);
-  const centsPerCard = PuzzleCard.DOLLAR_PRICE_PER_TIER[tierIndex] * 100;
+  const centsPerCard = PuzzleCard.BASE_PRICE_IN_DOLLARS * 100 * PuzzleCard.MINT_PRICE_MULTIPLERS[tierIndex];
   const priceInCents = Math.round(numCards * centsPerCard);
   const priceInDollars = priceInCents / 100;
   const displayPrice = priceInCents % 100 === 0 ? priceInDollars.toFixed(0) : priceInDollars.toFixed(2);
+
+  const highestTier = maxTier === PuzzleCard.TIER_NAMES[PuzzleCard.TIER_NAMES.length - 1];
+  const tierClasses = [styles.tier_dropdown, !highestTier && styles.unlockable, unlockState !== "initial" && styles.unlocking].filter(s => s).join(" ");
 
   return (
     <Draggable nodeRef={chipRef} bounds="parent" zoomed={zoomed} zoomDuration={1.5} onClick={zoomIn} disabled={zoomed} onStop={handleStop} className={styles.draggable}>
@@ -118,9 +148,10 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
                   { label: "500 cards", value: 500 },
                 ]} />
 
-                <Dropdown object={dropdowns[1]} className={styles.tier_dropdown} value={tierName} onChange={handleTierChange} options={
-                  PuzzleCard.TIER_NAMES.map(n => ({ label: n, value: n, locked: isLocked(n) }))
-                } />
+                <Dropdown object={dropdowns[1]} className={tierClasses} value={tierName} onChange={handleTierChange} options={[
+                  ...PuzzleCard.TIER_NAMES.map(n => ({ label: n, value: n, locked: isLocked(n) })),
+                  highestTier ? null : { label: unlockState === "initial" ? "Unlock all" : "Pending...", value: "unlock" },
+                ].filter(o => o)} />
               </div>
             </div>
           </div>

@@ -202,7 +202,7 @@ class PuzzleCard {
     if (tier === -1) { throw new Error(`Invalid tier ${tierName}`); }
 
     const to = recipient || PuzzleCard.ZERO_ADDRESS; // Cards are minted to the msg.sender if address(0).
-    const isOwner = PuzzleCard.CONTRACT.signer.address === PuzzleCard.CONTRACT_OWNER;
+    const isOwner = await PuzzleCard.isOwner();
 
     const maxTier = await PuzzleCard.maxTierUnlocked(to);
     if (tier > maxTier) { throw new Error(`Minting at ${tierName} is locked.`); }
@@ -221,9 +221,10 @@ class PuzzleCard {
 
   static async unlockMintingAtAllTiers(recipient, { wait = true } = {}) {
     const address = recipient || PuzzleCard.ZERO_ADDRESS; // Unlocked for the msg.sender if address(0).
+    const isOwner = await PuzzleCard.isOwner();
 
     const gasLimit = PuzzleCard.GAS_LIMIT_MINIMUM;
-    const price = await PuzzleCard.priceToUnlock();
+    const price = isOwner ? 0 : await PuzzleCard.priceToUnlock();
 
     const request = PuzzleCard.CONTRACT.unlockMintingAtAllTiers(address, { gasLimit, value: price });
     return wait ? request.then(t => t.wait()) : request;
@@ -420,6 +421,16 @@ class PuzzleCard {
   }
 
   // private methods
+
+  static async isOwner() {
+    const address1 = PuzzleCard.CONTRACT.signer.address;
+    if (address1 && address1.toLowerCase() === PuzzleCard.CONTRACT_OWNER) { return true; }
+
+    const address2 = await PuzzleCard.CONTRACT.signer.getAddress();
+    if (address2 && address2.toLowerCase() === PuzzleCard.CONTRACT_OWNER) { return true; }
+
+    return false;
+  }
 
   static inBatches(numberToMint, fn) {
     const batchSize = PuzzleCard.MAX_BATCH_SIZE;
@@ -743,9 +754,9 @@ PuzzleCard.ERROR_STRINGS = [
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0xff7ca10af37178bdd056628ef42fd7f799fac77c";
 PuzzleCard.ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-PuzzleCard.CONTRACT_ADDRESS = "0xbbc54cca9d40ed06130edb99541b478e1704915e";
+PuzzleCard.CONTRACT_ADDRESS = "0x934f1875e22a1d3abd3f0a105e4c43db258d5130";
 PuzzleCard.CONTRACT_OWNER = "0xbc50c6815ff8c11fb35ea70d9f79f90d5744182a";
-PuzzleCard.CONTRACT_BLOCK = 21120718;
+PuzzleCard.CONTRACT_BLOCK = 21121738;
 PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://matic-mumbai.chainstacklabs.com","url2":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
 
 PuzzleCard.CONTRACT_ABI = [
