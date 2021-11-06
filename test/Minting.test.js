@@ -50,10 +50,57 @@ describe("Minting", () => {
       const balanceAfter = await ethers.provider.getBalance(owner.address);
       const delta = balanceAfter.toBigInt() - balanceBefore.toBigInt();
 
-      const pricePerCard = (await PuzzleCard.pricePerTierInWei())[0];
+      const pricePerCard = await PuzzleCard.priceToMint("Mortal");
       const expectedPayment = BigInt(3) * pricePerCard;
 
       expect(delta).to.equal(expectedPayment);
+    });
+
+    it("does not allow users to mint at a tier until a card is promoted to that tier", async () => {
+      const openDoorCard = await PuzzleCard.mintExact(new PuzzleCard({ ...TestUtils.baseCard, type: "Door", variant: "Open" }), user1.address);
+      const playerCard = await PuzzleCard.mintExact(new PuzzleCard({ ...TestUtils.baseCard, type: "Player" }), user1.address);
+
+      PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
+      await PuzzleCard.mint(1, "Mortal", user1.address);
+
+      const promise1 = PuzzleCard.mint(1, "Immortal", user1.address);
+      await expectRevert.unspecified(promise1);
+
+      const promise2 = PuzzleCard.mint(1, "Master", user1.address);
+      await expectRevert.unspecified(promise2);
+
+      const mintedCard = (await PuzzleCard.goThroughStarDoor([openDoorCard, playerCard]))[0];
+      expect(mintedCard.tier).to.equal("Immortal");
+
+      await PuzzleCard.mint(1, "Immortal", user1.address); // This should work now.
+
+      const promise3 = PuzzleCard.mint(1, "Master", user1.address);
+      await expectRevert.unspecified(promise3);
+    });
+
+    it("allows users to pay to unlock minting at all tiers", async () => {
+      PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
+      await PuzzleCard.unlockMintingAtAllTiers(user1.address);
+
+      await PuzzleCard.mint(1, "Immortal", user1.address);
+      await PuzzleCard.mint(1, "Master", user1.address);
+    });
+
+    it("applies the tier restriction to the msg.sender, not the recipient", async () => {
+      PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
+      await PuzzleCard.unlockMintingAtAllTiers(user1.address);
+
+      // This should be allowed so that user1 can gift cards to user2, even
+      // though user2 hasn't unlocked the Immortal tier. They can do this anyway
+      // by transferring tokens so there's no reason to deny it here.
+      await PuzzleCard.mint(1, "Immortal", user2.address);
+    });
+
+    it("does not apply the tier restriction to the contract owner", async () => {
+      // We could set maxTierUnlocked[owner()] = MASTER_TIER in the contract
+      // constructor, but I'd rather not do that so that it's easier to test the
+      // UI for unlocking when connected to the contract owner's account.
+      await PuzzleCard.mint(1, "Immortal", user2.address);
     });
 
     it("reverts if no payment is provided", async () => {
@@ -62,7 +109,7 @@ describe("Minting", () => {
     });
 
     it("reverts if insufficient payment is provided", async () => {
-      const pricePerCard = (await PuzzleCard.pricePerTierInWei())[0];
+      const pricePerCard = await PuzzleCard.priceToMint("Mortal");
       const notEnough = BigInt(3) * pricePerCard - BigInt(1);
 
       const promise = PuzzleCard.CONTRACT.mint(3, 0, user2.address, { ...PuzzleCard.GAS_OPTIONS, value: notEnough });
@@ -73,7 +120,7 @@ describe("Minting", () => {
       await user2.sendTransaction({ to: owner.address, value: 999999999960000000000000n });
       PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user2));
 
-      const pricePerCard = (await PuzzleCard.pricePerTierInWei())[0];
+      const pricePerCard = await PuzzleCard.priceToMint("Mortal");
       const promise = PuzzleCard.mint(3, "Mortal", user2.address);
 
       expect(promise).to.eventually.be.rejectedWith(/doesn't have enough funds/);

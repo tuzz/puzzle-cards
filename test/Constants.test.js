@@ -16,38 +16,46 @@ describe("Constants", () => {
     PuzzleCard.setContract(contract);
   });
 
-  it("can get the price per tier", async () => {
-    const pricePerTierInWei = await PuzzleCard.pricePerTierInWei();
+  it("allows the contract owner to update the base price when the exchange rate changes", async () => {
+    await PuzzleCard.setExchangeRate(5.00);
 
-    expect(pricePerTierInWei).to.deep.equal([
-      5263157894736843n, // $0.01
-      10526315789473686n, // $0.02
-      26315789473684215n, // $0.05
-      52631578947368430n, // $0.10
-      105263157894736860n, // $0.20
-      263157894736842150n, // $0.50
-      526315789473684300n // $1.00
-    ]);
-  });
-
-  it("allows the contract owner to update the price when the exchange rate changes", async () => {
-    await PuzzleCard.updatePrices(5.00);
-
-    const pricePerTierInWei = await PuzzleCard.pricePerTierInWei();
-
-    expect(pricePerTierInWei).to.deep.equal([
-      2000000000000000n,
-      4000000000000000n,
-      10000000000000000n,
-      20000000000000000n,
-      40000000000000000n,
-      100000000000000000n,
-      200000000000000000n
-    ]);
+    const basePriceInWei = await PuzzleCard.basePriceInWei();
+    expect(basePriceInWei).to.deep.equal(2000000000000000n);
 
     // Verify that the price for minting has actually been taken into account.
-    await contract.mint(1, 0, owner.address, { value: 2000000000000000n });
-    await expectRevert.unspecified(contract.mint(1, 0, owner.address, { value: 1999999999999999n }));
+    for (let tier = 0; tier < PuzzleCard.TIER_NAMES.length; tier += 1) {
+      const tierMultiplier = BigInt(PuzzleCard.MINT_PRICE_MULTIPLERS[tier]);
+      const price = basePriceInWei * tierMultiplier;
+
+      await contract.mint(1, tier, owner.address, { value: price });
+      await expectRevert.unspecified(contract.mint(1, tier, owner.address, { value: price - BigInt(1) }));
+    }
+  });
+
+  it("can get the price per card at a given tier", async () => {
+    const priceBefore = await PuzzleCard.priceToMint("Godly");
+    expect(priceBefore).to.equal(263157894736842150n);
+
+    await PuzzleCard.setExchangeRate(5.00);
+
+    const priceAfter = await PuzzleCard.priceToMint("Godly");
+    expect(priceAfter).to.equal(100000000000000000n);
+  });
+
+  it("allows the contract owner to update MINT_PRICE_MULTIPLERS", async () => {
+    const priceBefore = await PuzzleCard.priceToMint("Godly");
+    expect(priceBefore).to.equal(263157894736842150n);
+
+    PuzzleCard.MINT_PRICE_MULTIPLERS = [0, 0, 0, 0, 0, 1000, 0]
+    await PuzzleCard.updateConstants();
+
+    const priceAfter = await PuzzleCard.priceToMint("Godly");
+    expect(priceAfter).to.deep.equal(5263157894736843000n);
+
+    // Verify that the multiplier has actually been taken into account.
+    await contract.mint(1, 5, owner.address, { value: priceAfter });
+    await expectRevert.unspecified(contract.mint(1, 5, owner.address, { value: priceAfter - BigInt(1) }));
+  });
   });
 
   it("allows the contract owner to update METADATA_URI", async () => {
@@ -110,5 +118,10 @@ describe("Constants", () => {
   it("does not allow other users to update constants", async () => {
     PuzzleCard.setContract(contract.connect(user1));
     await expectRevert.unspecified(PuzzleCard.updateConstants());
+  });
+
+  it("does not allow other users to set the base price", async () => {
+    PuzzleCard.setContract(contract.connect(user1));
+    await expectRevert.unspecified(PuzzleCard.setExchangeRate(0));
   });
 });

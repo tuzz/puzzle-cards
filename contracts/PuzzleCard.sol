@@ -51,6 +51,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     mapping(address => uint8) public maxTierUnlocked;
     mapping(uint256 => uint256) public limitedEditions;
     mapping(uint16 => uint8) public masterCopyClaimedAt;
+    uint256 public basePriceInWei = 5263157894736843; // $0.01
 
     constructor(address proxyRegistryAddress) ERC1155("") {
         PROXY_REGISTRY_ADDRESS = proxyRegistryAddress;
@@ -75,13 +76,17 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     // minting
 
     function mint(uint256 numberToMint, uint8 tier, address to) external payable {
-        if (to == address(0)) { to = msg.sender; }
-        require(tier <= maxTierUnlocked[to]);
+        if (msg.sender != owner()) {
+          require(tier <= maxTierUnlocked[msg.sender]);
+        }
 
-        payable(owner()).transfer(numberToMint * pricePerTierInWei[tier]);
+        payable(owner()).transfer(basePriceInWei * numberToMint * MINT_PRICE_MULTIPLERS[tier]);
+
+        if (to == address(0)) { to = msg.sender; }
         mintStarterCards(numberToMint, tier, to);
     }
 
+    // TODO: remove this function
     function gift(uint256 numberToGift, uint8 tier, address to) external onlyOwner {
         mintStarterCards(numberToGift, tier, to);
     }
@@ -704,6 +709,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     uint8[] private NUM_VARIANTS_PER_TYPE = [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2];
     uint16[] private VARIANT_OFFSET_PER_TYPE = [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 5];
 
+    uint256[7] private MINT_PRICE_MULTIPLERS = [1, 2, 5, 10, 20, 50, 100];
     uint256[] private STANDARD_TYPE_PROBABILITIES = [300, 100, 100, 200, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
     uint256[] private VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
     uint256[] private POST_VIRTUAL_TYPE_PROBABILITIES = [0, 1, 100, 200, 100, 100, 20, 20, 20, 10, 10, 0, 4, 6];
@@ -719,30 +725,20 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         uint16[] memory puzzleOffsetPerSeries,
         uint8[] memory numVariantsPerType,
         uint16[] memory variantOffsetPerType,
-        string memory metadataURI,
-        address proxyRegistryAddress
+        uint256[7] memory mintPriceMultipliers,
+        address proxyRegistryAddress,
+        string memory metadataURI
     ) external onlyOwner {
         NUM_PUZZLES_PER_SERIES = numPuzzlesPerSeries;
         PUZZLE_OFFSET_PER_SERIES = puzzleOffsetPerSeries;
         NUM_VARIANTS_PER_TYPE = numVariantsPerType;
         VARIANT_OFFSET_PER_TYPE = variantOffsetPerType;
+        MINT_PRICE_MULTIPLERS = mintPriceMultipliers;
         PROXY_REGISTRY_ADDRESS = proxyRegistryAddress;
-
         _setURI(metadataURI);
     }
 
-    function updatePricePerTierInWei(uint256[7] memory _pricePerTierInWei) external onlyOwner {
-        pricePerTierInWei = _pricePerTierInWei;
+    function setBasePrice(uint256 _basePriceInWei) external onlyOwner {
+        basePriceInWei = _basePriceInWei;
     }
-
-   // These initial prices are based on $1.90 per matic, as of 2021-11-02.
-    uint256[7] public pricePerTierInWei = [
-      5263157894736843, // $0.01
-      10526315789473686, // $0.02
-      26315789473684215, // $0.05
-      52631578947368430, // $0.10
-      105263157894736860, // $0.20
-      263157894736842150, // $0.50
-      526315789473684300 // $1.00
-    ];
 }

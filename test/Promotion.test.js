@@ -47,7 +47,7 @@ describe("Promotion", () => {
           //if (printDeckSoICanManuallyCheckNoMoreActionsCanBePerformed(deck, 200)) { return; }
         }
 
-        const totalPrice = numMinted * PuzzleCard.DOLLAR_PRICE_PER_TIER[i];
+        const totalPrice = numMinted * PuzzleCard.MINT_PRICE_MULTIPLERS[i] * 0.01;
         console.log(`  - ${numMinted} minted cards: $${totalPrice.toFixed(2)}     (${deck.promotionAction})`);
 
         results.push([numMinted, totalPrice]);

@@ -206,15 +206,25 @@ class PuzzleCard {
     const maxTier = await PuzzleCard.maxTierUnlocked(to);
     if (tier > maxTier) { throw new Error(`Minting at ${tierName} is locked.`); }
 
-    return PuzzleCard.CONTRACT.pricePerTierInWei(tier).then(price => (
-      PuzzleCard.inBatches(numberToMint, (batchSize) => {
-        const gasLimit = PuzzleCard.gasLimitToMint(batchSize);
-        const value = price.toBigInt() * BigInt(batchSize);
+    const basePrice = await PuzzleCard.basePriceInWei();
+    const tierMultiplier = PuzzleCard.MINT_PRICE_MULTIPLERS[tier];
 
-        const request = PuzzleCard.CONTRACT.mint(batchSize, tier, to, { gasLimit, value });
-        return wait ? request.then(PuzzleCard.fromBatchEvent) : request;
-      })
-    ));
+    return PuzzleCard.inBatches(numberToMint, (batchSize) => {
+      const gasLimit = PuzzleCard.gasLimitToMint(batchSize);
+      const value = basePrice * BigInt(batchSize) * BigInt(tierMultiplier);
+
+      const request = PuzzleCard.CONTRACT.mint(batchSize, tier, to, { gasLimit, value });
+      return wait ? request.then(PuzzleCard.fromBatchEvent) : request;
+    });
+  }
+
+  static priceToMint(tierName) {
+    const tier = PuzzleCard.TIER_NAMES.findIndex(n => n === tierName);
+    if (tier === -1) { throw new Error(`Invalid tier ${tierName}`); }
+
+    const tierMultiplier = PuzzleCard.MINT_PRICE_MULTIPLERS[tier];
+    return PuzzleCard.basePriceInWei().then(p => p * BigInt(tierMultiplier));
+  }
   }
 
   static gasLimitToMint(numberToMint) {
@@ -229,10 +239,8 @@ class PuzzleCard {
     return Math.min(totalGas, PuzzleCard.GAS_LIMIT_MAXIMUM);
   }
 
-  static pricePerTierInWei() {
-    return Promise.all(PuzzleCard.TIER_NAMES.map((_, i) => (
-      PuzzleCard.CONTRACT.pricePerTierInWei(i).then(p => p.toBigInt())
-    )));
+  static basePriceInWei() {
+    return PuzzleCard.CONTRACT.basePriceInWei().then(p => BigInt(p));
   }
 
   static numberOwned(card, address) {
@@ -390,22 +398,22 @@ class PuzzleCard {
       PuzzleCard.PUZZLE_OFFSET_PER_SERIES,
       PuzzleCard.NUM_VARIANTS_PER_TYPE,
       PuzzleCard.VARIANT_OFFSET_PER_TYPE,
-      PuzzleCard.METADATA_URI,
+      PuzzleCard.MINT_PRICE_MULTIPLERS,
       PuzzleCard.PROXY_REGISTRY_ADDRESS,
+      PuzzleCard.METADATA_URI,
     );
   }
 
-  static updatePrices(dollarsPerMatic) {
-    const pricePerTierInWei = PuzzleCard.DOLLAR_PRICE_PER_TIER.map(dollars => {
-      if (dollarsPerMatic === 0) { return 0; } // For testing purposes.
+  static setExchangeRate(dollarsPerMatic) {
+    if (dollarsPerMatic === 0) { // For testing purposes.
+      return PuzzleCard.CONTRACT.setBasePrice(0);
+    }
 
-      const matic = dollars / dollarsPerMatic;
-      const wei = matic * PuzzleCard.WEI_PER_MATIC;
+    const matic = PuzzleCard.BASE_PRICE_IN_DOLLARS / dollarsPerMatic;
+    const wei = matic * PuzzleCard.WEI_PER_MATIC;
 
-      return BigInt(Math.round(wei));
-    });
-
-    return PuzzleCard.CONTRACT.updatePricePerTierInWei(pricePerTierInWei);
+    const basePriceInWei = BigInt(Math.round(wei));
+    return PuzzleCard.CONTRACT.setBasePrice(basePriceInWei);
   }
 
   // private methods
@@ -657,6 +665,12 @@ PuzzleCard.NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 1, 2, 0, 0, 2, 0, 0,
 PuzzleCard.NUM_VARIANTS_PER_TYPE = [0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2];
 PuzzleCard.VARIANT_OFFSET_PER_TYPE = [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 5];
 
+// The intention is that these prices remain fixed but the base price in Wei is
+// updated as the dollar/matic exchange rate changes over time.
+PuzzleCard.MINT_PRICE_MULTIPLERS = [1, 2, 5, 10, 20, 50, 100];
+PuzzleCard.BASE_PRICE_IN_DOLLARS = 0.01;
+PuzzleCard.WEI_PER_MATIC = 1000000000000000000;
+
 PuzzleCard.TIER_PROBABILITIES = [90, 10];
 PuzzleCard.CONDITION_PROBABILITIES = [80, 20];
 PuzzleCard.STANDARD_TYPE_PROBABILITIES = [300, 100, 100, 200, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
@@ -669,11 +683,6 @@ PuzzleCard.DECKS_URI = "https://puzzlecards.github.io/decks";
 
 PuzzleCard.EMBED_URI = "http://localhost:3000/embed"; // TMP
 PuzzleCard.DECKS_URI = "http://localhost:3000/decks"; // TMP
-
-// The intention is that these prices remain fixed but the price in Wei is
-// updated as the dollar/matic exchange rate changes over time.
-PuzzleCard.DOLLAR_PRICE_PER_TIER = [0.01, 0.02, 0.05, 0.10, 0.20, 0.50, 1.00];
-PuzzleCard.WEI_PER_MATIC = 1000000000000000000;
 
 // Set a minimum gas limit that provides enough headroom for all actions.
 // Set a maximum gas limit that matches the limit for the polygon network.
@@ -745,6 +754,7 @@ PuzzleCard.CONTRACT_ABI = [
   "function activateSunOrMoon(uint256[] tokenIDs)",
   "function balanceOf(address account, uint256 id) view returns (uint256)",
   "function balanceOfBatch(address[] accounts, uint256[] ids) view returns (uint256[])",
+  "function basePriceInWei() view returns (uint256)",
   "function canActivateSunOrMoon(uint256[] tokenIDs) view returns (bool ok, bool[34] errors)",
   "function canChangeLensColor(uint256[] tokenIDs) view returns (bool ok, bool[34] errors)",
   "function canDiscard2Pickup1(uint256[] tokenIDs) view returns (bool ok, bool[34] errors)",
@@ -777,21 +787,20 @@ PuzzleCard.CONTRACT_ABI = [
   "function mint(uint256 numberToMint, uint8 tier, address to) payable",
   "function name() view returns (string)",
   "function owner() view returns (address)",
-  "function pricePerTierInWei(uint256) view returns (uint256)",
   "function puzzleMastery1(uint256[] tokenIDs)",
   "function puzzleMastery2(uint256[] tokenIDs)",
   "function renounceOwnership()",
   "function safeBatchTransferFrom(address from, address to, uint256[] ids, uint256[] amounts, bytes data)",
   "function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data)",
   "function setApprovalForAll(address operator, bool approved)",
+  "function setBasePrice(uint256 _basePriceInWei)",
   "function shineTorchOnBasePair(uint256[] tokenIDs)",
   "function supportsInterface(bytes4 interfaceId) view returns (bool)",
   "function symbol() view returns (string)",
   "function teleportToNextArea(uint256[] tokenIDs)",
   "function totalSupply(uint256) view returns (uint256)",
   "function transferOwnership(address newOwner)",
-  "function updateConstants(uint8[] numPuzzlesPerSeries, uint16[] puzzleOffsetPerSeries, uint8[] numVariantsPerType, uint16[] variantOffsetPerType, string metadataURI, address proxyRegistryAddress)",
-  "function updatePricePerTierInWei(uint256[7] _pricePerTierInWei)",
+  "function updateConstants(uint8[] numPuzzlesPerSeries, uint16[] puzzleOffsetPerSeries, uint8[] numVariantsPerType, uint16[] variantOffsetPerType, uint256[7] mintPriceMultipliers, address proxyRegistryAddress, string metadataURI)",
   "function uri(uint256) view returns (string)"
 ];
 
