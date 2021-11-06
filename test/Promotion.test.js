@@ -17,10 +17,15 @@ describe("Promotion", () => {
   });
 
   it("can always promote via some combination of actions to the tier above", async () => {
-    const numRuns = 50;
+    const numRuns = 20;
     const mintSize = 10;
 
-    for (let i = 0; i < PuzzleCard.TIER_NAMES.length - 1; i += 1) {
+    const fromTier = 0;
+    const toTier = PuzzleCard.TIER_NAMES.length - 1;
+
+    let cumulativePrice = 0;
+
+    for (let i = fromTier; i < toTier; i += 1) {
       const tier = PuzzleCard.TIER_NAMES[i];
       console.log(`\nTesting promotion from ${tier} tier:`);
 
@@ -58,6 +63,7 @@ describe("Promotion", () => {
       const avgPrice = results.map(([_, p]) => p).reduce((a, b) => a + b) / results.length;
 
       console.log(`On average it takes ${avgNum} cards and costs $${avgPrice.toFixed(2)} (upper bound).`);
+      cumulativePrice += avgPrice;
 
       console.log("\nActions taken:")
       const actionFrequencies = TestUtils.tallyFrequencies(actionsTaken);
@@ -79,6 +85,8 @@ describe("Promotion", () => {
         console.log(`  - ${type} ${(frequency * 100).toFixed(2)}%`);
       }
     }
+
+    console.log(`\nIn total, it costs about $${cumulativePrice.toFixed(2)} to promote from ${PuzzleCard.TIER_NAMES[fromTier]} to ${PuzzleCard.TIER_NAMES[toTier]} tier.`);
   });
 });
 
