@@ -70,12 +70,28 @@ class PuzzleCard {
     return PuzzleCard.METADATA_URI.replace("{id}", this.tokenHexString().slice(2).padStart(64, "0"));
   }
 
-  embedUrl() {
-    return [PuzzleCard.EMBED_URI, this.embedQueryString()].join("?");
+  puzzleVideoUrl() {
+    return `${PuzzleCard.VIDEOS_URI}/${this.puzzleSlug()}.mp4`;
   }
 
-  embedQueryString() {
-    return new URLSearchParams(this).toString();
+  puzzlePreviewUrl() {
+    return `${PuzzleCard.PREVIEWS_URI}/${this.puzzleSlug()}.mp4`;
+  }
+
+  puzzleSlug() {
+    return this.puzzleTitle().toLowerCase().replaceAll(" ", "-");
+  }
+
+  puzzleTitle() {
+    return [this.series, this.puzzle].join(" ");
+  }
+
+  puzzleNumber() {
+    return this.puzzleIndex() + 1;
+  }
+
+  puzzleNumberInSet() {
+    return `${this.puzzleNumber()} / ${PuzzleCard.PUZZLE_NAMES.length}`;
   }
 
   tokenID() {
@@ -693,11 +709,13 @@ PuzzleCard.VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 
 PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
 PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
-PuzzleCard.EMBED_URI = "https://puzzlecards.github.io/embed";
 PuzzleCard.DECKS_URI = "https://puzzlecards.github.io/decks";
+PuzzleCard.VIDEOS_URI = "https://puzzlecards.github.io/puzzles";
+PuzzleCard.PREVIEWS_URI = "https://puzzlecards.github.io/previews";
 
-PuzzleCard.EMBED_URI = "http://localhost:3000/embed"; // TMP
 PuzzleCard.DECKS_URI = "http://localhost:3000/decks"; // TMP
+PuzzleCard.VIDEOS_URI = "http://localhost:3000/puzzles"; // TMP
+PuzzleCard.PREVIEWS_URI = "http://localhost:3000/previews"; // TMP
 
 // Set a minimum gas limit that provides enough headroom for all actions.
 // Set a maximum gas limit that matches the limit for the polygon network.

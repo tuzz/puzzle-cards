@@ -40,14 +40,12 @@ const CardStack = ({ cardStack, startPosition, position, withinY, dealDelay, fad
   };
 
   const rotation = (position || {}).rotation || startPosition.rotation || { base: 0, random: 4 };
-  const iframeSrc = `/embed?${cardStack.card.embedQueryString()}`;
 
   return (
     <Draggable bounds="parent" startPosition={startPosition} position={position} withinY={withinY} zoomed={zoomed} onClick={zoomIn} onStop={handleStop} disabled={zoomed} className={`${fadeIn && styles.fade_in}`}>
       <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={rotation}>
         <Flippable flipped={!loaded || flipped} direction={flipDirection} className={styles.flippable}>
-          <CardFront onLoaded={() => setLoaded(true)} />
-
+          <CardFront card={cardStack.card} onLoaded={() => setLoaded(true)} />
           <div className={styles.back}>back</div>
         </Flippable>
       </Zoomable>
