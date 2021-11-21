@@ -1,11 +1,11 @@
 import styles from "./styles.module.scss";
 
 module.exports.Player = ({ card }) => {
-  const v = snakeCase(card.variant);
+  const name = snakeCase(card.variant);
 
   return (
-    <div className={`${styles.player} ${styles[v]}`}>
-      <img src={`/images/types/${v}.png`} />
+    <div className={`${styles.player} ${styles[name]}`}>
+      <img src={`/images/types/${name}.png`} />
     </div>
   );
 };
@@ -25,13 +25,25 @@ module.exports.Cloak = ({ card }) => (
   <p>cloak</p>
 );
 
-module.exports.Inactive = ({ card }) => (
-  <p>inactive</p>
-);
+module.exports.Inactive = ({ card }) => {
+  const name = snakeCase([card.color1, card.variant]);
 
-module.exports.Active = ({ card }) => (
-  <p>active</p>
-);
+  return (
+    <div className={`${styles.inactive} ${styles[name]}`}>
+      <img src={`/images/types/${name}.png`} />
+    </div>
+  );
+};
+
+module.exports.Active = ({ card }) => {
+  const name = snakeCase([card.color1, card.variant]);
+
+  return (
+    <div className={`${styles.inactive} ${styles[name]}`}>
+      <img src={`/images/types/${name}.png`} />
+    </div>
+  );
+};
 
 module.exports.Telescope = ({ card }) => (
   <p>telescope</p>
