@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import PuzzleCard from "../../public/PuzzleCard";
 import VectorText from "../VectorText";
+import types from "./types";
 import styles from "./styles.module.scss";
 
 const CardFront = ({ card, onLoaded = () => {} }) => {
   const edition = `${card.edition} Edition`;
+  const TypeComponent = types[card.type];
 
   return (
     <div className={styles.card_front}>
@@ -17,8 +19,8 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
           </video>
         </div>
 
-        <div className={styles.graphic}>
-          <img src="/images/telescope.png" />
+        <div className={styles.type}>
+          <TypeComponent card={card} />
         </div>
       </div>
 

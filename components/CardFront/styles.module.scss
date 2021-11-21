@@ -69,15 +69,141 @@
   }
 }
 
-.graphic {
-  img {
-    width: 80%;
-    position: absolute;
-    bottom: 3.4%;
-    left: 10%;
-  }
-}
+.type {
+  position: absolute;
+  left: 1.5%;
+  right: 1.5%;
+  top: 54.6%;
+  bottom: 5.7%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 
-.graphic {
-  flex: 1;
+  img {
+    width: 100%;
+    display: block;
+  }
+
+  .player {
+    width: 33%;
+
+    &.swim_left_1,
+    &.swim_left_2,
+    &.swim_left_3,
+    &.swim_left_4,
+    &.swim_left_5,
+    &.swim_left_6,
+    &.swim_left_7,
+    &.swim_left_8,
+    &.swim_right_1,
+    &.swim_right_2,
+    &.swim_right_3,
+    &.swim_right_4,
+    &.swim_right_5,
+    &.swim_right_6,
+    &.swim_right_7,
+    &.swim_right_8 {
+      width: 57.926245943%; // 33% * 4507 / 2773 * 1.08
+    }
+
+    &.swim_left_1,
+    &.swim_left_2,
+    &.swim_left_3,
+    &.swim_left_4,
+    &.swim_left_5,
+    &.swim_left_6,
+    &.swim_left_7,
+    &.swim_left_8,
+    &.swim_right_1,
+    &.swim_right_2,
+    &.swim_right_3,
+    &.swim_right_4,
+    &.swim_right_5,
+    &.swim_right_6,
+    &.swim_right_7,
+    &.swim_right_8,
+    &.tread_water_1,
+    &.tread_water_2,
+    &.tread_water_3,
+    &.tread_water_4,
+    &.tread_water_5,
+    &.dive {
+      &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 60%;
+        bottom: 0.7%;
+        background: rgba(38, 47, 251, 0.4);
+        border-bottom-left-radius: 4.25% 18%;
+        border-bottom-right-radius: 4.25% 18%;
+      }
+    }
+
+    &.tread_water_1,
+    &.tread_water_2,
+    &.tread_water_3,
+    &.tread_water_4,
+    &.tread_water_5 {
+      margin-bottom: 2%;
+
+      &:before {
+        top: 28%;
+        background: rgba(38, 47, 251, 0.35);
+        border-bottom-left-radius: 4.25% 10%;
+        border-bottom-right-radius: 4.25% 10%;
+      }
+    }
+
+    &.dive {
+      margin-bottom: 2%;
+
+      &:before {
+        top: 0;
+        background: rgba(38, 47, 251, 0.5);
+        border-bottom-left-radius: 4.25% 7%;
+        border-bottom-right-radius: 4.25% 7%;
+      }
+    }
+
+    &.climb_1,
+    &.climb_2 {
+      margin-bottom: 12%;
+
+      &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0.7%;
+        background-image: url(/images/types/ladder.png);
+        background-repeat: repeat-y;
+        background-position: bottom;
+        background-size: 18.4871194362%;
+        opacity: 0.3;
+      }
+
+      img {
+        position: relative;
+      }
+    }
+
+    &.climb_1 img {
+      right: 1.5%;
+    }
+
+    &.climb_2 img {
+      left: 1.5%;
+    }
+
+    &.jump_left_1,
+    &.jump_left_2,
+    &.jump_left_3,
+    &.jump_left_4,
+    &.jump_left_5 {
+      margin-bottom: 2%;
+    }
+  }
 }

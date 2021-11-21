@@ -7,7 +7,18 @@ const Tmp = () => {
   const { tokenID } = router.query;
 
   if (!tokenID) { return null; }
-  const card = PuzzleCard.fromTokenID(BigInt(tokenID));
+  //const card = PuzzleCard.fromTokenID(BigInt(tokenID));
+  const card = new PuzzleCard({
+    series: "Series 1",
+    puzzle: "Puzzle 1-0",
+    tier: "Mortal",
+    type: "Player",
+    color1: "None",
+    color2: "None",
+    variant: "Idle Front",
+    condition: "Pristine",
+    edition: "Standard",
+  });
 
   return (
     <div style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, background: "#999" }}>
