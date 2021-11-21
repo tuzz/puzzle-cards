@@ -45,9 +45,17 @@ module.exports.Active = ({ card }) => {
   );
 };
 
-module.exports.Telescope = ({ card }) => (
-  <p>telescope</p>
-);
+module.exports.Telescope = ({ card, random }) => {
+  const mirrored = random("mirror-telescope").int32() % 2 === 0;
+  const sunOrMoon = snakeCase([card.color1, card.variant]);
+
+  return (
+    <div className={`${styles.telescope} ${mirrored && styles.mirrored}`}>
+      <img src="/images/types/telescope.png" className={styles.body} />
+      <img src={`/images/types/${sunOrMoon}.png`} className={styles.lock} />
+    </div>
+  );
+};
 
 module.exports.Helix = ({ card }) => (
   <p>helix</p>

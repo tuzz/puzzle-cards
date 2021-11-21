@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
+import seedrandom from "seedrandom";
 import PuzzleCard from "../../public/PuzzleCard";
 import VectorText from "../VectorText";
 import types from "./types";
 import styles from "./styles.module.scss";
 
 const CardFront = ({ card, onLoaded = () => {} }) => {
+  const random = stableRandom(card);
   const edition = `${card.edition} Edition`;
   const TypeComponent = types[card.type];
 
@@ -20,7 +22,7 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
         </div>
 
         <div className={styles.type}>
-          <TypeComponent card={card} />
+          <TypeComponent card={card} random={random} />
         </div>
       </div>
 
@@ -30,6 +32,11 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
       </div>
   </div>
   );
+};
+
+const stableRandom = (card) => {
+  const tokenID = card.tokenID().toString();
+  return (seed) => seedrandom(tokenID + seed);
 };
 
 export default CardFront;

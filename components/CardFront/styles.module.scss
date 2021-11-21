@@ -251,4 +251,36 @@
     width: 40%;
     margin-bottom: 0.3%;
   }
+
+  .telescope {
+    margin-bottom: -3.1%;
+    width: 80%;
+
+    .lock {
+      position: absolute;
+      width: 13.816925734%; // 80 * 0.4/2.316;
+      top: 22.2%;
+    }
+
+    &:not(&.mirrored) {
+      margin-right: 3%;
+
+      .lock {
+        right: 10.5%;
+        transform: rotate(11deg);
+      }
+    }
+
+    &.mirrored {
+      .body {
+        margin-left: 3%;
+        transform: scaleX(-1);
+      }
+
+      .lock {
+        left: 11.3%;
+        transform: rotate(-11deg);
+      }
+    }
+  }
 }
