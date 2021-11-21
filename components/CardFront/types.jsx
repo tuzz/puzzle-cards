@@ -10,9 +10,16 @@ module.exports.Player = ({ card }) => {
   );
 };
 
-module.exports.Crab = ({ card }) => (
-  <p>crab</p>
-);
+module.exports.Crab = ({ card }) => {
+  const className = `crab_${snakeCase(card.variant)}`;
+  const basename = className.replace("swim_", "").replace("floating", "middle");
+
+  return (
+    <div className={`${styles.crab} ${styles[className]}`}>
+      <img src={`/images/types/${basename}.png`} />
+    </div>
+  );
+};
 
 module.exports.Cloak = ({ card }) => (
   <p>cloak</p>
