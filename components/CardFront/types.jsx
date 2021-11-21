@@ -135,7 +135,9 @@ module.exports.Glasses = ({ card }) => (
 );
 
 module.exports.Eclipse = ({ card }) => (
-  <p>eclipse</p>
+  <div className={styles.eclipse}>
+    <img src="/images/types/eclipse.png" />
+  </div>
 );
 
 module.exports.Door = ({ card }) => (

@@ -1,3 +1,5 @@
+@import "./mixins";
+
 .card_front {
   width: 100%;
   height: 100%;
@@ -288,23 +290,7 @@
     width: 60%;
 
     &:before {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0.7%;
-      border-bottom-left-radius: 4.25% 7%;
-      border-bottom-right-radius: 4.25% 7%;
-
-      background-color: black;
-      background-image: url(/images/color_particles.png);
-      background-size: 200%;
-      background-position: center;
-      animation-name: zoom_color_particles;
-      animation-iteration-count: infinite;
-      animation-timing-function: ease-in-out;
-      animation-duration: 60s;
+      @include black_background;
     }
 
     img {
@@ -388,11 +374,20 @@
     .blur_6 { left: 83%; top: 26.3%; }
     .blur_7 { left: 79.5%; top: 76.2%; }
   }
-}
 
-@keyframes zoom_color_particles {
-  0%, 100% { background-size: 150%; }
-  50% { background-size: 250%; }
+  .eclipse {
+    width: 50%;
+    margin-bottom: 4.2%;
+
+    &:before {
+      @include black_background;
+    }
+
+    img {
+      position: relative;
+      filter: contrast(200%);
+    }
+  }
 }
 
 @keyframes spin-clockwise {
