@@ -12,10 +12,10 @@ const Tmp = () => {
     series: "Series 1",
     puzzle: "Puzzle 1-0",
     tier: "Mortal",
-    type: "Eclipse",
+    type: "Door",
     color1: "None",
     color2: "None",
-    variant: "None",
+    variant: "Open",
     condition: "Pristine",
     edition: "Standard",
   });

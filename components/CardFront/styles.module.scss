@@ -388,6 +388,19 @@
       filter: contrast(200%);
     }
   }
+
+  .door {
+    width: 33%;
+    margin-bottom: -5.8%;
+
+    &:before {
+      @include black_background;
+    }
+
+    img {
+      position: relative;
+    }
+  }
 }
 
 @keyframes spin-clockwise {

@@ -140,9 +140,15 @@ module.exports.Eclipse = ({ card }) => (
   </div>
 );
 
-module.exports.Door = ({ card }) => (
-  <p>door</p>
-);
+module.exports.Door = ({ card }) => {
+  const name = snakeCase(card.variant);
+
+  return (
+    <div className={`${styles.door} ${name}`}>
+      <img src={`/images/types/door_${name}.png`} />
+    </div>
+  );
+};
 
 module.exports.Hidden = ({ card }) => (
   <p>hidden</p>
