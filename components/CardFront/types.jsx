@@ -156,9 +156,17 @@ module.exports.Hidden = ({ card }) => (
   </div>
 );
 
-module.exports.Star = ({ card }) => (
-  <p>star</p>
-);
+module.exports.Star = ({ card }) => {
+  const color = card.color1.toLowerCase();
+  const quickly = card.condition === "Pristine";
+
+  return (
+    <div className={styles.star}>
+      <img className={quickly && styles.spin_quickly} src={`/images/types/${color}_star.png`} />
+      <VectorText text={card.color1} referenceText="Yellow" padSide="around" />
+    </div>
+  );
+};
 
 module.exports.Artwork = ({ card }) => (
   <p>artwork</p>

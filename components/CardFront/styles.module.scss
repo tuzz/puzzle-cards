@@ -414,6 +414,39 @@
       fill: rgba(0, 0, 0, 0.3);
     }
   }
+
+  .star {
+    width: 25%;
+    margin-bottom: 23%;
+
+    &:before {
+      @include black_background;
+    }
+
+    img {
+      position: relative;
+      filter: drop-shadow(0 0 0.2rem white);
+
+      animation-name: spin-clockwise;
+      animation-duration: 60s;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+
+      &.spin_quickly {
+        animation-duration: 6s;
+      }
+    }
+
+    svg {
+      position: absolute;
+      width: 20%;
+      height: 20%;
+      left: 40%;
+      bottom: 10%;
+      fill: white;
+      text-shadow: 0 0 0.5rem black;
+    }
+  }
 }
 
 @keyframes spin-clockwise {

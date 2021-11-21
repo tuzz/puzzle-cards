@@ -5,6 +5,10 @@ const VectorText = ({ text, className, referenceText, padSide = "right" }) => {
   const [textSize, setTextSize] = useState("1em");
   const svgRef = useRef();
 
+  const padLeft = padSide === "around" || padSide === "left";
+  const padRight = padSide === "around" || padSide === "right";
+  const padChar = padSide === "around" ? "\u00A0" : "\u00A0\u00A0";
+
   // If the text to display is shorter than the reference text, pad it by two
   // non-breaking white space character for every character missing. This keeps
   // the font-size fairly consistent, e.g. for the bottom-right number text.
@@ -13,7 +17,7 @@ const VectorText = ({ text, className, referenceText, padSide = "right" }) => {
     const numCharsShorterThanReference = referenceText.length - text.length;
     const uptoNum = [...Array(numCharsShorterThanReference).keys()];
 
-    padding = uptoNum.map(() => "\u00A0\u00A0").join("");
+    padding = uptoNum.map(() => padChar).join("");
   }
 
   useEffect(() => {
@@ -33,7 +37,7 @@ const VectorText = ({ text, className, referenceText, padSide = "right" }) => {
   return (
     <svg ref={svgRef} className={classes} xmlns={xmlns}>
       <text x="50%" y="50%" fontSize={textSize}>
-        <tspan>{padSide === "left" && padding}{text}{padSide === "right" && padding}</tspan>
+        <tspan>{padLeft && padding}{text}{padRight && padding}</tspan>
       </text>
     </svg>
   );
