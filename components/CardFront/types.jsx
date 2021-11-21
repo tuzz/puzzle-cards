@@ -151,7 +151,9 @@ module.exports.Door = ({ card }) => {
 };
 
 module.exports.Hidden = ({ card }) => (
-  <p>hidden</p>
+  <div className={styles.hidden}>
+    <VectorText text="?" />
+  </div>
 );
 
 module.exports.Star = ({ card }) => (
