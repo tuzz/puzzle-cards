@@ -1,3 +1,4 @@
+import VectorText from "../VectorText";
 import styles from "./styles.module.scss";
 
 module.exports.Player = ({ card }) => {
@@ -57,9 +58,24 @@ module.exports.Telescope = ({ card, random }) => {
   );
 };
 
-module.exports.Helix = ({ card }) => (
-  <p>helix</p>
-);
+module.exports.Helix = ({ card, random }) => {
+  const image = random("alternate-helix").int32() % 2 === 0 ? "1" : "2";
+  const mirrored = random("mirror-helix").int32() % 2 === 0;
+
+  return (
+    <div className={`${styles.helix} ${mirrored && styles.mirrored}`}>
+      <img src={`/images/types/helix${image}.png`} />
+
+      <div className={`${styles.left_sensor} ${card.color1.toLowerCase()}`}>
+        <VectorText text={card.color1} />
+      </div>
+
+      <div className={`${styles.right_sensor} ${card.color2.toLowerCase()}`}>
+        <VectorText text={card.color2} />
+      </div>
+    </div>
+  );
+};
 
 module.exports.Beacon = ({ card }) => (
   <p>beacon</p>
