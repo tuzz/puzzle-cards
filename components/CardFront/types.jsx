@@ -47,7 +47,7 @@ module.exports.Active = ({ card }) => {
 };
 
 module.exports.Telescope = ({ card, random }) => {
-  const mirrored = random("mirror-telescope").int32() % 2 === 0;
+  const mirrored = random("mirror-telescope").mod(2) === 0;
   const sunOrMoon = snakeCase([card.color1, card.variant]);
 
   return (
@@ -59,8 +59,8 @@ module.exports.Telescope = ({ card, random }) => {
 };
 
 module.exports.Helix = ({ card, random }) => {
-  const image = random("alternate-helix").int32() % 2 === 0 ? "1" : "2";
-  const mirrored = random("mirror-helix").int32() % 2 === 0;
+  const image = random("alternate-helix").mod(2) === 0 ? "1" : "2";
+  const mirrored = random("mirror-helix").mod(2) === 0;
 
   return (
     <div className={`${styles.helix} ${mirrored && styles.mirrored}`}>
@@ -85,9 +85,46 @@ module.exports.Torch = ({ card }) => (
   <p>torch</p>
 );
 
-module.exports.Map = ({ card }) => (
-  <p>map</p>
-);
+const arrowColors = ["red", "green", "blue", "yellow", "pink", "white"]; // Skip black
+const blurColors = ["red", "green", "blue", "yellow", "pink", "black"]; // Skip white
+
+module.exports.Map = ({ card, random }) => {
+  const withLocation = card.variant.includes("Location");
+  const withDate = card.variant.includes("Date");
+  const withTime = card.variant.includes("Time");
+
+  return (
+    <div className={`${styles.map} ${styles[name]}`}>
+      <img src="/images/types/map.png" />
+
+      {withLocation && <img
+        src={`/images/types/${arrowColors[random("map-arrow-color").mod(6)]}_arrow.png`}
+        className={styles.arrow}
+        style={{
+          left: `${40 + random("map-arrow-left")() * 20}%`,
+          top: `${43 + random("map-arrow-top")() * 14}%`,
+          transform: `rotate(${random("map-arrow-degrees")() * 360}deg)`,
+        }}
+      />}
+
+      {withDate && <>
+          <img className={styles.blur_1} src={`/images/types/${blurColors[random("blur-1").mod(6)]}_blur.png`} />
+          <img className={styles.blur_2} src={`/images/types/${blurColors[random("blur-2").mod(6)]}_blur.png`} />
+          <img className={styles.blur_3} src={`/images/types/${blurColors[random("blur-3").mod(6)]}_blur.png`} />
+          <img className={styles.blur_4} src={`/images/types/${blurColors[random("blur-4").mod(6)]}_blur.png`} />
+          <img className={styles.blur_5} src={`/images/types/${blurColors[random("blur-5").mod(6)]}_blur.png`} />
+          <img className={styles.blur_6} src={`/images/types/${blurColors[random("blur-6").mod(6)]}_blur.png`} />
+          <img className={styles.blur_7} src={`/images/types/${blurColors[random("blur-7").mod(6)]}_blur.png`} />
+      </>}
+
+      {withTime && <img
+        src="/images/types/clock.png"
+        className={styles.clock}
+        style={{ animationDelay: `${random("map-clock-time")() * -100000}s` }}
+      />}
+    </div>
+  );
+};
 
 module.exports.Teleport = ({ card }) => (
   <p>teleport</p>

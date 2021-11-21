@@ -353,9 +353,49 @@
       right: 30%;
     }
   }
+
+  .map {
+    width: 75%;
+    display: flex;
+    justify-content: center;
+
+    .clock {
+      position: absolute;
+      width: 16.5664773529%; // 75% * 0.75101364/3.4;
+      margin-top: 1.5%;
+
+      animation-name: spin-clockwise;
+      animation-duration: 777s;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+    }
+
+    .arrow {
+      position: absolute;
+      width: 2.5%;
+    }
+
+    .blur_1, .blur_2, .blur_3, .blur_4, .blur_5, .blur_6, .blur_7, .blur_8 {
+      position: absolute;
+      width: 3.4082756496%; // 75% * 0.125 / 2.7506578
+    }
+
+    .blur_1 { left: 15.3%; top: 79.7%; }
+    .blur_2 { left: 20%; top: 76.3%; }
+    .blur_3 { left: 15.5%; top: 40%; }
+    .blur_4 { left: 20%; top: 11.2%; }
+    .blur_5 { left: 78.5%; top: 12.7%; }
+    .blur_6 { left: 83%; top: 26.3%; }
+    .blur_7 { left: 79.5%; top: 76.2%; }
+  }
 }
 
 @keyframes zoom_color_particles {
   0%, 100% { background-size: 150%; }
   50% { background-size: 250%; }
+}
+
+@keyframes spin-clockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

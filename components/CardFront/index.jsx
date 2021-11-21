@@ -36,7 +36,13 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
 
 const stableRandom = (card) => {
   const tokenID = card.tokenID().toString();
-  return (seed) => seedrandom(tokenID + seed);
+
+  return (seed) => {
+    const generator = seedrandom(tokenID + seed);
+    generator.mod = (n) => Math.abs(generator.int32()) % n;
+
+    return generator;
+  };
 };
 
 export default CardFront;
