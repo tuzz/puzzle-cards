@@ -131,7 +131,13 @@ module.exports.Teleport = ({ card }) => (
 );
 
 module.exports.Glasses = ({ card }) => (
-  <p>glasses</p>
+  <div className={styles.glasses}>
+    <img className={styles.left_lens} src={`/images/types/${card.color1.toLowerCase()}_lens.png`} />
+    <img className={styles.right_lens} src={`/images/types/${card.color2.toLowerCase()}_lens.png`} />
+    <img className={styles.frame} src="/images/types/sunglasses_frame.png" />
+    <VectorText className={`${styles.left_text} ${card.color1.toLowerCase()}`} text={card.color1} referenceText="Yellow" padSide="around" />
+    <VectorText className={`${styles.right_text} ${card.color2.toLowerCase()}`} text={card.color2} referenceText="Yellow" padSide="around" />
+  </div>
 );
 
 module.exports.Eclipse = ({ card }) => (

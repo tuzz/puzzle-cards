@@ -375,6 +375,57 @@
     .blur_7 { left: 79.5%; top: 76.2%; }
   }
 
+  .glasses {
+    width: 80%;
+    margin-bottom: 1%;
+
+    .left_lens, .right_lens {
+      position: absolute;
+      width: 35%;
+      top: 22%;
+      //filter: saturate(200%) contrast(200%);
+    }
+
+    .left_lens {
+      transform: scaleX(-1);
+      left: 15%;
+    }
+
+    .right_lens {
+      right: 15%;
+    }
+
+    .frame {
+      position: relative;
+    }
+
+    .left_text, .right_text {
+      position: absolute;
+      top: 40%;
+      width: 20%;
+      height: 20%;
+
+      &:global {
+        &.yellow { transform: scale(0.87); }
+        &.pink { transform: scale(0.95); }
+        &.white { transform: scale(0.9); }
+        &.black {
+          fill: white;
+          font-weight: normal;
+          transform: scale(0.85);
+        }
+      }
+    }
+
+    .left_text {
+      left: 21%;
+    }
+
+    .right_text {
+      right: 21%;
+    }
+  }
+
   .eclipse {
     width: 50%;
     margin-bottom: 4.2%;
