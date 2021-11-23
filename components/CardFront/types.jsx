@@ -30,8 +30,8 @@ module.exports.Inactive = ({ card }) => {
   const name = snakeCase([card.color1, card.variant]);
 
   return (
-    <div className={`${styles.inactive} ${styles[name]}`}>
-      <img src={`/images/types/${name}.png`} />
+    <div className={`${styles.inactive} ${styles[card.color1.toLowerCase()]}`}>
+      <img src={`/images/types/inactive_${name}.png`} />
     </div>
   );
 };
@@ -40,8 +40,8 @@ module.exports.Active = ({ card }) => {
   const name = snakeCase([card.color1, card.variant]);
 
   return (
-    <div className={`${styles.inactive} ${styles[name]}`}>
-      <img src={`/images/types/${name}.png`} />
+    <div className={`${styles.active} ${styles[card.color1.toLowerCase()]}`}>
+      <img src={`/images/types/active_${name}.png`} />
     </div>
   );
 };

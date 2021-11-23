@@ -245,13 +245,40 @@
   }
 
   .inactive {
-    width: 40%;
+    width: 43.5%;
     margin-bottom: 0.3%;
+    filter: drop-shadow(0 0 1rem rgba(0, 0, 0, 0.2));
+
+    &.yellow, &.white {
+      filter: none;
+    }
+
+    &.black {
+      filter: drop-shadow(0 0 1rem rgba(0, 0, 0, 0.6));
+    }
   }
 
   .active {
-    width: 40%;
+    width: 80%;
     margin-bottom: 0.3%;
+
+    &.yellow {
+      filter: drop-shadow(0 0 0.2rem rgba(0, 0, 0, 0.2));
+    }
+
+    &.black {
+      filter: drop-shadow(0 0 0.5rem #97f);
+    }
+  }
+
+  .inactive, .active {
+    &.white:before {
+      @include black_background;
+    }
+
+    img {
+      position: relative;
+    }
   }
 
   .telescope {
