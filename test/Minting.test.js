@@ -58,7 +58,7 @@ describe("Minting", () => {
 
     it("does not allow users to mint at a tier until a card is promoted to that tier", async () => {
       const openDoorCard = await PuzzleCard.mintExact(new PuzzleCard({ ...TestUtils.baseCard, type: "Door", variant: "Open" }), user1.address);
-      const playerCard = await PuzzleCard.mintExact(new PuzzleCard({ ...TestUtils.baseCard, type: "Player" }), user1.address);
+      const playerCard = await PuzzleCard.mintExact(new PuzzleCard({ ...TestUtils.baseCard, type: "Player", variant: "Dive" }), user1.address);
 
       PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
       await PuzzleCard.mint(1, "Mortal", user1.address);

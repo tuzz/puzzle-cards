@@ -17,8 +17,8 @@ TestUtils.addHelpfulMethodsTo = (contract) => {
 };
 
 TestUtils.baseCard = {
-  series: "Series 1",
-  puzzle: "Puzzle 1-2",
+  series: "Teamwork",
+  puzzle: "I",
   tier: "Mortal",
   color1: "None",
   color2: "None",

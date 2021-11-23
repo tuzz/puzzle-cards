@@ -354,7 +354,8 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
       });
 
       it("unlocks minting at the next tier", async () => {
-        for (let tier of PuzzleCard.TIER_NAMES) {
+        for (let i = 0; i < PuzzleCard.TIER_NAMES.length - 1; i += 1) {
+          const tier = PuzzleCard.TIER_NAMES[i];
           const cards = [];
 
           for (const card of validCards) {
@@ -418,7 +419,12 @@ const itMintsATierStarterCard = (actionName, validCards, tierIncreases) => {
           const mintedCard = (await PuzzleCard[actionName](cards))[0];
 
           expect(["Player", "Glasses", "Hidden"]).to.include(mintedCard.type);
-          expect(mintedCard.variant).to.equal("None");
+
+          if (mintedCard.type === "Player") {
+            expect(mintedCard.variant).not.to.equal("None");
+          } else {
+            expect(mintedCard.variant).to.equal("None");
+          }
 
           const hasColor = mintedCard.type === "Glasses";
 

@@ -6,7 +6,7 @@ const { card, baseCard } = TestUtils;
 const PuzzleCard = require("../../public/PuzzleCard");
 
 describe("LookThroughTelescope", () => {
-  const playerCard = new PuzzleCard({ ...baseCard, type: "Player" });
+  const playerCard = new PuzzleCard({ ...baseCard, type: "Player", variant: "Dive" });
   const telescopeCard = new PuzzleCard({ ...baseCard, type: "Telescope", color1: "Black", variant: "Sun" });
   const activeCard = new PuzzleCard({ ...baseCard, type: "Active", color1: "Black", variant: "Sun" });
 

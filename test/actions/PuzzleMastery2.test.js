@@ -6,13 +6,13 @@ const { card, baseCard } = TestUtils;
 const PuzzleCard = require("../../public/PuzzleCard");
 
 describe("PuzzleMastery2", () => {
-  const starCard1 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Red" });
-  const starCard2 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Green" });
-  const starCard3 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Blue" });
-  const starCard4 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "Puzzle 1-0", tier: "Master", color1: "Yellow" });
-  const starCard5 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "Puzzle 1-1", tier: "Master", color1: "Pink" });
-  const starCard6 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "Puzzle 1-1", tier: "Master", color1: "White" });
-  const starCard7 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "Puzzle 1-2", tier: "Master", color1: "Black" });
+  const starCard1 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "I",   tier: "Master", color1: "Red" });
+  const starCard2 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "I",   tier: "Master", color1: "Green" });
+  const starCard3 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "I",   tier: "Master", color1: "Blue" });
+  const starCard4 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "I",   tier: "Master", color1: "Yellow" });
+  const starCard5 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "II",  tier: "Master", color1: "Pink" });
+  const starCard6 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "II",  tier: "Master", color1: "White" });
+  const starCard7 = new PuzzleCard({ ...baseCard, type: "Star", puzzle: "III", tier: "Master", color1: "Black" });
 
   const validCards = [starCard1, starCard2, starCard3, starCard4, starCard5, starCard6, starCard7];
   const validTypes = [["Star"], ["Star"], ["Star"], ["Star"], ["Star"], ["Star"], ["Star"]];
@@ -77,9 +77,9 @@ describe("PuzzleMastery2", () => {
 
       const frequencies = TestUtils.tallyFrequencies(puzzleNames);
 
-      expect(frequencies[["Series 1", "Puzzle 1-0"]]).to.be.within(0.5, 0.65); // 57.1%
-      expect(frequencies[["Series 1", "Puzzle 1-1"]]).to.be.within(0.2, 0.35); // 28.6%
-      expect(frequencies[["Series 1", "Puzzle 1-2"]]).to.be.within(0.08, 0.2); // 14.3%
+      expect(frequencies[["Teamwork", "I"]]).to.be.within(0.5, 0.65); // 57.1%
+      expect(frequencies[["Teamwork", "II"]]).to.be.within(0.2, 0.35); // 28.6%
+      expect(frequencies[["Teamwork", "III"]]).to.be.within(0.08, 0.2); // 14.3%
     });
 
     context("when all star cards are pristine", () => {
@@ -104,7 +104,7 @@ describe("PuzzleMastery2", () => {
           const cards = [];
 
           for (const card of pristineCards) {
-            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "II" }), owner.address));
           }
 
           const mintedCard = (await PuzzleCard.puzzleMastery2(cards))[0];
@@ -121,7 +121,7 @@ describe("PuzzleMastery2", () => {
         const cards = [];
 
         for (const card of pristineCards) {
-          cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-2" }), owner.address));
+          cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "III" }), owner.address));
         }
 
         const mintedCard = (await PuzzleCard.puzzleMastery2(cards))[0];
@@ -137,7 +137,7 @@ describe("PuzzleMastery2", () => {
             const cards = [];
 
             for (const card of pristineCards) {
-              cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+              cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "II" }), owner.address));
             }
 
             const mintedCard = (await PuzzleCard.puzzleMastery2(cards))[0];
@@ -165,47 +165,47 @@ describe("PuzzleMastery2", () => {
           const cards = [];
 
           for (const card of pristineCards) {
-            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "II" }), owner.address));
           }
 
           await PuzzleCard.puzzleMastery2(cards);
         }
 
-        const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
+        const card = new PuzzleCard({ series: "Teamwork", puzzle: "II", skipValidation: true });
         const numLimited = await PuzzleCard.numLimitedEditions(card);
 
         expect(numLimited.toNumber()).to.equal(151);
       });
 
       it("provides a method to get whether the master copy has been claimed for a puzzle", async () => {
-        const claimedBefore = await PuzzleCard.masterCopyClaimed(new PuzzleCard({ ...pristineCards[0], puzzle: "Puzzle 1-1" }));
+        const claimedBefore = await PuzzleCard.masterCopyClaimed(new PuzzleCard({ ...pristineCards[0], puzzle: "II" }));
         expect(claimedBefore).to.equal(false);
 
         for (let i = 0; i < 200; i += 1) {
           const cards = [];
 
           for (const card of pristineCards) {
-            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "II" }), owner.address));
           }
 
           await PuzzleCard.puzzleMastery2(cards);
         }
 
-        const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
+        const card = new PuzzleCard({ series: "Teamwork", puzzle: "II", skipValidation: true });
         const claimedAfter = await PuzzleCard.masterCopyClaimed(card);
 
         expect(claimedAfter).to.equal(true);
       });
 
       it("provides a method to get the number of the limited edition when the master copy was claimed", async () => {
-        const card = new PuzzleCard({ ...pristineCards[0], puzzle: "Puzzle 1-1" });
+        const card = new PuzzleCard({ ...pristineCards[0], puzzle: "II", skipValidation: true });
         expect(await PuzzleCard.numOfTheLimitedEditionWhenMasterCopyClaimed(card)).to.equal(null);
 
         for (let i = 0; i < 151; i += 1) {
           const cards = [];
 
           for (const card of pristineCards) {
-            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "II" }), owner.address));
           }
 
           await PuzzleCard.puzzleMastery2(cards);
@@ -216,14 +216,14 @@ describe("PuzzleMastery2", () => {
       });
 
       it("can mint limited editions and the master copy again if others are discarded", async () => {
-        const card = new PuzzleCard({ series: "Series 1", puzzle: "Puzzle 1-1" });
+        const card = new PuzzleCard({ series: "Teamwork", puzzle: "II", skipValidation: true });
         const mintedCards = [];
 
         for (let i = 0; i < 200; i += 1) {
           const cards = [];
 
           for (const card of pristineCards) {
-            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "II" }), owner.address));
           }
 
           mintedCards.push((await PuzzleCard.puzzleMastery2(cards))[0]);
@@ -254,7 +254,7 @@ describe("PuzzleMastery2", () => {
           const cards = [];
 
           for (const card of pristineCards) {
-            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "Puzzle 1-1" }), owner.address));
+            cards.push(await PuzzleCard.mintExact(new PuzzleCard({ ...card, puzzle: "II" }), owner.address));
           }
 
           await PuzzleCard.puzzleMastery2(cards);

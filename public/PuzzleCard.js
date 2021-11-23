@@ -8,7 +8,7 @@
 // See https://puzzlecards.github.io/developers for example usage.
 
 class PuzzleCard {
-  constructor({ series, puzzle, tier, type, color1, color2, variant, condition, edition }) {
+  constructor({ series, puzzle, tier, type, color1, color2, variant, condition, edition, skipValidation }) {
     this.series = series;
     this.puzzle = puzzle;
     this.tier = tier;
@@ -18,16 +18,39 @@ class PuzzleCard {
     this.variant = variant;
     this.condition = condition;
     this.edition = edition;
+
+    if (!skipValidation) {
+      this.validateFields();
+    }
   }
 
   // instance methods
+
+  validateFields() {
+    const errors = [];
+
+    if (this.seriesIndex() === -1)    { errors.push(`Series: ${this.series}`); }
+    if (this.tierIndex() === -1)      { errors.push(`Tier: ${this.tier}`); }
+    if (this.typeIndex() === -1)      { errors.push(`Type: ${this.type}`); }
+    if (this.color1Index() === -1)    { errors.push(`Color1: ${this.color1}`); }
+    if (this.color2Index() === -1)    { errors.push(`Color2: ${this.color2}`); }
+    if (this.conditionIndex() === -1) { errors.push(`Condition: ${this.condition}`); }
+    if (this.editionIndex() === -1)   { errors.push(`Edition: ${this.edition}`); }
+
+    if (this.puzzleIndex() === -1 || this.relativePuzzleIndex() < 0) { errors.push(`Puzzle: ${this.puzzle}`); }
+    if (this.variantIndex() === -1 || this.relativeVariantIndex() < 0) { errors.push(`Variant: ${this.variant}`); }
+
+    if (errors.length > 0) {
+      throw new Error(`These fields are invalid: ${errors.join(", ")}\n\n${JSON.stringify(this)}\n`);
+    }
+  }
 
   seriesIndex() {
     return PuzzleCard.SERIES_NAMES.indexOf(this.series);
   }
 
   puzzleIndex() {
-    return PuzzleCard.PUZZLE_NAMES.indexOf(this.puzzle);
+    return this.puzzleIndexScopedToSeries();
   }
 
   relativePuzzleIndex() {
@@ -437,6 +460,19 @@ class PuzzleCard {
   }
 
   // private methods
+
+  puzzleIndexScopedToSeries() {
+    const s = this.seriesIndex();
+
+    const from = PuzzleCard.PUZZLE_OFFSET_PER_SERIES[s];
+    const to = from + PuzzleCard.NUM_PUZZLES_PER_SERIES[s];
+
+    for (let i = from; i < to; i += 1) {
+      if (PuzzleCard.PUZZLE_NAMES[i] === this.puzzle) { return i; }
+    }
+
+    return -1;
+  }
 
   static async isOwner() {
     const address1 = PuzzleCard.CONTRACT.signer.address;

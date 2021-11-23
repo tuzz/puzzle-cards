@@ -4,8 +4,8 @@ const PuzzleCard = require("../public/PuzzleCard");
 describe("PuzzleCard", () => {
   it("can get the contract struct's index values for each field", () => {
     const puzzleCard = new PuzzleCard({
-      series: "Series 1",
-      puzzle: "Puzzle 1-2",
+      series: "Teamwork",
+      puzzle: "III",
       tier: "Celestial",
       type: "Active",
       color1: "Red",
@@ -16,7 +16,7 @@ describe("PuzzleCard", () => {
     });
 
     expect(puzzleCard.seriesIndex()).to.equal(1);
-    expect(puzzleCard.puzzleIndex()).to.equal(4);
+    expect(puzzleCard.puzzleIndex()).to.equal(6);
     expect(puzzleCard.relativePuzzleIndex()).to.equal(2);
     expect(puzzleCard.tierIndex()).to.equal(4);
     expect(puzzleCard.typeIndex()).to.equal(4);
@@ -30,8 +30,8 @@ describe("PuzzleCard", () => {
 
   it("can get the tokenID for a puzzle card", () => {
     const puzzleCard = new PuzzleCard({
-      series: "Series 1",
-      puzzle: "Puzzle 1-2",
+      series: "Teamwork",
+      puzzle: "III",
       tier: "Celestial",
       type: "Active",
       color1: "Red",
@@ -47,8 +47,8 @@ describe("PuzzleCard", () => {
   it("can build a puzzle card from a tokenID", () => {
     const puzzleCard = PuzzleCard.fromTokenID(18591989585508631296n);
 
-    expect(puzzleCard.series).to.equal("Series 1");
-    expect(puzzleCard.puzzle).to.equal("Puzzle 1-2");
+    expect(puzzleCard.series).to.equal("Teamwork");
+    expect(puzzleCard.puzzle).to.equal("III");
     expect(puzzleCard.tier).to.equal("Celestial");
     expect(puzzleCard.type).to.equal("Active");
     expect(puzzleCard.color1).to.equal("Red");
@@ -62,8 +62,8 @@ describe("PuzzleCard", () => {
     PuzzleCard.METADATA_URI = "https://example.com/metadata/{id}.json";
 
     const puzzleCard = new PuzzleCard({
-      series: "Series 1",
-      puzzle: "Puzzle 1-2",
+      series: "Teamwork",
+      puzzle: "III",
       tier: "Celestial",
       type: "Active",
       color1: "Red",
@@ -75,26 +75,6 @@ describe("PuzzleCard", () => {
 
     expect(puzzleCard.metadataUrl()).to.equal(
       "https://example.com/metadata/0000000000000000000000000000000000000000000000010204040600010300.json"
-    )
-  });
-
-  it("can get the embed url for a puzzle card", () => {
-    PuzzleCard.EMBED_URI = "https://example.com/embed";
-
-    const puzzleCard = new PuzzleCard({
-      series: "Series 1",
-      puzzle: "Puzzle 1-2",
-      tier: "Celestial",
-      type: "Active",
-      color1: "Red",
-      color2: "None",
-      variant: "Moon",
-      condition: "Excellent",
-      edition: "Standard",
-    });
-
-    expect(puzzleCard.embedUrl()).to.equal(
-      "https://example.com/embed?series=Series+1&puzzle=Puzzle+1-2&tier=Celestial&type=Active&color1=Red&color2=None&variant=Moon&condition=Excellent&edition=Standard"
     )
   });
 });

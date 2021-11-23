@@ -6,7 +6,7 @@ const { baseCard } = TestUtils;
 const PuzzleCard = require("../../public/PuzzleCard");
 
 describe("LookThroughGlasses", () => {
-  const playerCard = new PuzzleCard({ ...baseCard, tier: "Virtual", type: "Player" });
+  const playerCard = new PuzzleCard({ ...baseCard, tier: "Virtual", type: "Player", variant: "Dive" });
   const glassesCard = new PuzzleCard({ ...baseCard, tier: "Virtual", type: "Glasses", color1: "Red", color2: "Green" });
   const hiddenCard = new PuzzleCard({ ...baseCard, tier: "Virtual", type: "Hidden" });
 

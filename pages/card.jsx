@@ -9,13 +9,13 @@ const Tmp = () => {
   if (!tokenID) { return null; }
   //const card = PuzzleCard.fromTokenID(BigInt(tokenID));
   const card = new PuzzleCard({
-    series: "Series 1",
-    puzzle: "Puzzle 1-0",
+    series: "Teamwork",
+    puzzle: "I",
     tier: "Mortal",
-    type: "Glasses",
-    color1: "White",
-    color2: "Black",
-    variant: "None",
+    type: "Crab",
+    color1: "None",
+    color2: "None",
+    variant: "Middle",
     condition: "Pristine",
     edition: "Standard",
   });

@@ -6,7 +6,7 @@ const { tokenID, baseCard } = TestUtils;
 const PuzzleCard = require("../../public/PuzzleCard");
 
 describe("ChangeLensColor", () => {
-  const playerCard = new PuzzleCard({ ...baseCard, type: "Player" });
+  const playerCard = new PuzzleCard({ ...baseCard, type: "Player", variant: "Dive" });
   const cloakCard = new PuzzleCard({ ...baseCard, type: "Cloak", color1: "Red" });
   const torchCard = new PuzzleCard({ ...baseCard, type: "Torch", color1: "Blue", color2: "Green" });
   const glassesCard = new PuzzleCard({ ...baseCard, type: "Glasses", color1: "Blue", color2: "Green" });

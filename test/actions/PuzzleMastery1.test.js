@@ -26,8 +26,8 @@ describe("PuzzleMastery1", () => {
     });
 
     it("cannot be performed if the puzzles don't match", async () => {
-      const card1 = await PuzzleCard.mintExact(new PuzzleCard({ ...artworkCard1, puzzle: "Puzzle 1-0" }), owner.address);
-      const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...artworkCard2, puzzle: "Puzzle 1-1" }), owner.address);
+      const card1 = await PuzzleCard.mintExact(new PuzzleCard({ ...artworkCard1, puzzle: "I" }), owner.address);
+      const card2 = await PuzzleCard.mintExact(new PuzzleCard({ ...artworkCard2, puzzle: "II" }), owner.address);
 
       const [isAllowed, reasons] = await PuzzleCard.canPuzzleMastery1([card1, card2]);
 

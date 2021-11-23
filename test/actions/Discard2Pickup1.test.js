@@ -6,7 +6,7 @@ const { card, baseCard } = TestUtils;
 const PuzzleCard = require("../../public/PuzzleCard");
 
 describe("Discard2Pickup1", () => {
-  const playerCard = new PuzzleCard({ ...baseCard, type: "Player" });
+  const playerCard = new PuzzleCard({ ...baseCard, type: "Player", variant: "Dive" });
   const doorCard = new PuzzleCard({ ...baseCard, type: "Door", variant: "Open" });
 
   const anyType = PuzzleCard.TYPE_NAMES;

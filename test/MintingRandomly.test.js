@@ -160,8 +160,8 @@ describe("MintingRandomly", () => {
     it(6)("picks according to the probability distribution for types with variants", async () => {
       const cards = await PuzzleCard.mint(5000, "Mortal", owner.address);
 
-      const nonVaryingTypes = ["Player", "Crab", "Cloak", "Helix", "Torch", "Beacon", "Map", "Teleport", "Glasses", "Eclipse", "Hidden", "Artwork", "Star"];
-      const varyingTypes = ["Inactive", "Active", "Telescope", "Door"];
+      const nonVaryingTypes = ["Cloak", "Helix", "Torch", "Beacon", "Teleport", "Glasses", "Eclipse", "Hidden", "Artwork", "Star"];
+      const varyingTypes = ["Player", "Crab", "Map", "Inactive", "Active", "Telescope", "Door"];
 
       const nonVaryingVariants= cards.filter(c => nonVaryingTypes.indexOf(c.type) !== -1).map(c => c.variant);
       const varyingVariants = cards.filter(c => varyingTypes.indexOf(c.type) !== -1).map(c => c.variant);
@@ -169,14 +169,8 @@ describe("MintingRandomly", () => {
       const nonVaryingFrequencies = TestUtils.tallyFrequencies(nonVaryingVariants);
       const varyingFrequencies = TestUtils.tallyFrequencies(varyingVariants);
 
-      expect(nonVaryingFrequencies["None"]).to.equal(1); // 100%
-
-      // active/inactive occur 30% of the time, doors occur 0.6% of the time
-      expect(varyingFrequencies["Sun"]).to.be.within(0.46, 0.52);  // 49% = 50% * (30/30.6)
-      expect(varyingFrequencies["Moon"]).to.be.within(0.48, 0.52); // 49% = 50% * (30/30.6)
-      expect(varyingFrequencies["Open"]).to.be.below(0.01);       // 0.1% = 50% * (0.6/30.6)
-      expect(varyingFrequencies["Closed"]).to.be.below(0.01);     // 0.1% = 50% * (0.6/30.6)
-      expect(varyingFrequencies["None"]).to.be.undefined;
+      expect(nonVaryingFrequencies["None"]).to.equal(1);  // 100%
+      expect(varyingFrequencies["None"]).to.be.undefined; // 0%
     });
   });
 

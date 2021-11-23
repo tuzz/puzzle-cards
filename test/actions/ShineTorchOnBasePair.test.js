@@ -6,7 +6,7 @@ const { card, baseCard } = TestUtils;
 const PuzzleCard = require("../../public/PuzzleCard");
 
 describe("ShineTorchOnBasePair", () => {
-  const playerCard = new PuzzleCard({ ...baseCard, type: "Player" });
+  const playerCard = new PuzzleCard({ ...baseCard, type: "Player", variant: "Dive" });
   const torchCard = new PuzzleCard({ ...baseCard, type: "Torch", color1: "Red", color2: "Green" });
   const helixCard = new PuzzleCard({ ...baseCard, type: "Helix", color1: "Red", color2: "Green" });
 
@@ -60,7 +60,12 @@ describe("ShineTorchOnBasePair", () => {
         expect(["Map", "Teleport"]).to.include(mintedCard.type);
         expect(mintedCard.color1).to.equal("None");
         expect(mintedCard.color2).to.equal("None");
-        expect(mintedCard.variant).to.equal("None");
+
+        if (mintedCard.type === "Map") {
+          expect(mintedCard.variant).not.to.equal("None");
+        } else {
+          expect(mintedCard.variant).to.equal("None");
+        }
 
         typeNames.push(mintedCard.type);
       }
