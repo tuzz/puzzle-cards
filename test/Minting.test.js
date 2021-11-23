@@ -129,7 +129,7 @@ describe("Minting", () => {
     });
 
     it("reverts if the purchaser doesn't have enough funds", async () => {
-      await user1.sendTransaction({ to: owner.address, value: 999999999940000000000000n });
+      await user1.sendTransaction({ to: owner.address, value: 999999999900000000000000n });
       PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
 
       const pricePerCard = await PuzzleCard.priceToMint("Mortal");

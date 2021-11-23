@@ -88,14 +88,15 @@ describe("Constants", () => {
   });
 
   it("allows the contract owner to update puzzles, e.g. when new puzzles are added", async () => {
-    PuzzleCard.SERIES_NAMES = ["Series 0", "Series 1", "Series 2"];
-    PuzzleCard.PUZZLE_NAMES = ["Puzzle 0-0", "Puzzle 0-1", "Puzzle 1-0", "Puzzle 1-1", "Puzzle 1-2", "Puzzle 1-3", "Puzzle 2-0"];
-    PuzzleCard.NUM_PUZZLES_PER_SERIES = [2, 4, 1];                                                //       ^             ^
-    PuzzleCard.PUZZLE_OFFSET_PER_SERIES = [0, 2, 6];                                              //   These puzzles were added.
+    PuzzleCard.SERIES_NAMES = ["Teamwork", "Darkness Yields Light", "Something Else"];
+    PuzzleCard.PUZZLE_NAMES = ["I", "II", "III", "IV", "V", "VI", "VII", "I", "II", "III", "IV", "V", "I"];
+    PuzzleCard.NUM_PUZZLES_PER_SERIES = [7, 5, 1];               // ^.............................^....^ These puzzles were added.
+    PuzzleCard.NUM_PUZZLES_PER_SERIES_CUMULATIVE = [7, 12, 13];
+    PuzzleCard.PUZZLE_OFFSET_PER_SERIES = [0, 7, 12];
 
     await PuzzleCard.updateConstants();
 
-    const tokenIDs = await TestUtils.batchTokenIDs(contract.mint(100, 0, owner.address));
+    const tokenIDs = await TestUtils.batchTokenIDs(contract.mint(500, 0, owner.address, { gasLimit: 30000000 }));
     const names = [];
 
     for (const tokenID of tokenIDs) {
@@ -104,8 +105,9 @@ describe("Constants", () => {
       names.push([card.series, card.puzzle]);
     }
 
-    expect(names).to.deep.include(["Series 1", "Puzzle 1-3"]);
-    expect(names).to.deep.include(["Series 2", "Puzzle 2-0"]);
+    expect(names).to.deep.include(["Teamwork", "VII"]);
+    expect(names).to.deep.include(["Darkness Yields Light", "V"]);
+    expect(names).to.deep.include(["Something Else", "I"]);
   });
 
   it("allows the contract owner to update variants, e.g. when new art is added", async () => {

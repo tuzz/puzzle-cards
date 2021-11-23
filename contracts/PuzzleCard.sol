@@ -116,9 +116,9 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
 
     function starterCardForTier(uint8 tier, uint8 condition) private returns (Attributes memory) {
         uint256[] memory typeProbabilities =
-          tier == MASTER_TIER                        ? MASTER_TYPE_PROBABILITIES :
-          tier == VIRTUAL_TIER || tier == GODLY_TIER ? VIRTUAL_TYPE_PROBABILITIES :
-                                                       STANDARD_TYPE_PROBABILITIES;
+          tier == MASTER_TIER                        ? MASTER_TYPE_PROBABILITIES_CUMULATIVE :
+          tier == VIRTUAL_TIER || tier == GODLY_TIER ? VIRTUAL_TYPE_PROBABILITIES_CUMULATIVE :
+                                                       STANDARD_TYPE_PROBABILITIES_CUMULATIVE;
 
         return randomCard(tier, condition, typeProbabilities);
     }
@@ -193,11 +193,11 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         uint8 tier = tierForTokenID(glassesID);
         uint8 condition = randomlyDegrade(tokenIDs, tier);
 
-        replace(tokenIDs, randomCard(tier, condition, POST_VIRTUAL_TYPE_PROBABILITIES));
+        replace(tokenIDs, randomCard(tier, condition, POST_VIRTUAL_TYPE_PROBABILITIES_CUMULATIVE));
 
         if (color1ForTokenID(glassesID) != color2ForTokenID(glassesID)) {
           condition = randomlyDegrade(tokenIDs, tier);
-          mintCard(randomCard(tier, condition, POST_VIRTUAL_TYPE_PROBABILITIES));
+          mintCard(randomCard(tier, condition, POST_VIRTUAL_TYPE_PROBABILITIES_CUMULATIVE));
         }
     }
 
@@ -561,7 +561,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     // randomness
 
     function randomPuzzle() private returns (uint8, uint8) {
-        uint8 series = uint8(randomNumber() % NUM_PUZZLES_PER_SERIES.length);
+        uint8 series = pickRandom(NUM_PUZZLES_PER_SERIES_CUMULATIVE);
         uint8 puzzle = uint8(randomNumber() % NUM_PUZZLES_PER_SERIES[series]);
 
         return (series, puzzle);
@@ -598,18 +598,12 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
              : worstCondition - uint8(randomNumber() % 2);
     }
 
-    function pickRandom(uint256[] memory probabilities) private returns (uint8 index) {
-        uint256 cumulative = 0;
-        for (uint8 i = 0; i < probabilities.length; i += 1) {
-            cumulative += probabilities[i];
-        }
+    function pickRandom(uint256[] memory cumulativeProbabilities) private returns (uint8 index) {
+        uint256 outOf = cumulativeProbabilities[cumulativeProbabilities.length - 1];
+        uint256 random = randomNumber() % outOf;
 
-        uint256 random = randomNumber() % cumulative;
-
-        uint256 total = 0;
-        for (uint8 i = 0; i < probabilities.length; i += 1) {
-          total += probabilities[i];
-          if (random < total) { return i; }
+        for (uint8 i = 0; i < cumulativeProbabilities.length; i += 1) {
+          if (random < cumulativeProbabilities[i]) { return i; }
         }
     }
 
@@ -711,18 +705,18 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     uint8 private constant MAX_LIMITED_EDITIONS = 151;
 
     uint8[] private NUM_PUZZLES_PER_SERIES = [4, 6];
-    uint16[] private PUZZLE_OFFSET_PER_SERIES = [0, 4];
+    uint256[] private NUM_PUZZLES_PER_SERIES_CUMULATIVE = [4, 10];
     uint8[] private NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 1, 2, 0, 0, 2, 0, 0, 0, 1, 0];
     uint8[] private NUM_VARIANTS_PER_TYPE = [56, 6, 0, 2, 2, 2, 0, 0, 0, 8, 0, 0, 0, 2, 0, 0, 2];
-    uint16[] private VARIANT_OFFSET_PER_TYPE = [5, 61, 0, 1, 1, 1, 0, 0, 0, 67, 0, 0, 0, 3, 0, 0, 75];
 
     uint256[7] private MINT_PRICE_MULTIPLERS = [1, 2, 5, 10, 20, 50, 100];
     uint256 private UNLOCK_PRICE_MULTIPLIER = 10000;
 
-    uint256[] private STANDARD_TYPE_PROBABILITIES = [300, 100, 100, 200, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
-    uint256[] private VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
-    uint256[] private POST_VIRTUAL_TYPE_PROBABILITIES = [0, 1, 100, 200, 100, 100, 20, 20, 20, 10, 10, 0, 4, 6];
-    uint256[] private MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
+    // These differ from PuzzleCard.js because these are cumulative.
+    uint256[] private STANDARD_TYPE_PROBABILITIES_CUMULATIVE = [300, 400, 500, 700, 800, 900, 920, 940, 960, 970, 980, 990, 994, 1000];
+    uint256[] private VIRTUAL_TYPE_PROBABILITIES_CUMULATIVE = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3];
+    uint256[] private POST_VIRTUAL_TYPE_PROBABILITIES_CUMULATIVE = [0, 1, 101, 301, 401, 501, 521, 541, 561, 571, 581, 581, 585, 591];
+    uint256[] private MASTER_TYPE_PROBABILITIES_CUMULATIVE = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
     address private PROXY_REGISTRY_ADDRESS;
     uint256 private NUM_RANDOM_CALLS = 0;
@@ -731,18 +725,16 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     // The arrays must be append only and not reorder or remove puzzles/variants.
     function updateConstants(
         uint8[] memory numPuzzlesPerSeries,
-        uint16[] memory puzzleOffsetPerSeries,
+        uint256[] memory numPuzzlesPerSeriesCumulative,
         uint8[] memory numVariantsPerType,
-        uint16[] memory variantOffsetPerType,
         uint256[7] memory mintPriceMultipliers,
         uint256 unlockPriceMultiplier,
         address proxyRegistryAddress,
         string memory metadataURI
     ) external onlyOwner {
         NUM_PUZZLES_PER_SERIES = numPuzzlesPerSeries;
-        PUZZLE_OFFSET_PER_SERIES = puzzleOffsetPerSeries;
+        NUM_PUZZLES_PER_SERIES_CUMULATIVE = numPuzzlesPerSeriesCumulative;
         NUM_VARIANTS_PER_TYPE = numVariantsPerType;
-        VARIANT_OFFSET_PER_TYPE = variantOffsetPerType;
         MINT_PRICE_MULTIPLERS = mintPriceMultipliers;
         UNLOCK_PRICE_MULTIPLIER = unlockPriceMultiplier;
         PROXY_REGISTRY_ADDRESS = proxyRegistryAddress;

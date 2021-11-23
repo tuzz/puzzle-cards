@@ -437,13 +437,13 @@ class PuzzleCard {
   static updateConstants() {
     return PuzzleCard.CONTRACT.updateConstants(
       PuzzleCard.NUM_PUZZLES_PER_SERIES,
-      PuzzleCard.PUZZLE_OFFSET_PER_SERIES,
+      PuzzleCard.NUM_PUZZLES_PER_SERIES_CUMULATIVE,
       PuzzleCard.NUM_VARIANTS_PER_TYPE,
-      PuzzleCard.VARIANT_OFFSET_PER_TYPE,
       PuzzleCard.MINT_PRICE_MULTIPLERS,
       PuzzleCard.UNLOCK_PRICE_MULTIPLIER,
       PuzzleCard.PROXY_REGISTRY_ADDRESS,
       PuzzleCard.METADATA_URI,
+      { gasLimit: PuzzleCard.GAS_LIMIT_MAXIMUM },
     );
   }
 
@@ -726,6 +726,7 @@ PuzzleCard.ACTION_NAMES = ["activateSunOrMoon", "changeLensColor", "discard2Pick
 PuzzleCard.CAN_ACTION_NAMES = PuzzleCard.ACTION_NAMES.map(s => "can" + s[0].toUpperCase() + s.slice(1));
 
 PuzzleCard.NUM_PUZZLES_PER_SERIES = [4, 6];
+PuzzleCard.NUM_PUZZLES_PER_SERIES_CUMULATIVE = [4, 10];
 PuzzleCard.PUZZLE_OFFSET_PER_SERIES = [0, 4];
 PuzzleCard.NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 1, 2, 0, 0, 2, 0, 0, 0, 1, 0];
 PuzzleCard.NUM_VARIANTS_PER_TYPE = [56, 6, 0, 2, 2, 2, 0, 0, 0, 8, 0, 0, 0, 2, 0, 0, 2];
@@ -742,6 +743,7 @@ PuzzleCard.TIER_PROBABILITIES = [90, 10];
 PuzzleCard.CONDITION_PROBABILITIES = [80, 20];
 PuzzleCard.STANDARD_TYPE_PROBABILITIES = [300, 100, 100, 200, 100, 100, 20, 20, 20, 10, 10, 10, 4, 6];
 PuzzleCard.VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1];
+PuzzleCard.POST_VIRTUAL_TYPE_PROBABILITIES = [0, 1, 100, 200, 100, 100, 20, 20, 20, 10, 10, 0, 4, 6];
 PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
 PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
@@ -870,7 +872,7 @@ PuzzleCard.CONTRACT_ABI = [
   "function totalSupply(uint256) view returns (uint256)",
   "function transferOwnership(address newOwner)",
   "function unlockMintingAtAllTiers(address address_) payable",
-  "function updateConstants(uint8[] numPuzzlesPerSeries, uint16[] puzzleOffsetPerSeries, uint8[] numVariantsPerType, uint16[] variantOffsetPerType, uint256[7] mintPriceMultipliers, uint256 unlockPriceMultiplier, address proxyRegistryAddress, string metadataURI)",
+  "function updateConstants(uint8[] numPuzzlesPerSeries, uint256[] numPuzzlesPerSeriesCumulative, uint8[] numVariantsPerType, uint256[7] mintPriceMultipliers, uint256 unlockPriceMultiplier, address proxyRegistryAddress, string metadataURI)",
   "function uri(uint256) view returns (string)"
 ];
 

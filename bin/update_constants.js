@@ -117,21 +117,48 @@ const main = async () => {
 
   const numVariantsPerType = PuzzleCard.TYPE_NAMES.map(type => variantsPerType[type].length);
   const variantNames = orderVariants(variantsPerType);
+
   const variantOffsetPerType = PuzzleCard.TYPE_NAMES.map(type => (
     variantNames.findIndex(v => v === (variantsPerType[type][0] || "None"))
   ));
 
   const seriesNames = Object.keys(puzzlesPerSeries);
   const puzzleNames = seriesNames.flatMap(series => puzzlesPerSeries[series]);
+
   const numPuzzlesPerSeries = seriesNames.map(series => puzzlesPerSeries[series].length);
+  const numPuzzlesPerSeriesCumulative = cumulative(numPuzzlesPerSeries);
+
   const puzzleOffsetPerSeries = seriesNames.map((_, i) => (
     numPuzzlesPerSeries.slice(0, i).reduce((a, b) => a + b, 0)
   ));
 
-  updateConstants("public/PuzzleCard.js", numVariantsPerType, variantNames, variantOffsetPerType, seriesNames, puzzleNames, numPuzzlesPerSeries, puzzleOffsetPerSeries);
-  updateConstants("contracts/PuzzleCard.sol", numVariantsPerType, variantNames, variantOffsetPerType, seriesNames, puzzleNames, numPuzzlesPerSeries, puzzleOffsetPerSeries);
+  const args = {
+    numVariantsPerType,
+    variantNames,
+    variantOffsetPerType,
+    seriesNames,
+    puzzleNames,
+    numPuzzlesPerSeries,
+    numPuzzlesPerSeriesCumulative,
+    puzzleOffsetPerSeries,
+  };
+
+  updateConstants("public/PuzzleCard.js", args);
+  updateConstants("contracts/PuzzleCard.sol", args);
 
   // TODO: add a --deploy flag to the script that also calls the #updateConstants contract method
+};
+
+const cumulative = (array) => {
+  const result = [];
+  let sum = 0;
+
+  for (let n of array) {
+    result.push(n + sum);
+    sum += n;
+  }
+
+  return result
 };
 
 const orderVariants = (variantsPerType) => {
@@ -156,15 +183,16 @@ const orderVariants = (variantsPerType) => {
   return Object.keys(ordered);
 };
 
-const updateConstants = (filename, numVariantsPerType, variantNames, variantOffsetPerType, seriesNames, puzzleNames, numPuzzlesPerSeries, puzzleOffsetPerSeries) => {
+const updateConstants = (filename, args) => {
   const content = fs.readFileSync(filename, "utf8")
-    .replace(/NUM_VARIANTS_PER_TYPE = .*;/, `NUM_VARIANTS_PER_TYPE = ${JSON.stringify(numVariantsPerType).replaceAll(",", ", ")};`)
-    .replace(/VARIANT_NAMES = .*;/, `VARIANT_NAMES = ${JSON.stringify(variantNames).replaceAll(",", ", ").replaceAll(",  ", ", ")};`)
-    .replace(/VARIANT_OFFSET_PER_TYPE = .*;/, `VARIANT_OFFSET_PER_TYPE = ${JSON.stringify(variantOffsetPerType).replaceAll(",", ", ")};`)
-    .replace(/SERIES_NAMES = .*;/, `SERIES_NAMES = ${JSON.stringify(seriesNames).replaceAll(",", ", ")};`)
-    .replace(/PUZZLE_NAMES = .*;/, `PUZZLE_NAMES = ${JSON.stringify(puzzleNames).replaceAll(",", ", ")};`)
-    .replace(/NUM_PUZZLES_PER_SERIES = .*;/, `NUM_PUZZLES_PER_SERIES = ${JSON.stringify(numPuzzlesPerSeries).replaceAll(",", ", ")};`)
-    .replace(/PUZZLE_OFFSET_PER_SERIES = .*;/, `PUZZLE_OFFSET_PER_SERIES = ${JSON.stringify(puzzleOffsetPerSeries).replaceAll(",", ", ")};`)
+    .replace(/NUM_VARIANTS_PER_TYPE = .*;/, `NUM_VARIANTS_PER_TYPE = ${JSON.stringify(args.numVariantsPerType).replaceAll(",", ", ")};`)
+    .replace(/VARIANT_NAMES = .*;/, `VARIANT_NAMES = ${JSON.stringify(args.variantNames).replaceAll(",", ", ").replaceAll(",  ", ", ")};`)
+    .replace(/VARIANT_OFFSET_PER_TYPE = .*;/, `VARIANT_OFFSET_PER_TYPE = ${JSON.stringify(args.variantOffsetPerType).replaceAll(",", ", ")};`)
+    .replace(/SERIES_NAMES = .*;/, `SERIES_NAMES = ${JSON.stringify(args.seriesNames).replaceAll(",", ", ")};`)
+    .replace(/PUZZLE_NAMES = .*;/, `PUZZLE_NAMES = ${JSON.stringify(args.puzzleNames).replaceAll(",", ", ")};`)
+    .replace(/NUM_PUZZLES_PER_SERIES = .*;/, `NUM_PUZZLES_PER_SERIES = ${JSON.stringify(args.numPuzzlesPerSeries).replaceAll(",", ", ")};`)
+    .replace(/NUM_PUZZLES_PER_SERIES_CUMULATIVE = .*;/, `NUM_PUZZLES_PER_SERIES_CUMULATIVE = ${JSON.stringify(args.numPuzzlesPerSeriesCumulative).replaceAll(",", ", ")};`)
+    .replace(/PUZZLE_OFFSET_PER_SERIES = .*;/, `PUZZLE_OFFSET_PER_SERIES = ${JSON.stringify(args.puzzleOffsetPerSeries).replaceAll(",", ", ")};`)
 
   fs.writeFileSync(filename, content);
 };
