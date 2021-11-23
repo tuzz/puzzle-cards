@@ -126,7 +126,7 @@ const main = async () => {
   const puzzleNames = seriesNames.flatMap(series => puzzlesPerSeries[series]);
 
   const numPuzzlesPerSeries = seriesNames.map(series => puzzlesPerSeries[series].length);
-  const numPuzzlesPerSeriesCumulative = cumulative(numPuzzlesPerSeries);
+  const seriesForEachPuzzle = buildReverseIndex(numPuzzlesPerSeries);
 
   const puzzleOffsetPerSeries = seriesNames.map((_, i) => (
     numPuzzlesPerSeries.slice(0, i).reduce((a, b) => a + b, 0)
@@ -139,7 +139,7 @@ const main = async () => {
     seriesNames,
     puzzleNames,
     numPuzzlesPerSeries,
-    numPuzzlesPerSeriesCumulative,
+    seriesForEachPuzzle,
     puzzleOffsetPerSeries,
   };
 
@@ -147,18 +147,6 @@ const main = async () => {
   updateConstants("contracts/PuzzleCard.sol", args);
 
   // TODO: add a --deploy flag to the script that also calls the #updateConstants contract method
-};
-
-const cumulative = (array) => {
-  const result = [];
-  let sum = 0;
-
-  for (let n of array) {
-    result.push(n + sum);
-    sum += n;
-  }
-
-  return result
 };
 
 const orderVariants = (variantsPerType) => {
@@ -183,6 +171,18 @@ const orderVariants = (variantsPerType) => {
   return Object.keys(ordered);
 };
 
+const buildReverseIndex = (numPuzzlesPerSeries) => {
+  const seriesForEachPuzzle = [];
+
+  for (let series = 0; series < numPuzzlesPerSeries.length; series += 1) {
+    for (let i = 0; i < numPuzzlesPerSeries[series]; i += 1) {
+      seriesForEachPuzzle.push(series);
+    }
+  }
+
+  return seriesForEachPuzzle;
+}
+
 const updateConstants = (filename, args) => {
   const content = fs.readFileSync(filename, "utf8")
     .replace(/NUM_VARIANTS_PER_TYPE = .*;/, `NUM_VARIANTS_PER_TYPE = ${JSON.stringify(args.numVariantsPerType).replaceAll(",", ", ")};`)
@@ -191,7 +191,7 @@ const updateConstants = (filename, args) => {
     .replace(/SERIES_NAMES = .*;/, `SERIES_NAMES = ${JSON.stringify(args.seriesNames).replaceAll(",", ", ")};`)
     .replace(/PUZZLE_NAMES = .*;/, `PUZZLE_NAMES = ${JSON.stringify(args.puzzleNames).replaceAll(",", ", ")};`)
     .replace(/NUM_PUZZLES_PER_SERIES = .*;/, `NUM_PUZZLES_PER_SERIES = ${JSON.stringify(args.numPuzzlesPerSeries).replaceAll(",", ", ")};`)
-    .replace(/NUM_PUZZLES_PER_SERIES_CUMULATIVE = .*;/, `NUM_PUZZLES_PER_SERIES_CUMULATIVE = ${JSON.stringify(args.numPuzzlesPerSeriesCumulative).replaceAll(",", ", ")};`)
+    .replace(/SERIES_FOR_EACH_PUZZLE = .*;/, `SERIES_FOR_EACH_PUZZLE = ${JSON.stringify(args.seriesForEachPuzzle).replaceAll(",", ", ")};`)
     .replace(/PUZZLE_OFFSET_PER_SERIES = .*;/, `PUZZLE_OFFSET_PER_SERIES = ${JSON.stringify(args.puzzleOffsetPerSeries).replaceAll(",", ", ")};`)
 
   fs.writeFileSync(filename, content);

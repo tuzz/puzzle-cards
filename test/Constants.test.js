@@ -91,7 +91,7 @@ describe("Constants", () => {
     PuzzleCard.SERIES_NAMES = ["Teamwork", "Darkness Yields Light", "Something Else"];
     PuzzleCard.PUZZLE_NAMES = ["I", "II", "III", "IV", "V", "VI", "VII", "I", "II", "III", "IV", "V", "I"];
     PuzzleCard.NUM_PUZZLES_PER_SERIES = [7, 5, 1];               // ^.............................^....^ These puzzles were added.
-    PuzzleCard.NUM_PUZZLES_PER_SERIES_CUMULATIVE = [7, 12, 13];
+    PuzzleCard.SERIES_FOR_EACH_PUZZLE = [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2];
     PuzzleCard.PUZZLE_OFFSET_PER_SERIES = [0, 7, 12];
 
     await PuzzleCard.updateConstants();

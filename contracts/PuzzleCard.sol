@@ -561,10 +561,16 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     // randomness
 
     function randomPuzzle() private returns (uint8, uint8) {
-        uint8 series = pickRandom(NUM_PUZZLES_PER_SERIES_CUMULATIVE);
-        uint8 puzzle = uint8(randomNumber() % NUM_PUZZLES_PER_SERIES[series]);
+        uint256 random = randomNumber();
 
-        return (series, puzzle);
+        // Use a random puzzle as a means of choosing a series uniformly random.
+        uint8 puzzle = uint8(random % SERIES_FOR_EACH_PUZZLE.length);
+        uint8 series = SERIES_FOR_EACH_PUZZLE[puzzle];
+
+        // The actual puzzle is chosen here. We may as well reuse the randomness.
+        uint8 relativePuzzle = uint8(random % NUM_PUZZLES_PER_SERIES[series]);
+
+        return (series, relativePuzzle);
     }
 
     function randomColors(uint8 tier, uint8 type_) private returns (uint8, uint8) {
@@ -705,7 +711,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     uint8 private constant MAX_LIMITED_EDITIONS = 151;
 
     uint8[] private NUM_PUZZLES_PER_SERIES = [4, 6];
-    uint256[] private NUM_PUZZLES_PER_SERIES_CUMULATIVE = [4, 10];
+    uint8[] private SERIES_FOR_EACH_PUZZLE = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1];
     uint8[] private NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 1, 2, 0, 0, 2, 0, 0, 0, 1, 0];
     uint8[] private NUM_VARIANTS_PER_TYPE = [56, 6, 0, 2, 2, 2, 0, 0, 0, 8, 0, 0, 0, 2, 0, 0, 2];
 
@@ -725,7 +731,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     // The arrays must be append only and not reorder or remove puzzles/variants.
     function updateConstants(
         uint8[] memory numPuzzlesPerSeries,
-        uint256[] memory numPuzzlesPerSeriesCumulative,
+        uint8[] memory seriesForEachPuzzle,
         uint8[] memory numVariantsPerType,
         uint256[7] memory mintPriceMultipliers,
         uint256 unlockPriceMultiplier,
@@ -733,7 +739,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         string memory metadataURI
     ) external onlyOwner {
         NUM_PUZZLES_PER_SERIES = numPuzzlesPerSeries;
-        NUM_PUZZLES_PER_SERIES_CUMULATIVE = numPuzzlesPerSeriesCumulative;
+        SERIES_FOR_EACH_PUZZLE = seriesForEachPuzzle;
         NUM_VARIANTS_PER_TYPE = numVariantsPerType;
         MINT_PRICE_MULTIPLERS = mintPriceMultipliers;
         UNLOCK_PRICE_MULTIPLIER = unlockPriceMultiplier;
