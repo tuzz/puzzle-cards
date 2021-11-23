@@ -10,10 +10,12 @@
 // supporting Chris's work and towards making the game as enjoyable as possible.
 //
 // All of the contract and website code is fully auditable and open on GitHub.
-// Puzzle Card imagery can be freely shared on social media, OpenSea, etc.
+// Puzzle Cards can be freely shared on social media, OpenSea, etc. Everything
+// else (e.g. code, images) is Copyright, Chris Patuzzo, All Rights Reserved.
 //
-// Many ERC1155 extensions are supported, e.g, ERC1155MetadataURI, ERC1155Supply.
-// A JavaScript library is provided to make it easier to work with the contract.
+// This contract supports many ERC1155 extensions such as ERC1155MetadataURI and
+// ERC1155Supply. A JavaScript library (PuzzleCard.js) is provided to make it
+// easier to work with the contract, e.g. to check which actions can be performed.
 //
 // - Website: https://puzzlecards.github.io/
 // - Library: https://puzzlecards.github.io/PuzzleCard.js
