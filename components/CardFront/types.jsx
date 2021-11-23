@@ -53,6 +53,7 @@ module.exports.Telescope = ({ card, random }) => {
   return (
     <div className={`${styles.telescope} ${mirrored && styles.mirrored} ${styles[card.color1.toLowerCase()]}`}>
       <img src="/images/types/telescope.png" className={styles.body} />
+      <img src="/images/types/telescope_particles.png" className={styles.particles} />
       <img src={`/images/types/${sunOrMoon}.png`} className={styles.lock} />
     </div>
   );

@@ -285,6 +285,12 @@
     margin-bottom: -3.1%;
     width: 80%;
 
+    .particles {
+      position: absolute;
+      width: 27%;
+      top: -11%;
+    }
+
     .lock {
       position: absolute;
       width: 13.816925734%; // 80 * 0.4/2.316;
@@ -308,6 +314,10 @@
     &:not(&.mirrored) {
       margin-right: 3%;
 
+      .particles {
+        right: 27.5%;
+      }
+
       .lock {
         right: 10.5%;
         transform: rotate(11deg);
@@ -317,6 +327,11 @@
     &.mirrored {
       .body {
         margin-left: 3%;
+        transform: scaleX(-1);
+      }
+
+      .particles {
+        left: 27.5%;
         transform: scaleX(-1);
       }
 
