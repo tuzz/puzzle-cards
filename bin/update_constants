@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 ]; then
+  echo "Usage: ./bin/update_constants network"
+  exit 1
+fi
+
+yarn hardhat run bin/update_constants.js --network $1

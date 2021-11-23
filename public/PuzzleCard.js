@@ -683,7 +683,7 @@ PuzzleCard.PUZZLE_NAMES = ["Puzzle 0-0", "Puzzle 0-1", "Puzzle 1-0", "Puzzle 1-1
 PuzzleCard.TIER_NAMES = ["Mortal", "Immortal", "Ethereal", "Virtual", "Celestial", "Godly", "Master"];
 PuzzleCard.TYPE_NAMES = ["Player", "Crab", "Cloak", "Inactive", "Active", "Telescope", "Helix", "Beacon", "Torch", "Map", "Teleport", "Glasses", "Eclipse", "Door", "Hidden", "Star", "Artwork"];
 PuzzleCard.COLOR_NAMES = ["None", "Yellow", "Black", "Green", "White", "Blue", "Red", "Pink"];
-PuzzleCard.VARIANT_NAMES = ["None", "Sun", "Moon", "Open", "Closed", "Plain", "With Time", "With Date", "With Time, Date", "With Location", "With Time, Location", "With Date, Location", "With Time, Date, Location", "Art 0", "Art 1"];
+PuzzleCard.VARIANT_NAMES = ["None", "Sun", "Moon", "Open", "Closed", "Climb 1", "Climb 2", "Dive", "Idle Back", "Idle Front", "Idle Left", "Idle Right", "Jump Left 1", "Jump Left 2", "Jump Left 3", "Jump Left 4", "Jump Left 5", "Jump Left 6", "Jump Right 1", "Jump Right 2", "Jump Right 3", "Jump Right 4", "Jump Right 5", "Jump Right 6", "Swim Left 1", "Swim Left 2", "Swim Left 3", "Swim Left 4", "Swim Left 5", "Swim Left 6", "Swim Left 7", "Swim Left 8", "Swim Right 1", "Swim Right 2", "Swim Right 3", "Swim Right 4", "Swim Right 5", "Swim Right 6", "Swim Right 7", "Swim Right 8", "Tread Water 1", "Tread Water 2", "Tread Water 3", "Tread Water 4", "Tread Water 5", "Walk Left 1", "Walk Left 2", "Walk Left 3", "Walk Left 4", "Walk Left 5", "Walk Left 6", "Walk Left 7", "Walk Left 8", "Walk Right 1", "Walk Right 2", "Walk Right 3", "Walk Right 4", "Walk Right 5", "Walk Right 6", "Walk Right 7", "Walk Right 8", "Left", "Right", "Middle", "Swim Left", "Swim Right", "Floating", "Plain", "With Time", "With Date", "With Time,  Date", "With Location", "With Time,  Location", "With Date,  Location", "With Time,  Date,  Location", "Art 0", "Art 1"];
 PuzzleCard.CONDITION_NAMES = ["Dire", "Poor", "Reasonable", "Excellent", "Pristine"];
 PuzzleCard.EDITION_NAMES = ["Standard", "Signed", "Limited", "Master Copy"];
 PuzzleCard.ACTION_NAMES = ["activateSunOrMoon", "changeLensColor", "discard2Pickup1", "goThroughStarDoor", "jumpIntoBeacon", "jumpIntoEclipse", "lookThroughGlasses", "lookThroughTelescope", "puzzleMastery1", "puzzleMastery2", "shineTorchOnBasePair", "teleportToNextArea"];
@@ -692,8 +692,8 @@ PuzzleCard.CAN_ACTION_NAMES = PuzzleCard.ACTION_NAMES.map(s => "can" + s[0].toUp
 PuzzleCard.NUM_PUZZLES_PER_SERIES = [2, 3];
 PuzzleCard.PUZZLE_OFFSET_PER_SERIES = [0, 2];
 PuzzleCard.NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 1, 2, 0, 0, 2, 0, 0, 0, 1, 0];
-PuzzleCard.NUM_VARIANTS_PER_TYPE = [0, 0, 0, 2, 2, 2, 0, 0, 0, 8, 0, 0, 0, 2, 0, 0, 2];
-PuzzleCard.VARIANT_OFFSET_PER_TYPE = [0, 0, 0, 1, 1, 1, 0, 0, 0, 5, 0, 0, 0, 3, 0, 0, 13];
+PuzzleCard.NUM_VARIANTS_PER_TYPE = [56, 6, 0, 2, 2, 2, 0, 0, 0, 8, 0, 0, 0, 2, 0, 0, 2];
+PuzzleCard.VARIANT_OFFSET_PER_TYPE = [5, 61, 0, 1, 1, 1, 0, 0, 0, 67, 0, 0, 0, 3, 0, 0, 75];
 
 // The intention is that these prices remain fixed but the base price in Wei is
 // updated as the dollar/matic exchange rate changes over time.
