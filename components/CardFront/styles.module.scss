@@ -291,6 +291,20 @@
       top: 22.2%;
     }
 
+    &.white {
+      &:before {
+        @include black_background;
+      }
+    }
+
+    img {
+      position: relative;
+    }
+
+    &.yellow .lock {
+      filter: drop-shadow(0 0 0.2rem rgba(0, 0, 0, 0.2));
+    }
+
     &:not(&.mirrored) {
       margin-right: 3%;
 

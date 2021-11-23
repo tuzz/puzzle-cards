@@ -51,7 +51,7 @@ module.exports.Telescope = ({ card, random }) => {
   const sunOrMoon = snakeCase([card.color1, card.variant]);
 
   return (
-    <div className={`${styles.telescope} ${mirrored && styles.mirrored}`}>
+    <div className={`${styles.telescope} ${mirrored && styles.mirrored} ${styles[card.color1.toLowerCase()]}`}>
       <img src="/images/types/telescope.png" className={styles.body} />
       <img src={`/images/types/${sunOrMoon}.png`} className={styles.lock} />
     </div>
