@@ -110,16 +110,27 @@ const main = async () => {
     ],
   };
 
+  const puzzlesPerSeries = {
+    "Darkness Yields Light": ["I", "II", "III", "IV"],
+    "Teamwork": ["I", "II", "III", "IV", "V", "VI"],
+  };
+
   const numVariantsPerType = PuzzleCard.TYPE_NAMES.map(type => variantsPerType[type].length);
   const variantNames = orderVariants(variantsPerType);
   const variantOffsetPerType = PuzzleCard.TYPE_NAMES.map(type => (
     variantNames.findIndex(v => v === (variantsPerType[type][0] || "None"))
   ));
 
-  updateConstants("public/PuzzleCard.js", numVariantsPerType, variantNames, variantOffsetPerType);
-  updateConstants("contracts/PuzzleCard.sol", numVariantsPerType, variantNames, variantOffsetPerType);
+  const seriesNames = Object.keys(puzzlesPerSeries);
+  const puzzleNames = seriesNames.flatMap(series => puzzlesPerSeries[series]);
+  const numPuzzlesPerSeries = seriesNames.map(series => puzzlesPerSeries[series].length);
+  const puzzleOffsetPerSeries = seriesNames.map((_, i) => (
+    numPuzzlesPerSeries.slice(0, i).reduce((a, b) => a + b, 0)
+  ));
 
-  // TODO: update series/puzzles
+  updateConstants("public/PuzzleCard.js", numVariantsPerType, variantNames, variantOffsetPerType, seriesNames, puzzleNames, numPuzzlesPerSeries, puzzleOffsetPerSeries);
+  updateConstants("contracts/PuzzleCard.sol", numVariantsPerType, variantNames, variantOffsetPerType, seriesNames, puzzleNames, numPuzzlesPerSeries, puzzleOffsetPerSeries);
+
   // TODO: add a --deploy flag to the script that also calls the #updateConstants contract method
 };
 
@@ -145,11 +156,15 @@ const orderVariants = (variantsPerType) => {
   return Object.keys(ordered);
 };
 
-const updateConstants = (filename, numVariantsPerType, variantNames, variantOffsetPerType) => {
+const updateConstants = (filename, numVariantsPerType, variantNames, variantOffsetPerType, seriesNames, puzzleNames, numPuzzlesPerSeries, puzzleOffsetPerSeries) => {
   const content = fs.readFileSync(filename, "utf8")
     .replace(/NUM_VARIANTS_PER_TYPE = .*;/, `NUM_VARIANTS_PER_TYPE = ${JSON.stringify(numVariantsPerType).replaceAll(",", ", ")};`)
-    .replace(/VARIANT_NAMES = .*;/, `VARIANT_NAMES = ${JSON.stringify(variantNames).replaceAll(",", ", ")};`)
+    .replace(/VARIANT_NAMES = .*;/, `VARIANT_NAMES = ${JSON.stringify(variantNames).replaceAll(",", ", ").replaceAll(",  ", ", ")};`)
     .replace(/VARIANT_OFFSET_PER_TYPE = .*;/, `VARIANT_OFFSET_PER_TYPE = ${JSON.stringify(variantOffsetPerType).replaceAll(",", ", ")};`)
+    .replace(/SERIES_NAMES = .*;/, `SERIES_NAMES = ${JSON.stringify(seriesNames).replaceAll(",", ", ")};`)
+    .replace(/PUZZLE_NAMES = .*;/, `PUZZLE_NAMES = ${JSON.stringify(puzzleNames).replaceAll(",", ", ")};`)
+    .replace(/NUM_PUZZLES_PER_SERIES = .*;/, `NUM_PUZZLES_PER_SERIES = ${JSON.stringify(numPuzzlesPerSeries).replaceAll(",", ", ")};`)
+    .replace(/PUZZLE_OFFSET_PER_SERIES = .*;/, `PUZZLE_OFFSET_PER_SERIES = ${JSON.stringify(puzzleOffsetPerSeries).replaceAll(",", ", ")};`)
 
   fs.writeFileSync(filename, content);
 };
