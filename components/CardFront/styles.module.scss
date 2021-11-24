@@ -14,6 +14,7 @@
   svg {
     font-family: "Trebuchet MS";
     font-weight: bold;
+    fill: rgba(0, 0, 0, 0.8);
   }
 }
 
@@ -45,14 +46,12 @@
 .edition {
   width: 40%;
   height: 100%;
-  fill: rgba(0, 0, 0, 0.8);
   text-shadow: 0.2rem 0.2rem 0.2rem white;
 }
 
 .number {
   width: 23.27%;
   height: 100%;
-  fill: rgba(0, 0, 0, 0.8);
   text-shadow: 0.2rem 0.2rem 0.2rem white;
 }
 
@@ -301,7 +300,6 @@
       width: 70%;
       left: 15%;
       top: 0;
-      fill: rgba(0, 0, 0, 0.8);
       height: 25%;
     }
   }
@@ -326,6 +324,10 @@
       &:before {
         @include black_background;
       }
+
+      .text {
+        fill: white;
+      }
     }
 
     img {
@@ -334,6 +336,13 @@
 
     &.yellow .lock {
       filter: drop-shadow(0 0 0.2rem rgba(0, 0, 0, 0.2));
+    }
+
+    .text {
+      position: absolute;
+      top: 47%;
+      width: 40%;
+      height: 20%;
     }
 
     &:not(&.mirrored) {
@@ -346,6 +355,11 @@
       .lock {
         right: 10.5%;
         transform: rotate(11deg);
+      }
+
+      .text {
+        transform: rotate(11deg);
+        right: 1%;
       }
     }
 
@@ -363,6 +377,11 @@
       .lock {
         left: 11.3%;
         transform: rotate(-11deg);
+      }
+
+      .text {
+        transform: rotate(-11deg);
+        left: 1%;
       }
     }
   }
