@@ -138,7 +138,12 @@ module.exports.Map = ({ card, random }) => {
 };
 
 module.exports.Teleport = ({ card }) => (
-  <p>teleport</p>
+  <div className={styles.teleport}>
+    <video autoPlay muted loop playsinline>
+      <source src="/videos/teleport.mov" type="video/mp4" />
+      <source src="/videos/teleport.webm" type="video/webm" />
+    </video>
+  </div>
 );
 
 module.exports.Glasses = ({ card }) => (

@@ -16,7 +16,7 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
         <VectorText className={styles.title} text={card.puzzleTitle()} />
 
         <div className={styles.video}>
-          <video autoPlay muted loop onCanPlay={onLoaded}>
+          <video autoPlay muted loop playsinline onCanPlay={onLoaded}>
             <source src={card.puzzlePreviewUrl()} type="video/mp4" />
           </video>
         </div>
