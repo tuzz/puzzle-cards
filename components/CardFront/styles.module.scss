@@ -510,7 +510,6 @@
       position: absolute;
       width: 35%;
       top: 22%;
-      //filter: saturate(200%) contrast(200%);
     }
 
     .left_lens {
@@ -528,9 +527,9 @@
 
     .left_text, .right_text {
       position: absolute;
-      top: 40%;
-      width: 20%;
-      height: 20%;
+      top: 38%;
+      width: 25%;
+      height: 25%;
 
       &:global {
         &.yellow { transform: scale(0.87); }
@@ -545,11 +544,11 @@
     }
 
     .left_text {
-      left: 21%;
+      left: 18%;
     }
 
     .right_text {
-      right: 21%;
+      right: 18%;
     }
   }
 
