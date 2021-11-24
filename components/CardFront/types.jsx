@@ -159,7 +159,7 @@ module.exports.Door = ({ card }) => {
 
 module.exports.Hidden = ({ card }) => (
   <div className={styles.hidden}>
-    <VectorText text="?" />
+    <VectorText text="(Hidden)" />
   </div>
 );
 
