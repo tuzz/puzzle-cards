@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import ReactSelect from "react-select";
 import styles from "./styles.module.scss";
 
-const Dropdown = ({ placeholder, onChange, names, counts, alphabetic, disabled, hidden, alertText, relevanceFn = () => true, ...props }) => {
+const Dropdown = ({ placeholder, onChange, names, counts, alphabetic, disabled, hidden, alertText, menuWidth = "default", relevanceFn = () => true, ...props }) => {
   const ref = useRef();
 
   names = names.filter(s => s !== "None");
@@ -47,7 +47,7 @@ const Dropdown = ({ placeholder, onChange, names, counts, alphabetic, disabled, 
         onChange={onChange}
         options={options}
         classNamePrefix="dropdown"
-        className={`${styles.dropdown} ${disabled && styles.display_none}`}
+        className={`${styles.dropdown} ${disabled && styles.display_none} ${styles[`menu_${menuWidth}`]}`}
         styles={customStyles}
         theme={theme}
         isClearable={true}

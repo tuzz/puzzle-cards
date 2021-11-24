@@ -108,6 +108,9 @@ const FilterRows = ({ filters, setFilters }) => {
       `Not applicable because types with two colors do not have variants.` :
       `Not applicable because the 'Star' type does not have variants.`;
 
+  const variantMenuWidth = filters.filters["type"] === "Player" ? "wide" :
+                           filters.filters["type"] === "Map" ? "verywide" : "default";
+
   return <>
     <div className={`${styles.filter_row} ${styles.top}`}>
       <Dropdown
@@ -175,7 +178,9 @@ const FilterRows = ({ filters, setFilters }) => {
         counts={filters.countsForDropdownOptions["variant"]}
         names={variantNames}
         disabled={numVariants === 0}
-        alertText={variantAlert} />
+        alertText={variantAlert}
+        menuWidth={variantMenuWidth}
+      />
     </div>
   </>;
 };

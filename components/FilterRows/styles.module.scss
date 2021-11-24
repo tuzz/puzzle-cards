@@ -40,6 +40,18 @@
   svg {
     transform: scale(1.2);
   }
+
+  &.menu_wide {
+    :global(.dropdown__menu) {
+      width: 12rem;
+    }
+  }
+
+  &.menu_verywide {
+    :global(.dropdown__menu) {
+      width: 17.2rem;
+    }
+  }
 }
 
 .option_count {
