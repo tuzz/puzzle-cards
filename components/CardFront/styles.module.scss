@@ -438,6 +438,33 @@
     .right_sensor {
       right: 30%;
     }
+
+    .left_text, .right_text {
+      position: absolute;
+      fill: white;
+      top: 50%;
+      width: 18%;
+      height: 15%;
+
+      &:global {
+        &.green { transform: scale(0.97); }
+        &.yellow { transform: scale(0.86); }
+        &.blue { transform: scale(0.95); }
+        &.pink { transform: scale(0.93); }
+        &.white { transform: scale(0.95); }
+        &.black { transform: scale(0.88); }
+      }
+    }
+
+    .left_text {
+      left: 30%;
+      transform-origin: left;
+    }
+
+    .right_text {
+      right: 30%;
+      transform-origin: right;
+    }
   }
 
   .map {

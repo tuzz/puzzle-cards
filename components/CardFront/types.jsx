@@ -71,15 +71,11 @@ module.exports.Helix = ({ card, random }) => {
 
   return (
     <div className={`${styles.helix} ${mirrored && styles.mirrored}`}>
+      <VectorText className={`${styles.left_text} ${card.color1.toLowerCase()}`} text={card.color1} referenceText="Yellow" padSide="right" />
+      <VectorText className={`${styles.right_text} ${card.color2.toLowerCase()}`} text={card.color2} referenceText="Yellow" padSide="left" />
       <img src={`/images/types/helix${image}.png`} />
-
-      <div className={`${styles.left_sensor} ${card.color1.toLowerCase()}`}>
-        <VectorText text={card.color1} />
-      </div>
-
-      <div className={`${styles.right_sensor} ${card.color2.toLowerCase()}`}>
-        <VectorText text={card.color2} />
-      </div>
+      <div className={`${styles.left_sensor} ${card.color1.toLowerCase()}`}></div>
+      <div className={`${styles.right_sensor} ${card.color2.toLowerCase()}`}></div>
     </div>
   );
 };
