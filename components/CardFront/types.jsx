@@ -30,14 +30,16 @@ module.exports.Crab = ({ card }) => {
   );
 };
 
-module.exports.Cloak = ({ card }) => {
+module.exports.Cloak = ({ card, random }) => {
   const text = `${card.color1} Cloak`;
+  const animationDelay = random("cloak-animation-delay")() * -20;
+  const videoDelay = random("cloak-video-delay")() * 5.5;
 
   return (
     <div className={styles.cloak}>
-      <video autoPlay muted loop playsinline>
-        <source src="/videos/cloak.mov" type="video/mp4" />
-        <source src="/videos/cloak.webm" type="video/webm" />
+      <video autoPlay muted loop playsinline style={{ animationDelay: `${animationDelay}s` }}>
+        <source src={`/videos/cloak.mov#t=${videoDelay}`} type="video/mp4" />
+        <source src={`/videos/cloak.webm#t=${videoDelay}`} type="video/webm" />
       </video>
       <VectorText className={styles.text} text={text} referenceText="Yellow Cloak" padSide="around" />
     </div>
