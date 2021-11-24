@@ -62,9 +62,9 @@ const main = async () => {
       "Walk Right 8",
     ],
     Crab: [
-      "Left",
-      "Right",
-      "Middle",
+      "Point Left",
+      "Point Right",
+      "Standing",
       "Swim Left",
       "Swim Right",
       "Floating",

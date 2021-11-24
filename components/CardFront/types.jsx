@@ -13,7 +13,7 @@ module.exports.Player = ({ card }) => {
 
 module.exports.Crab = ({ card }) => {
   const className = `crab_${snakeCase(card.variant)}`;
-  const basename = className.replace("swim_", "").replace("floating", "middle");
+  const basename = className.replace("swim_", "point_").replace("floating", "standing");
 
   return (
     <div className={`${styles.crab} ${styles[className]}`}>
