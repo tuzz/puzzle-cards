@@ -15,9 +15,17 @@ module.exports.Crab = ({ card }) => {
   const className = `crab_${snakeCase(card.variant)}`;
   const basename = className.replace("swim_", "point_").replace("floating", "standing");
 
+  const showGlasses = card.tier === "Virtual" || card.tier === "Godly";
+
   return (
     <div className={`${styles.crab} ${styles[className]}`}>
       <img src={`/images/types/${basename}.png`} />
+
+      {showGlasses && <div className={styles.crab_sunglasses}>
+        <img src="/images/types/black_lens.png" className={styles.left_lens} />
+        <img src="/images/types/black_lens.png" className={styles.right_lens} />
+        <img src="/images/types/sunglasses_frame.png" className={styles.frame} />
+      </div>}
     </div>
   );
 };

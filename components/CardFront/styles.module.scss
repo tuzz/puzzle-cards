@@ -212,10 +212,58 @@
     width: 51.3084%; // 33% * 0.7774 / 0.5;
     margin-bottom: -1.2%;
 
+    .crab_sunglasses {
+      position: absolute;
+      bottom: 8%;
+      width: 20%;
+      height: 21%;
+      left: 40.6%;
+
+      .frame {
+        position: absolute;
+        width: 100%;
+      }
+
+      .left_lens, .right_lens {
+        position: absolute;
+        top: 25%;
+        width: 43.75%;
+      }
+
+      .left_lens {
+        right: 50%;
+        transform: scaleX(-1);
+      }
+
+      .right_lens {
+        left: 50%;
+      }
+    }
+
+    &.crab_point_left .crab_sunglasses {
+      transform: rotate(4deg);
+    }
+
+    &.crab_point_right .crab_sunglasses {
+      transform: rotate(-4deg);
+    }
+
+    &.crab_floating .crab_sunglasses {
+      transform: translateY(-203%);
+    }
+
+    &.crab_swim_left .crab_sunglasses {
+      transform: translate(-50%, -75%) rotate(4deg);
+    }
+
+    &.crab_swim_right .crab_sunglasses {
+      transform: translate(50%, -75%) rotate(-4deg);
+    }
+
     &.crab_swim_left,
     &.crab_swim_right,
     &.crab_floating {
-      &:before {
+      &:after {
         content: "";
         position: absolute;
         left: 0;
