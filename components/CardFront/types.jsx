@@ -36,7 +36,7 @@ module.exports.Cloak = ({ card, random }) => {
   const videoDelay = random("cloak-video-delay")() * 5.5;
 
   return (
-    <div className={styles.cloak}>
+    <div className={`${styles.cloak} ${styles[card.color1.toLowerCase()]}`}>
       <video autoPlay muted loop playsinline style={{ animationDelay: `${animationDelay}s` }}>
         <source src={`/videos/${card.color1.toLowerCase()}_cloak.mov#t=${videoDelay}`} type="video/mp4" />
         <source src={`/videos/${card.color1.toLowerCase()}_cloak.webm#t=${videoDelay}`} type="video/webm" />

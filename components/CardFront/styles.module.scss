@@ -292,6 +292,16 @@
   }
 
   .cloak {
+    &.white {
+      &:before {
+        @include black_background;
+      }
+
+      .text {
+        fill: white;
+      }
+    }
+
     video {
       position: absolute;
       left: 0;

@@ -6,13 +6,13 @@ use rayon::iter::IntoParallelIterator;
 
 fn main() {
     let colors = [
-        ("red", (1., 0., 0.)),
-        ("green", (1., 0., 0.)),
-        ("blue", (1., 0., 0.)),
-        ("yellow", (1., 0., 0.)),
-        ("pink", (1., 0., 0.)),
-        ("white", (1., 0., 0.)),
-        ("black", (1., 0., 0.)), // Copied only.
+        ("red", (0.8745, 0.1647, 0.1882)),
+        ("green", (0., 0.5922, 0.2235)),
+        ("blue", (0.2824, 0.4784, 0.9843)),
+        ("yellow", (0.7, 0.7, 0.15)),
+        ("pink", (0.8471, 0.3451, 0.9137)),
+        ("white", (1., 1., 1.)),
+        ("black", (0., 0., 0.)), // Copied only.
     ];
 
     for (color_name, color) in colors {
@@ -30,7 +30,7 @@ fn main() {
         println!();
     }
 
-    println!();
+    println!("Finished. Now run ./bin/transcode_videos");
 }
 
 const BLACK: (f32, f32, f32) = (0., 0., 0.);
@@ -70,8 +70,23 @@ fn image_to_u8(image: DynamicImage) -> Vec<u8> {
     output
 }
 
-fn colorize(bytes: &[u8], _color: (f32, f32, f32)) -> Vec<u8> {
-    bytes.to_vec() // TODO
+fn colorize(bytes: &[u8], color: (f32, f32, f32)) -> Vec<u8> {
+    let mut colored = vec![];
+
+    for chunk in bytes.chunks(4) {
+        let alpha = chunk[3];
+        if alpha == 0 { colored.extend([0, 0, 0, 0]); continue; }
+
+        let average = (chunk[0] + chunk[1] + chunk[2]) / 3;
+        let saturation = 1. - average as f32 / 255.;
+
+        colored.push((saturation * color.0 * 255.).round() as u8);
+        colored.push((saturation * color.1 * 255.).round() as u8);
+        colored.push((saturation * color.2 * 255.).round() as u8);
+        colored.push(alpha);
+    }
+
+    colored
 }
 
 fn u8s_to_image(rgba: &[u8], width: u32, height: u32) -> DynamicImage {
