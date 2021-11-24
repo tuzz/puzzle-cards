@@ -28,9 +28,11 @@ module.exports.Cloak = ({ card }) => (
 
 module.exports.Inactive = ({ card }) => {
   const name = snakeCase([card.color1, card.variant]);
+  const text = `Inactive ${card.color1} ${card.variant}`;
 
   return (
     <div className={`${styles.inactive} ${styles[card.color1.toLowerCase()]}`}>
+      <VectorText className={styles.text} text={text} referenceText="Inactive Yellow Moon" padSide="around" />
       <img src={`/images/types/inactive_${name}.png`} />
     </div>
   );
@@ -38,9 +40,11 @@ module.exports.Inactive = ({ card }) => {
 
 module.exports.Active = ({ card }) => {
   const name = snakeCase([card.color1, card.variant]);
+  const text = `Active ${card.color1} ${card.variant}`;
 
   return (
     <div className={`${styles.active} ${styles[card.color1.toLowerCase()]}`}>
+      <VectorText className={styles.text} text={text} referenceText="Inactive Yellow Moon" padSide="around" />
       <img src={`/images/types/active_${name}.png`} />
     </div>
   );
