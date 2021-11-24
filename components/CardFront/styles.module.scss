@@ -291,6 +291,29 @@
     }
   }
 
+  .cloak {
+    video {
+      position: absolute;
+      left: 0;
+      top: -1%;
+      width: 118%;
+      left: -9%;
+
+      animation-name: move-up-and-down;
+      animation-duration: 20s;
+      animation-iteration-count: infinite;
+      animation-timing-function: ease-in-out;
+    }
+
+    .text {
+      position: absolute;
+      width: 50%;
+      left: 25%;
+      height: 20%;
+      top: 35%;
+    }
+  }
+
   .inactive {
     img {
       width: 43.5%;
@@ -691,4 +714,18 @@
 @keyframes spin-clockwise {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+@keyframes move-up-and-down {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(52%); }
+}
+
+// Safari only.
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) {
+    .type .cloak video {
+      animation-name: none !important;
+    }
+  }
 }

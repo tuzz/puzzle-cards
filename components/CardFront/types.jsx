@@ -30,9 +30,19 @@ module.exports.Crab = ({ card }) => {
   );
 };
 
-module.exports.Cloak = ({ card }) => (
-  <p>cloak</p>
-);
+module.exports.Cloak = ({ card }) => {
+  const text = `${card.color1} Cloak`;
+
+  return (
+    <div className={styles.cloak}>
+      <video autoPlay muted loop playsinline>
+        <source src="/videos/cloak.mov" type="video/mp4" />
+        <source src="/videos/cloak.webm" type="video/webm" />
+      </video>
+      <VectorText className={styles.text} text={text} referenceText="Yellow Cloak" padSide="around" />
+    </div>
+  );
+};
 
 module.exports.Inactive = ({ card }) => {
   const name = snakeCase([card.color1, card.variant]);
