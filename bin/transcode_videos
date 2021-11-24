@@ -45,44 +45,47 @@ ffmpeg                                                \
 -c:v libvpx-vp9                                       \
 public/videos/teleport.webm
 
-# Cloak HEVC for Safari:
-ffmpeg                                                \
--hide_banner                                          \
--loglevel error                                       \
--stats                                                \
--y                                                    \
--framerate 60                                         \
--pattern_type glob                                    \
--i 'public/images/types/cloak_frames/frame-*.png'     \
--r 60                                                 \
--filter:v "crop=1700:1350:1510:230,scale=1200:-1"     \
--level 4.0                                            \
--map_metadata -1                                      \
--movflags +faststart                                  \
--pix_fmt yuva420p                                     \
--preset veryslow                                      \
--c:v hevc_videotoolbox                                \
--allow_sw 1                                           \
--alpha_quality 0.25                                   \
--vtag hvc1                                            \
-public/videos/cloak.mov
+for color in red green blue yellow pink white black
+do
+  # Cloak HEVC for Safari:
+  ffmpeg                                                \
+  -hide_banner                                          \
+  -loglevel error                                       \
+  -stats                                                \
+  -y                                                    \
+  -framerate 60                                         \
+  -pattern_type glob                                    \
+  -i ".tmp/cloak_frames/$color/frame-*.png"             \
+  -r 60                                                 \
+  -filter:v "crop=1700:1350:1510:230,scale=1200:-1"     \
+  -level 4.0                                            \
+  -map_metadata -1                                      \
+  -movflags +faststart                                  \
+  -pix_fmt yuva420p                                     \
+  -preset veryslow                                      \
+  -c:v hevc_videotoolbox                                \
+  -allow_sw 1                                           \
+  -alpha_quality 0.25                                   \
+  -vtag hvc1                                            \
+  "public/videos/${color}_cloak.mov"
 
-# Cloak VP9 for Chrome/Firefox:
-ffmpeg                                                \
--hide_banner                                          \
--loglevel error                                       \
--stats                                                \
--y                                                    \
--framerate 60                                         \
--pattern_type glob                                    \
--i 'public/images/types/cloak_frames/frame-*.png'     \
--r 60                                                 \
--filter:v "crop=1700:1350:1510:230,scale=1200:-1"     \
--level 4.0                                            \
--map_metadata -1                                      \
--movflags +faststart                                  \
--pix_fmt yuva420p                                     \
--crf 35                                               \
--preset veryslow                                      \
--c:v libvpx-vp9                                       \
-public/videos/cloak.webm
+  # Cloak VP9 for Chrome/Firefox:
+  ffmpeg                                                \
+  -hide_banner                                          \
+  -loglevel error                                       \
+  -stats                                                \
+  -y                                                    \
+  -framerate 60                                         \
+  -pattern_type glob                                    \
+  -i ".tmp/cloak_frames/$color/frame-*.png"             \
+  -r 60                                                 \
+  -filter:v "crop=1700:1350:1510:230,scale=1200:-1"     \
+  -level 4.0                                            \
+  -map_metadata -1                                      \
+  -movflags +faststart                                  \
+  -pix_fmt yuva420p                                     \
+  -crf 35                                               \
+  -preset veryslow                                      \
+  -c:v libvpx-vp9                                       \
+  "public/videos/${color}_cloak.webm"
+done

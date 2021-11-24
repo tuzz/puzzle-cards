@@ -38,8 +38,8 @@ module.exports.Cloak = ({ card, random }) => {
   return (
     <div className={styles.cloak}>
       <video autoPlay muted loop playsinline style={{ animationDelay: `${animationDelay}s` }}>
-        <source src={`/videos/cloak.mov#t=${videoDelay}`} type="video/mp4" />
-        <source src={`/videos/cloak.webm#t=${videoDelay}`} type="video/webm" />
+        <source src={`/videos/${card.color1.toLowerCase()}_cloak.mov#t=${videoDelay}`} type="video/mp4" />
+        <source src={`/videos/${card.color1.toLowerCase()}_cloak.webm#t=${videoDelay}`} type="video/webm" />
       </video>
       <VectorText className={styles.text} text={text} referenceText="Yellow Cloak" padSide="around" />
     </div>
