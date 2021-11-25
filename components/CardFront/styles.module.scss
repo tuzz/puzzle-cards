@@ -513,7 +513,7 @@
       &:global {
         &.red { background: rgb(255, 47, 57); }
         &.green { background: rgb(82, 241, 83); }
-        &.blue { background: rgb(100, 180, 255); }
+        &.blue { background: rgb(50, 180, 255); }
         &.yellow { background: rgb(255, 253, 69); }
         &.pink { background: rgb(246, 128, 252); }
         &.white { background: white; }
@@ -534,10 +534,67 @@
       right: 30%;
     }
 
+    .left_text {
+      top: 50%;
+      left: 30%;
+    }
+
+    .right_text {
+      top: 50%;
+      right: 30%;
+    }
+  }
+
+  .torch {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+
+    &:before {
+      @include black_background;
+    }
+
+    .beam {
+      height: 90%;
+      position: relative;
+      top: -2%;
+
+      animation-name: change-torch-width;
+      animation-duration: 5s;
+      animation-iteration-count: infinite;
+      animation-timing-function: ease-in-out;
+
+      .trapezoid {
+        animation-name: change-torch-opacity;
+        animation-duration: 5s;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease-in-out;
+      }
+    }
+
+    .left_text {
+      top: 20%;
+      left: 10%;
+    }
+
+    .right_text {
+      top: 20%;
+      right: 10%;
+    }
+
+    .red { stop-color: rgb(255, 47, 57); }
+    .green { stop-color: rgb(82, 241, 83); }
+    .blue { stop-color: rgb(50, 180, 255); }
+    .yellow { stop-color: rgb(255, 253, 69); }
+    .pink { stop-color: rgb(246, 128, 252); }
+    .white { stop-color: white; }
+    .black { stop-color: #444; }
+  }
+
+  .helix, .torch {
     .left_text, .right_text {
       position: absolute;
       fill: white;
-      top: 50%;
       width: 18%;
       height: 15%;
 
@@ -552,12 +609,10 @@
     }
 
     .left_text {
-      left: 30%;
       transform-origin: left;
     }
 
     .right_text {
-      right: 30%;
       transform-origin: right;
     }
   }
@@ -734,6 +789,16 @@
 @keyframes move-up-and-down {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(52%); }
+}
+
+@keyframes change-torch-width {
+  0%, 25%, 100% { transform: scaleX(1); }
+  50%, 75% { transform: scaleX(1.5); }
+}
+
+@keyframes change-torch-opacity {
+  0%, 25%, 100% { opacity: 0.85; }
+  50%, 75% { opacity: 0.6; }
 }
 
 // Safari only.

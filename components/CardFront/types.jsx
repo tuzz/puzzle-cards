@@ -37,7 +37,7 @@ module.exports.Cloak = ({ card, random }) => {
 
   return (
     <div className={`${styles.cloak} ${styles[card.color1.toLowerCase()]}`}>
-      <video autoPlay muted loop playsinline style={{ animationDelay: `${animationDelay}s` }}>
+      <video autoPlay muted loop playsInline style={{ animationDelay: `${animationDelay}s` }}>
         <source src={`/videos/${card.color1.toLowerCase()}_cloak.mov#t=${videoDelay}`} type="video/mp4" />
         <source src={`/videos/${card.color1.toLowerCase()}_cloak.webm#t=${videoDelay}`} type="video/webm" />
       </video>
@@ -104,9 +104,30 @@ module.exports.Beacon = ({ card }) => (
   <p>beacon</p>
 );
 
-module.exports.Torch = ({ card }) => (
-  <p>torch</p>
-);
+module.exports.Torch = ({ card }) => {
+  const gradientId = `${card.color1}-${card.color2}-gradient`;
+
+  return (
+    <div className={styles.torch}>
+      <VectorText className={`${styles.left_text} ${card.color1.toLowerCase()}`} text={card.color1} referenceText="Yellow" padSide="left" />
+      <VectorText className={`${styles.right_text} ${card.color2.toLowerCase()}`} text={card.color2} referenceText="Yellow" padSide="right" />
+
+      <svg className={styles.beam} viewBox="0 0 12 21">
+        <defs>
+          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" className={styles[card.color1.toLowerCase()]} />
+            <stop offset="35%" className={styles[card.color1.toLowerCase()]} />
+            <stop offset="65%" className={styles[card.color2.toLowerCase()]} />
+            <stop offset="100%" className={styles[card.color2.toLowerCase()]} />
+          </linearGradient>
+        </defs>
+
+        <path d="M0,0 L12,0 L8,20 L4,20z" fill={`url(#${gradientId})`} className={styles.trapezoid} />
+        <ellipse cx="6" cy="20" rx="2" ry="0.4" style={{ fill: "white" }} />
+      </svg>
+    </div>
+  );
+};
 
 const arrowColors = ["red", "green", "blue", "yellow", "pink", "white"]; // Skip black
 const blurColors = ["red", "green", "blue", "yellow", "pink", "black"]; // Skip white
@@ -151,7 +172,7 @@ module.exports.Map = ({ card, random }) => {
 
 module.exports.Teleport = ({ card }) => (
   <div className={styles.teleport}>
-    <video autoPlay muted loop playsinline>
+    <video autoPlay muted loop playsInline>
       <source src="/videos/teleport.mov" type="video/mp4" />
       <source src="/videos/teleport.webm" type="video/webm" />
     </video>
