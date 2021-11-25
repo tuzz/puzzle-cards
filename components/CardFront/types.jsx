@@ -170,7 +170,8 @@ module.exports.Glasses = ({ card }) => (
 
 module.exports.Eclipse = ({ card }) => (
   <div className={styles.eclipse}>
-    <img src="/images/types/eclipse.png" />
+    <img className={styles.particles} src="/images/types/eclipse_particles.png" />
+    <img className={styles.sprite} src="/images/types/eclipse.png" />
   </div>
 );
 

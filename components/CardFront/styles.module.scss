@@ -655,9 +655,14 @@
       @include black_background;
     }
 
-    img {
+    .sprite {
       position: relative;
-      filter: contrast(200%);
+    }
+
+    .particles {
+      position: absolute;
+      width: 50%;
+      filter: saturate(1000%);
     }
   }
 
