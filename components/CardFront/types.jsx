@@ -100,9 +100,39 @@ module.exports.Helix = ({ card, random }) => {
   );
 };
 
-module.exports.Beacon = ({ card }) => (
-  <p>beacon</p>
-);
+module.exports.Beacon = ({ card, random }) => {
+  const clockwise = random("beacon-clockwise").mod(2) === 0;
+  const [from, to] = clockwise ? [0, 360] : [360, 0];
+
+  const gradient1Id = `${card.color1}-gradient1`;
+  const gradient2Id = `${card.color1}-gradient2`;
+
+  return (
+    <div className={`${styles.beacon} ${styles[card.color1.toLowerCase()]}`}>
+      <VectorText className={styles.text} text={`${card.color1} Beacon`} referenceText="Yellow Beacon" padSide="around" />
+
+      <svg className={styles.triangles} viewBox="0 0 698.41 400.19">
+        <defs>
+          <linearGradient id={gradient1Id} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" className={styles[card.color1.toLowerCase()]} />
+            <stop offset="100%" className={styles[card.color1.toLowerCase()]} stopOpacity="0%" />
+          </linearGradient>
+
+          <linearGradient id={gradient2Id} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" className={styles[card.color1.toLowerCase()]} stopOpacity="0%" />
+            <stop offset="100%" className={styles[card.color1.toLowerCase()]} />
+          </linearGradient>
+        </defs>
+
+        <g transform="translate(349.205,200.095)">
+          <polygon points="-1,0 500,-200 500,200" fill={`url(#${gradient1Id})`} />
+          <polygon points="1,0 -500,-200 -500,200" fill={`url(#${gradient2Id})`} />
+          <animateTransform attributeName="transform" type="rotate" from={from} to={to} dur="4s" additive="sum" repeatCount="indefinite" />
+        </g>
+      </svg>
+    </div>
+  );
+};
 
 module.exports.Torch = ({ card }) => {
   const gradientId = `${card.color1}-${card.color2}-gradient`;
