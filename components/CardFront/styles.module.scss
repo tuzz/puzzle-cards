@@ -554,22 +554,19 @@
       @include black_background;
     }
 
-    .beam {
+    .beam, .base {
       height: 90%;
-      position: relative;
+      position: absolute;
       top: -2%;
 
       animation-name: change-torch-width;
       animation-duration: 5s;
       animation-iteration-count: infinite;
       animation-timing-function: ease-in-out;
+    }
 
-      .trapezoid {
-        animation-name: change-torch-opacity;
-        animation-duration: 5s;
-        animation-iteration-count: infinite;
-        animation-timing-function: ease-in-out;
-      }
+    .beam {
+      animation-name: change-torch-width-and-opacity;
     }
 
     .left_text {
@@ -796,9 +793,9 @@
   50%, 75% { transform: scaleX(1.5); }
 }
 
-@keyframes change-torch-opacity {
-  0%, 25%, 100% { opacity: 0.85; }
-  50%, 75% { opacity: 0.6; }
+@keyframes change-torch-width-and-opacity {
+  0%, 25%, 100% { transform: scaleX(1); opacity: 0.85 }
+  50%, 75% { transform: scaleX(1.5); opacity: 0.6 }
 }
 
 // Safari only.

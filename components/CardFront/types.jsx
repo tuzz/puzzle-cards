@@ -122,7 +122,10 @@ module.exports.Torch = ({ card }) => {
           </linearGradient>
         </defs>
 
-        <path d="M0,0 L12,0 L8,20 L4,20z" fill={`url(#${gradientId})`} className={styles.trapezoid} />
+        <path d="M0,0 L12,0 L8,20 L4,20z" fill={`url(#${gradientId})`} />
+      </svg>
+
+      <svg className={styles.base} viewBox="0 0 12 21">
         <ellipse cx="6" cy="20" rx="2" ry="0.4" style={{ fill: "white" }} />
       </svg>
     </div>
