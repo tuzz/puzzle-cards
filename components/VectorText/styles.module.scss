@@ -1,4 +1,14 @@
-.vector_text * {
-  dominant-baseline: central;
-  text-anchor: middle;
+.vector_text {
+  * {
+    dominant-baseline: central;
+    text-anchor: middle;
+  }
+
+  &.start * {
+    text-anchor: start;
+  }
+
+  &.end * {
+    text-anchor: end;
+  }
 }

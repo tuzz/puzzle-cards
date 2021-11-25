@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import styles from "./styles.module.scss";
 
-const VectorText = ({ text, className, referenceText, padSide = "right" }) => {
+const VectorText = ({ text, className, referenceText, padSide = "right", scale = 1, anchor = "middle" }) => {
   const [textSize, setTextSize] = useState("1em");
   const svgRef = useRef();
 
@@ -27,16 +27,18 @@ const VectorText = ({ text, className, referenceText, padSide = "right" }) => {
     const { width: svgWidth, height: svgHeight } = svg.getBoundingClientRect();
     const { width: textWidth, height: textHeight } = text.getBoundingClientRect();
 
-    const scale = Math.min(svgWidth / textWidth, svgHeight / textHeight);
-    setTextSize(`${scale}em`);
+    const size = Math.min(svgWidth / textWidth, svgHeight / textHeight);
+    setTextSize(`${size * scale}em`);
   }, []);
 
   const xmlns = "http://www.w3.org/2000/svg";
-  const classes = [styles.vector_text, className].filter(s => s).join(" ");
+  const classes = [styles.vector_text, className, styles[anchor]].filter(s => s).join(" ");
+
+  const x = anchor === "start" ? "0%" : anchor === "end" ? "100%" : "50%";
 
   return (
     <svg ref={svgRef} className={classes} xmlns={xmlns}>
-      <text x="50%" y="50%" fontSize={textSize}>
+      <text x={x} y="50%" fontSize={textSize}>
         <tspan>{padLeft && padding}{text}{padRight && padding}</tspan>
       </text>
     </svg>

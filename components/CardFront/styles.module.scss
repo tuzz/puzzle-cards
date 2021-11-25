@@ -49,8 +49,8 @@
   text-shadow: 0.2rem 0.2rem 0.2rem white;
 }
 
-.number {
-  width: 23.27%;
+.tier {
+  width: 40%;
   height: 100%;
   text-shadow: 0.2rem 0.2rem 0.2rem white;
 }
@@ -67,6 +67,23 @@
   video {
     position: absolute; // Prevents blur when zoomed.
     width: 97%;
+  }
+}
+
+.overlay {
+  position: absolute;
+  width: 97%;
+  height: 39%;
+
+  .number {
+    position: absolute;
+    width: 12%;
+    height: 10%;
+    right: 1.7%;
+
+    * {
+      fill: white; // TODO: dependent on puzzle
+    }
   }
 }
 
