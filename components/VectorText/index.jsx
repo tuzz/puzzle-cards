@@ -22,12 +22,12 @@ const VectorText = ({ text, className, referenceText, padSide = "right", scale =
 
   useEffect(() => {
     const svg = svgRef.current;
-    const text = svg.children[0];
+    const tspan = svg.children[0].children[0];
 
     const { width: svgWidth, height: svgHeight } = svg.getBoundingClientRect();
-    const { width: textWidth, height: textHeight } = text.getBoundingClientRect();
+    const { width: tspanWidth, height: tspanHeight } = tspan.getBoundingClientRect();
 
-    const size = Math.min(svgWidth / textWidth, svgHeight / textHeight);
+    const size = Math.min(svgWidth / tspanWidth, svgHeight / tspanHeight);
     setTextSize(`${size * scale}em`);
   }, []);
 

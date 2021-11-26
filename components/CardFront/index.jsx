@@ -32,7 +32,7 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
       </div>
 
       <div className={styles.bottom_row}>
-        <VectorText className={styles.edition} text={edition} referenceText="Standard Edition" padSide="right" />
+        <VectorText className={styles.edition} text={edition} referenceText="Standard Edition" padSide="right" anchor="start" />
         <span className={styles.tier}>
           {tierIcons[card.tier].map(iconName => (
             <img key={iconName} src={`/images/${iconName}_icon.png`} className={`${styles.tier_icon} ${styles[iconName]}`} />
