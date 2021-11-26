@@ -3,6 +3,7 @@ import seedrandom from "seedrandom";
 import PuzzleCard from "../../public/PuzzleCard";
 import VectorText from "../VectorText";
 import types from "./types";
+import randomDefects from "./defects";
 import styles from "./styles.module.scss";
 
 const CardFront = ({ card, onLoaded = () => {} }) => {
@@ -10,6 +11,7 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
   const edition = `${card.edition} Edition`;
   const tier = `${card.tier} Tier`;
   const TypeComponent = types[card.type];
+  const defects = randomDefects(card, random);
 
   return (
     <div className={styles.card_front}>
@@ -40,8 +42,9 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
           <VectorText className={`${styles.tier_name} ${styles[card.tier.toLowerCase()]}`} text={tier} scale={tierScales[card.tier] || 1} anchor="end" />
         </span>
       </div>
-  </div>
-  ); };
+    </div>
+  );
+};
 
 const stableRandom = (card) => {
   const tokenID = card.tokenID().toString();
