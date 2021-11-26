@@ -265,17 +265,17 @@
 
       .left_lens, .right_lens {
         position: absolute;
-        top: 25%;
-        width: 43.75%;
+        top: 26%;
+        width: 45%;
       }
 
       .left_lens {
-        right: 50%;
+        right: 49%;
         transform: scaleX(-1);
       }
 
       .right_lens {
-        left: 50%;
+        left: 49%;
       }
     }
 
