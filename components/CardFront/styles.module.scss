@@ -44,15 +44,37 @@
 }
 
 .edition {
-  width: 40%;
+  flex: 40;
   height: 100%;
   text-shadow: 0.2rem 0.2rem 0.2rem white;
 }
 
 .tier {
-  width: 40%;
+  flex: 60;
   height: 100%;
   text-shadow: 0.2rem 0.2rem 0.2rem white;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  .tier_icon {
+    width: 6%;
+    margin-left: 5%;
+
+    &.glasses { width: 13%; }
+    &.helix { width: 10%; }
+  }
+
+  .tier_name {
+    width: 66.66666667%;
+    height: 100%;
+
+    &.immortal { margin-left: -8%; }
+    &.ethereal { margin-left: -10%; }
+    &.virtual { margin-left: -17%; }
+    &.celestial { margin-left: -10%; }
+    &.godly { margin-left: -21%; }
+  }
 }
 
 .video {

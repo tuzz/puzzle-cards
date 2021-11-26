@@ -33,7 +33,12 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
 
       <div className={styles.bottom_row}>
         <VectorText className={styles.edition} text={edition} referenceText="Standard Edition" padSide="right" />
-        <VectorText className={styles.tier} text={tier} scale={tierScales[card.tier] || 1} anchor="end" />
+        <span className={styles.tier}>
+          {tierIcons[card.tier].map(iconName => (
+            <img key={iconName} src={`/images/${iconName}_icon.png`} className={`${styles.tier_icon} ${styles[iconName]}`} />
+          ))}
+          <VectorText className={`${styles.tier_name} ${styles[card.tier.toLowerCase()]}`} text={tier} scale={tierScales[card.tier] || 1} anchor="end" />
+        </span>
       </div>
   </div>
   ); };
@@ -59,5 +64,15 @@ const tierScales = {
   Godly: 0.6476929028,
   Master: 0.6792013102,
 };
+
+const tierIcons = {
+  Mortal: [],
+  Immortal: ["shield"],
+  Ethereal: ["walls"],
+  Virtual: ["glasses"],
+  Celestial: ["helix"],
+  Godly: ["shield", "walls", "glasses", "helix"],
+  Master: [],
+}
 
 export default CardFront;
