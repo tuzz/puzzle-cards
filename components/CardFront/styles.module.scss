@@ -331,6 +331,12 @@
   }
 
   .cloak {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     &.white {
       &:before {
         @include black_background;
@@ -338,6 +344,7 @@
 
       .text {
         fill: white;
+        position: relative;
       }
     }
 
@@ -355,11 +362,8 @@
     }
 
     .text {
-      position: absolute;
       width: 50%;
-      left: 25%;
       height: 20%;
-      top: 35%;
     }
   }
 
