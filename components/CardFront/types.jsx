@@ -53,13 +53,19 @@ module.exports.Inactive = ({ card }) => {
 
   return (
     <div className={`${styles.inactive} ${styles[card.color1.toLowerCase()]}`}>
-      <VectorText className={styles.text} text={text} referenceText="Inactive Yellow Moon" padSide="around" />
+      <VectorText className={`${styles.text} ${inaccessible && styles.raised}`} text={text} referenceText="Inactive Yellow Moon" padSide="around" />
       <img src={`/images/types/inactive_${name}.png`} />
 
       {inaccessible && <>
         <div className={styles.left_wall}></div>
         <div className={styles.right_wall}></div>
         <div className={styles.top_wall}></div>
+
+        <img className={styles.left_cross} src="/images/cross_mark.png" />
+        <img className={styles.right_cross} src="/images/cross_mark.png" />
+
+        <VectorText className={styles.left_text} text="Player" />
+        <VectorText className={styles.right_text} text="Crab" />
       </>}
     </div>
   );

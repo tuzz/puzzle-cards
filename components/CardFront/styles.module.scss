@@ -410,7 +410,7 @@
         @include black_background;
       }
 
-      .text {
+      .text, .left_text, .right_text {
         fill: white;
       }
     }
@@ -425,6 +425,10 @@
       left: 15%;
       top: 0;
       height: 25%;
+
+      &.raised {
+        height: 21%;
+      }
     }
 
     .left_wall, .right_wall, .top_wall {
@@ -453,6 +457,36 @@
       left: 26%;
       height: 7%;
       background-size: 104.16666667%;
+    }
+
+    .left_cross, .right_cross {
+      position: absolute;
+      width: 7%;
+      bottom: 33%;
+    }
+
+    .left_cross {
+      left: 22.5%;
+    }
+
+    .right_cross {
+      right: 22.5%;
+    }
+
+    .left_text, .right_text {
+      position: absolute;
+      width: 20%;
+      height: 10%;
+      bottom: 34.8%;
+    }
+
+    .left_text {
+      left: 3%;
+    }
+
+    .right_text {
+      width: 18%;
+      right: 6.3%;
     }
   }
 
