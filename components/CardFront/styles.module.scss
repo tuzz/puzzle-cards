@@ -386,7 +386,7 @@
 
   .active {
     img {
-      width: 80%;
+      width: 81.2%;
       margin: auto;
       margin-bottom: 0.3%;
     }
@@ -425,6 +425,34 @@
       left: 15%;
       top: 0;
       height: 25%;
+    }
+
+    .left_wall, .right_wall, .top_wall {
+      position: absolute;
+      top: 22.3%;
+      background-image: url(/images/foil_mesh.jpeg);
+    }
+
+    .left_wall, .right_wall {
+      width: 3.9375%;
+      height: 77%;
+      background-size: auto 200%;
+    }
+
+    .left_wall {
+      left: 26%;
+    }
+
+    .right_wall {
+      right: 26%;
+      background-position: right;
+    }
+
+    .top_wall {
+      width: 48%;
+      left: 26%;
+      height: 7%;
+      background-size: 104.16666667%;
     }
   }
 

@@ -49,11 +49,18 @@ module.exports.Cloak = ({ card, random }) => {
 module.exports.Inactive = ({ card }) => {
   const name = snakeCase([card.color1, card.variant]);
   const text = `Inactive ${card.color1} ${card.variant}`;
+  const inaccessible = card.tier === "Ethereal" || card.tier === "Godly";
 
   return (
     <div className={`${styles.inactive} ${styles[card.color1.toLowerCase()]}`}>
       <VectorText className={styles.text} text={text} referenceText="Inactive Yellow Moon" padSide="around" />
       <img src={`/images/types/inactive_${name}.png`} />
+
+      {inaccessible && <>
+        <div className={styles.left_wall}></div>
+        <div className={styles.right_wall}></div>
+        <div className={styles.top_wall}></div>
+      </>}
     </div>
   );
 };
@@ -61,11 +68,18 @@ module.exports.Inactive = ({ card }) => {
 module.exports.Active = ({ card }) => {
   const name = snakeCase([card.color1, card.variant]);
   const text = `Active ${card.color1} ${card.variant}`;
+  const inaccessible = card.tier === "Ethereal" || card.tier === "Godly";
 
   return (
     <div className={`${styles.active} ${styles[card.color1.toLowerCase()]}`}>
       <VectorText className={styles.text} text={text} referenceText="Inactive Yellow Moon" padSide="around" />
       <img src={`/images/types/active_${name}.png`} />
+
+      {inaccessible && <>
+        <div className={styles.left_wall}></div>
+        <div className={styles.right_wall}></div>
+        <div className={styles.top_wall}></div>
+      </>}
     </div>
   );
 };
