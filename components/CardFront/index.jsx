@@ -47,12 +47,23 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
         </span>
       </div>
 
+      {defects.fingerprint && <div className={styles.fingerprint}>
+        <img src={`/images/fingerprint_${defects.fingerprint.image}.png`} style={{
+          width: `${defects.fingerprint.width}%`,
+          [defects.fingerprint.side]: `${defects.fingerprint.x}%`,
+          top: `${defects.fingerprint.y}%`,
+          opacity: defects.fingerprint.opacity,
+          transform: `rotate(${defects.fingerprint.degrees}deg) scaleX(${defects.fingerprint.scaleX})`,
+        }} />
+      </div>}
+
       {defects.coffee_stain && <div className={styles.coffee_stain}>
         <img src={`/images/coffee_stain_${defects.coffee_stain.image}.png`} style={{
           width: `${defects.coffee_stain.width}%`,
           [defects.coffee_stain.side]: `${defects.coffee_stain.x}%`,
           top: `${defects.coffee_stain.y}%`,
           opacity: defects.coffee_stain.opacity,
+          transform: `rotate(${defects.coffee_stain.degrees}deg) scaleX(${defects.coffee_stain.scaleX})`,
         }} />
       </div>}
     </div>

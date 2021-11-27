@@ -130,6 +130,20 @@
   }
 }
 
+.fingerprint {
+  position: absolute;
+  width: 97%;
+  height: 93%;
+  border-radius: 4.25% / 3.0357142857%;
+  left: 1.5%;
+  top: 1.5%;
+  overflow: hidden;
+
+  img {
+    position: absolute;
+  }
+}
+
 .coffee_stain {
   position: absolute;
   width: 100%;

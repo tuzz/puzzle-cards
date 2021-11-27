@@ -18,6 +18,20 @@ const randomDefects = (card, random) => {
     defects.puzzle_rotation = 0;
   }
 
+  if (defects.faint_fingerprint || defects.obvious_fingerprint) {
+    defects.fingerprint = {};
+    defects.fingerprint.image = random("fingerprint-image").mod(2) + 1;
+    defects.fingerprint.width = random("fingerprint-width")() * 5 + 15;
+    defects.fingerprint.side = random("fingerprint-side").mod(2) === 0 ? "left" : "right";
+    defects.fingerprint.x = random("fingerprint-x")() * 10;
+    defects.fingerprint.y = random("fingerprint-y")() * 50 + 40;
+    defects.fingerprint.opacity = random("fingerprint-opacity")() * 0.05 + 0.1;
+    defects.fingerprint.degrees = random("fingerprint-degrees")() * 60 - 30;
+    defects.fingerprint.scaleX = random("fingerprint-scale-x").mod(2) * 2 - 1;
+
+    if (defects.faint_fingerprint) { defects.fingerprint.opacity /= 2; }
+  }
+
   if (defects.coffee_stain) {
     defects.coffee_stain = {};
     defects.coffee_stain.image = random("coffee-stain-image").mod(6) + 1;
@@ -26,6 +40,8 @@ const randomDefects = (card, random) => {
     defects.coffee_stain.x = random("coffee-stain-x")() * 20 + 60;
     defects.coffee_stain.y = random("coffee-stain-y")() * 130 - 50;
     defects.coffee_stain.opacity = random("coffee-stain-opacity")() * 0.4 + 0.2;
+    defects.coffee_stain.degrees = random("coffee-stain-degrees")() * 360;
+    defects.coffee_stain.scaleX = random("coffee-stain-scale-x").mod(2) * 2 - 1;
   }
 
   return defects;
