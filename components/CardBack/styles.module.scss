@@ -1,0 +1,23 @@
+.card_back {
+  width: 100%;
+  height: 100%;
+  border-radius: 5% / 3.5714285714%; // 5 * 15/21
+  background: yellow;
+
+  // These match CardFront styles except the left/right clip paths are swapped.
+  &.top_left_folded_corner {
+    clip-path: polygon(0% 0%, 88% 0%, 100% 8.5714285714%, 100% 100%, 0% 100%);
+  }
+
+  &.top_right_folded_corner {
+    clip-path: polygon(12% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 8.5714285714%);
+  }
+
+  &.bottom_left_folded_corner {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 91.4285714286%, 88% 100%, 0% 100%);
+  }
+
+  &.bottom_right_folded_corner {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 12% 100%, 0% 91.4285714286%);
+  }
+}

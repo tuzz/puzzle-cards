@@ -6,23 +6,11 @@
   animation-duration: 500ms;
 }
 
-.iframe, .back {
-  box-shadow: 0 0 0.2rem rgba(0, 0, 0, 0.2);
-}
-
-.flippable, .iframe, .back {
+.flippable {
   width: 15rem;
   height: 21rem;
   border-radius: 0.75rem;
   pointer-events: none;
-}
-
-.iframe {
-  border: none;
-}
-
-.back {
-  background: yellow;
 }
 
 @keyframes fade_in {

@@ -3,12 +3,16 @@ import Draggable from "../Draggable";
 import Zoomable from "../Zoomable";
 import Flippable from "../Flippable";
 import CardFront from "../CardFront";
+import CardBack from "../CardBack";
 import styles from "./styles.module.scss";
 
 const CardStack = ({ cardStack, startPosition, position, withinY, dealDelay, fadeIn = true, flipped, flipDirection = 1, onMoved = () => {} }) => {
   const [dealing, setDealing] = useState(dealDelay && dealDelay > 0);
   const [zoomed, setZoomed] = useState(false);
   const [loaded, setLoaded] = useState(false);
+
+  const random = CardFront.stableRandom(cardStack.card);
+  const defects = CardFront.randomDefects(cardStack.card, random);
 
   useEffect(() => {
     if (!dealDelay) { return; }
@@ -45,8 +49,8 @@ const CardStack = ({ cardStack, startPosition, position, withinY, dealDelay, fad
     <Draggable bounds="parent" startPosition={startPosition} position={position} withinY={withinY} zoomed={zoomed} onClick={zoomIn} onStop={handleStop} disabled={zoomed} className={`${fadeIn && styles.fade_in}`}>
       <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={rotation}>
         <Flippable flipped={!loaded || flipped} direction={flipDirection} className={styles.flippable}>
-          <CardFront card={cardStack.card} onLoaded={() => setLoaded(true)} />
-          <div className={styles.back}>back</div>
+          <CardFront card={cardStack.card} random={random} defects={defects} onLoaded={() => setLoaded(true)} />
+          <CardBack defects={defects} />
         </Flippable>
       </Zoomable>
     </Draggable>

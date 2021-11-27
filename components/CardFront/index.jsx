@@ -1,17 +1,18 @@
 import { useState, useRef, useEffect } from "react";
-import seedrandom from "seedrandom";
 import PuzzleCard from "../../public/PuzzleCard";
 import VectorText from "../VectorText";
 import types from "./types";
+import stableRandom from "./stableRandom";
 import randomDefects from "./defects";
 import styles from "./styles.module.scss";
 
-const CardFront = ({ card, onLoaded = () => {} }) => {
-  const random = stableRandom(card);
+const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
   const edition = `${card.edition} Edition`;
   const tier = `${card.tier} Tier`;
   const TypeComponent = types[card.type];
-  const defects = randomDefects(card, random);
+
+  random = random || stableRandom(card);
+  defects = defects || randomDefects(card, random);
 
   return (
     <div className={styles.card_front}>
@@ -72,17 +73,6 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
   );
 };
 
-const stableRandom = (card) => {
-  const tokenID = card.tokenID().toString();
-
-  return (seed) => {
-    const generator = seedrandom(tokenID + seed);
-    generator.mod = (n) => Math.abs(generator.int32()) % n;
-
-    return generator;
-  };
-};
-
 // Manually set the size of the bottom-right tier text so that it matches the edition.
 const tierScales = {
   Mortal: 0.6605568153,
@@ -103,5 +93,8 @@ const tierIcons = {
   Godly: ["shield", "walls", "glasses", "helix"],
   Master: [],
 }
+
+CardFront.stableRandom = stableRandom;
+CardFront.randomDefects = randomDefects;
 
 export default CardFront;
