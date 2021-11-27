@@ -25,11 +25,22 @@ const randomDefects = (card, random) => {
     defects.fingerprint.side = random("fingerprint-side").mod(2) === 0 ? "left" : "right";
     defects.fingerprint.x = random("fingerprint-x")() * 10;
     defects.fingerprint.y = random("fingerprint-y")() * 50 + 40;
-    defects.fingerprint.opacity = random("fingerprint-opacity")() * 0.05 + 0.1;
+    defects.fingerprint.opacity = random("fingerprint-opacity")() * 0.1 + 0.1;
     defects.fingerprint.degrees = random("fingerprint-degrees")() * 60 - 30;
     defects.fingerprint.scaleX = random("fingerprint-scale-x").mod(2) * 2 - 1;
 
     if (defects.faint_fingerprint) { defects.fingerprint.opacity /= 2; }
+  }
+
+  if (defects.ink_stain) {
+    defects.ink_stain = {};
+    defects.ink_stain.image = random("ink-stain-image").mod(5) + 1;
+    defects.ink_stain.width = random("ink-stain-width")() * 20 + 20;
+    defects.ink_stain.x = random("ink-stain-x")() * 80 + 10;
+    defects.ink_stain.y = random("ink-stain-y")() * 80;
+    defects.ink_stain.opacity = random("ink-stain-opacity")() * 0.4 + 0.5;
+    defects.ink_stain.degrees = random("ink-stain-degrees")() * 360;
+    defects.ink_stain.scaleX = random("ink-stain-scale-x").mod(2) * 2 - 1;
   }
 
   if (defects.coffee_stain) {
@@ -66,17 +77,17 @@ const possibleDefects = {
   },
   Reasonable: {
     always: { peeling_foil: true },
-    sometimes: ["smudged_title", "yellowing", "faint_fingerprint"],
+    sometimes: ["yellowing", "faint_fingerprint"],
     num: 1
   },
   Poor: {
     always: { peeling_foil: true },
-    sometimes: ["smudged_title", "yellowing", "tilted_puzzle", "folded_corner", "obvious_fingerprint"],
+    sometimes: ["ink_stain", "yellowing", "tilted_puzzle", "folded_corner", "obvious_fingerprint"],
     num: 2
   },
   Dire: {
     always: { peeling_foil: true, yellowing: true },
-    sometimes: ["smudged_title", "slipped_puzzle", "coffee_stain", "torn_edge", "folded_corner", "obvious_fingerprint"],
+    sometimes: ["ink_stain", "slipped_puzzle", "coffee_stain", "torn_edge", "folded_corner", "obvious_fingerprint"],
     num: 2
   },
 };

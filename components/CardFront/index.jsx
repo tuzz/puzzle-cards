@@ -62,6 +62,16 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
         }} />
       </div>}
 
+      {defects.ink_stain && <div className={`${styles.ink_stain} ${foldedCornerClass}`}>
+        <img src={`/images/ink_stain_${defects.ink_stain.image}.png`} style={{
+          width: `${defects.ink_stain.width}%`,
+          left: `${defects.ink_stain.x}%`,
+          top: `${defects.ink_stain.y}%`,
+          opacity: defects.ink_stain.opacity,
+          transform: `rotate(${defects.ink_stain.degrees}deg) scaleX(${defects.ink_stain.scaleX})`,
+        }} />
+      </div>}
+
       {defects.coffee_stain && <div className={`${styles.coffee_stain} ${foldedCornerClass}`}>
         <img src={`/images/coffee_stain_${defects.coffee_stain.image}.png`} style={{
           width: `${defects.coffee_stain.width}%`,
