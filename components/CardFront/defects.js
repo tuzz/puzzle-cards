@@ -10,6 +10,14 @@ const randomDefects = (card, random) => {
     defects.yellowing = random("yellowing-scale-x").mod(2) * 2 - 1;
   }
 
+  if (defects.tilted_puzzle) {
+    defects.puzzle_rotation = random("puzzle-degrees").mod(2) * 3 - 1.5;
+  } else if (defects.slipped_puzzle) {
+    defects.puzzle_rotation = random("puzzle-degrees").mod(2) * 8 - 4;
+  } else {
+    defects.puzzle_rotation = 0;
+  }
+
   return defects;
 };
 

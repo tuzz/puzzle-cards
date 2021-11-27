@@ -23,11 +23,11 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
         <VectorText className={styles.title} text={card.puzzleTitle()} />
 
         <div className={styles.video}>
-          <video autoPlay muted loop playsInline onCanPlay={onLoaded}>
+          <video autoPlay muted loop playsInline onCanPlay={onLoaded} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>
             <source src={card.puzzlePreviewUrl()} type="video/mp4" />
           </video>
 
-          <div className={styles.overlay}>
+          <div className={styles.overlay} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>
             <VectorText className={styles.number} text={card.puzzleNumberInSet()} referenceText="123 / 123" padSide="left" />
           </div>
         </div>
