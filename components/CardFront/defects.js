@@ -87,7 +87,7 @@ const possibleDefects = {
   },
   Dire: {
     always: { peeling_foil: true, yellowing: true },
-    sometimes: ["ink_stain", "slipped_puzzle", "coffee_stain", "torn_edge", "folded_corner", "obvious_fingerprint"],
+    sometimes: ["ink_stain", "slipped_puzzle", "coffee_stain", "folded_corner", "obvious_fingerprint"],
     num: 2
   },
 };
