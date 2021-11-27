@@ -15,57 +15,59 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
 
   return (
     <div className={styles.card_front}>
-      {defects.peeling_foil && <div className={styles.peeling_foil} style={{ transform: `scaleX(${defects.peeling_foil})` }}></div>}
+      <div className={styles.silver_foil}>
+        {defects.peeling_foil && <div className={styles.peeling_foil} style={{ transform: `scaleX(${defects.peeling_foil})` }}></div>}
 
-      <div className={styles.paper}>
-        {defects.yellowing && <div className={styles.yellowing} style={{ transform: `scaleX(${defects.yellowing})` }}></div>}
+        <div className={styles.paper}>
+          {defects.yellowing && <div className={styles.yellowing} style={{ transform: `scaleX(${defects.yellowing})` }}></div>}
 
-        <VectorText className={styles.title} text={card.puzzleTitle()} />
-
-        <div className={styles.video}>
-          <video autoPlay muted loop playsInline onCanPlay={onLoaded} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>
-            <source src={card.puzzlePreviewUrl()} type="video/mp4" />
-          </video>
-
-          <div className={styles.overlay} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>
-            <VectorText className={styles.number} text={card.puzzleNumberInSet()} referenceText="123 / 123" padSide="left" />
-          </div>
+          <VectorText className={styles.title} text={card.puzzleTitle()} />
         </div>
 
-        <div className={styles.type}>
-          <TypeComponent card={card} random={random} />
+        <div className={styles.bottom_row}>
+          <VectorText className={styles.edition} text={edition} referenceText="Standard Edition" padSide="right" anchor="start" />
+          <span className={styles.tier}>
+            {tierIcons[card.tier].map(iconName => (
+              <img key={iconName} src={`/images/${iconName}_icon.png`} className={`${styles.tier_icon} ${styles[iconName]}`} />
+            ))}
+            <VectorText className={`${styles.tier_name} ${styles[card.tier.toLowerCase()]}`} text={tier} scale={tierScales[card.tier] || 1} anchor="end" />
+          </span>
+        </div>
+
+        {defects.fingerprint && <div className={styles.fingerprint}>
+          <img src={`/images/fingerprint_${defects.fingerprint.image}.png`} style={{
+            width: `${defects.fingerprint.width}%`,
+            [defects.fingerprint.side]: `${defects.fingerprint.x}%`,
+            top: `${defects.fingerprint.y}%`,
+            opacity: defects.fingerprint.opacity,
+            transform: `rotate(${defects.fingerprint.degrees}deg) scaleX(${defects.fingerprint.scaleX})`,
+          }} />
+        </div>}
+
+        {defects.coffee_stain && <div className={styles.coffee_stain}>
+          <img src={`/images/coffee_stain_${defects.coffee_stain.image}.png`} style={{
+            width: `${defects.coffee_stain.width}%`,
+            [defects.coffee_stain.side]: `${defects.coffee_stain.x}%`,
+            top: `${defects.coffee_stain.y}%`,
+            opacity: defects.coffee_stain.opacity,
+            transform: `rotate(${defects.coffee_stain.degrees}deg) scaleX(${defects.coffee_stain.scaleX})`,
+          }} />
+        </div>}
+      </div>
+
+      <div className={styles.video}>
+        <video autoPlay muted loop playsInline onCanPlay={onLoaded} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>
+          <source src={card.puzzlePreviewUrl()} type="video/mp4" />
+        </video>
+
+        <div className={styles.overlay} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>
+          <VectorText className={styles.number} text={card.puzzleNumberInSet()} referenceText="123 / 123" padSide="left" />
         </div>
       </div>
 
-      <div className={styles.bottom_row}>
-        <VectorText className={styles.edition} text={edition} referenceText="Standard Edition" padSide="right" anchor="start" />
-        <span className={styles.tier}>
-          {tierIcons[card.tier].map(iconName => (
-            <img key={iconName} src={`/images/${iconName}_icon.png`} className={`${styles.tier_icon} ${styles[iconName]}`} />
-          ))}
-          <VectorText className={`${styles.tier_name} ${styles[card.tier.toLowerCase()]}`} text={tier} scale={tierScales[card.tier] || 1} anchor="end" />
-        </span>
+      <div className={styles.type}>
+        <TypeComponent card={card} random={random} />
       </div>
-
-      {defects.fingerprint && <div className={styles.fingerprint}>
-        <img src={`/images/fingerprint_${defects.fingerprint.image}.png`} style={{
-          width: `${defects.fingerprint.width}%`,
-          [defects.fingerprint.side]: `${defects.fingerprint.x}%`,
-          top: `${defects.fingerprint.y}%`,
-          opacity: defects.fingerprint.opacity,
-          transform: `rotate(${defects.fingerprint.degrees}deg) scaleX(${defects.fingerprint.scaleX})`,
-        }} />
-      </div>}
-
-      {defects.coffee_stain && <div className={styles.coffee_stain}>
-        <img src={`/images/coffee_stain_${defects.coffee_stain.image}.png`} style={{
-          width: `${defects.coffee_stain.width}%`,
-          [defects.coffee_stain.side]: `${defects.coffee_stain.x}%`,
-          top: `${defects.coffee_stain.y}%`,
-          opacity: defects.coffee_stain.opacity,
-          transform: `rotate(${defects.coffee_stain.degrees}deg) scaleX(${defects.coffee_stain.scaleX})`,
-        }} />
-      </div>}
     </div>
   );
 };

@@ -3,6 +3,17 @@
 .card_front {
   width: 100%;
   height: 100%;
+
+  svg {
+    font-family: "Trebuchet MS";
+    font-weight: bold;
+    fill: rgba(0, 0, 0, 0.8);
+  }
+}
+
+.silver_foil {
+  width: 100%;
+  height: 100%;
   border-radius: 5% / 3.5714285714%; // 5 * 15/21
   background-color: #aaa;
   background-image: url(/images/silver_foil.jpeg);
@@ -11,11 +22,13 @@
   padding-bottom: 0;
   box-sizing: border-box;
 
-  svg {
-    font-family: "Trebuchet MS";
-    font-weight: bold;
-    fill: rgba(0, 0, 0, 0.8);
-  }
+  clip-path: polygon(
+    0% 0%,
+    100% 0%,
+    100% 90%,
+    90% 100%,
+    0% 100%
+  );
 }
 
 .peeling_foil {
@@ -99,8 +112,11 @@
 }
 
 .video {
-  width: 100%;
-  height: 46%;
+  position: absolute;
+  top: 11.7%;
+  left: 1.5%;
+  width: 97%;
+  height: 43%;
   display: flex;
   align-items: center;
   background: #bbb;
@@ -109,14 +125,14 @@
 
   video {
     position: absolute; // Prevents blur when zoomed.
-    width: 97%;
+    width: 100%;
   }
 }
 
 .overlay {
   position: absolute;
-  width: 97%;
-  height: 39%;
+  width: 100%;
+  height: 90.5%;
 
   .number {
     position: absolute;
