@@ -24,7 +24,12 @@
   background-color: white;
   background-image: url(/images/paper.jpeg);
   background-size: 100%;
+  background-position: bottom;
   overflow: hidden;
+
+  &.yellowing {
+    background-image: url(/images/yellowed_paper.jpeg);
+  }
 }
 
 .title {

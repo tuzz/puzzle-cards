@@ -15,7 +15,7 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
 
   return (
     <div className={styles.card_front}>
-      <div className={styles.paper}>
+      <div className={`${styles.paper} ${defects.yellowing && styles.yellowing}`}>
         <VectorText className={styles.title} text={card.puzzleTitle()} />
 
         <div className={styles.video}>
