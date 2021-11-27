@@ -15,7 +15,11 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
 
   return (
     <div className={styles.card_front}>
-      <div className={`${styles.paper} ${defects.yellowing && styles.yellowing}`}>
+      {defects.peeling_foil && <div className={styles.peeling_foil} style={{ transform: `scaleX(${defects.peeling_foil})` }}></div>}
+
+      <div className={styles.paper}>
+        {defects.yellowing && <div className={styles.yellowing} style={{ transform: `scaleX(${defects.yellowing})` }}></div>}
+
         <VectorText className={styles.title} text={card.puzzleTitle()} />
 
         <div className={styles.video}>

@@ -1,6 +1,16 @@
 const randomDefects = (card, random) => {
   const { always, sometimes, num } = possibleDefects[card.condition];
-  return { ...always, ...choose(random, num, sometimes) };
+  const defects = { ...always, ...choose(random, num, sometimes) };
+
+  if (defects.peeling_foil) {
+    defects.peeling_foil = random("peeling-foil-scale-x").mod(2) * 2 - 1;
+  }
+
+  if (defects.yellowing) {
+    defects.yellowing = random("yellowing-scale-x").mod(2) * 2 - 1;
+  }
+
+  return defects;
 };
 
 const possibleDefects = {

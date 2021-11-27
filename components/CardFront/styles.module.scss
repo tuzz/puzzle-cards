@@ -18,18 +18,34 @@
   }
 }
 
+.peeling_foil {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  border-radius: 5% / 3.5714285714%;
+  background-image: url(/images/peeling_foil.png);
+  background-size: 100%;
+}
+
 .paper {
   height: 94%;
   border-radius: 4.25% / 3.0357142857%; // 4.25 * 15/21
   background-color: white;
   background-image: url(/images/paper.jpeg);
   background-size: 100%;
-  background-position: bottom;
   overflow: hidden;
+}
 
-  &.yellowing {
-    background-image: url(/images/yellowed_paper.jpeg);
-  }
+.yellowing {
+  position: absolute;
+  width: 97%;
+  height: 93%;
+  border-radius: 4.25% / 3.0357142857%; // 4.25 * 15/21
+  background-image: url(/images/yellowing.png);
+  background-size: 100%;
+  background-position: bottom;
 }
 
 .title {
