@@ -44,8 +44,14 @@ const randomDefects = (card, random) => {
     defects.coffee_stain.scaleX = random("coffee-stain-scale-x").mod(2) * 2 - 1;
   }
 
+  if (defects.folded_corner) {
+    defects.folded_corner = corners[random("folded-corner").mod(4)];
+  }
+
   return defects;
 };
+
+const corners = ["top_left", "top_right", "bottom_left", "bottom_right"];
 
 const possibleDefects = {
   Pristine: {

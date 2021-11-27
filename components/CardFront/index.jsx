@@ -15,7 +15,7 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
 
   return (
     <div className={styles.card_front}>
-      <div className={styles.silver_foil}>
+      <div className={`${styles.silver_foil} ${styles[`${defects.folded_corner}_folded_corner`]}`}>
         {defects.peeling_foil && <div className={styles.peeling_foil} style={{ transform: `scaleX(${defects.peeling_foil})` }}></div>}
 
         <div className={styles.paper}>
