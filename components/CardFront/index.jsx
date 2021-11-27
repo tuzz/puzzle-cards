@@ -14,9 +14,11 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
   random = random || stableRandom(card);
   defects = defects || randomDefects(card, random);
 
+  const foldedCornerClass = defects.folded_corner && styles[`${defects.folded_corner}_folded_corner`];
+
   return (
     <div className={styles.card_front}>
-      <div className={`${styles.silver_foil} ${styles[`${defects.folded_corner}_folded_corner`]}`}>
+      <div className={`${styles.silver_foil} ${foldedCornerClass}`}>
         {defects.peeling_foil && <div className={styles.peeling_foil} style={{ transform: `scaleX(${defects.peeling_foil})` }}></div>}
 
         <div className={styles.paper}>
@@ -34,26 +36,6 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
             <VectorText className={`${styles.tier_name} ${styles[card.tier.toLowerCase()]}`} text={tier} scale={tierScales[card.tier] || 1} anchor="end" />
           </span>
         </div>
-
-        {defects.fingerprint && <div className={styles.fingerprint}>
-          <img src={`/images/fingerprint_${defects.fingerprint.image}.png`} style={{
-            width: `${defects.fingerprint.width}%`,
-            [defects.fingerprint.side]: `${defects.fingerprint.x}%`,
-            top: `${defects.fingerprint.y}%`,
-            opacity: defects.fingerprint.opacity,
-            transform: `rotate(${defects.fingerprint.degrees}deg) scaleX(${defects.fingerprint.scaleX})`,
-          }} />
-        </div>}
-
-        {defects.coffee_stain && <div className={styles.coffee_stain}>
-          <img src={`/images/coffee_stain_${defects.coffee_stain.image}.png`} style={{
-            width: `${defects.coffee_stain.width}%`,
-            [defects.coffee_stain.side]: `${defects.coffee_stain.x}%`,
-            top: `${defects.coffee_stain.y}%`,
-            opacity: defects.coffee_stain.opacity,
-            transform: `rotate(${defects.coffee_stain.degrees}deg) scaleX(${defects.coffee_stain.scaleX})`,
-          }} />
-        </div>}
       </div>
 
       <div className={styles.video}>
@@ -69,6 +51,26 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
       <div className={styles.type}>
         <TypeComponent card={card} random={random} />
       </div>
+
+      {defects.fingerprint && <div className={`${styles.fingerprint} ${foldedCornerClass}`}>
+        <img src={`/images/fingerprint_${defects.fingerprint.image}.png`} style={{
+          width: `${defects.fingerprint.width}%`,
+          [defects.fingerprint.side]: `${defects.fingerprint.x}%`,
+          top: `${defects.fingerprint.y}%`,
+          opacity: defects.fingerprint.opacity,
+          transform: `rotate(${defects.fingerprint.degrees}deg) scaleX(${defects.fingerprint.scaleX})`,
+        }} />
+      </div>}
+
+      {defects.coffee_stain && <div className={`${styles.coffee_stain} ${foldedCornerClass}`}>
+        <img src={`/images/coffee_stain_${defects.coffee_stain.image}.png`} style={{
+          width: `${defects.coffee_stain.width}%`,
+          [defects.coffee_stain.side]: `${defects.coffee_stain.x}%`,
+          top: `${defects.coffee_stain.y}%`,
+          opacity: defects.coffee_stain.opacity,
+          transform: `rotate(${defects.coffee_stain.degrees}deg) scaleX(${defects.coffee_stain.scaleX})`,
+        }} />
+      </div>}
     </div>
   );
 };
