@@ -18,6 +18,16 @@ const randomDefects = (card, random) => {
     defects.puzzle_rotation = 0;
   }
 
+  if (defects.coffee_stain) {
+    defects.coffee_stain = {};
+    defects.coffee_stain.image = random("coffee-stain-image").mod(6) + 1;
+    defects.coffee_stain.width = random("coffee-stain-width")() * 20 + 90;
+    defects.coffee_stain.side = random("coffee-stain-side").mod(2) === 0 ? "left" : "right";
+    defects.coffee_stain.x = random("coffee-stain-x")() * 20 + 60;
+    defects.coffee_stain.y = random("coffee-stain-y")() * 130 - 50;
+    defects.coffee_stain.opacity = random("coffee-stain-opacity")() * 0.4 + 0.2;
+  }
+
   return defects;
 };
 

@@ -46,6 +46,15 @@ const CardFront = ({ card, onLoaded = () => {} }) => {
           <VectorText className={`${styles.tier_name} ${styles[card.tier.toLowerCase()]}`} text={tier} scale={tierScales[card.tier] || 1} anchor="end" />
         </span>
       </div>
+
+      {defects.coffee_stain && <div className={styles.coffee_stain}>
+        <img src={`/images/coffee_stain_${defects.coffee_stain.image}.png`} style={{
+          width: `${defects.coffee_stain.width}%`,
+          [defects.coffee_stain.side]: `${defects.coffee_stain.x}%`,
+          top: `${defects.coffee_stain.y}%`,
+          opacity: defects.coffee_stain.opacity,
+        }} />
+      </div>}
     </div>
   );
 };
