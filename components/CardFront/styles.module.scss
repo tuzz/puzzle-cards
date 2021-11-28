@@ -1073,11 +1073,215 @@
       text-shadow: 0 0 0.5rem black;
     }
   }
+
+  .artwork {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    img {
+      position: relative;
+
+      &.mirrored {
+        transform: scaleX(-1);
+      }
+    }
+
+    &.player_sketch {
+      img { width: 10.5%; margin-bottom: -0.5%; }
+    }
+
+    &.ice_block {
+      &:before { @include black_background; }
+      img { width: 41%; margin-bottom: 0.3%; }
+    }
+
+    &.car_body {
+      img { width: 95%; margin-bottom: 5.3%; }
+    }
+
+    &.car_tyre {
+      align-items: center;
+
+      img {
+        width: 35%;
+        animation-name: spin-clockwise;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+
+        &.mirrored {
+          animation-name: spin-counter-clockwise;
+        }
+      }
+    }
+
+    &.two_torches {
+      align-items: center;
+      img { width: 50%; }
+    }
+
+    &.book_cover {
+      img { width: 40%; margin-bottom: 0.3%; }
+    }
+
+    &.jellyfish {
+      align-items: center;
+
+      &:before {
+        @include black_background;
+      }
+
+      img {
+        width: 28%;
+        transform: rotate(15deg);
+
+        &.mirrored {
+          transform: rotate(-15deg);
+        }
+      }
+    }
+
+    &.big_tree {
+      img {
+        width: 50%;
+        margin-bottom: -5%;
+        margin-left: 15%;
+
+        &.mirrored {
+          margin-left: -15%;
+        }
+      }
+    }
+
+    &.small_tree {
+      img {
+        width: 45%;
+        margin-bottom: -4.5%;
+        margin-left: 15%;
+
+        &.mirrored {
+          margin-left: -15%;
+        }
+      }
+    }
+
+    &.ladder_tree {
+      img { width: 50%; margin-bottom: -3.5%; }
+    }
+
+    &.baby_crab {
+      img { width: 20%; margin-bottom: -0.3%; }
+    }
+
+    &.solar_spikes {
+      &:before { @include black_background; }
+    }
+
+    &.ancient_door {
+      img { width: 42%; margin-bottom: 0.3%; }
+    }
+
+    &.overgrown_door {
+      img { width: 47%; margin-bottom: 0.3%; }
+    }
+
+    &.anglerfish {
+      img { width: 90%; margin-bottom: 10%; }
+    }
+
+    &.seaweed {
+      img { margin-bottom: -3%; }
+    }
+
+    &.starfish {
+      align-items: center;
+
+      img {
+        width: 40%;
+        animation-name: spin-clockwise;
+        animation-duration: 10s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+
+        &.mirrored {
+          animation-name: spin-counter-clockwise;
+        }
+      }
+    }
+
+    &.helix_coral {
+      height: 200%;
+      margin-bottom: -8.2%;
+      overflow: hidden;
+
+      &:before {
+        @include black_background;
+      }
+
+      img {
+        width: 150%;
+        transform: rotate(-40deg);
+        margin-left: 5%;
+        margin-bottom: 8%;
+
+        &.mirrored {
+          transform: rotate(40deg);
+          margin-left: -5%;
+        }
+      }
+    }
+
+    &.torch_coral {
+      img { width: 30%; margin-bottom: -2.5%; }
+    }
+
+    &.frozen_sun, &.frozen_moon {
+      &:before { @include black_background; }
+      img { width: 48%; }
+    }
+
+    &.sun_padlock {
+      img { width: 50%; margin-bottom: 0.3%; }
+    }
+
+    &.black_hourglass, &.white_hourglass {
+      align-items: center;
+
+      img {
+        width: 28%;
+
+        animation-name: spin-hourglass;
+        animation-duration: 10s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+      }
+    }
+
+    &.white_hourglass {
+      &:before { @include black_background; }
+    }
+  }
 }
 
 @keyframes spin-clockwise {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+@keyframes spin-counter-clockwise {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes spin-hourglass {
+  0% { transform: rotate(360deg); }
+  25% { transform: rotate(180deg); }
+  50% { transform: rotate(180deg); }
+  75% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
 }
 
 @keyframes move-up-and-down {

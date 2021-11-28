@@ -277,9 +277,26 @@ module.exports.Star = ({ card }) => {
   );
 };
 
-module.exports.Artwork = ({ card }) => (
-  <p>artwork</p>
-);
+module.exports.Artwork = ({ card, random }) => {
+  const name = snakeCase(card.variant);
+  const mirrored = !nonMirroredArt.includes(name) && random("mirror-artwork").mod(2) === 0;
+
+  return (
+    <div className={`${styles.artwork} ${styles[name]}`}>
+      <img src={`/images/artwork/${name}.png`} className={`${mirrored && styles.mirrored}`} />
+    </div>
+  );
+};
+
+const nonMirroredArt = [
+  "book_cover",
+  "sun_padlock",
+  "frozen_sun",
+  "frozen_moon",
+  "black_hourglass",
+  "white_hourglass",
+  "torch_coral",
+];
 
 const snakeCase = (strings) => {
   strings = Array.isArray(strings) ? strings : [strings];

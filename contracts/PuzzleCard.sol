@@ -713,7 +713,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     uint8[] private NUM_PUZZLES_PER_SERIES = [4, 6];
     uint8[] private SERIES_FOR_EACH_PUZZLE = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1];
     uint8[] private NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 1, 2, 0, 0, 2, 0, 0, 0, 1, 0];
-    uint8[] private NUM_VARIANTS_PER_TYPE = [56, 6, 0, 2, 2, 2, 0, 0, 0, 8, 0, 0, 0, 2, 0, 0, 2];
+    uint8[] private NUM_VARIANTS_PER_TYPE = [56, 6, 0, 2, 2, 2, 0, 0, 0, 8, 0, 0, 0, 2, 0, 0, 24];
 
     uint256[7] private MINT_PRICE_MULTIPLERS = [1, 2, 5, 10, 20, 50, 100];
     uint256 private UNLOCK_PRICE_MULTIPLIER = 10000;

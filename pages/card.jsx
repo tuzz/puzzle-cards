@@ -10,14 +10,14 @@ const Tmp = () => {
   //const card = PuzzleCard.fromTokenID(BigInt(tokenID));
   const card = new PuzzleCard({
     series: "Teamwork",
-    puzzle: "I",
-    tier: "Mortal",
-    type: "Crab",
+    puzzle: "II",
+    tier: "Master",
+    type: "Artwork",
     color1: "None",
     color2: "None",
-    variant: "Middle",
+    variant: "Anglerfish",
     condition: "Pristine",
-    edition: "Standard",
+    edition: "Limited",
   });
 
   return (
