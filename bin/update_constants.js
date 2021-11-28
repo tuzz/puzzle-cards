@@ -1,7 +1,8 @@
 const fs = require("fs")
-const PuzzleCard = require("../public/PuzzleCard");
 
 const main = async () => {
+  let PuzzleCard = require("../public/PuzzleCard");
+
   const variantsPerType = {
     Player: [
       "Idle Front",
@@ -150,14 +151,14 @@ const main = async () => {
   };
 
   const numVariantsPerType = PuzzleCard.TYPE_NAMES.map(type => variantsPerType[type].length);
-  const variantNames = orderVariants(variantsPerType);
+  const variantNames = orderVariants(variantsPerType, PuzzleCard);
 
   const variantOffsetPerType = PuzzleCard.TYPE_NAMES.map(type => (
     variantNames.findIndex(v => v === (variantsPerType[type][0] || "None"))
   ));
 
   const seriesNames = Object.keys(puzzlesPerSeries);
-  const puzzleNames = orderPuzzles(puzzlesPerSeries);
+  const puzzleNames = orderPuzzles(puzzlesPerSeries, PuzzleCard);
 
   const numPuzzlesPerSeries = seriesNames.map(series => puzzlesPerSeries[series].length);
   const seriesForEachPuzzle = buildReverseIndex(numPuzzlesPerSeries);
@@ -180,10 +181,26 @@ const main = async () => {
   updateConstants("public/PuzzleCard.js", args);
   updateConstants("contracts/PuzzleCard.sol", args);
 
-  // TODO: add a --deploy flag to the script that also calls the #updateConstants contract method
+  if (process.env.DEPLOY !== "true") {
+    console.log("PuzzleCard.js updated but not deploying because DEPLOY=true was not set.");
+    return;
+  }
+
+  PuzzleCard = reload(PuzzleCard);
+
+  const [owner] = await ethers.getSigners();
+
+  PuzzleCard.attach(ethers, ethers.provider);
+  PuzzleCard.connect(owner);
+
+  const receipt = await PuzzleCard.updateConstants();
+  const transaction = await receipt.wait();
+
+  console.log(transaction);
+  console.log(`PuzzleCard.js updated and deployed to contract ${PuzzleCard.CONTRACT_ADDRESS}`);
 };
 
-const orderVariants = (variantsPerType) => {
+const orderVariants = (variantsPerType, PuzzleCard) => {
   const ordered = { None: 0, Sun: 1, Moon: 2, Open: 3, Closed: 4 };
   let nextIndex = 5;
 
@@ -205,7 +222,7 @@ const orderVariants = (variantsPerType) => {
   return Object.keys(ordered);
 };
 
-const orderPuzzles = (puzzlesPerSeries) => {
+const orderPuzzles = (puzzlesPerSeries, PuzzleCard) => {
   const ordered = {};
   let nextIndex = 0;
 
@@ -247,6 +264,19 @@ const updateConstants = (filename, args) => {
     .replace(/PUZZLE_OFFSET_PER_SERIES = .*;/, `PUZZLE_OFFSET_PER_SERIES = ${JSON.stringify(args.puzzleOffsetPerSeries).replaceAll(",", ", ")};`)
 
   fs.writeFileSync(filename, content);
+};
+
+const reload = (PuzzleCard) => {
+  PuzzleCard.stale = true;
+
+  delete require.cache[require.resolve("../public/PuzzleCard")];
+  PuzzleCard = require("../public/PuzzleCard");
+
+  if (PuzzleCard.stale) {
+    throw new Error("Reloading PuzzleCard failed.");
+  }
+
+  return PuzzleCard;
 };
 
 main().then(() => process.exit(0)).catch(error => {

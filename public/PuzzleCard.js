@@ -793,9 +793,9 @@ PuzzleCard.ERROR_STRINGS = [
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0xff7ca10af37178bdd056628ef42fd7f799fac77c";
 PuzzleCard.ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-PuzzleCard.CONTRACT_ADDRESS = "0x0d69d1ef5d1a7afbfcb11bce0e5e63cf71c65da4";
+PuzzleCard.CONTRACT_ADDRESS = "0xcb8bafd6b12bc11b9e5abbb09cf7156dcc3ff3a3";
 PuzzleCard.CONTRACT_OWNER = "0xbc50c6815ff8c11fb35ea70d9f79f90d5744182a";
-PuzzleCard.CONTRACT_BLOCK = 21128400;
+PuzzleCard.CONTRACT_BLOCK = 22040583;
 PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://matic-mumbai.chainstacklabs.com","url2":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
 
 PuzzleCard.CONTRACT_ABI = [
