@@ -1,0 +1,47 @@
+#!/usr/bin/env node
+
+// Compares two deck json files and prints any differences. This can be used to
+// verify that an incrementally built deck matches one built from scratch.
+
+const fs = require("fs")
+
+const main = async () => {
+  if (process.argv.length !== 4) {
+    throw new Error("Usage: ./bin/compare_deck a.json b.json");
+  }
+
+  const deck1Path = process.argv[2];
+  const deck2Path = process.argv[3];
+
+  const deck1Json = fs.readFileSync(deck1Path, "utf8")
+  const deck2Json = fs.readFileSync(deck2Path, "utf8")
+
+  const deck1 = JSON.parse(deck1Json);
+  const deck2 = JSON.parse(deck2Json);
+
+  for (let [tokenID, quantity1] of Object.entries(deck1.balanceByTokenID)) {
+    const quantity2 = deck2.balanceByTokenID[tokenID]
+
+    if (typeof quantity2 !== "number") {
+      console.log(`token ${tokenID} is not in ${deck2Path}`);
+      continue;
+    }
+
+    if (quantity1 !== quantity2) {
+      console.log(`token ${tokenID} has quantity ${quantity1} in ${deck1Path} and ${quantity2} in ${deck2Path}`);
+    }
+  }
+
+  for (let tokenID of Object.keys(deck2.balanceByTokenID)) {
+    const quantity1 = deck1.balanceByTokenID[tokenID]
+
+    if (typeof quantity1 !== "number") {
+      console.log(`token ${tokenID} is not in ${deck1Path}`);
+    }
+  }
+};
+
+main().then(() => process.exit(0)).catch(error => {
+  console.error(error);
+  process.exit(1);
+});
