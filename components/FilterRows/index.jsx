@@ -109,7 +109,9 @@ const FilterRows = ({ filters, setFilters }) => {
       `Not applicable because the 'Star' type does not have variants.`;
 
   const variantMenuWidth = filters.filters["type"] === "Player" ? "wide" :
-                           filters.filters["type"] === "Map" ? "verywide" : "default";
+                           filters.filters["type"] === "Map" ? "verywide" :
+                           filters.filters["type"] === "Artwork" ? "mediumwide" :
+                           typeIndex === -1 && filters.filters["tier"] === "Master" ? "mediumwide" : "default";
 
   return <>
     <div className={`${styles.filter_row} ${styles.top}`}>

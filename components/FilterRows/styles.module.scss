@@ -47,6 +47,12 @@
     }
   }
 
+  &.menu_mediumwide {
+    :global(.dropdown__menu) {
+      width: 13.5rem;
+    }
+  }
+
   &.menu_verywide {
     :global(.dropdown__menu) {
       width: 17.2rem;
