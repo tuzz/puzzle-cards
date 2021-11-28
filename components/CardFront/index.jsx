@@ -7,8 +7,10 @@ import randomDefects from "./defects";
 import styles from "./styles.module.scss";
 
 const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
-  const edition = `${card.edition} Edition`;
-  const tier = `${card.tier} Tier`;
+  const editionText = card.editionIndex() < 2  ? "Standard Edition" : "Limited Edition";
+  const tierText = `${card.tier} Tier`;
+
+  const isMasterCopy = card.edition === "Master Copy";
   const TypeComponent = types[card.type];
 
   random = random || stableRandom(card);
@@ -17,8 +19,8 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
   const foldedCornerClass = defects.folded_corner && styles[`${defects.folded_corner}_folded_corner`];
 
   return (
-    <div className={styles.card_front}>
-      <div className={`${styles.silver_foil} ${foldedCornerClass}`}>
+    <div className={`${styles.card_front} ${styles[shinyMaterial(card)]} ${isMasterCopy && styles.master_copy}`}>
+      <div className={`${styles.shiny_material} ${foldedCornerClass}`}>
         {defects.peeling_foil && <div className={styles.peeling_foil} style={{ transform: `scaleX(${defects.peeling_foil})` }}></div>}
 
         <div className={styles.paper}>
@@ -28,12 +30,13 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
         </div>
 
         <div className={styles.bottom_row}>
-          <VectorText className={styles.edition} text={edition} referenceText="Standard Edition" padSide="right" anchor="start" />
+          <VectorText className={styles.edition} text={editionText} referenceText="Standard Edition" padSide="right" anchor="start" />
+
           <span className={styles.tier}>
             {tierIcons[card.tier].map(iconName => (
               <img key={iconName} src={`/images/${iconName}_icon.png`} className={`${styles.tier_icon} ${styles[iconName]}`} />
             ))}
-            <VectorText className={`${styles.tier_name} ${styles[card.tier.toLowerCase()]}`} text={tier} scale={tierScales[card.tier] || 1} anchor="end" />
+            <VectorText className={`${styles.tier_name} ${styles[card.tier.toLowerCase()]}`} text={tierText} scale={tierScales[card.tier] || 1} anchor="end" />
           </span>
         </div>
       </div>
@@ -83,6 +86,16 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
       </div>}
     </div>
   );
+};
+
+const shinyMaterial = (card) => {
+  if (card.edition === "Limited" || card.edition === "Master Copy") {
+    return "gold_glitter";
+  } else if (card.tier === "Master") {
+    return "silver_glitter";
+  } else {
+    return "silver_foil";
+  }
 };
 
 // Manually set the size of the bottom-right tier text so that it matches the edition.

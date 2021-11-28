@@ -11,7 +11,7 @@
   }
 }
 
-.silver_foil {
+.shiny_material {
   width: 100%;
   height: 100%;
   border-radius: 5% / 3.5714285714%; // 5 * 15/21
@@ -35,6 +35,20 @@
       background-size: 100%;
     }
   }
+}
+
+.silver_glitter .shiny_material {
+  background-image: url(/images/silver_glitter.jpeg);
+  background-size: 50%;
+}
+
+.gold_glitter .shiny_material {
+  background-image: url(/images/gold_glitter.jpeg);
+  background-size: 70%;
+}
+
+.master_copy .shiny_material {
+  box-shadow: 0 0 2rem #97f;
 }
 
 .top_left_folded_corner {
@@ -106,13 +120,13 @@
 .edition {
   flex: 40;
   height: 100%;
-  text-shadow: 0.2rem 0.2rem 0.2rem white;
+  text-shadow: -0.2rem 0.2rem 0.2rem white;
 }
 
 .tier {
   flex: 60;
   height: 100%;
-  text-shadow: 0.2rem 0.2rem 0.2rem white;
+  text-shadow: -0.2rem 0.2rem 0.2rem white;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -137,14 +151,18 @@
   }
 }
 
+.silver_glitter, .gold_glitter {
+  .edition, .tier {
+    text-shadow: -0.1rem 0.1rem 0.1rem white;
+  }
+}
+
 .video {
   position: absolute;
   top: 11.7%;
   left: 1.5%;
   width: 97%;
-  height: 42.9%;
-  display: flex;
-  align-items: center;
+  height: 42.6%;
   background: #bbb;
   background-image: url(/images/foil_mesh.jpeg);
   background-size: 50% 140%;
@@ -152,13 +170,25 @@
   video {
     position: absolute; // Prevents blur when zoomed.
     width: 100%;
+    top: 4.258168184%;
   }
+}
+
+.silver_glitter .video {
+  background-image: url(/images/silver_glitter.jpeg);
+  background-size: 50%;
+}
+
+.gold_glitter .video {
+  background-image: url(/images/gold_glitter.jpeg);
+  background-size: 70%;
 }
 
 .overlay {
   position: absolute;
   width: 100%;
-  height: 90.5%;
+  height: 91.4%;
+  top: 4.258168184%;
 
   .number {
     position: absolute;
@@ -204,7 +234,7 @@
   position: absolute;
   left: 1.5%;
   right: 1.5%;
-  top: 54.6%;
+  top: 54.3%;
   bottom: 5.7%;
   display: flex;
   align-items: flex-end;

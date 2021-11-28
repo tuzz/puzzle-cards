@@ -14,7 +14,7 @@ const VectorText = ({ text, className, referenceText, padSide = "right", scale =
   // the font-size fairly consistent, e.g. for the bottom-right number text.
   let padding = "";
   if (referenceText) {
-    const numCharsShorterThanReference = referenceText.length - text.length;
+    const numCharsShorterThanReference = Math.max(0, referenceText.length - text.length);
     const uptoNum = [...Array(numCharsShorterThanReference).keys()];
 
     padding = uptoNum.map(() => padChar).join("");

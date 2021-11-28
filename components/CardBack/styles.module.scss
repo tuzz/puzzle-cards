@@ -20,4 +20,8 @@
   &.bottom_right_folded_corner {
     clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 12% 100%, 0% 91.4285714286%);
   }
+
+  &.master_copy {
+    box-shadow: 0 0 2rem #97f;
+  }
 }
