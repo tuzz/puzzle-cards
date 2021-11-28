@@ -7,15 +7,17 @@ import randomDefects from "./defects";
 import styles from "./styles.module.scss";
 
 const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
+  random = random || stableRandom(card);
+  defects = defects || randomDefects(card, random);
+
   const editionText = card.editionIndex() < 2  ? "Standard Edition" : "Limited Edition";
   const tierText = `${card.tier} Tier`;
 
   const isMasterCopy = card.edition === "Master Copy";
+  const isSigned = card.edition !== "Standard";
+  const signatureSide = isSigned && random("signature-side")() < 0.5 ? "left" : "right";
+
   const TypeComponent = types[card.type];
-
-  random = random || stableRandom(card);
-  defects = defects || randomDefects(card, random);
-
   const foldedCornerClass = defects.folded_corner && styles[`${defects.folded_corner}_folded_corner`];
 
   return (
@@ -88,6 +90,13 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
           transform: `rotate(${defects.coffee_stain.degrees}deg) scaleX(${defects.coffee_stain.scaleX})`,
         }} />
       </div>}
+
+      {isSigned && <img className={styles.signature} src={`/images/signature_${random("signature").mod(4) + 1}.png`} style={{
+        height: `${random("signature-height")() * 4 + 13}%`,
+        [signatureSide]: `${random("signature-x")() * 5 + 1.5}%`,
+        top: `${random("signature-y")() * 25 + 50}%`,
+        transform: `rotate(${random("signature-degrees")() * 25 * (signatureSide === "left" ? -1 : 1)}deg)`,
+      }} />}
     </div>
   );
 };
