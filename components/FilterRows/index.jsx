@@ -147,7 +147,7 @@ const FilterRows = ({ filters, setFilters }) => {
         counts={filters.countsForDropdownOptions["color2"]}
         alphabetic={true}
         disabled={numColorSlots < 2 || isDoorVariant}
-        hidden={isMasterTier}
+        hidden={isMasterTier || type === "Artwork"}
         alertText={colorAlert} />
 
       <Dropdown
@@ -155,7 +155,7 @@ const FilterRows = ({ filters, setFilters }) => {
         onChange={handleChange("puzzle")}
         names={PuzzleCard.PUZZLE_NAMES}
         counts={filters.countsForDropdownOptions["puzzle"]}
-        hidden={!isMasterTier} />
+        hidden={!isMasterTier && type !== "Artwork"} />
     </div>
 
     <div className={`${styles.filter_row} ${styles.bottom}`}>
