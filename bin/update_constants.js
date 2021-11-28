@@ -133,8 +133,20 @@ const main = async () => {
   };
 
   const puzzlesPerSeries = {
-    "Darkness Yields Light": ["I", "II", "III", "IV"],
-    "Teamwork": ["I", "II", "III", "IV", "V", "VI"],
+    "Darkness Yields Light": [
+      "Darkness Yields Light I",
+      "Darkness Yields Light II",
+      "Darkness Yields Light III",
+      "Darkness Yields Light IV",
+    ],
+    "Teamwork": [
+      "Teamwork I",
+      "Teamwork II",
+      "Teamwork III",
+      "Teamwork IV",
+      "Teamwork V",
+      "Teamwork VI",
+    ],
   };
 
   const numVariantsPerType = PuzzleCard.TYPE_NAMES.map(type => variantsPerType[type].length);
@@ -145,7 +157,7 @@ const main = async () => {
   ));
 
   const seriesNames = Object.keys(puzzlesPerSeries);
-  const puzzleNames = seriesNames.flatMap(series => puzzlesPerSeries[series]);
+  const puzzleNames = orderPuzzles(puzzlesPerSeries);
 
   const numPuzzlesPerSeries = seriesNames.map(series => puzzlesPerSeries[series].length);
   const seriesForEachPuzzle = buildReverseIndex(numPuzzlesPerSeries);
@@ -186,6 +198,24 @@ const orderVariants = (variantsPerType) => {
       }
 
       ordered[variant] = nextIndex;
+      nextIndex += 1;
+    }
+  }
+
+  return Object.keys(ordered);
+};
+
+const orderPuzzles = (puzzlesPerSeries) => {
+  const ordered = {};
+  let nextIndex = 0;
+
+  for (let series of PuzzleCard.SERIES_NAMES) {
+    for (let puzzle of puzzlesPerSeries[series]) {
+      if (ordered.hasOwnProperty(puzzle)) {
+        throw new Error(`Puzzle ${puzzle} is repeated`);
+      }
+
+      ordered[puzzle] = nextIndex;
       nextIndex += 1;
     }
   }

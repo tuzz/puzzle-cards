@@ -155,7 +155,8 @@ const FilterRows = ({ filters, setFilters }) => {
         onChange={handleChange("puzzle")}
         names={PuzzleCard.PUZZLE_NAMES}
         counts={filters.countsForDropdownOptions["puzzle"]}
-        hidden={!isMasterTier && type !== "Artwork"} />
+        hidden={!isMasterTier && type !== "Artwork"}
+        menuWidth="verywide" />
     </div>
 
     <div className={`${styles.filter_row} ${styles.bottom}`}>

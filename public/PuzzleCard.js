@@ -50,7 +50,7 @@ class PuzzleCard {
   }
 
   puzzleIndex() {
-    return this.puzzleIndexScopedToSeries();
+    return PuzzleCard.PUZZLE_NAMES.indexOf(this.puzzle);
   }
 
   relativePuzzleIndex() {
@@ -102,11 +102,7 @@ class PuzzleCard {
   }
 
   puzzleSlug() {
-    return this.puzzleTitle().toLowerCase().replaceAll(" ", "-");
-  }
-
-  puzzleTitle() {
-    return [this.series, this.puzzle].join(" ");
+    return this.puzzle.toLowerCase().replaceAll(" ", "-");
   }
 
   puzzleNumber() {
@@ -461,19 +457,6 @@ class PuzzleCard {
 
   // private methods
 
-  puzzleIndexScopedToSeries() {
-    const s = this.seriesIndex();
-
-    const from = PuzzleCard.PUZZLE_OFFSET_PER_SERIES[s];
-    const to = from + PuzzleCard.NUM_PUZZLES_PER_SERIES[s];
-
-    for (let i = from; i < to; i += 1) {
-      if (PuzzleCard.PUZZLE_NAMES[i] === this.puzzle) { return i; }
-    }
-
-    return -1;
-  }
-
   static async isOwner() {
     const address1 = PuzzleCard.CONTRACT.signer.address;
     if (address1 && address1.toLowerCase() === PuzzleCard.CONTRACT_OWNER) { return true; }
@@ -715,7 +698,7 @@ class PuzzleCard {
 // constants
 
 PuzzleCard.SERIES_NAMES = ["Darkness Yields Light", "Teamwork"];
-PuzzleCard.PUZZLE_NAMES = ["I", "II", "III", "IV", "I", "II", "III", "IV", "V", "VI"];
+PuzzleCard.PUZZLE_NAMES = ["Darkness Yields Light I", "Darkness Yields Light II", "Darkness Yields Light III", "Darkness Yields Light IV", "Teamwork I", "Teamwork II", "Teamwork III", "Teamwork IV", "Teamwork V", "Teamwork VI"];
 PuzzleCard.TIER_NAMES = ["Mortal", "Immortal", "Ethereal", "Virtual", "Celestial", "Godly", "Master"];
 PuzzleCard.TYPE_NAMES = ["Player", "Crab", "Cloak", "Inactive", "Active", "Telescope", "Helix", "Beacon", "Torch", "Map", "Teleport", "Glasses", "Eclipse", "Door", "Hidden", "Star", "Artwork"];
 PuzzleCard.COLOR_NAMES = ["None", "Yellow", "Black", "Green", "White", "Blue", "Red", "Pink"];

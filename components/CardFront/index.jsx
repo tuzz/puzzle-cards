@@ -28,7 +28,7 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
         <div className={styles.paper}>
           {defects.yellowing && <div className={styles.yellowing} style={{ transform: `scaleX(${defects.yellowing})` }}></div>}
 
-          <VectorText className={styles.title} text={card.puzzleTitle()} />
+          <VectorText className={styles.title} text={card.puzzle} />
         </div>
 
         <div className={styles.bottom_row}>
