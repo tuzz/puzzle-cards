@@ -47,6 +47,10 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
         </video>
 
         <div className={styles.overlay} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>
+          {isMasterCopy && <div className={styles.master_copy_grid}>
+            <VectorText className={styles.master_copy_text} text={"Master Copy"} />
+          </div>}
+
           <VectorText className={styles.number} text={card.puzzleNumberInSet()} referenceText="123 / 123" padSide="left" />
         </div>
       </div>
