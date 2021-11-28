@@ -1,0 +1,3 @@
+#!/bin/bash
+
+yarn hardhat run bin/generate_metadata.js --network test
