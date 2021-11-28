@@ -47,7 +47,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
     });
 
     return () => removeEventListener("resize", resizeListener);
-  }, [loadedAddress]);
+  }, [loadedAddress, filters]);
 
   useEffect(() => {
     setStackPositions(stackPositions => {
