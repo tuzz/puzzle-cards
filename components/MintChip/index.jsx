@@ -1,5 +1,5 @@
 import { useContext, useRef, useState, useEffect } from "react";
-import AppContext from "../DeckLoader/context"
+import DeckContext from "../DeckLoader/context"
 import Draggable from "../Draggable";
 import Zoomable from "../Zoomable";
 import Flippable from "../Flippable";
@@ -7,7 +7,7 @@ import Dropdown from "./dropdown";
 import styles from "./styles.module.scss";
 
 const MintChip = ({ filters, onMoved = () => {}, channel }) => {
-  const { PuzzleCard, address, chainId, maxTiers, updateMaxTier } = useContext(AppContext);
+  const { PuzzleCard, address, chainId, maxTiers, updateMaxTier } = useContext(DeckContext);
   const maxTier = maxTiers[address];
 
   const dropdowns = [{ ref: useRef() }, { ref: useRef() }];

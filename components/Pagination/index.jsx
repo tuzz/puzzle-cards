@@ -1,9 +1,9 @@
 import { useContext, useState, useEffect } from "react";
-import AppContext from "../DeckLoader/context"
+import DeckContext from "../DeckLoader/context"
 import styles from "./styles.module.scss";
 
 const Pagination = ({ filters, setFilters }) => {
-  const { address, decks } = useContext(AppContext);
+  const { address, decks } = useContext(DeckContext);
   const [showing, setShowing] = useState(false);
 
   useEffect(() => {

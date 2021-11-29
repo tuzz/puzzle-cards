@@ -1,12 +1,12 @@
 import { useContext, useState, useRef, useEffect } from "react";
-import AppContext from "../DeckLoader/context";
+import DeckContext from "../DeckLoader/context";
 import DragContext from "../DragRegion/context";
 import CardStack from "../CardStack";
 import layout from "./layout";
 import styles from "./styles.module.scss";
 
 const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, filters, setFilters, channel }) => {
-  const { address, decks } = useContext(AppContext);
+  const { address, decks } = useContext(DeckContext);
   const { maxZIndex } = useContext(DragContext);
 
   const [loadedAddress, setLoadedAddress] = useState(address);

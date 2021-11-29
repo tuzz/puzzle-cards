@@ -1,11 +1,11 @@
 import { useContext, useState } from "react";
-import AppContext from "../DeckLoader/context";
+import DeckContext from "../DeckLoader/context";
 import Dropdown from "./dropdown";
 import styles from "./styles.module.scss";
 
 const FilterRows = ({ filters, setFilters }) => {
   const [showingFilters, setShowingFilters] = useState(false);
-  const { PuzzleCard, address, decks } = useContext(AppContext);
+  const { PuzzleCard, address, decks } = useContext(DeckContext);
 
   const unnecessary = !address || decks[address].length <= 6;
   if (!showingFilters && unnecessary) { return null; }

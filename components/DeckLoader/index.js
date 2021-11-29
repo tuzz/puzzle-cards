@@ -1,10 +1,10 @@
 import { useState, useEffect, createContext } from "react";
 import { ethers } from "ethers";
 import PuzzleCard from "../../public/PuzzleCard";
-import AppContext from "./context";
+import DeckContext from "./context";
 
 const DeckLoader = ({ children }) => {
-  const [appContext, setAppContext] = useState({ PuzzleCard, decks: {}, maxTiers: {}, generation: 0 });
+  const [deckContext, setDeckContext] = useState({ PuzzleCard, decks: {}, maxTiers: {}, generation: 0 });
   const [connectPoller, setConnectPoller] = useState();
 
   useEffect(async () => {
@@ -48,7 +48,7 @@ const DeckLoader = ({ children }) => {
   };
 
   const ensureDeck = async (address, chainId) => {
-    setAppContext(c => {
+    setDeckContext(c => {
       address = address || c.address;
       chainId = chainId || c.chainId;
 
@@ -74,9 +74,9 @@ const DeckLoader = ({ children }) => {
   };
 
   useEffect(() => {
-    if (!correctNetwork(appContext.chainId)) { return; }
+    if (!correctNetwork(deckContext.chainId)) { return; }
 
-    for (let [address, deck] of Object.entries(appContext.decks)) {
+    for (let [address, deck] of Object.entries(deckContext.decks)) {
       if (!deck.fetching && !deck.fetched) {
         deck.fetching = true;
         deck.justChanged = [];
@@ -85,14 +85,14 @@ const DeckLoader = ({ children }) => {
           deck.fetched = true;
           deck.justChanged = [];
 
-          setAppContext(c => ({ ...c, decks: { ...c.decks, [address]: deck } }));
+          setDeckContext(c => ({ ...c, decks: { ...c.decks, [address]: deck } }));
         });
       }
     }
-  }, [appContext.decks, appContext.chainId]);
+  }, [deckContext.decks, deckContext.chainId]);
 
   const updateFetchedDeck = (address) => (changes) => {
-    setAppContext(c => {
+    setDeckContext(c => {
       const deck = c.decks[address].slice(0);
 
       deck.fetched = true;
@@ -122,7 +122,7 @@ const DeckLoader = ({ children }) => {
 
     const maxTier = await PuzzleCard.maxTierUnlocked(address);
 
-    setAppContext(c => {
+    setDeckContext(c => {
       if (c.maxTiers[address] === maxTier) { return c; }
 
       return { ...c, maxTiers: { ...c.maxTiers, [address]: maxTier } };
@@ -132,9 +132,9 @@ const DeckLoader = ({ children }) => {
   const correctNetwork = (chainId) => chainId === PuzzleCard.CONTRACT_NETWORK.chainId;
 
   return <>
-    <AppContext.Provider value={{ ...appContext, updateMaxTier }}>
+    <DeckContext.Provider value={{ ...deckContext, updateMaxTier }}>
       {children}
-    </AppContext.Provider>
+    </DeckContext.Provider>
   </>;
 };
 

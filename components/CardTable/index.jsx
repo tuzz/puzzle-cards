@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from "react";
-import AppContext from "../DeckLoader/context";
+import DeckContext from "../DeckLoader/context";
 import Metamask from "./metamask";
 import TransactState from "./transactState";
 import YellowSun from "../YellowSun";
@@ -16,7 +16,7 @@ import styles from "./styles.module.scss";
 import Filters from "./filters";
 
 const CardTable = () => {
-  const { PuzzleCard, decks, address, chainId, generation } = useContext(AppContext);
+  const { PuzzleCard, decks, address, chainId, generation } = useContext(DeckContext);
   const [chosenStacks, setChosenStacks] = useState([]);
   const [hourglassStacks, setHourglassStacks] = useState([]);
   const [mintChipActive, setMintChipActive] = useState(true);

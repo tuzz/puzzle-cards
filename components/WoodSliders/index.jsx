@@ -1,10 +1,10 @@
 import { useContext, useState, useEffect } from "react";
-import AppContext from "../DeckLoader/context"
+import DeckContext from "../DeckLoader/context"
 import Head from "next/head";
 import styles from "./styles.module.scss";
 
 const WoodSliders = ({ transactState, onButtonClick = () => {}, onSlidersClosed = () => {} }) => {
-  const { address, decks } = useContext(AppContext);
+  const { address, decks } = useContext(DeckContext);
   const [state, setState] = useState(0);
   const [showing, setShowing] = useState(false);
 
