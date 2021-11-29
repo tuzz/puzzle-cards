@@ -1,3 +1,5 @@
-import CardTable from "../components/CardTable";
+const Page = () => (
+  <p>index page</p>
+);
 
-export default CardTable;
+export default Page;

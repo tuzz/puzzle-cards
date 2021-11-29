@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import AppContext from "../AppRoot/context";
+import AppContext from "../DeckLoader/context";
 import Dropdown from "./dropdown";
 import styles from "./styles.module.scss";
 

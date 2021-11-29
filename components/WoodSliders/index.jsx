@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from "react";
-import AppContext from "../AppRoot/context"
+import AppContext from "../DeckLoader/context"
 import Head from "next/head";
 import styles from "./styles.module.scss";
 

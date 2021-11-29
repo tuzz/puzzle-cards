@@ -1,5 +1,5 @@
 import { useContext, useRef, useState, useEffect } from "react";
-import AppContext from "../AppRoot/context"
+import AppContext from "../DeckLoader/context"
 import Draggable from "../Draggable";
 import Zoomable from "../Zoomable";
 import Flippable from "../Flippable";

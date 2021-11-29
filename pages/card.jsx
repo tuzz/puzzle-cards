@@ -2,7 +2,7 @@ import { useRouter } from "next/router"
 import PuzzleCard from "../public/PuzzleCard";
 import CardViewer from "../components/CardViewer";
 
-const CardPage = () => {
+const Page = () => {
   const router = useRouter();
   const { tokenID } = router.query;
 
@@ -12,4 +12,4 @@ const CardPage = () => {
   return <CardViewer card={card} />;
 };
 
-export default CardPage;
+export default Page;

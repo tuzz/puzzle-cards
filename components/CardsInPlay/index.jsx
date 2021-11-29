@@ -1,5 +1,5 @@
 import { useContext, useState, useRef, useEffect } from "react";
-import AppContext from "../AppRoot/context";
+import AppContext from "../DeckLoader/context";
 import DragContext from "../DragRegion/context";
 import CardStack from "../CardStack";
 import layout from "./layout";

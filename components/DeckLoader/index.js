@@ -1,10 +1,9 @@
 import { useState, useEffect, createContext } from "react";
 import { ethers } from "ethers";
-import Head from "next/head";
 import PuzzleCard from "../../public/PuzzleCard";
 import AppContext from "./context";
 
-const AppRoot = ({ Component, pageProps }) => {
+const DeckLoader = ({ children }) => {
   const [appContext, setAppContext] = useState({ PuzzleCard, decks: {}, maxTiers: {}, generation: 0 });
   const [connectPoller, setConnectPoller] = useState();
 
@@ -133,13 +132,10 @@ const AppRoot = ({ Component, pageProps }) => {
   const correctNetwork = (chainId) => chainId === PuzzleCard.CONTRACT_NETWORK.chainId;
 
   return <>
-    <Head>
-      <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-    </Head>
     <AppContext.Provider value={{ ...appContext, updateMaxTier }}>
-      <Component {...pageProps} />
+      {children}
     </AppContext.Provider>
   </>;
 };
 
-export default AppRoot;
+export default DeckLoader;

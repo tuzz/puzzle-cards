@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from "react";
-import AppContext from "../AppRoot/context";
+import AppContext from "../DeckLoader/context";
 import Metamask from "./metamask";
 import TransactState from "./transactState";
 import YellowSun from "../YellowSun";
