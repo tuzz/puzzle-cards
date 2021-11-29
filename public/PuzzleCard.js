@@ -89,15 +89,19 @@ class PuzzleCard {
     return PuzzleCard.EDITION_NAMES.indexOf(this.edition);
   }
 
-  metadataUrl() {
-    return PuzzleCard.METADATA_URI.replace("{id}", this.tokenHexString().slice(2).padStart(64, "0"));
+  metadataURL() {
+    return PuzzleCard.METADATA_URI.replace("{id}", this.metadataID());
   }
 
-  puzzleVideoUrl() {
+  metadataID() {
+    return this.tokenHexString().slice(2).padStart(64, "0");
+  }
+
+  puzzleVideoURL() {
     return `${PuzzleCard.VIDEOS_URI}/${this.puzzleSlug()}.mp4`;
   }
 
-  puzzlePreviewUrl() {
+  puzzlePreviewURL() {
     return `${PuzzleCard.PREVIEWS_URI}/${this.puzzleSlug()}.mp4`;
   }
 

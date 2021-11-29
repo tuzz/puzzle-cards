@@ -49,9 +49,10 @@ const main = async () => {
                     name: card.puzzle,
                     description: "Description",
                     image: "https://storage.googleapis.com/opensea-prod.appspot.com/creature/1.png",
+                    animation_url: `https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=${card.tokenID()}`,
                   };
 
-                  fs.writeFileSync(`public/metadata/${card.tokenID()}.json`, JSON.stringify(metadata, null, 2) + "\n");
+                  fs.writeFileSync(`public/metadata/${card.metadataID()}.json`, JSON.stringify(metadata, null, 2) + "\n");
                   cardCombinations += 1;
                 }
               }
