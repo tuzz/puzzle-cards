@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useLayoutEffect } from "react";
 import styles from "./styles.module.scss";
 
 const VectorText = ({ text, className, referenceText, padSide = "right", scale = 1, anchor = "middle" }) => {
-  const [textSize, setTextSize] = useState("1em");
+  const [textSize, setTextSize] = useState(1);
   const svgRef = useRef();
 
   const padLeft = padSide === "around" || padSide === "left";
@@ -20,7 +20,9 @@ const VectorText = ({ text, className, referenceText, padSide = "right", scale =
     padding = uptoNum.map(() => padChar).join("");
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (textSize !== 1) { return; }
+
     const svg = svgRef.current;
     const tspan = svg.children[0].children[0];
 
@@ -28,7 +30,14 @@ const VectorText = ({ text, className, referenceText, padSide = "right", scale =
     const { width: tspanWidth, height: tspanHeight } = tspan.getBoundingClientRect();
 
     const size = Math.min(svgWidth / tspanWidth, svgHeight / tspanHeight);
-    setTextSize(`${size * scale}em`);
+    setTextSize(size * scale);
+  }, [textSize]);
+
+  useEffect(() => {
+    const listener = () => setTextSize(1);
+
+    addEventListener("resize", listener);
+    return () => removeEventListener("resize", listener);
   }, []);
 
   const xmlns = "http://www.w3.org/2000/svg";
@@ -38,7 +47,7 @@ const VectorText = ({ text, className, referenceText, padSide = "right", scale =
 
   return (
     <svg ref={svgRef} className={classes} xmlns={xmlns}>
-      <text x={x} y="50%" fontSize={textSize}>
+      <text x={x} y="50%" fontSize={`${textSize}em`}>
         <tspan>{padLeft && padding}{text}{padRight && padding}</tspan>
       </text>
     </svg>
