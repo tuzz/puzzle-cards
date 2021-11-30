@@ -1,0 +1,40 @@
+{
+  "name": "Teamwork I, Poor Condition",
+  "description": "Description",
+  "image": "https://storage.googleapis.com/opensea-prod.appspot.com/creature/1.png",
+  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=18448450515756908800",
+  "attributes": [
+    {
+      "trait_type": "0. Card Type",
+      "value": "Artwork"
+    },
+    {
+      "trait_type": "3. Variant",
+      "value": "Small Tree"
+    },
+    {
+      "trait_type": "4. Signature",
+      "value": "None"
+    },
+    {
+      "trait_type": "5. Edition",
+      "value": "Standard Edition"
+    },
+    {
+      "trait_type": "6. Condition",
+      "value": "2/5 Poor"
+    },
+    {
+      "trait_type": "7. Tier",
+      "value": "7/7 Master Tier"
+    },
+    {
+      "trait_type": "8. Puzzle",
+      "value": "Teamwork I"
+    },
+    {
+      "trait_type": "9. Series",
+      "value": "Teamwork"
+    }
+  ]
+}

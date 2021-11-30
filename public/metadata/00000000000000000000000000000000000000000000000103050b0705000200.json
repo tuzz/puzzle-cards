@@ -1,6 +1,40 @@
 {
-  "name": "Teamwork IV",
+  "name": "Pink and Blue Glasses, Godly Tier",
   "description": "Description",
   "image": "https://storage.googleapis.com/opensea-prod.appspot.com/creature/1.png",
-  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=18664336355483451904"
+  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=18664336355483451904",
+  "attributes": [
+    {
+      "trait_type": "0. Card Type",
+      "value": "Glasses"
+    },
+    {
+      "trait_type": "1. Color 1",
+      "value": "Pink"
+    },
+    {
+      "trait_type": "2. Color 2",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "5. Edition",
+      "value": "Standard Edition"
+    },
+    {
+      "trait_type": "6. Condition",
+      "value": "3/5 Reasonable"
+    },
+    {
+      "trait_type": "7. Tier",
+      "value": "6/7 Godly Tier"
+    },
+    {
+      "trait_type": "8. Puzzle",
+      "value": "Teamwork IV"
+    },
+    {
+      "trait_type": "9. Series",
+      "value": "Teamwork"
+    }
+  ]
 }

@@ -1,6 +1,40 @@
 {
-  "name": "Darkness Yields Light II",
+  "name": "Inactive Black Moon, Mortal Tier",
   "description": "Description",
   "image": "https://storage.googleapis.com/opensea-prod.appspot.com/creature/1.png",
-  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=72060901162812160"
+  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=72060901162812160",
+  "attributes": [
+    {
+      "trait_type": "0. Card Type",
+      "value": "Inactive"
+    },
+    {
+      "trait_type": "1. Color 1",
+      "value": "Black"
+    },
+    {
+      "trait_type": "3. Variant",
+      "value": "Moon"
+    },
+    {
+      "trait_type": "5. Edition",
+      "value": "Standard Edition"
+    },
+    {
+      "trait_type": "6. Condition",
+      "value": "4/5 Excellent"
+    },
+    {
+      "trait_type": "7. Tier",
+      "value": "1/7 Mortal Tier"
+    },
+    {
+      "trait_type": "8. Puzzle",
+      "value": "Darkness Yields Light II"
+    },
+    {
+      "trait_type": "9. Series",
+      "value": "Darkness Yields Light"
+    }
+  ]
 }

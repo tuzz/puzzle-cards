@@ -1,6 +1,40 @@
 {
-  "name": "Darkness Yields Light IV",
+  "name": "Active Blue Moon, Virtual Tier",
   "description": "Description",
   "image": "https://storage.googleapis.com/opensea-prod.appspot.com/creature/1.png",
-  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=217021626565329408"
+  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=217021626565329408",
+  "attributes": [
+    {
+      "trait_type": "0. Card Type",
+      "value": "Active"
+    },
+    {
+      "trait_type": "1. Color 1",
+      "value": "Blue"
+    },
+    {
+      "trait_type": "3. Variant",
+      "value": "Moon"
+    },
+    {
+      "trait_type": "5. Edition",
+      "value": "Standard Edition"
+    },
+    {
+      "trait_type": "6. Condition",
+      "value": "3/5 Reasonable"
+    },
+    {
+      "trait_type": "7. Tier",
+      "value": "4/7 Virtual Tier"
+    },
+    {
+      "trait_type": "8. Puzzle",
+      "value": "Darkness Yields Light IV"
+    },
+    {
+      "trait_type": "9. Series",
+      "value": "Darkness Yields Light"
+    }
+  ]
 }

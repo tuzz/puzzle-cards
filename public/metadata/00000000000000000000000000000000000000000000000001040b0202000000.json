@@ -1,6 +1,40 @@
 {
-  "name": "Darkness Yields Light II",
+  "name": "Black Glasses, Celestial Tier",
   "description": "Description",
   "image": "https://storage.googleapis.com/opensea-prod.appspot.com/creature/1.png",
-  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=73195597196165120"
+  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=73195597196165120",
+  "attributes": [
+    {
+      "trait_type": "0. Card Type",
+      "value": "Glasses"
+    },
+    {
+      "trait_type": "1. Color 1",
+      "value": "Black"
+    },
+    {
+      "trait_type": "2. Color 2",
+      "value": "Black"
+    },
+    {
+      "trait_type": "5. Edition",
+      "value": "Standard Edition"
+    },
+    {
+      "trait_type": "6. Condition",
+      "value": "1/5 Dire"
+    },
+    {
+      "trait_type": "7. Tier",
+      "value": "5/7 Celestial Tier"
+    },
+    {
+      "trait_type": "8. Puzzle",
+      "value": "Darkness Yields Light II"
+    },
+    {
+      "trait_type": "9. Series",
+      "value": "Darkness Yields Light"
+    }
+  ]
 }

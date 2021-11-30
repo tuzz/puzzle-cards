@@ -146,6 +146,67 @@ class PuzzleCard {
     ].map(i => i.toString(16).padStart(2, "0")).join("");
   }
 
+  openSeaTitle() {
+    let name;
+
+    switch (this.type) {
+      case "Player":    name = `Player Card, ${this.tier} Tier`; break;
+      case "Crab":      name = `Crab Card, ${this.tier} Tier`; break;
+      case "Cloak":     name = `${this.color1} Cloak, ${this.tier} Tier`; break;
+      case "Inactive":  name = `Inactive ${this.color1} ${this.variant}, ${this.tier} Tier`; break;
+      case "Active":    name = `Active ${this.color1} ${this.variant}, ${this.tier} Tier`; break;
+      case "Telescope": name = `${this.color1} ${this.variant} Telescope, ${this.tier} Tier`; break;
+      case "Beacon":    name = `${this.color1} Beacon, ${this.tier} Tier`; break;
+      case "Map":       name = `Map Card, ${this.tier} Tier`; break
+      case "Teleport":  name = `Teleport Card, ${this.tier} Tier`; break;
+      case "Eclipse":   name = `Eclipse Card, ${this.tier} Tier`; break;
+      case "Door":      name = `Door Card, ${this.tier} Tier`; break;
+      case "Hidden":    name = `Hidden Card, ${this.tier} Tier`; break;
+      case "Star":      name = `${this.color1} Star, ${this.tier} Tier, ${this.condition} Condition`; break;
+
+      case "Helix":     name = this.color1 === this.color2 ? `Double ${this.color1} Helix, ${this.tier} Tier`
+                                                           : `${this.color1} and ${this.color2} Helix, ${this.tier} Tier`; break;
+
+      case "Torch":     name = this.color1 === this.color2 ? `${this.color1} Torch, ${this.tier} Tier`
+                                                           : `${this.color1} and ${this.color2} Torch, ${this.tier} Tier`; break;
+
+      case "Glasses":   name = this.color1 === this.color2 ? `${this.color1} Glasses, ${this.tier} Tier`
+                                                           : `${this.color1} and ${this.color2} Glasses, ${this.tier} Tier`; break;
+
+      case "Artwork":   name = this.edition === "Standard" ? `${this.puzzle}, ${this.condition} Condition` :
+                        name = this.edition === "Signed"   ? `${this.puzzle}, Signed by tuzz` :
+                        name = this.edition === "Limited"  ? `${this.puzzle}, Limited Edition` :
+                                                             `${this.puzzle}, Master Copy`; break;
+    }
+
+    return name;
+  }
+
+  openSeaProperties() {
+    const isLimited = this.edition === "Limited" || this.edition === "Master Copy";
+
+    let properties = [
+      { trait_type: "0. Card Type", value: this.type },
+      { trait_type: "1. Color 1", value: this.color1 },
+      { trait_type: "2. Color 2", value: this.color2 },
+      { trait_type: "3. Variant", value: this.variant },
+      { trait_type: "4. Signature", value: this.edition === "Standard" ? "None" : "Signed by tuzz" },
+      { trait_type: "5. Edition", value: isLimited ? "Limited Edition" : "Standard Edition" },
+      { trait_type: "6. Condition", value: `${this.conditionIndex() + 1}/5 ${this.condition}` },
+      { trait_type: "7. Tier", value: `${this.tierIndex() + 1}/7 ${this.tier} Tier` },
+      { trait_type: "8. Puzzle", value: this.puzzle },
+      { trait_type: "9. Series", value: this.series },
+    ];
+
+    if (this.edition === "Master Copy") {
+      properties.push({ trait_type: "x. Exclusivity", value: "Master Copy" });
+    }
+
+    return properties.filter(({ trait_type, value }) => (
+      value !== "None" || this.type === "Artwork" && trait_type.includes("Signature")
+    ));
+  }
+
   // class methods
 
   static async fetchDeck(address, onChange, onProgress = () => {}) {
@@ -797,9 +858,9 @@ PuzzleCard.ERROR_STRINGS = [
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0xff7ca10af37178bdd056628ef42fd7f799fac77c";
 PuzzleCard.ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-PuzzleCard.CONTRACT_ADDRESS = "0xcb8bafd6b12bc11b9e5abbb09cf7156dcc3ff3a3";
+PuzzleCard.CONTRACT_ADDRESS = "0x901c75bf414251e992b3aebDe424c097400B9c47";
 PuzzleCard.CONTRACT_OWNER = "0xbc50c6815ff8c11fb35ea70d9f79f90d5744182a";
-PuzzleCard.CONTRACT_BLOCK = 22040583;
+PuzzleCard.CONTRACT_BLOCK = 22096696;
 PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://matic-mumbai.chainstacklabs.com","url2":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
 
 PuzzleCard.CONTRACT_ABI = [

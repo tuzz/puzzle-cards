@@ -1,6 +1,36 @@
 {
-  "name": "Teamwork I",
+  "name": "Crab Card, Ethereal Tier",
   "description": "Description",
   "image": "https://storage.googleapis.com/opensea-prod.appspot.com/creature/1.png",
-  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=18447308123174601728"
+  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=18447308123174601728",
+  "attributes": [
+    {
+      "trait_type": "0. Card Type",
+      "value": "Crab"
+    },
+    {
+      "trait_type": "3. Variant",
+      "value": "Standing"
+    },
+    {
+      "trait_type": "5. Edition",
+      "value": "Standard Edition"
+    },
+    {
+      "trait_type": "6. Condition",
+      "value": "5/5 Pristine"
+    },
+    {
+      "trait_type": "7. Tier",
+      "value": "3/7 Ethereal Tier"
+    },
+    {
+      "trait_type": "8. Puzzle",
+      "value": "Teamwork I"
+    },
+    {
+      "trait_type": "9. Series",
+      "value": "Teamwork"
+    }
+  ]
 }

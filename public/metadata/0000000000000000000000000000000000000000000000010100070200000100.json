@@ -1,6 +1,36 @@
 {
-  "name": "Teamwork II",
+  "name": "Black Beacon, Mortal Tier",
   "description": "Description",
   "image": "https://storage.googleapis.com/opensea-prod.appspot.com/creature/1.png",
-  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=18518809372918808832"
+  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=18518809372918808832",
+  "attributes": [
+    {
+      "trait_type": "0. Card Type",
+      "value": "Beacon"
+    },
+    {
+      "trait_type": "1. Color 1",
+      "value": "Black"
+    },
+    {
+      "trait_type": "5. Edition",
+      "value": "Standard Edition"
+    },
+    {
+      "trait_type": "6. Condition",
+      "value": "2/5 Poor"
+    },
+    {
+      "trait_type": "7. Tier",
+      "value": "1/7 Mortal Tier"
+    },
+    {
+      "trait_type": "8. Puzzle",
+      "value": "Teamwork II"
+    },
+    {
+      "trait_type": "9. Series",
+      "value": "Teamwork"
+    }
+  ]
 }

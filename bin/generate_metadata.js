@@ -1,8 +1,8 @@
 const fs = require("fs")
 const PuzzleCard = require("../public/PuzzleCard");
 
-const standardTypes = { from: 0, to: 13 };
-const masterTypes = { from: 14, to: 15 };
+const standardTypes = { from: 0, to: 14 };
+const masterTypes = { from: 15, to: 16 };
 
 const nonLimitedEditions = ["Standard", "Signed"];
 const standardEditionOnly = ["Standard"];
@@ -44,15 +44,17 @@ const main = async () => {
 
                 for (let edition of editionChoices) {
                   const card = new PuzzleCard({ series, puzzle, tier, type, color1, color2, variant, condition, edition });
+                  const filename = `public/metadata/${card.metadataID()}.json`;
 
                   const metadata = {
-                    name: card.puzzle,
+                    name: card.openSeaTitle(),
                     description: "Description",
                     image: "https://storage.googleapis.com/opensea-prod.appspot.com/creature/1.png",
                     animation_url: `https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=${card.tokenID()}`,
+                    attributes: card.openSeaProperties(),
                   };
 
-                  fs.writeFileSync(`public/metadata/${card.metadataID()}.json`, JSON.stringify(metadata, null, 2) + "\n");
+                  fs.writeFileSync(filename, JSON.stringify(metadata, null, 2) + "\n");
                   cardCombinations += 1;
                 }
               }

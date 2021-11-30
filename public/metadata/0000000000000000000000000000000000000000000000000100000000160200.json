@@ -1,6 +1,36 @@
 {
-  "name": "Darkness Yields Light II",
+  "name": "Player Card, Mortal Tier",
   "description": "Description",
   "image": "https://storage.googleapis.com/opensea-prod.appspot.com/creature/1.png",
-  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=72057594039370240"
+  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=72057594039370240",
+  "attributes": [
+    {
+      "trait_type": "0. Card Type",
+      "value": "Player"
+    },
+    {
+      "trait_type": "3. Variant",
+      "value": "Jump Left 3"
+    },
+    {
+      "trait_type": "5. Edition",
+      "value": "Standard Edition"
+    },
+    {
+      "trait_type": "6. Condition",
+      "value": "3/5 Reasonable"
+    },
+    {
+      "trait_type": "7. Tier",
+      "value": "1/7 Mortal Tier"
+    },
+    {
+      "trait_type": "8. Puzzle",
+      "value": "Darkness Yields Light II"
+    },
+    {
+      "trait_type": "9. Series",
+      "value": "Darkness Yields Light"
+    }
+  ]
 }
