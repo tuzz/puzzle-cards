@@ -34,7 +34,7 @@ import "./vendor/ProxyRegistry.sol";
 //import "hardhat/console.sol";
 
 contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
-    string public name = "Worship the Sun: Puzzle Card";
+    string public name = "Worship the Sun Puzzle Cards";
     string public symbol = "WSUN";
 
     struct Attributes {
