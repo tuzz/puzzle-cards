@@ -13,9 +13,6 @@ const main = async () => {
   const contract = await factory.deploy(proxyAddress);
   console.log(`Contract address: ${contract.address}`);
 
-  const transaction = await contract.mint(400, 0, owner.address, { gasLimit: 20000000 });
-  console.log(`Mint transaction: ${transaction.hash}`);
-
   while (true) {
     const block = await ethers.provider.getBlock(blockNumber);
 
