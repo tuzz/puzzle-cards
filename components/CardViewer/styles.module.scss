@@ -14,10 +14,15 @@
 
 .card {
   position: relative;
-  width: 64.2857142857vw;
-  height: 90vw;
-  max-width: 64.2857142857vh;
-  max-height: 90vh;
+  width: 64.2857142857vh;
+  height: 90vh;
+}
+
+@media (max-aspect-ratio: 15/21) {
+  .card {
+    width: 90vw;
+    height: 126vw;
+  }
 }
 
 @media (min-width: 1000px) {
