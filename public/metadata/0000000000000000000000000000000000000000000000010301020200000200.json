@@ -1,8 +1,8 @@
 {
   "name": "Black Cloak, Immortal Tier",
   "description": "Description",
-  "image": "https://storage.googleapis.com/opensea-prod.appspot.com/creature/1.png",
-  "animation_url": "https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=18663200538413236736",
+  "image": "https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images/18663200538413236736.jpeg",
+  "animation_url": "https://9d5c-2a02-6b6c-60-0-d127-1db4-73cf-9248.ngrok.io/card?tokenID=18663200538413236736",
   "attributes": [
     {
       "trait_type": "0. Card Type",

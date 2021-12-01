@@ -45,7 +45,7 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
 
       <div className={styles.video}>
         <video autoPlay muted loop playsInline onCanPlay={onLoaded} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>
-          <source src={card.puzzlePreviewURL()} type="video/mp4" />
+          <source src={card.puzzleVideoURL()} type="video/mp4" />
         </video>
 
         <div className={styles.overlay} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>

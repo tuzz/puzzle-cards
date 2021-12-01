@@ -49,8 +49,8 @@ const main = async () => {
                   const metadata = {
                     name: card.openSeaTitle(),
                     description: "Description",
-                    image: "https://storage.googleapis.com/opensea-prod.appspot.com/creature/1.png",
-                    animation_url: `https://1163-2a02-6b6c-60-0-419d-553a-1213-6374.ngrok.io/card?tokenID=${card.tokenID()}`,
+                    image: card.imageURL(),
+                    animation_url: `https://9d5c-2a02-6b6c-60-0-d127-1db4-73cf-9248.ngrok.io/card?tokenID=${card.tokenID()}`,
                     attributes: card.openSeaProperties(),
                   };
 

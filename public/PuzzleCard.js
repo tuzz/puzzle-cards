@@ -98,11 +98,7 @@ class PuzzleCard {
   }
 
   puzzleVideoURL() {
-    return `${PuzzleCard.VIDEOS_URI}/${this.puzzleSlug()}.mp4`;
-  }
-
-  puzzlePreviewURL() {
-    return `${PuzzleCard.PREVIEWS_URI}/${this.puzzleSlug()}.mp4`;
+    return `${PuzzleCard.PUZZLES_URI}/${this.puzzleSlug()}.mp4`;
   }
 
   puzzleSlug() {
@@ -115,6 +111,10 @@ class PuzzleCard {
 
   puzzleNumberInSet() {
     return `${this.puzzleNumber()} / ${PuzzleCard.PUZZLE_NAMES.length}`;
+  }
+
+  imageURL() {
+    return `${PuzzleCard.IMAGES_URI}/${this.tokenID()}.jpeg`;
   }
 
   tokenID() {
@@ -794,14 +794,13 @@ PuzzleCard.VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 
 PuzzleCard.POST_VIRTUAL_TYPE_PROBABILITIES = [0, 1, 100, 200, 100, 100, 20, 20, 20, 10, 10, 0, 4, 6];
 PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
-PuzzleCard.METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
+PuzzleCard.METADATA_URI = "https://9d5c-2a02-6b6c-60-0-d127-1db4-73cf-9248.ngrok.io/metadata/{id}.json";
 PuzzleCard.DECKS_URI = "https://puzzlecards.github.io/decks";
-PuzzleCard.VIDEOS_URI = "https://puzzlecards.github.io/puzzles";
-PuzzleCard.PREVIEWS_URI = "https://puzzlecards.github.io/previews";
+PuzzleCard.IMAGES_URI = "https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images"
+PuzzleCard.PUZZLES_URI = "https://puzzlecards.github.io/videos/puzzles";
 
 PuzzleCard.DECKS_URI = "http://localhost:3000/decks"; // TMP
-PuzzleCard.VIDEOS_URI = "http://localhost:3000/puzzles"; // TMP
-PuzzleCard.PREVIEWS_URI = "http://localhost:3000/previews"; // TMP
+PuzzleCard.PUZZLES_URI = "http://localhost:3000/videos/puzzles"; // TMP
 
 // Set a minimum gas limit that provides enough headroom for all actions.
 // Set a maximum gas limit that matches the limit for the polygon network.
