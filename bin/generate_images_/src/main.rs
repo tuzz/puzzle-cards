@@ -16,16 +16,17 @@ fn main() {
     let output_width = corresponding_width(OUTPUT_HEIGHT);
 
     fs::create_dir_all(OUTPUT_DIRECTORY).unwrap();
+    let extension = if JPEG_QUALITY.is_some() { ".jpeg" } else { ".png" };
 
     let expected_token_ids = token_ids_from_metadata_directory();
-    let actual_token_ids = token_ids_from_output_directory();
+    let actual_token_ids = token_ids_from_output_directory(extension);
 
     let missing_token_ids = expected_token_ids.difference(&actual_token_ids).collect::<Vec<_>>();
     let surplus_token_ids = actual_token_ids.difference(&expected_token_ids).collect::<Vec<_>>();
 
     if missing_token_ids.is_empty() { println!("All images already captured. Exiting."); return; }
 
-    surplus_token_ids.iter().for_each(|t| fs::remove_file(format!("{}/{}.png", OUTPUT_DIRECTORY, t)).unwrap());
+    surplus_token_ids.iter().for_each(|t| fs::remove_file(format!("{}/{}{}", OUTPUT_DIRECTORY, t, extension)).unwrap());
     if !surplus_token_ids.is_empty() { println!("\nRemoved {} images that have no corresponding metadata.", surplus_token_ids.len()); }
 
     let options = LaunchOptionsBuilder::default()
@@ -55,20 +56,17 @@ fn main() {
             let png_image = Reader::with_format(Cursor::new(png_bytes), ImageFormat::Png).decode().unwrap();
             let png_image = png_image.resize(output_width, OUTPUT_HEIGHT, FilterType::Lanczos3);
 
+            let out_path = format!("{}/{}{}", OUTPUT_DIRECTORY, token_id, extension);
+            let mut file = std::fs::File::create(out_path).unwrap();
+
             if let Some(quality) = JPEG_QUALITY {
                 let mut jpeg_bytes = vec![];
 
                 let mut jpeg_encoder = JpegEncoder::new_with_quality(&mut jpeg_bytes, quality);
                 jpeg_encoder.encode_image(&png_image).unwrap();
 
-                let out_path = format!("{}/{}.jpeg", OUTPUT_DIRECTORY, token_id);
-                let mut file = std::fs::File::create(out_path).unwrap();
-
                 file.write_all(&jpeg_bytes).unwrap();
             } else {
-                let out_path = format!("{}/{}.png", OUTPUT_DIRECTORY, token_id);
-                let mut file = std::fs::File::create(out_path).unwrap();
-
                 png_image.write_to(&mut file, image::ImageOutputFormat::Png).unwrap();
             }
 
@@ -76,7 +74,6 @@ fn main() {
             break;
         }
     }
-
 }
 
 fn token_ids_from_metadata_directory() -> BTreeSet<u128> {
@@ -101,7 +98,7 @@ fn token_ids_from_metadata_directory() -> BTreeSet<u128> {
     return token_ids;
 }
 
-fn token_ids_from_output_directory() -> BTreeSet<u128> {
+fn token_ids_from_output_directory(extension: &'static str) -> BTreeSet<u128> {
     let mut token_ids = BTreeSet::new();
 
     for result in fs::read_dir(OUTPUT_DIRECTORY).unwrap() {
@@ -111,9 +108,9 @@ fn token_ids_from_output_directory() -> BTreeSet<u128> {
         if !metadata.is_file() { continue; }
 
         let file_name = dir_entry.file_name().into_string().unwrap();
-        if !file_name.contains(".png") { continue; }
+        if !file_name.contains(extension) { continue; }
 
-        let token_id_string = file_name.split(".png").next().unwrap();
+        let token_id_string = file_name.split(extension).next().unwrap();
 
         let token_id = token_id_string.parse::<u128>().unwrap();
         token_ids.insert(token_id);
