@@ -4,6 +4,10 @@
   width: 100%;
   height: 100%;
 
+  &.master_copy {
+    filter: drop-shadow(0 0 2rem #97f);
+  }
+
   svg {
     font-family: "Trebuchet MS";
     font-weight: bold;
@@ -45,10 +49,6 @@
 .gold_glitter .shiny_material {
   background-image: url(/images/gold_glitter.jpeg);
   background-size: 70%;
-}
-
-.master_copy .shiny_material {
-  box-shadow: 0 0 2rem #97f;
 }
 
 .top_left_folded_corner {
@@ -225,8 +225,12 @@
   }
 }
 
-// Make the grid and the text at the top easier to see in the generated images.
 :global(.referrer_generate_images) {
+  .card_front:not(.master_copy) {
+    filter: drop-shadow(0 0 1rem black);
+  }
+
+  // Make the grid and the text at the top easier to see in the generated images.
   .overlay {
     .master_copy_grid {
       background-image:

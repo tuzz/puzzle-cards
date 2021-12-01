@@ -12,10 +12,9 @@ const CardViewer = ({ card, referrer }) => {
   // Present CardViewer differently depending on how the user arrived at this page.
   // e.g don't show the felt background when taking screenshots in ./bin/generate_images
   const referrerClass = `referrer_${referrer}`;
-  const editionClass = card.edition === "Master Copy" ? styles.master_copy : "";
 
   return (
-    <div className={`${styles.card_viewer} ${referrerClass} ${editionClass}`} ref={ref} onClick={handleClick}>
+    <div className={`${styles.card_viewer} ${referrerClass}`} ref={ref} onClick={handleClick}>
       <div className={styles.card}>
         <CardFront card={card} />
       </div>

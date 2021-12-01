@@ -27,12 +27,7 @@
   .card {
     width: 67.8571428571vh;
     height: 94vh;
-    box-shadow: 0 0 1rem black;
   }
-}
-
-.master_copy .card {
-  box-shadow: none;
 }
 
 @media (max-aspect-ratio: 15/21) {
