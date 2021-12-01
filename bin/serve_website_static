@@ -1,0 +1,5 @@
+#!/bin/bash
+
+./bin/build_website && \
+cd .gh-pages && \
+npx http-server -p 5000 -c 9999999999
