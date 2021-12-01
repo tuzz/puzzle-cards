@@ -28,8 +28,8 @@ const main = async () => {
         const numVariants = PuzzleCard.NUM_VARIANTS_PER_TYPE[typeIndex];
         const variantOffset = PuzzleCard.VARIANT_OFFSET_PER_TYPE[typeIndex];
 
-        const color1Choices = numColors < 1 ? ["None"] : PuzzleCard.COLOR_NAMES;
-        const color2Choices = numColors < 2 ? ["None"] : PuzzleCard.COLOR_NAMES;
+        const color1Choices = numColors < 1 ? ["None"] : PuzzleCard.COLOR_NAMES.slice(1);
+        const color2Choices = numColors < 2 ? ["None"] : PuzzleCard.COLOR_NAMES.slice(1);
         const variantChoices = numVariants < 1 ? ["None"] : PuzzleCard.VARIANT_NAMES.slice(variantOffset, variantOffset + numVariants);
 
         for (let color1 of color1Choices) {
