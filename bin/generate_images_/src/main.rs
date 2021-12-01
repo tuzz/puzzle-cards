@@ -1,16 +1,15 @@
 use headless_chrome::{Browser, LaunchOptionsBuilder, protocol::page::ScreenshotFormat, Tab};
-use std::{fs, collections::BTreeSet, sync::Arc};
+use std::{fs, collections::BTreeSet, sync::Arc, time::Duration};
 use std::io::{Cursor, Write, stdout};
 use image::{io::Reader, imageops::FilterType, ImageFormat, jpeg::JpegEncoder};
 
 const CAPTURE_HEIGHT: u32 = 2000;
 const CAPTURE_WIDTH: u32 = 2000;
-const HEADLESS: bool = true;
 
 const OUTPUT_WIDTH: u32 = 350;
 const OUTPUT_HEIGHT: u32 = 350;
-const OUTPUT_DIRECTORY: &str = "../../public_s3/card_images";
 
+const OUTPUT_DIRECTORY: &str = "../../public_s3/card_images";
 const JPEG_QUALITY: Option<u8> = Some(75); // Or output a lossless PNG if None.
 
 fn main() {
@@ -29,12 +28,14 @@ fn main() {
     if !surplus_token_ids.is_empty() { println!("\nRemoved {} images that have no corresponding metadata.", surplus_token_ids.len()); }
 
     let options = LaunchOptionsBuilder::default()
-        .headless(HEADLESS)
+        .headless(false) // Otherwise, it tends to time out.
         .window_size(Some((CAPTURE_WIDTH / 2, CAPTURE_HEIGHT / 2)))
+        .idle_browser_timeout(Duration::from_secs(999999999))
         .build().unwrap();
 
     let browser = Browser::new(options).unwrap();
     let tab = browser.wait_for_initial_tab().unwrap();
+    tab.set_default_timeout(Duration::from_secs(999999999));
 
     check_if_server_running(&tab);
 
