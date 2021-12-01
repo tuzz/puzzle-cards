@@ -225,6 +225,27 @@
   }
 }
 
+// Make the grid and the text at the top easier to see in the generated images.
+:global(.referrer_generate_images) {
+  .overlay {
+    .master_copy_grid {
+      background-image:
+        linear-gradient(to right, rgba(153, 119, 255, 0.5) 1%, transparent 5px),
+        linear-gradient(to bottom, rgba(153, 119, 255, 0.5) 1%, transparent 5px);
+    }
+
+    .master_copy_text {
+      transform-origin: top left;
+      transform: scale(1.8) translateX(5%);
+    }
+
+    .number {
+      transform-origin: top right;
+      transform: scale(1.8) translateX(-5%);
+    }
+  }
+}
+
 .fingerprint, .ink_stain {
   position: absolute;
   width: 97%;

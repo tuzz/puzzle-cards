@@ -16,12 +16,36 @@
   position: relative;
   width: 64.2857142857vh;
   height: 90vh;
+  border-radius: 5% / 3.5714285714%; // 5 * 15/21
+}
+
+:global(.referrer_generate_images) {
+  &.card_viewer {
+    background: none;
+  }
+
+  .card {
+    width: 67.8571428571vh;
+    height: 94vh;
+    box-shadow: 0 0 1rem black;
+  }
+}
+
+.master_copy .card {
+  box-shadow: none;
 }
 
 @media (max-aspect-ratio: 15/21) {
   .card {
     width: 90vw;
     height: 126vw;
+  }
+
+  :global(.referrer_generate_images) {
+    .card {
+      width: 92vw;
+      height: 131.6vw;
+    }
   }
 }
 

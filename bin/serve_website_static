@@ -1,5 +1,4 @@
 #!/bin/bash
 
 ./bin/build_website && \
-cd .gh-pages && \
-npx http-server -p 5000 -c 9999999999
+npx http-server .gh-pages -p 5000 -c 9999999999 -t0 --gzip

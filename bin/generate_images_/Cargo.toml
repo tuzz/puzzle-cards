@@ -1,0 +1,8 @@
+[package]
+name = "generate_images"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+headless_chrome = "*"
+image = "*"

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Visits every card page and takes a screenshot.
+#
+# Prerequisites:
+#   - The ./bin/generate_metadata must have already run
+#   - The ./bin/serve_website_static script must be running
+
+cd bin/generate_images_ && cargo run --release && cd ../../
