@@ -1,13 +1,15 @@
 use headless_chrome::{Browser, LaunchOptionsBuilder, protocol::page::ScreenshotFormat, Tab};
 use std::{fs, collections::BTreeSet, sync::Arc};
 use std::io::{Cursor, Write, stdout};
-use image::{io::Reader, imageops::FilterType, ImageFormat};
+use image::{io::Reader, imageops::FilterType, ImageFormat, jpeg::JpegEncoder};
 
 const CAPTURE_HEIGHT: u32 = 2000;
 const HEADLESS: bool = true;
 
 const OUTPUT_HEIGHT: u32 = 350;
-const OUTPUT_DIRECTORY: &str = "../../public/images/cards";
+const OUTPUT_DIRECTORY: &str = "../../public_s3/card_images";
+
+const JPEG_QUALITY: Option<u8> = Some(95); // Or output a lossless PNG if None.
 
 fn main() {
     let capture_width = corresponding_width(CAPTURE_HEIGHT);
@@ -53,12 +55,24 @@ fn main() {
             let png_image = Reader::with_format(Cursor::new(png_bytes), ImageFormat::Png).decode().unwrap();
             let png_image = png_image.resize(output_width, OUTPUT_HEIGHT, FilterType::Lanczos3);
 
-            let out_path = format!("{}/{}.png", OUTPUT_DIRECTORY, token_id);
-            let mut file = std::fs::File::create(out_path).unwrap();
+            if let Some(quality) = JPEG_QUALITY {
+                let mut jpeg_bytes = vec![];
 
-            png_image.write_to(&mut file, image::ImageOutputFormat::Png).unwrap();
+                let mut jpeg_encoder = JpegEncoder::new_with_quality(&mut jpeg_bytes, quality);
+                jpeg_encoder.encode_image(&png_image).unwrap();
+
+                let out_path = format!("{}/{}.jpeg", OUTPUT_DIRECTORY, token_id);
+                let mut file = std::fs::File::create(out_path).unwrap();
+
+                file.write_all(&jpeg_bytes).unwrap();
+            } else {
+                let out_path = format!("{}/{}.png", OUTPUT_DIRECTORY, token_id);
+                let mut file = std::fs::File::create(out_path).unwrap();
+
+                png_image.write_to(&mut file, image::ImageOutputFormat::Png).unwrap();
+            }
+
             println!("Captured {}/{}", i + 1, missing_token_ids.len());
-
             break;
         }
     }
