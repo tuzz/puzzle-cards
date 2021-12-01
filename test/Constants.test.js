@@ -80,11 +80,14 @@ describe("Constants", () => {
   });
 
   it("allows the contract owner to update METADATA_URI", async () => {
-    PuzzleCard.METADATA_URI = "https://foo.com/metadata/{}.json";
+    PuzzleCard.METADATA_URI = "https://foo.com/metadata/{id}.json";
     await PuzzleCard.updateConstants();
 
     const metadataURI = await contract.uri(0);
-    expect(metadataURI).to.equal("https://foo.com/metadata/{}.json");
+    expect(metadataURI).to.equal("https://foo.com/metadata/{id}.json");
+
+    const contractMetadataURI = await contract.contractURI();
+    expect(contractMetadataURI).to.equal("https://foo.com/metadata/contract.json");
   });
 
   it("allows the contract owner to update puzzles, e.g. when new puzzles are added", async () => {

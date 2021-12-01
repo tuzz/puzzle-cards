@@ -57,9 +57,14 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
 
     constructor(address proxyRegistryAddress) ERC1155("") {
         PROXY_REGISTRY_ADDRESS = proxyRegistryAddress;
+        CONTRACT_METADATA_URI = "https://puzzlecards.github.io/metadata/contract.json";
 
         _setURI("https://puzzlecards.github.io/metadata/{id}.json");
         _initializeEIP712(name);
+    }
+
+    function contractURI() external view returns (string memory) {
+      return CONTRACT_METADATA_URI;
     }
 
     function exists(uint256 tokenID) external view returns (bool) {
@@ -725,6 +730,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     uint256[] private MASTER_TYPE_PROBABILITIES_CUMULATIVE = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
     address private PROXY_REGISTRY_ADDRESS;
+    string private CONTRACT_METADATA_URI;
     uint256 private NUM_RANDOM_CALLS = 0;
 
     // Be very careful not to invalidate existing cards when calling this method.
@@ -736,6 +742,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         uint256[7] memory mintPriceMultipliers,
         uint256 unlockPriceMultiplier,
         address proxyRegistryAddress,
+        string memory contractMetadataURI,
         string memory metadataURI
     ) external onlyOwner {
         NUM_PUZZLES_PER_SERIES = numPuzzlesPerSeries;
@@ -744,6 +751,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         MINT_PRICE_MULTIPLERS = mintPriceMultipliers;
         UNLOCK_PRICE_MULTIPLIER = unlockPriceMultiplier;
         PROXY_REGISTRY_ADDRESS = proxyRegistryAddress;
+        CONTRACT_METADATA_URI = contractMetadataURI;
         _setURI(metadataURI);
     }
 

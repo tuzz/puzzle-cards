@@ -88,9 +88,11 @@ fn token_ids_from_metadata_directory() -> BTreeSet<u128> {
         if !file_name.contains(".json") { continue; }
 
         let hex_string = file_name.split(".json").next().unwrap();
-        let tail_of_string = &hex_string[32..];
+        if hex_string.len() != 64 { continue; }
 
+        let tail_of_string = &hex_string[32..];
         let token_id = u128::from_str_radix(tail_of_string, 16).unwrap();
+
         token_ids.insert(token_id);
     }
 

@@ -5,7 +5,7 @@
 // - it contains constants, such as the contract address, ABI, etc.
 // - it decodes reasons for why actions cannot be performed
 //
-// See https://puzzlecards.github.io/developers for example usage.
+// See https://github.com/tuzz/puzzle-cards for more information.
 
 class PuzzleCard {
   constructor({ series, puzzle, tier, type, color1, color2, variant, condition, edition, skipValidation }) {
@@ -87,6 +87,10 @@ class PuzzleCard {
 
   editionIndex() {
     return PuzzleCard.EDITION_NAMES.indexOf(this.edition);
+  }
+
+  static contractMetadataURL() {
+    return PuzzleCard.METADATA_URI.replace("{id}", "contract");
   }
 
   metadataURL() {
@@ -503,6 +507,7 @@ class PuzzleCard {
       PuzzleCard.MINT_PRICE_MULTIPLERS,
       PuzzleCard.UNLOCK_PRICE_MULTIPLIER,
       PuzzleCard.PROXY_REGISTRY_ADDRESS,
+      PuzzleCard.contractMetadataURL(),
       PuzzleCard.METADATA_URI,
       { gasLimit: PuzzleCard.GAS_LIMIT_MAXIMUM },
     );
@@ -857,9 +862,9 @@ PuzzleCard.ERROR_STRINGS = [
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0xff7ca10af37178bdd056628ef42fd7f799fac77c";
 PuzzleCard.ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-PuzzleCard.CONTRACT_ADDRESS = "0x901c75bf414251e992b3aebDe424c097400B9c47";
+PuzzleCard.CONTRACT_ADDRESS = "0xf21d39f44f934088f4f5124da911225f274115b1";
 PuzzleCard.CONTRACT_OWNER = "0xbc50c6815ff8c11fb35ea70d9f79f90d5744182a";
-PuzzleCard.CONTRACT_BLOCK = 22096696;
+PuzzleCard.CONTRACT_BLOCK = 22144962;
 PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://matic-mumbai.chainstacklabs.com","url2":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
 
 PuzzleCard.CONTRACT_ABI = [
@@ -887,6 +892,7 @@ PuzzleCard.CONTRACT_ABI = [
   "function canShineTorchOnBasePair(uint256[] tokenIDs) view returns (bool ok, bool[34] errors)",
   "function canTeleportToNextArea(uint256[] tokenIDs) view returns (bool ok, bool[34] errors)",
   "function changeLensColor(uint256[] tokenIDs)",
+  "function contractURI() view returns (string)",
   "function discard2Pickup1(uint256[] tokenIDs)",
   "function executeMetaTransaction(address userAddress, bytes functionSignature, bytes32 sigR, bytes32 sigS, uint8 sigV) payable returns (bytes)",
   "function exists(uint256 tokenID) view returns (bool)",
@@ -919,7 +925,7 @@ PuzzleCard.CONTRACT_ABI = [
   "function totalSupply(uint256) view returns (uint256)",
   "function transferOwnership(address newOwner)",
   "function unlockMintingAtAllTiers(address address_) payable",
-  "function updateConstants(uint8[] numPuzzlesPerSeries, uint8[] seriesForEachPuzzle, uint8[] numVariantsPerType, uint256[7] mintPriceMultipliers, uint256 unlockPriceMultiplier, address proxyRegistryAddress, string metadataURI)",
+  "function updateConstants(uint8[] numPuzzlesPerSeries, uint8[] seriesForEachPuzzle, uint8[] numVariantsPerType, uint256[7] mintPriceMultipliers, uint256 unlockPriceMultiplier, address proxyRegistryAddress, string contractMetadataURI, string metadataURI)",
   "function uri(uint256) view returns (string)"
 ];
 
