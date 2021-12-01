@@ -20,10 +20,6 @@
 }
 
 :global(.referrer_generate_images) {
-  &.card_viewer {
-    background: none;
-  }
-
   .card {
     width: 67.8571428571vh;
     height: 94vh;

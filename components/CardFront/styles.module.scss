@@ -213,12 +213,8 @@
   }
 }
 
+// Make the grid and the text at the top easier to see in the generated images.
 :global(.referrer_generate_images) {
-  .card_front:not(.master_copy) {
-    filter: drop-shadow(0 0 1rem black);
-  }
-
-  // Make the grid and the text at the top easier to see in the generated images.
   .overlay {
     .master_copy_grid {
       background-image:

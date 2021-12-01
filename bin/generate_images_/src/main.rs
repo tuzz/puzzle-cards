@@ -4,17 +4,16 @@ use std::io::{Cursor, Write, stdout};
 use image::{io::Reader, imageops::FilterType, ImageFormat, jpeg::JpegEncoder};
 
 const CAPTURE_HEIGHT: u32 = 2000;
+const CAPTURE_WIDTH: u32 = 2000;
 const HEADLESS: bool = true;
 
+const OUTPUT_WIDTH: u32 = 350;
 const OUTPUT_HEIGHT: u32 = 350;
 const OUTPUT_DIRECTORY: &str = "../../public_s3/card_images";
 
 const JPEG_QUALITY: Option<u8> = Some(95); // Or output a lossless PNG if None.
 
 fn main() {
-    let capture_width = corresponding_width(CAPTURE_HEIGHT);
-    let output_width = corresponding_width(OUTPUT_HEIGHT);
-
     fs::create_dir_all(OUTPUT_DIRECTORY).unwrap();
     let extension = if JPEG_QUALITY.is_some() { ".jpeg" } else { ".png" };
 
@@ -31,7 +30,7 @@ fn main() {
 
     let options = LaunchOptionsBuilder::default()
         .headless(HEADLESS)
-        .window_size(Some((capture_width / 2, CAPTURE_HEIGHT / 2)))
+        .window_size(Some((CAPTURE_WIDTH / 2, CAPTURE_HEIGHT / 2)))
         .build().unwrap();
 
     let browser = Browser::new(options).unwrap();
@@ -39,7 +38,7 @@ fn main() {
 
     check_if_server_running(&tab);
 
-    println!("\nCapturing at {}x{} then resizing to {}x{}.", capture_width, CAPTURE_HEIGHT, output_width, OUTPUT_HEIGHT);
+    println!("\nCapturing at {}x{} then resizing to {}x{}.", CAPTURE_WIDTH, CAPTURE_HEIGHT, OUTPUT_WIDTH, OUTPUT_HEIGHT);
     println!("\n{}/{} images already captured.\n", expected_token_ids.len() - missing_token_ids.len(), expected_token_ids.len());
 
     for (i, token_id) in missing_token_ids.iter().enumerate() {
@@ -54,7 +53,7 @@ fn main() {
 
             // Capture at a higher resolution then downsample to produce a higher quality result.
             let png_image = Reader::with_format(Cursor::new(png_bytes), ImageFormat::Png).decode().unwrap();
-            let png_image = png_image.resize(output_width, OUTPUT_HEIGHT, FilterType::Lanczos3);
+            let png_image = png_image.resize(OUTPUT_WIDTH, OUTPUT_HEIGHT, FilterType::Lanczos3);
 
             let out_path = format!("{}/{}{}", OUTPUT_DIRECTORY, token_id, extension);
             let mut file = std::fs::File::create(out_path).unwrap();
@@ -117,16 +116,6 @@ fn token_ids_from_output_directory(extension: &'static str) -> BTreeSet<u128> {
     }
 
     token_ids
-}
-
-fn corresponding_width(height: u32) -> u32 {
-    let width = height as f32 / 21. * 15.;
-
-    // Add a bit on for the box-shadow.
-    let width = width * 1.03;
-
-    // Round to next even integer.
-    (width / 2.).ceil() as u32 * 2
 }
 
 fn check_if_server_running(tab: &Arc<Tab>) {
