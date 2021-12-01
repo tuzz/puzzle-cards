@@ -56,7 +56,16 @@ const randomDefects = (card, random) => {
   }
 
   if (defects.folded_corner) {
-    defects.folded_corner = corners[random("folded-corner").mod(4)];
+    defects.folded_corner = {};
+
+    const sideX = random("folded-corner-side-x").mod(2) === 0 ? "left": "right";
+    const sideY = random("folded-corner-side-y").mod(2) === 0 ? "top": "bottom";
+
+    defects.folded_corner.corner = `${sideY}_${sideX}`;
+    defects.folded_corner.sideX = sideX;
+    defects.folded_corner.sideY = sideY;
+    defects.folded_corner.scaleX = sideX === "left" ? -1 : 1;
+    defects.folded_corner.scaleY = sideY === "top" ? -1 : 1;
   }
 
   return defects;

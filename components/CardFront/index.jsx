@@ -18,11 +18,11 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
   const signatureSide = isSigned && random("signature-side")() < 0.5 ? "left" : "right";
 
   const TypeComponent = types[card.type];
-  const foldedCornerClass = defects.folded_corner && styles[`${defects.folded_corner}_folded_corner`];
+  const clippingClass = defects.folded_corner && styles[`clip_${defects.folded_corner.corner}`];
 
   return (
     <div className={`${styles.card_front} ${styles[shinyMaterial(card)]} ${isMasterCopy && styles.master_copy}`}>
-      <div className={`${styles.shiny_material} ${foldedCornerClass}`}>
+      <div className={`${styles.shiny_material} ${clippingClass}`}>
         {defects.peeling_foil && <div className={styles.peeling_foil} style={{ transform: `scaleX(${defects.peeling_foil})` }}></div>}
 
         <div className={styles.paper}>
@@ -61,7 +61,7 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
         <TypeComponent card={card} random={random} />
       </div>
 
-      {defects.fingerprint && <div className={`${styles.fingerprint} ${foldedCornerClass}`}>
+      {defects.fingerprint && <div className={`${styles.fingerprint} ${clippingClass}`}>
         <img src={`/images/fingerprint_${defects.fingerprint.image}.png`} style={{
           width: `${defects.fingerprint.width}%`,
           [defects.fingerprint.side]: `${defects.fingerprint.x}%`,
@@ -71,7 +71,7 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
         }} />
       </div>}
 
-      {defects.ink_stain && <div className={`${styles.ink_stain} ${foldedCornerClass}`}>
+      {defects.ink_stain && <div className={`${styles.ink_stain} ${clippingClass}`}>
         <img src={`/images/ink_stain_${defects.ink_stain.image}.png`} style={{
           width: `${defects.ink_stain.width}%`,
           left: `${defects.ink_stain.x}%`,
@@ -81,7 +81,7 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
         }} />
       </div>}
 
-      {defects.coffee_stain && <div className={`${styles.coffee_stain} ${foldedCornerClass}`}>
+      {defects.coffee_stain && <div className={`${styles.coffee_stain} ${clippingClass}`}>
         <img src={`/images/coffee_stain_${defects.coffee_stain.image}.png`} style={{
           width: `${defects.coffee_stain.width}%`,
           [defects.coffee_stain.side]: `${defects.coffee_stain.x}%`,
@@ -96,6 +96,12 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
         [signatureSide]: `${random("signature-x")() * 5 + 1.5}%`,
         top: `${random("signature-y")() * 25 + 50}%`,
         transform: `rotate(${random("signature-degrees")() * 25 * (signatureSide === "left" ? -1 : 1)}deg)`,
+      }} />}
+
+      {defects.folded_corner && <img className={styles.folded_corner} src="/images/folded_corner.png" style={{
+        [defects.folded_corner.sideX]: 0,
+        [defects.folded_corner.sideY]: 0,
+        transform: `scaleX(${defects.folded_corner.scaleX}) scaleY(${defects.folded_corner.scaleY})`,
       }} />}
     </div>
   );
