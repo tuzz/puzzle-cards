@@ -1,5 +1,5 @@
 use headless_chrome::{Browser, LaunchOptionsBuilder, protocol::page::ScreenshotFormat, Tab};
-use std::{fs, collections::BTreeSet, thread::sleep, time::Duration, sync::Arc};
+use std::{fs, collections::BTreeSet, sync::Arc};
 use std::io::{Cursor, Write, stdout};
 use image::{io::Reader, imageops::FilterType, ImageFormat};
 
@@ -43,8 +43,6 @@ fn main() {
         loop {
             if let Err(_) = tab.navigate_to(&format!("http://localhost:5000/card?tokenID={}&referrer=generate_images", token_id)) { continue; }
             if let Err(_) = tab.wait_until_navigated() { continue; }
-
-            if i == 0 { sleep(Duration::from_secs(5)); } // Give the first page a bit longer to load.
 
             let png_bytes = match tab.capture_screenshot(ScreenshotFormat::PNG, None, true) {
                 Ok(png_bytes) => png_bytes,
@@ -122,20 +120,24 @@ fn corresponding_width(height: u32) -> u32 {
 
 fn check_if_server_running(tab: &Arc<Tab>) {
     print!("\nChecking if the server is running on port 5000");
+    let mut success = false;
 
-    for _ in 0..10 {
+    // This also seems to fix the first captured image sometimes not having its
+    // text scaled correctly so it's worth doing all 5 iterations.
+    for i in 0..5 {
         print!(".");
         stdout().flush().unwrap();
 
-        sleep(Duration::from_secs(1));
-
-        if let Err(_) = tab.navigate_to("http://localhost:5000/card?tokenID=0&referrer=generate_images") { continue; }
+        if let Err(_) = tab.navigate_to(&format!("http://localhost:5000/card?tokenID={}&referrer=generate_images", i)) { continue; }
         if let Err(_) = tab.wait_until_navigated() { continue; }
 
-        println!();
-        return;
+        success = true;
     }
 
-    eprintln!("\nNo server running. Start it with ./bin/serve_website_static\n");
-    std::process::exit(1);
+    if success {
+        println!();
+    } else {
+        eprintln!("\nNo server running. Start it with ./bin/serve_website_static\n");
+        std::process::exit(1);
+    }
 }
