@@ -2,26 +2,139 @@
   width: 100%;
   height: 100%;
   border-radius: 5% / 3.5714285714%; // 5 * 15/21
-  background: yellow;
+  background: rgb(253, 208, 47);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   // These match CardFront styles except the left/right clip paths are swapped.
-  &.top_left_folded_corner {
+  &.clip_top_left {
     clip-path: polygon(0% 0%, 88% 0%, 100% 8.5714285714%, 100% 100%, 0% 100%);
   }
 
-  &.top_right_folded_corner {
+  &.clip_top_right {
     clip-path: polygon(12% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 8.5714285714%);
   }
 
-  &.bottom_left_folded_corner {
+  &.clip_bottom_left {
     clip-path: polygon(0% 0%, 100% 0%, 100% 91.4285714286%, 88% 100%, 0% 100%);
   }
 
-  &.bottom_right_folded_corner {
+  &.clip_bottom_right {
     clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 12% 100%, 0% 91.4285714286%);
   }
 
   &.master_copy {
     box-shadow: 0 0 2rem #97f;
   }
+}
+
+.inner {
+  width: 88.8%;
+  height: 92%;
+  background-color: rgb(255, 253, 147);
+  background-image: url(/images/card_back.png);
+  background-size: 100%;
+  position: relative;
+  overflow: hidden;
+
+  svg {
+    font-family: "Trebuchet MS";
+    font-weight: bold;
+    fill: rgba(0, 0, 0, 0.8);
+  }
+}
+
+.worship {
+  width: 85%;
+  height: 25%;
+  display: block;
+  margin: auto;
+}
+
+.the_sun {
+  width: 80%;
+  height: 25%;
+  display: block;
+  margin: auto;
+  margin-top: -9%;
+}
+
+.puzzle {
+  width: 45%;
+  height: 12%;
+  display: block;
+  margin: auto;
+  margin-top: 26%;
+
+  animation-name: jiggle;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.cards {
+  width: 37.4%;
+  height: 12%;
+  display: block;
+  margin: auto;
+
+  animation-name: jiggle;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-delay: 0.5s;
+}
+
+.bottom_sun {
+  position: absolute;
+  bottom: -65%;
+  width: 120%;
+  left: -10%;
+
+  animation-name: spin-clockwise;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.left_sun {
+  position: absolute;
+  bottom: -13%;
+  width: 120%;
+  left: -92%;
+
+  animation-name: spin-counter-clockwise;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-delay: 0.5s;
+}
+
+.right_sun {
+  position: absolute;
+  bottom: -13%;
+  width: 120%;
+  right: -92%;
+
+  animation-name: spin-counter-clockwise;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-delay: 0.1s;
+}
+
+@keyframes spin-clockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin-counter-clockwise {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes jiggle {
+  0%, 100% { transform: rotate(10deg); }
+  50% { transform: rotate(-10deg); }
 }
