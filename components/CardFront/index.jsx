@@ -98,11 +98,13 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
         transform: `rotate(${random("signature-degrees")() * 25 * (signatureSide === "left" ? -1 : 1)}deg)`,
       }} />}
 
-      {defects.folded_corner && <img className={styles.folded_corner} src="/images/folded_corner.png" style={{
-        [defects.folded_corner.sideX]: 0,
-        [defects.folded_corner.sideY]: 0,
-        transform: `scaleX(${defects.folded_corner.scaleX}) scaleY(${defects.folded_corner.scaleY})`,
-      }} />}
+      {defects.folded_corner && <div className={`${styles.folded_corner} ${clippingClass}`}>
+        <img src="/images/folded_corner.png" style={{
+          [defects.folded_corner.sideX]: 0,
+          [defects.folded_corner.sideY]: 0,
+          transform: `scaleX(${defects.folded_corner.scaleX}) scaleY(${defects.folded_corner.scaleY})`,
+        }} />
+      </div>}
     </div>
   );
 };
