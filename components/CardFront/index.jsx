@@ -20,6 +20,8 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
   const TypeComponent = types[card.type];
   const clippingClass = defects.folded_corner && styles[`clip_${defects.folded_corner.corner}`];
 
+  const puzzleNumberInSet = `${card.puzzleIndex() + 1} / ${PuzzleCard.PUZZLE_NAMES.length}`;
+
   return (
     <div className={`${styles.card_front} ${styles[shinyMaterial(card)]} ${isMasterCopy && styles.master_copy}`}>
       <div className={`${styles.shiny_material} ${clippingClass}`}>
@@ -53,7 +55,7 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
             <VectorText className={styles.master_copy_text} text={"Master Copy"} />
           </div>}
 
-          <VectorText className={styles.number} text={card.puzzleNumberInSet()} referenceText="123 / 123" padSide="left" />
+          <VectorText className={styles.number} text={puzzleNumberInSet} referenceText="123 / 123" padSide="left" />
         </div>
       </div>
 

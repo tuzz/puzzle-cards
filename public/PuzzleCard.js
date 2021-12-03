@@ -105,14 +105,6 @@ class PuzzleCard {
     return this.puzzle.toLowerCase().replaceAll(" ", "-");
   }
 
-  puzzleNumber() {
-    return this.puzzleIndex() + 1;
-  }
-
-  puzzleNumberInSet() {
-    return `${this.puzzleNumber()} / ${PuzzleCard.PUZZLE_NAMES.length}`;
-  }
-
   imageURL() {
     return PuzzleCard.CARD_IMAGES_URI.replace("{id}", this.tokenID());
   }
@@ -146,65 +138,10 @@ class PuzzleCard {
     ].map(i => i.toString(16).padStart(2, "0")).join("");
   }
 
-  openSeaTitle() {
-    let name;
 
-    switch (this.type) {
-      case "Player":    name = `Player Card, ${this.tier} Tier`; break;
-      case "Crab":      name = `Crab Card, ${this.tier} Tier`; break;
-      case "Cloak":     name = `${this.color1} Cloak, ${this.tier} Tier`; break;
-      case "Inactive":  name = `Inactive ${this.color1} ${this.variant}, ${this.tier} Tier`; break;
-      case "Active":    name = `Active ${this.color1} ${this.variant}, ${this.tier} Tier`; break;
-      case "Telescope": name = `${this.color1} ${this.variant} Telescope, ${this.tier} Tier`; break;
-      case "Beacon":    name = `${this.color1} Beacon, ${this.tier} Tier`; break;
-      case "Map":       name = `Map Card, ${this.tier} Tier`; break
-      case "Teleport":  name = `Teleport Card, ${this.tier} Tier`; break;
-      case "Eclipse":   name = `Eclipse Card, ${this.tier} Tier`; break;
-      case "Door":      name = `Door Card, ${this.tier} Tier`; break;
-      case "Hidden":    name = `Hidden Card, ${this.tier} Tier`; break;
-      case "Star":      name = `${this.color1} Star, ${this.tier} Tier, ${this.condition} Condition`; break;
-
-      case "Helix":     name = this.color1 === this.color2 ? `Double ${this.color1} Helix, ${this.tier} Tier`
-                                                           : `${this.color1} and ${this.color2} Helix, ${this.tier} Tier`; break;
-
-      case "Torch":     name = this.color1 === this.color2 ? `${this.color1} Torch, ${this.tier} Tier`
-                                                           : `${this.color1} and ${this.color2} Torch, ${this.tier} Tier`; break;
-
-      case "Glasses":   name = this.color1 === this.color2 ? `${this.color1} Glasses, ${this.tier} Tier`
-                                                           : `${this.color1} and ${this.color2} Glasses, ${this.tier} Tier`; break;
-
-      case "Artwork":   name = this.edition === "Standard" ? `${this.puzzle}, ${this.condition} Condition` :
-                        name = this.edition === "Signed"   ? `${this.puzzle}, Signed by tuzz` :
-                        name = this.edition === "Limited"  ? `${this.puzzle}, Limited Edition` :
-                                                             `${this.puzzle}, Master Copy`; break;
-    }
-
-    return name;
   }
 
-  openSeaProperties() {
-    const isLimited = this.edition === "Limited" || this.edition === "Master Copy";
 
-    let properties = [
-      { trait_type: "0. Card Type", value: this.type },
-      { trait_type: "1. Color 1", value: this.color1 },
-      { trait_type: "2. Color 2", value: this.color2 },
-      { trait_type: "3. Variant", value: this.variant },
-      { trait_type: "4. Signature", value: this.edition === "Standard" ? "None" : "Signed by tuzz" },
-      { trait_type: "5. Edition", value: isLimited ? "Limited Edition" : "Standard Edition" },
-      { trait_type: "6. Condition", value: `${this.conditionIndex() + 1}/5 ${this.condition}` },
-      { trait_type: "7. Tier", value: `${this.tierIndex() + 1}/7 ${this.tier} Tier` },
-      { trait_type: "8. Puzzle", value: this.puzzle },
-      { trait_type: "9. Series", value: this.series },
-    ];
-
-    if (this.edition === "Master Copy") {
-      properties.push({ trait_type: "x. Exclusivity", value: "Master Copy" });
-    }
-
-    return properties.filter(({ trait_type, value }) => (
-      value !== "None" || this.type === "Artwork" && trait_type.includes("Signature")
-    ));
   }
 
   // class methods
