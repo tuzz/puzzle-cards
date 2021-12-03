@@ -98,7 +98,7 @@ class PuzzleCard {
   }
 
   puzzleVideoURL() {
-    return `${PuzzleCard.PUZZLE_VIDEOS_URI}/${this.puzzleSlug()}.mp4`;
+    return PuzzleCard.PUZZLE_VIDEOS_URI.replace("{slug}", this.puzzleSlug());
   }
 
   puzzleSlug() {
@@ -802,7 +802,12 @@ PuzzleCard.DECK_INDEXES_URI = "https://puzzlecards.github.io/decks/{address}.jso
 PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
 
 PuzzleCard.CARD_IMAGES_URI = "https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images"
-PuzzleCard.PUZZLES_VIDEOS_URI = "https://puzzlecards.github.io/videos/puzzles";
+PuzzleCard.PUZZLE_VIDEOS_URI = "https://puzzlecards.github.io/videos/puzzles/{slug}.mp4";
+
+// TMP
+PuzzleCard.DECK_INDEXES_URI = "http://localhost:3000/decks/{address}.json";
+PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
+PuzzleCard.PUZZLE_VIDEOS_URI = "http://localhost:3000/videos/puzzles/{slug}.mp4";
 
 // Set a minimum gas limit that provides enough headroom for all actions.
 // Set a maximum gas limit that matches the limit for the polygon network.
