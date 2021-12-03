@@ -89,12 +89,8 @@ class PuzzleCard {
     return PuzzleCard.EDITION_NAMES.indexOf(this.edition);
   }
 
-  static contractMetadataURL() {
-    return PuzzleCard.METADATA_URI.replace("{id}", "contract");
-  }
-
   metadataURL() {
-    return PuzzleCard.METADATA_URI.replace("{id}", this.metadataID());
+    return PuzzleCard.TOKEN_METADATA_URI.replace("{id}", this.metadataID());
   }
 
   metadataID() {
@@ -507,8 +503,8 @@ class PuzzleCard {
       PuzzleCard.MINT_PRICE_MULTIPLERS,
       PuzzleCard.UNLOCK_PRICE_MULTIPLIER,
       PuzzleCard.PROXY_REGISTRY_ADDRESS,
-      PuzzleCard.contractMetadataURL(),
-      PuzzleCard.METADATA_URI,
+      PuzzleCard.CONTRACT_METADATA_URI,
+      PuzzleCard.TOKEN_METADATA_URI,
       { gasLimit: PuzzleCard.GAS_LIMIT_MAXIMUM },
     );
   }
@@ -799,13 +795,12 @@ PuzzleCard.VIRTUAL_TYPE_PROBABILITIES = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 
 PuzzleCard.POST_VIRTUAL_TYPE_PROBABILITIES = [0, 1, 100, 200, 100, 100, 20, 20, 20, 10, 10, 0, 4, 6];
 PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
-PuzzleCard.METADATA_URI = "https://9d5c-2a02-6b6c-60-0-d127-1db4-73cf-9248.ngrok.io/metadata/{id}.json";
+PuzzleCard.TOKEN_METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
+PuzzleCard.CONTRACT_METADATA_URI = PuzzleCard.TOKEN_METADATA_URI.replace("{id}", "contract");
+
 PuzzleCard.DECKS_URI = "https://puzzlecards.github.io/decks";
 PuzzleCard.IMAGES_URI = "https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images"
 PuzzleCard.PUZZLES_URI = "https://puzzlecards.github.io/videos/puzzles";
-
-PuzzleCard.DECKS_URI = "http://localhost:3000/decks"; // TMP
-PuzzleCard.PUZZLES_URI = "http://localhost:3000/videos/puzzles"; // TMP
 
 // Set a minimum gas limit that provides enough headroom for all actions.
 // Set a maximum gas limit that matches the limit for the polygon network.
@@ -925,7 +920,7 @@ PuzzleCard.CONTRACT_ABI = [
   "function totalSupply(uint256) view returns (uint256)",
   "function transferOwnership(address newOwner)",
   "function unlockMintingAtAllTiers(address address_) payable",
-  "function updateConstants(uint8[] numPuzzlesPerSeries, uint8[] seriesForEachPuzzle, uint8[] numVariantsPerType, uint256[7] mintPriceMultipliers, uint256 unlockPriceMultiplier, address proxyRegistryAddress, string contractMetadataURI, string metadataURI)",
+  "function updateConstants(uint8[] numPuzzlesPerSeries, uint8[] seriesForEachPuzzle, uint8[] numVariantsPerType, uint256[7] mintPriceMultipliers, uint256 unlockPriceMultiplier, address proxyRegistryAddress, string contractMetadataURI, string tokenMetadataURI)",
   "function uri(uint256) view returns (string)"
 ];
 

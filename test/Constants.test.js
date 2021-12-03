@@ -79,8 +79,10 @@ describe("Constants", () => {
     await expectRevert.unspecified(contractAsUser1.unlockMintingAtAllTiers(user1.address, { value: priceAfter - BigInt(1) }));
   });
 
-  it("allows the contract owner to update METADATA_URI", async () => {
-    PuzzleCard.METADATA_URI = "https://foo.com/metadata/{id}.json";
+  it("allows the contract owner to update TOKEN_METADATA_URI", async () => {
+    PuzzleCard.TOKEN_METADATA_URI = "https://foo.com/metadata/{id}.json";
+    PuzzleCard.CONTRACT_METADATA_URI = PuzzleCard.TOKEN_METADATA_URI.replace("{id}", "contract");
+
     await PuzzleCard.updateConstants();
 
     const metadataURI = await contract.uri(0);

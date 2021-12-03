@@ -5,7 +5,7 @@ describe("PuzzleCard", () => {
   it("can get the contract struct's index values for each field", () => {
     const puzzleCard = new PuzzleCard({
       series: "Teamwork",
-      puzzle: "III",
+      puzzle: "Teamwork III",
       tier: "Celestial",
       type: "Active",
       color1: "Red",
@@ -31,7 +31,7 @@ describe("PuzzleCard", () => {
   it("can get the tokenID for a puzzle card", () => {
     const puzzleCard = new PuzzleCard({
       series: "Teamwork",
-      puzzle: "III",
+      puzzle: "Teamwork III",
       tier: "Celestial",
       type: "Active",
       color1: "Red",
@@ -48,7 +48,7 @@ describe("PuzzleCard", () => {
     const puzzleCard = PuzzleCard.fromTokenID(18591989585508631296n);
 
     expect(puzzleCard.series).to.equal("Teamwork");
-    expect(puzzleCard.puzzle).to.equal("III");
+    expect(puzzleCard.puzzle).to.equal("Teamwork III");
     expect(puzzleCard.tier).to.equal("Celestial");
     expect(puzzleCard.type).to.equal("Active");
     expect(puzzleCard.color1).to.equal("Red");
@@ -59,11 +59,11 @@ describe("PuzzleCard", () => {
   });
 
   it("can get the metadata url for a puzzle card", () => {
-    PuzzleCard.METADATA_URI = "https://example.com/metadata/{id}.json";
+    PuzzleCard.TOKEN_METADATA_URI = "https://example.com/metadata/{id}.json";
 
     const puzzleCard = new PuzzleCard({
       series: "Teamwork",
-      puzzle: "III",
+      puzzle: "Teamwork III",
       tier: "Celestial",
       type: "Active",
       color1: "Red",
@@ -73,7 +73,7 @@ describe("PuzzleCard", () => {
       edition: "Standard",
     });
 
-    expect(puzzleCard.metadataUrl()).to.equal(
+    expect(puzzleCard.metadataURL()).to.equal(
       "https://example.com/metadata/0000000000000000000000000000000000000000000000010204040600010300.json"
     )
   });

@@ -743,7 +743,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         uint256 unlockPriceMultiplier,
         address proxyRegistryAddress,
         string memory contractMetadataURI,
-        string memory metadataURI
+        string memory tokenMetadataURI
     ) external onlyOwner {
         NUM_PUZZLES_PER_SERIES = numPuzzlesPerSeries;
         SERIES_FOR_EACH_PUZZLE = seriesForEachPuzzle;
@@ -752,7 +752,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         UNLOCK_PRICE_MULTIPLIER = unlockPriceMultiplier;
         PROXY_REGISTRY_ADDRESS = proxyRegistryAddress;
         CONTRACT_METADATA_URI = contractMetadataURI;
-        _setURI(metadataURI);
+        _setURI(tokenMetadataURI);
     }
 
     function setBasePrice(uint256 _basePriceInWei) external onlyOwner {
