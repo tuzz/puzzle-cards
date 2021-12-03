@@ -602,8 +602,8 @@ class PuzzleCard {
   static async fetchDeckIndex(address, onChange, onProgress) {
     address = address.toLowerCase();
 
-    const outdatedDeckIndex = await fetch(`${PuzzleCard.DECK_INDEXES_URI}/${address}.json`).then(r => r.json()).catch(() => ({}));;
-    const lastIndexedBlock = await fetch(`${PuzzleCard.DECK_INDEXES_URI}/_last_indexed`).then(r => r.json()).catch(() => PuzzleCard.CONTRACT_BLOCK);
+    const outdatedDeckIndex = await fetch(PuzzleCard.DECK_INDEXES_URI.replace("{address}", address)).then(r => r.json()).catch(() => ({}));;
+    const lastIndexedBlock = await fetch(PuzzleCard.LAST_INDEXED_URI).then(r => r.json()).catch(() => PuzzleCard.CONTRACT_BLOCK);
 
     outdatedDeckIndex.balanceByTokenID = outdatedDeckIndex.balanceByTokenID || {};
     outdatedDeckIndex.mostRecentFirst = outdatedDeckIndex.mostRecentFirst || [];
@@ -797,7 +797,10 @@ PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 PuzzleCard.TOKEN_METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
 PuzzleCard.CONTRACT_METADATA_URI = PuzzleCard.TOKEN_METADATA_URI.replace("{id}", "contract");
-PuzzleCard.DECK_INDEXES_URI = "https://puzzlecards.github.io/decks";
+
+PuzzleCard.DECK_INDEXES_URI = "https://puzzlecards.github.io/decks/{address}.json";
+PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
+
 PuzzleCard.CARD_IMAGES_URI = "https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images"
 PuzzleCard.PUZZLES_VIDEOS_URI = "https://puzzlecards.github.io/videos/puzzles";
 
