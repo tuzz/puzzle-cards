@@ -49,7 +49,7 @@ const CardStack = ({ cardStack, startPosition, position, withinY, dealDelay, fad
     <Draggable bounds="parent" startPosition={startPosition} position={position} withinY={withinY} zoomed={zoomed} onClick={zoomIn} onStop={handleStop} disabled={zoomed} className={`${fadeIn && styles.fade_in}`}>
       <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={rotation}>
         <Flippable flipped={!loaded || flipped} direction={flipDirection} className={styles.flippable}>
-          <CardFront card={cardStack.card} random={random} defects={defects} onLoaded={() => setLoaded(true)} />
+          <CardFront card={cardStack.card} random={random} defects={defects} videoQuality="low" onLoaded={() => setLoaded(true)} />
           <CardBack defects={defects} isMasterCopy={cardStack.card.edition === "Master Copy"} />
         </Flippable>
       </Zoomable>

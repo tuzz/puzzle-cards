@@ -6,9 +6,11 @@ import stableRandom from "./stableRandom";
 import randomDefects from "./defects";
 import styles from "./styles.module.scss";
 
-const CardFront = ({ card, random, defects, scaleShadows, onLoaded = () => {} }) => {
+const CardFront = ({ card, random, defects, scaleShadows, videoQuality, onLoaded = () => {} }) => {
   random = random || stableRandom(card);
   defects = defects || randomDefects(card, random);
+
+  if (!videoQuality) { throw new Error("Please set videoQuality to high or low."); }
 
   const editionText = card.editionIndex() < 2  ? "Standard Edition" : "Limited Edition";
   const tierText = `${card.tier} Tier`;
@@ -47,7 +49,10 @@ const CardFront = ({ card, random, defects, scaleShadows, onLoaded = () => {} })
 
       <div className={styles.video}>
         <video autoPlay muted loop playsInline onCanPlay={onLoaded} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>
-          <source src={card.puzzleVideoURL()} type="video/mp4" />
+          <source src={card.puzzleVideoURL({ encoding: "av1", quality: videoQuality })} type="video/mp4" />
+          <source src={card.puzzleVideoURL({ encoding: "vp9", quality: videoQuality })} type="video/mp4" />
+          <source src={card.puzzleVideoURL({ encoding: "hevc", quality: videoQuality })} type="video/mov" />
+          <source src={card.puzzleVideoURL({ encoding: "x264", quality: videoQuality })} type="video/mp4" />
         </video>
 
         <div className={styles.overlay} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>
