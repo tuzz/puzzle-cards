@@ -89,25 +89,7 @@ class PuzzleCard {
     return PuzzleCard.EDITION_NAMES.indexOf(this.edition);
   }
 
-  metadataURL() {
-    return PuzzleCard.TOKEN_METADATA_URI.replace("{id}", this.metadataID());
-  }
-
-  metadataID() {
-    return this.tokenHexString().slice(2).padStart(64, "0");
-  }
-
-  puzzleVideoURL() {
-    return PuzzleCard.PUZZLE_VIDEOS_URI.replace("{slug}", this.puzzleSlug());
-  }
-
-  puzzleSlug() {
-    return this.puzzle.toLowerCase().replaceAll(" ", "-");
-  }
-
-  imageURL() {
-    return PuzzleCard.CARD_IMAGES_URI.replace("{id}", this.tokenID());
-  }
+  // identifiers
 
   tokenID() {
     return BigInt(this.tokenHexString());
@@ -127,6 +109,14 @@ class PuzzleCard {
     ].map(i => i.toString(16).padStart(2, "0")).join("");
   }
 
+  metadataID() {
+    return this.tokenHexString().slice(2).padStart(64, "0");
+  }
+
+  puzzleSlug() {
+    return this.puzzle.toLowerCase().replaceAll(" ", "-");
+  }
+
   editionsKey() {
     return BigInt(this.editionsHexString());
   }
@@ -138,13 +128,23 @@ class PuzzleCard {
     ].map(i => i.toString(16).padStart(2, "0")).join("");
   }
 
+  // urls (also see the _URI constants)
+
+  metadataURL() {
+    return PuzzleCard.TOKEN_METADATA_URI.replace("{id}", this.metadataID());
+  }
+
+  puzzleVideoURL() {
+    return PuzzleCard.PUZZLE_VIDEOS_URI.replace("{slug}", this.puzzleSlug());
+  }
 
   }
 
-
+  imageURL() {
+    return PuzzleCard.CARD_IMAGES_URI.replace("{id}", this.tokenID());
   }
 
-  // class methods
+  // deck sync methods
 
   static async fetchDeck(address, onChange, onProgress = () => {}) {
     let handleChange;
