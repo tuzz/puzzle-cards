@@ -742,7 +742,7 @@ PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.jso
 
 PuzzleCard.PUZZLE_VIDEOS_URI = "https://puzzlecards.github.io/videos/puzzles/{slug}.mp4";
 PuzzleCard.CARD_VIEWS_URI = "https://puzzlecards.github.io/card?tokenID={id}&referrer={referrer}";
-PuzzleCard.CARD_IMAGES_URI = "https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images/{id}.jpeg"
+PuzzleCard.CARD_IMAGES_URI = "https://d3fjxldyah6ziy.cloudfront.net/card_images/{id}.jpeg"
 
 // TMP
 PuzzleCard.TOKEN_METADATA_URI = "https://daff-2a02-6b6c-a0-0-20f9-d21-5e6a-f18.ngrok.io/metadata/{id}.json";

@@ -1,0 +1,193 @@
+#!/bin/bash
+
+INPUT_DIRECTORY="/Volumes/hdd/puzzles/captures"
+PREVIEW_DIRECTORY="/Volumes/hdd/puzzles/previews"
+YOUTUBE_DIRECTORY="/Volumes/hdd/puzzles/youtube"
+
+# Store the first choice of encodings on GitHub and the rest in S3 with CloudFront.
+AV1_DIRECTORY="public/videos/puzzle_videos/av1"
+VP9_DIRECTORY="public_s3/puzzle_videos/vp9"
+HEVC_DIRECTORY="public_s3/puzzle_videos/hevc"
+X264_DIRECTORY="public_s3/puzzle_videos/x264"
+
+mkdir -p $INPUT_DIRECTORY
+mkdir -p $PREVIEW_DIRECTORY
+mkdir -p $YOUTUBE_DIRECTORY
+
+function transcode() {
+  puzzle_slug=$1
+  start_time=${2:-0}
+  duration=${3:-999999}
+  all_formats=$4
+
+  echo "Transcoding $puzzle_slug..."
+
+  # Use hardware encoding to make a quick preview so I can decide where to trim.
+  echo "Trimmed preview:"
+  ffmpeg                                 \
+  -hide_banner                           \
+  -loglevel error                        \
+  -stats                                 \
+  -y                                     \
+  -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+  -ss $start_time                        \
+  -t $duration                           \
+  -level 4.0                             \
+  -map_metadata -1                       \
+  -movflags +faststart                   \
+  -pix_fmt yuv420p                       \
+  -c:v hevc_videotoolbox                 \
+  -allow_sw 1                            \
+  -vtag hvc1                             \
+  $PREVIEW_DIRECTORY/$puzzle_slug-trimmed.mov
+
+  echo "Original preview:"
+  ffmpeg                                 \
+  -hide_banner                           \
+  -loglevel error                        \
+  -stats                                 \
+  -y                                     \
+  -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+  -level 4.0                             \
+  -map_metadata -1                       \
+  -movflags +faststart                   \
+  -pix_fmt yuv420p                       \
+  -c:v hevc_videotoolbox                 \
+  -allow_sw 1                            \
+  -vtag hvc1                             \
+  $PREVIEW_DIRECTORY/$puzzle_slug-original.mov
+
+  if [ -z "$all_formats" ]; then
+    return;
+  fi
+
+  # Trim the lossless input to a new output so it can be uploaded to YouTube.
+  echo "YouTube:"
+  ffmpeg                                 \
+  -hide_banner                           \
+  -loglevel error                        \
+  -stats                                 \
+  -y                                     \
+  -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+  -ss $start_time                        \
+  -t $duration                           \
+  -c:v copy                              \
+  -c:a copy                              \
+  -map_metadata -1                       \
+  $YOUTUBE_DIRECTORY/$puzzle_slug.mov
+
+  # Produce multiple low and high quality videos using different encodings so
+  # that the videos can be played a wide range of devices. The encodes are
+  # listed in order of preference, i.e. AV1 is way way better than X264.
+
+  for quality in low high; do
+    if [ $quality = low ]; then res="1050:590"; else res="1350:760"; fi
+
+    mkdir -p ${AV1_DIRECTORY}_${quality}_quality
+    mkdir -p ${VP9_DIRECTORY}_${quality}_quality
+    mkdir -p ${HEVC_DIRECTORY}_${quality}_quality
+    mkdir -p ${X264_DIRECTORY}_${quality}_quality
+
+    # I've tried to choose CRF values that keep the quality high while keeping
+    # file sizes low. Aiming for 2-3MB low / 5-10MB high for a 10 second clip.
+
+    echo "AV1 ($quality):"
+    if [ $quality = low ]; then crf="45"; else crf="30"; fi
+
+    ffmpeg                                 \
+    -hide_banner                           \
+    -loglevel error                        \
+    -stats                                 \
+    -y                                     \
+    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+    -ss $start_time                        \
+    -t $duration                           \
+    -an                                    \
+    -c:v libaom-av1                        \
+    -cpu-used 8                            \
+    -row-mt true                           \
+    -threads 12                            \
+    -tile-columns 1                        \
+    -tile-rows 0                           \
+    -crf $crf                              \
+    -b:v 0                                 \
+    -vf scale=$res                         \
+    -level 4.0                             \
+    -pix_fmt yuv420p                       \
+    -preset veryslow                       \
+    -map_metadata -1                       \
+    -movflags +faststart                   \
+    ${AV1_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4
+
+    echo "VP9 ($quality):"
+    if [ $quality = low ]; then crf="45"; else crf="30"; fi
+
+    ffmpeg                                 \
+    -hide_banner                           \
+    -loglevel error                        \
+    -stats                                 \
+    -y                                     \
+    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+    -ss $start_time                        \
+    -t $duration                           \
+    -an                                    \
+    -c:v libvpx-vp9                        \
+    -crf $crf                              \
+    -vf scale=$res                         \
+    -level 4.0                             \
+    -pix_fmt yuv420p                       \
+    -preset veryslow                       \
+    -map_metadata -1                       \
+    -movflags +faststart                   \
+    ${VP9_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4
+
+    echo "HEVC ($quality):"
+    if [ $quality = low ]; then crf="23"; else crf="18"; fi
+
+    ffmpeg                                 \
+    -hide_banner                           \
+    -loglevel error                        \
+    -stats                                 \
+    -y                                     \
+    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+    -ss $start_time                        \
+    -t $duration                           \
+    -an                                    \
+    -c:v libx265                           \
+    -x265-params log-level=error           \
+    -crf $crf                              \
+    -vf scale=$res                         \
+    -level 4.0                             \
+    -pix_fmt yuv420p                       \
+    -preset veryslow                       \
+    -map_metadata -1                       \
+    -movflags +faststart                   \
+    -vtag hvc1                             \
+    ${HEVC_DIRECTORY}_${quality}_quality/$puzzle_slug.mov
+
+    echo "X264 ($quality):"
+    if [ $quality = low ]; then crf="35"; else crf="27"; fi
+
+    ffmpeg                                 \
+    -hide_banner                           \
+    -loglevel error                        \
+    -stats                                 \
+    -y                                     \
+    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+    -ss $start_time                        \
+    -t $duration                           \
+    -an                                    \
+    -c:v libx264                           \
+    -crf $crf                              \
+    -vf scale=$res                         \
+    -profile:v high                        \
+    -level 4.0                             \
+    -pix_fmt yuv420p                       \
+    -preset veryslow                       \
+    -map_metadata -1                       \
+    -movflags +faststart                   \
+    ${X264_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4
+  done
+}
+
+transcode caught-in-the-rain 0.8 11 true

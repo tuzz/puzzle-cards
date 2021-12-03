@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ffmpeg compiled with:
-# ./configure --enable-libfdk-aac --enable-libvpx --enable-libvorbis --enable-libx265 --enable-libx264 --enable-gpl --enable-nonfree
+# ./configure --enable-libaom --enable-libfdk-aac --enable-libvpx --enable-libvorbis --enable-libx265 --enable-libx264 --enable-gpl --enable-nonfree
 
 # Teleport HEVC for Safari:
 ffmpeg                                                \
@@ -11,7 +11,7 @@ ffmpeg                                                \
 -y                                                    \
 -framerate 60                                         \
 -pattern_type glob                                    \
- -i 'public/images/types/teleport_frames/frame-*.png' \
+-i 'public/images/types/teleport_frames/frame-*.png'  \
 -r 60                                                 \
 -filter:v "crop=350:350:1730:490"                     \
 -level 4.0                                            \
@@ -33,7 +33,7 @@ ffmpeg                                                \
 -y                                                    \
 -framerate 60                                         \
 -pattern_type glob                                    \
- -i 'public/images/types/teleport_frames/frame-*.png' \
+-i 'public/images/types/teleport_frames/frame-*.png'  \
 -r 60                                                 \
 -filter:v "crop=350:350:1730:490"                     \
 -level 4.0                                            \
