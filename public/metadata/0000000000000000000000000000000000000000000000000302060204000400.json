@@ -2,7 +2,8 @@
   "name": "Black and White Helix, Ethereal Tier",
   "description": "Description",
   "image": "https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images/216742337794016256.jpeg",
-  "animation_url": "https://9d5c-2a02-6b6c-60-0-d127-1db4-73cf-9248.ngrok.io/card?tokenID=216742337794016256",
+  "animation_url": "https://daff-2a02-6b6c-a0-0-20f9-d21-5e6a-f18.ngrok.io/card?tokenID=216742337794016256&referrer=animation_url",
+  "external_url": "https://daff-2a02-6b6c-a0-0-20f9-d21-5e6a-f18.ngrok.io/card?tokenID=216742337794016256&referrer=external_url",
   "attributes": [
     {
       "trait_type": "0. Card Type",

@@ -138,6 +138,8 @@ class PuzzleCard {
     return PuzzleCard.PUZZLE_VIDEOS_URI.replace("{slug}", this.puzzleSlug());
   }
 
+  viewURL({ referrer }) {
+    return PuzzleCard.CARD_VIEWS_URI.replace("{id}", this.tokenID()).replace("{referrer}", referrer);
   }
 
   imageURL() {
@@ -738,13 +740,16 @@ PuzzleCard.CONTRACT_METADATA_URI = PuzzleCard.TOKEN_METADATA_URI.replace("{id}",
 PuzzleCard.DECK_INDEXES_URI = "https://puzzlecards.github.io/decks/{address}.json";
 PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
 
-PuzzleCard.CARD_IMAGES_URI = "https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images/{id}.jpeg"
 PuzzleCard.PUZZLE_VIDEOS_URI = "https://puzzlecards.github.io/videos/puzzles/{slug}.mp4";
+PuzzleCard.CARD_VIEWS_URI = "https://puzzlecards.github.io/card?tokenID={id}&referrer={referrer}";
+PuzzleCard.CARD_IMAGES_URI = "https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images/{id}.jpeg"
 
 // TMP
+PuzzleCard.TOKEN_METADATA_URI = "https://daff-2a02-6b6c-a0-0-20f9-d21-5e6a-f18.ngrok.io/metadata/{id}.json";
 PuzzleCard.DECK_INDEXES_URI = "http://localhost:3000/decks/{address}.json";
 PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
 PuzzleCard.PUZZLE_VIDEOS_URI = "http://localhost:3000/videos/puzzles/{slug}.mp4";
+PuzzleCard.CARD_VIEWS_URI = "https://daff-2a02-6b6c-a0-0-20f9-d21-5e6a-f18.ngrok.io/card?tokenID={id}&referrer={referrer}";
 
 // Set a minimum gas limit that provides enough headroom for all actions.
 // Set a maximum gas limit that matches the limit for the polygon network.

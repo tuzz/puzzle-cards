@@ -53,7 +53,8 @@ const main = async () => {
                     name: openSeaTitle(card),
                     description: "Description",
                     image: card.imageURL(),
-                    animation_url: `https://9d5c-2a02-6b6c-60-0-d127-1db4-73cf-9248.ngrok.io/card?tokenID=${card.tokenID()}`,
+                    animation_url: card.viewURL({ referrer: "animation_url" }),
+                    external_url: card.viewURL({ referrer: "external_url" }),
                     attributes: openSeaProperties(card),
                   };
 
