@@ -26,6 +26,10 @@
 
   &.master_copy {
     box-shadow: 0 0 2rem #97f;
+
+    &.scale_shadows {
+      box-shadow: 0 0 3rem #97f;
+    }
   }
 }
 

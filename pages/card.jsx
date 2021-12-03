@@ -9,6 +9,18 @@ const Page = () => {
   if (!tokenID) { return null; }
   const card = PuzzleCard.fromTokenID(BigInt(tokenID));
 
+  //const card = new PuzzleCard({
+  //  series: "Teamwork",
+  //  puzzle: "Teamwork I",
+  //  tier: "Master",
+  //  type: "Artwork",
+  //  color1: "None",
+  //  color2: "None",
+  //  variant: "Ladder Tree",
+  //  condition: "Pristine",
+  //  edition: "Master Copy",
+  //});
+
   return <CardViewer card={card} referrer={referrer} />;
 };
 

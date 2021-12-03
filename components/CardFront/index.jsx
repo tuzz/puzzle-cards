@@ -6,7 +6,7 @@ import stableRandom from "./stableRandom";
 import randomDefects from "./defects";
 import styles from "./styles.module.scss";
 
-const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
+const CardFront = ({ card, random, defects, scaleShadows, onLoaded = () => {} }) => {
   random = random || stableRandom(card);
   defects = defects || randomDefects(card, random);
 
@@ -23,7 +23,7 @@ const CardFront = ({ card, random, defects, onLoaded = () => {} }) => {
   const puzzleNumberInSet = `${card.puzzleIndex() + 1} / ${PuzzleCard.PUZZLE_NAMES.length}`;
 
   return (
-    <div className={`${styles.card_front} ${styles[shinyMaterial(card)]} ${isMasterCopy && styles.master_copy}`}>
+    <div className={`${styles.card_front} ${styles[shinyMaterial(card)]} ${isMasterCopy && styles.master_copy} ${scaleShadows && styles.scale_shadows}`}>
       <div className={`${styles.shiny_material} ${clippingClass}`}>
         {defects.peeling_foil && <div className={styles.peeling_foil} style={{ transform: `scaleX(${defects.peeling_foil})` }}></div>}
 

@@ -16,7 +16,7 @@ const CardViewer = ({ card, referrer }) => {
   return (
     <div className={`${styles.card_viewer} ${referrerClass}`} ref={ref} onClick={handleClick}>
       <div className={styles.card}>
-        <CardFront card={card} />
+        <CardFront card={card} scaleShadows={true} />
       </div>
     </div>
   );

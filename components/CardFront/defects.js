@@ -2,6 +2,8 @@ const randomDefects = (card, random) => {
   const { always, sometimes, num } = possibleDefects[card.condition];
   const defects = { ...always, ...choose(random, num, sometimes) };
 
+  //defects.folded_corner = true;
+
   if (defects.peeling_foil) {
     defects.peeling_foil = random("peeling-foil-scale-x").mod(2) * 2 - 1;
   }

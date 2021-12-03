@@ -1,7 +1,7 @@
 import VectorText from "../VectorText";
 import styles from "./styles.module.scss";
 
-const CardBack = ({ defects, isMasterCopy }) => {
+const CardBack = ({ defects, isMasterCopy, scaleShadows }) => {
   if (typeof defects === "undefined") { throw new Error("defects must be provided"); }
   if (typeof isMasterCopy === "undefined") { throw new Error("isMasterCopy must be provided"); }
 
@@ -9,6 +9,7 @@ const CardBack = ({ defects, isMasterCopy }) => {
     styles.card_back,
     defects.folded_corner && styles[`clip_${defects.folded_corner.corner}`],
     isMasterCopy && styles.master_copy,
+    scaleShadows && styles.scale_shadows,
   ].filter(s => s).join(" ");
 
   return (

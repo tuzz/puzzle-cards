@@ -117,13 +117,13 @@
 .edition {
   flex: 40;
   height: 100%;
-  text-shadow: -0.2rem 0.2rem 0.2rem white;
+  text-shadow: 0.2rem 0.2rem 0.2rem white;
 }
 
 .tier {
   flex: 60;
   height: 100%;
-  text-shadow: -0.2rem 0.2rem 0.2rem white;
+  text-shadow: 0.2rem 0.2rem 0.2rem white;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -218,27 +218,6 @@
 
     * {
       fill: white; // TODO: dependent on puzzle
-    }
-  }
-}
-
-// Make the grid and the text at the top easier to see in the generated images.
-:global(.referrer_generate_images) {
-  .overlay {
-    .master_copy_grid {
-      background-image:
-        linear-gradient(to right, rgba(153, 119, 255, 0.5) 1%, transparent 5px),
-        linear-gradient(to bottom, rgba(153, 119, 255, 0.5) 1%, transparent 5px);
-    }
-
-    .master_copy_text {
-      transform-origin: top left;
-      transform: scale(1.8) translateX(5%);
-    }
-
-    .number {
-      transform-origin: top right;
-      transform: scale(1.8) translateX(-5%);
     }
   }
 }
@@ -701,7 +680,7 @@
     }
 
     &.yellow .lock {
-      filter: drop-shadow(0 0 0.2rem rgba(0, 0, 0, 0.2));
+      filter: drop-shadow(0 0 0.2rem rgba(0, 0, 0, 0.25));
     }
 
     .text {
@@ -1088,7 +1067,6 @@
       left: 35%;
       bottom: 7%;
       fill: white;
-      text-shadow: 0 0 0.5rem black;
     }
   }
 
@@ -1322,6 +1300,79 @@
   @supports (-webkit-appearance:none) {
     .type .cloak video {
       animation-name: none !important;
+    }
+  }
+}
+
+// Shadows only support fixed sizes (not percentages) so scale them up if we're
+// on the card view page where the card size is directly proportional to page size.
+@media (min-width: 1000px) {
+  .card_front.scale_shadows {
+    &.master_copy {
+      filter: drop-shadow(0 0 3rem #97f);
+    }
+
+    .overlay {
+      .master_copy_text {
+        text-shadow: 0 0 1rem black;
+      }
+    }
+
+    .type .helix {
+      .left_sensor, .right_sensor {
+        &:global {
+          &.black {
+            box-shadow: 0 0 1rem #97f;
+          }
+        }
+      }
+    }
+
+    .folded_corner img {
+      filter: drop-shadow(0 0 0.5rem rgba(0, 0, 0, 0.3));
+    }
+
+    .edition, .tier {
+      text-shadow: 0.4rem 0.4rem 0.4rem white;
+    }
+
+    .silver_glitter, .gold_glitter {
+      .edition, .tier {
+        text-shadow: -0.2rem 0.2rem 0.2rem white;
+      }
+    }
+
+    .active.black img {
+      filter: drop-shadow(0 0 1rem #97f);
+    }
+
+    .telescope.yellow .lock {
+      filter: drop-shadow(0 0 0.5rem rgba(0, 0, 0, 0.25));
+    }
+
+    .star img {
+      filter: drop-shadow(0 0 0.7rem white);
+    }
+  }
+}
+
+// Make the grid and the text at the top easier to see in the generated images.
+:global(.referrer_generate_images) {
+  .overlay {
+    .master_copy_grid {
+      background-image:
+        linear-gradient(to right, rgba(153, 119, 255, 0.5) 1%, transparent 5px),
+        linear-gradient(to bottom, rgba(153, 119, 255, 0.5) 1%, transparent 5px);
+    }
+
+    .master_copy_text {
+      transform-origin: top left;
+      transform: scale(1.8) translateX(5%);
+    }
+
+    .number {
+      transform-origin: top right;
+      transform: scale(1.8) translateX(-5%);
     }
   }
 }
