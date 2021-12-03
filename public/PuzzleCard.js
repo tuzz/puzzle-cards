@@ -114,7 +114,7 @@ class PuzzleCard {
   }
 
   imageURL() {
-    return `${PuzzleCard.CARD_IMAGES_URI}/${this.tokenID()}.jpeg`;
+    return PuzzleCard.CARD_IMAGES_URI.replace("{id}", this.tokenID());
   }
 
   tokenID() {
@@ -801,7 +801,7 @@ PuzzleCard.CONTRACT_METADATA_URI = PuzzleCard.TOKEN_METADATA_URI.replace("{id}",
 PuzzleCard.DECK_INDEXES_URI = "https://puzzlecards.github.io/decks/{address}.json";
 PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
 
-PuzzleCard.CARD_IMAGES_URI = "https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images"
+PuzzleCard.CARD_IMAGES_URI = "https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images/{id}.jpeg"
 PuzzleCard.PUZZLE_VIDEOS_URI = "https://puzzlecards.github.io/videos/puzzles/{slug}.mp4";
 
 // TMP
