@@ -24,6 +24,10 @@
     clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 12% 100%, 0% 91.4285714286%);
   }
 
+  // Show a slight shadow so that cards that are stacked when minting are distinguishable.
+  // Shadows will be clipped on cards with folded corners but newly minted don't have that.
+  box-shadow: 0 0 0.3rem rgba(0, 0, 0, 0.3);
+
   &.master_copy {
     box-shadow: 0 0 2rem #97f;
 
