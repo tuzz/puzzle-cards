@@ -114,7 +114,7 @@ class PuzzleCard {
   }
 
   imageURL() {
-    return `${PuzzleCard.IMAGES_URI}/${this.tokenID()}.jpeg`;
+    return `${PuzzleCard.CARD_IMAGES_URI}/${this.tokenID()}.jpeg`;
   }
 
   tokenID() {
@@ -798,8 +798,8 @@ PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 PuzzleCard.TOKEN_METADATA_URI = "https://puzzlecards.github.io/metadata/{id}.json";
 PuzzleCard.CONTRACT_METADATA_URI = PuzzleCard.TOKEN_METADATA_URI.replace("{id}", "contract");
 PuzzleCard.DECK_INDEXES_URI = "https://puzzlecards.github.io/decks";
+PuzzleCard.CARD_IMAGES_URI = "https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images"
 
-PuzzleCard.IMAGES_URI = "https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images"
 PuzzleCard.PUZZLES_URI = "https://puzzlecards.github.io/videos/puzzles";
 
 // Set a minimum gas limit that provides enough headroom for all actions.
