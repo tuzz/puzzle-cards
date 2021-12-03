@@ -1,7 +1,8 @@
 const fs = require("fs")
 const PuzzleCard = require("../public/PuzzleCard");
 
-const standardTypes = { from: 0, to: 14 };
+const standardTypes = { from: 0, to: 13 };
+const virtualTypes = { from: 0, to: 14 };
 const masterTypes = { from: 15, to: 16 };
 
 const nonLimitedEditions = ["Standard", "Signed"];
@@ -18,7 +19,9 @@ const main = async () => {
 
     for (let tier of PuzzleCard.TIER_NAMES) {
       const isMasterTier = tier === "Master";
-      const typesRange = isMasterTier ? masterTypes : standardTypes;
+      const isVirtualTier = tier === "Virtual" || tier === "Godly";
+
+      const typesRange = isMasterTier ? masterTypes : isVirtualTier ? virtualTypes : standardTypes;
 
       for (let typeIndex = typesRange.from; typeIndex <= typesRange.to; typeIndex += 1) {
         const type = PuzzleCard.TYPE_NAMES[typeIndex];
