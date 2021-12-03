@@ -4,7 +4,6 @@ import Metamask from "./metamask";
 import TransactState from "./transactState";
 import YellowSun from "../YellowSun";
 import WorshipStick from "../WorshipStick";
-import TableEdge from "../TableEdge";
 import FilterRows from "../FilterRows";
 import DragRegion from "../DragRegion";
 import CardsInPlay from "../CardsInPlay";
@@ -158,7 +157,7 @@ const CardTable = () => {
       <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={buttonEnabled} buttonFlashing={buttonFlashing} onButtonClick={performAction} raised={stickRaised} className={styles.worship_stick} channel={channel} />
       <YellowSun stickRaised={stickRaised} channel={channel} />
 
-      <TableEdge ratioOfScreenThatIsTableOnPageLoad={0.15}>
+      <div className={styles.table_edge}>
         <FilterRows filters={filters} setFilters={setFilters} />
 
         <DragRegion>
@@ -171,7 +170,7 @@ const CardTable = () => {
           <WoodSliders transactState={transactState} onButtonClick={alignCardsWithSliders} onSlidersClosed={clearHourglassStacks} />
           <Pagination filters={filters} setFilters={setFilters} />
         </div>
-      </TableEdge>
+      </div>
     </div>
   );
 };
