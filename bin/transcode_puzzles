@@ -89,7 +89,7 @@ function transcode() {
     mkdir -p ${X264_DIRECTORY}_${quality}_quality
 
     # I've tried to choose CRF values that keep the quality high while keeping
-    # file sizes low. Aiming for 2-3MB low / 5-10MB high for a 10 second clip.
+    # file sizes low. Aiming for 1-2MB lowq / 5-10MB highq for a 10 second clip.
 
     echo "AV1 ($quality):"
     if [ $quality = low ]; then crf="45"; else crf="30"; fi
@@ -142,7 +142,7 @@ function transcode() {
     ${VP9_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4
 
     echo "HEVC ($quality):"
-    if [ $quality = low ]; then crf="23"; else crf="18"; fi
+    if [ $quality = low ]; then crf="25"; else crf="20"; fi
 
     ffmpeg                                 \
     -hide_banner                           \
@@ -166,7 +166,7 @@ function transcode() {
     ${HEVC_DIRECTORY}_${quality}_quality/$puzzle_slug.mov
 
     echo "X264 ($quality):"
-    if [ $quality = low ]; then crf="35"; else crf="27"; fi
+    if [ $quality = low ]; then crf="30"; else crf="19"; fi
 
     ffmpeg                                 \
     -hide_banner                           \
