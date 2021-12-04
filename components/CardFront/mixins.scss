@@ -9,8 +9,8 @@
   border-bottom-right-radius: 4.25% 7%;
 
   background-color: black;
-  background-image: url(/images/color_particles.png);
-  background-size: 200%;
+  background-image: url(/images/color_particles.jpeg);
+  background-size: 133%;
   background-position: center;
   animation-name: zoom_background;
   animation-iteration-count: infinite;
@@ -19,6 +19,6 @@
 }
 
 @keyframes zoom_background {
-  0%, 100% { background-size: 150%; }
-  50% { background-size: 250%; }
+  0%, 100% { background-size: 100%; }
+  50% { background-size: 167%; }
 }
