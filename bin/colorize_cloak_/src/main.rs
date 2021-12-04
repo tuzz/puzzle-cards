@@ -22,7 +22,7 @@ fn main() {
         let frames = (42..=401_u32).into_par_iter();
 
         frames.for_each(|frame| {
-            let in_path = format!("../../public/images/types/cloak_frames/frame-{:0>8}.png", frame);
+            let in_path = format!("../../image_sources/types/cloak_frames/frame-{:0>8}.png", frame);
             let out_path = format!("../../.tmp/cloak_frames/{}/frame-{:0>8}.png", color_name, frame);
 
             colorize_image(&in_path, &out_path, color);

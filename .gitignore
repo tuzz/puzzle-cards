@@ -10,4 +10,5 @@ contracts/TestUtils.sol
 test-output.txt
 bin/colorize_cloak_/target
 bin/generate_images_/target
+bin/optimize_images_/target
 public_s3

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Optimises the images_sources/ and writes to public/images/
+
+which pngquant || brew install pngquant
+
+cd bin/optimize_images_ && cargo run --release && cd ../../
