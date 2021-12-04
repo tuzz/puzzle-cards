@@ -648,6 +648,11 @@
       bottom: 0;
       width: 100%;
       height: 100%;
+
+      animation-name: pulse-teleport-light;
+      animation-duration: 5s;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
     }
   }
 
@@ -1293,6 +1298,16 @@
   50%, 75% { transform: scaleX(1.5); opacity: 0.6 }
 }
 
+@keyframes pulse-teleport-light {
+  0%, 100%   { filter: drop-shadow(0 0 0.3rem rgba(255, 255, 255, 0)); }
+  50%  { filter: drop-shadow(0 0 0.3rem rgba(255, 255, 255, 1)); }
+}
+
+@keyframes pulse-teleport-light-scaled {
+  0%, 100%   { filter: drop-shadow(0 0 1.5rem rgba(255, 255, 255, 0)); }
+  50%  { filter: drop-shadow(0 0 1.5rem rgba(255, 255, 255, 1)); }
+}
+
 // Safari only.
 @media not all and (min-resolution:.001dpcm) {
   @supports (-webkit-appearance:none) {
@@ -1350,6 +1365,10 @@
 
     .star img {
       filter: drop-shadow(0 0 0.7rem white);
+    }
+
+    .teleport video {
+      animation-name: pulse-teleport-light-scaled;
     }
   }
 }
