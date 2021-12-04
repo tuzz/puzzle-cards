@@ -1029,6 +1029,7 @@
 
     img {
       position: relative;
+      filter: drop-shadow(0 0 0.3rem white);
     }
   }
 
@@ -1369,6 +1370,10 @@
 
     .teleport video {
       animation-name: pulse-teleport-light-scaled;
+    }
+
+    .door img {
+      filter: drop-shadow(0 0 1rem white);
     }
   }
 }
