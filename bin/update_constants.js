@@ -119,7 +119,6 @@ const main = async () => {
       "Starfish",
       "Jellyfish",
       "Anglerfish",
-      "Torch Coral",
       "Helix Coral",
       "Big Tree",
       "Small Tree",

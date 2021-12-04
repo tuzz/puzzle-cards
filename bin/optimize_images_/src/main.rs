@@ -293,7 +293,6 @@ fn settings_per_file() -> SettingsPerFile {
         ("../../image_sources/artwork/solar_spikes.png".to_string(), (1346, true, 0)),
         ("../../image_sources/artwork/starfish.png".to_string(), (539, true, 0)),
         ("../../image_sources/artwork/sun_padlock.png".to_string(), (498, true, 0)),
-        ("../../image_sources/artwork/torch_coral.png".to_string(), (404, true, 0)),
         ("../../image_sources/artwork/two_torches.png".to_string(), (673, true, 0)),
         ("../../image_sources/artwork/white_hourglass.png".to_string(), (377, true, 0)),
 

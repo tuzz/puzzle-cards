@@ -295,7 +295,6 @@ const nonMirroredArt = [
   "frozen_moon",
   "black_hourglass",
   "white_hourglass",
-  "torch_coral",
 ];
 
 const snakeCase = (strings) => {

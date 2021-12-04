@@ -1232,10 +1232,6 @@
       }
     }
 
-    &.torch_coral {
-      img { width: 30%; margin-bottom: -2.5%; }
-    }
-
     &.frozen_sun, &.frozen_moon {
       &:before { @include black_background; }
       img { width: 48%; }

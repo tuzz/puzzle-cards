@@ -1,7 +1,7 @@
 {
   "name": "Teamwork I, Excellent Condition",
   "description": "Description",
-  "image": "https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images/18448450515757040384.jpeg",
+  "image": "https://d3fjxldyah6ziy.cloudfront.net/card_images/18448450515757040384.jpeg",
   "animation_url": "https://daff-2a02-6b6c-a0-0-20f9-d21-5e6a-f18.ngrok.io/card?tokenID=18448450515757040384&referrer=animation_url",
   "external_url": "https://daff-2a02-6b6c-a0-0-20f9-d21-5e6a-f18.ngrok.io/card?tokenID=18448450515757040384&referrer=external_url",
   "attributes": [
@@ -11,7 +11,7 @@
     },
     {
       "trait_type": "3. Variant",
-      "value": "Baby Crab"
+      "value": "Black Hourglass"
     },
     {
       "trait_type": "4. Signature",
