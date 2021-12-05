@@ -23,7 +23,7 @@ function transcode() {
   echo "Transcoding $puzzle_slug..."
 
   # Use hardware encoding to make a quick preview so I can decide where to trim.
-  echo "Trimmed preview:"
+  echo "Preview:"
   ffmpeg                                 \
   -hide_banner                           \
   -loglevel error                        \
@@ -39,23 +39,7 @@ function transcode() {
   -c:v hevc_videotoolbox                 \
   -allow_sw 1                            \
   -vtag hvc1                             \
-  $PREVIEW_DIRECTORY/$puzzle_slug-trimmed.mov
-
-  echo "Original preview:"
-  ffmpeg                                 \
-  -hide_banner                           \
-  -loglevel error                        \
-  -stats                                 \
-  -y                                     \
-  -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
-  -level 4.0                             \
-  -map_metadata -1                       \
-  -movflags +faststart                   \
-  -pix_fmt yuv420p                       \
-  -c:v hevc_videotoolbox                 \
-  -allow_sw 1                            \
-  -vtag hvc1                             \
-  $PREVIEW_DIRECTORY/$puzzle_slug-original.mov
+  $PREVIEW_DIRECTORY/$puzzle_slug.mov
 
   if [ -z "$all_formats" ]; then
     return;
@@ -71,13 +55,14 @@ function transcode() {
   -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
   -ss $start_time                        \
   -t $duration                           \
+  -s 3840x2160                           \
   -c:v copy                              \
   -c:a copy                              \
   -map_metadata -1                       \
   $YOUTUBE_DIRECTORY/$puzzle_slug.mov
 
   # Produce multiple low and high quality videos using different encodings so
-  # that the videos can be played a wide range of devices. The encodes are
+  # that the videos can be played a wide range of devices. The encodings are
   # listed in order of preference, i.e. AV1 is way way better than X264.
 
   for quality in low high; do
@@ -88,11 +73,11 @@ function transcode() {
     mkdir -p ${HEVC_DIRECTORY}_${quality}_quality
     mkdir -p ${X264_DIRECTORY}_${quality}_quality
 
-    # I've tried to choose CRF values that keep the quality high while keeping
-    # file sizes low. Aiming for 1-2MB lowq / 5-10MB highq for a 10 second clip.
+    # Most puzzle videos are about 10 seconds. Aim for file sizes of 1MB/8MB
+    # for AV1 which compresses more efficiently and 1.25/10MB for the others.
 
     echo "AV1 ($quality):"
-    if [ $quality = low ]; then crf="45"; else crf="30"; fi
+    if [ $quality = low ]; then bitrate=800k; else bitrate=6.4M; fi
 
     ffmpeg                                 \
     -hide_banner                           \
@@ -109,18 +94,45 @@ function transcode() {
     -threads 12                            \
     -tile-columns 1                        \
     -tile-rows 0                           \
-    -crf $crf                              \
-    -b:v 0                                 \
     -vf scale=$res                         \
+    -b:v $bitrate                          \
     -level 4.0                             \
     -pix_fmt yuv420p                       \
     -preset veryslow                       \
     -map_metadata -1                       \
     -movflags +faststart                   \
+    -pass 1                                \
+    -f null /dev/null                   && \
+                                           \
+    ffmpeg                                 \
+    -hide_banner                           \
+    -loglevel error                        \
+    -stats                                 \
+    -y                                     \
+    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+    -ss $start_time                        \
+    -t $duration                           \
+    -an                                    \
+    -c:v libaom-av1                        \
+    -cpu-used 8                            \
+    -row-mt true                           \
+    -threads 12                            \
+    -tile-columns 1                        \
+    -tile-rows 0                           \
+    -vf scale=$res                         \
+    -b:v $bitrate                          \
+    -level 4.0                             \
+    -pix_fmt yuv420p                       \
+    -preset veryslow                       \
+    -map_metadata -1                       \
+    -movflags +faststart                   \
+    -pass 2                                \
     ${AV1_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4
 
+
+
     echo "VP9 ($quality):"
-    if [ $quality = low ]; then crf="45"; else crf="30"; fi
+    if [ $quality = low ]; then bitrate=1M; else bitrate=8M; fi
 
     ffmpeg                                 \
     -hide_banner                           \
@@ -132,17 +144,40 @@ function transcode() {
     -t $duration                           \
     -an                                    \
     -c:v libvpx-vp9                        \
-    -crf $crf                              \
     -vf scale=$res                         \
+    -b:v $bitrate                          \
     -level 4.0                             \
     -pix_fmt yuv420p                       \
     -preset veryslow                       \
     -map_metadata -1                       \
     -movflags +faststart                   \
+    -pass 1                                \
+    -f null /dev/null                   && \
+                                           \
+    ffmpeg                                 \
+    -hide_banner                           \
+    -loglevel error                        \
+    -stats                                 \
+    -y                                     \
+    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+    -ss $start_time                        \
+    -t $duration                           \
+    -an                                    \
+    -c:v libvpx-vp9                        \
+    -vf scale=$res                         \
+    -b:v $bitrate                          \
+    -level 4.0                             \
+    -pix_fmt yuv420p                       \
+    -preset veryslow                       \
+    -map_metadata -1                       \
+    -movflags +faststart                   \
+    -pass 2                                \
     ${VP9_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4
 
+
+
     echo "HEVC ($quality):"
-    if [ $quality = low ]; then crf="25"; else crf="20"; fi
+    if [ $quality = low ]; then bitrate=1M; else bitrate=8M; fi
 
     ffmpeg                                 \
     -hide_banner                           \
@@ -155,18 +190,43 @@ function transcode() {
     -an                                    \
     -c:v libx265                           \
     -x265-params log-level=error           \
-    -crf $crf                              \
     -vf scale=$res                         \
+    -b:v $bitrate                          \
     -level 4.0                             \
     -pix_fmt yuv420p                       \
     -preset veryslow                       \
     -map_metadata -1                       \
     -movflags +faststart                   \
     -vtag hvc1                             \
+    -pass 1                                \
+    -f null /dev/null                   && \
+                                           \
+    ffmpeg                                 \
+    -hide_banner                           \
+    -loglevel error                        \
+    -stats                                 \
+    -y                                     \
+    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+    -ss $start_time                        \
+    -t $duration                           \
+    -an                                    \
+    -c:v libx265                           \
+    -x265-params log-level=error           \
+    -vf scale=$res                         \
+    -b:v $bitrate                          \
+    -level 4.0                             \
+    -pix_fmt yuv420p                       \
+    -preset veryslow                       \
+    -map_metadata -1                       \
+    -movflags +faststart                   \
+    -vtag hvc1                             \
+    -pass 2                                \
     ${HEVC_DIRECTORY}_${quality}_quality/$puzzle_slug.mov
 
+
+
     echo "X264 ($quality):"
-    if [ $quality = low ]; then crf="30"; else crf="19"; fi
+    if [ $quality = low ]; then bitrate=1M; else bitrate=8M; fi
 
     ffmpeg                                 \
     -hide_banner                           \
@@ -178,16 +238,38 @@ function transcode() {
     -t $duration                           \
     -an                                    \
     -c:v libx264                           \
-    -crf $crf                              \
     -vf scale=$res                         \
+    -b:v $bitrate                          \
     -profile:v high                        \
     -level 4.0                             \
     -pix_fmt yuv420p                       \
     -preset veryslow                       \
     -map_metadata -1                       \
     -movflags +faststart                   \
+    -pass 1                                \
+    -f null /dev/null                   && \
+                                           \
+    ffmpeg                                 \
+    -hide_banner                           \
+    -loglevel error                        \
+    -stats                                 \
+    -y                                     \
+    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+    -ss $start_time                        \
+    -t $duration                           \
+    -an                                    \
+    -c:v libx264                           \
+    -vf scale=$res                         \
+    -b:v $bitrate                          \
+    -profile:v high                        \
+    -level 4.0                             \
+    -pix_fmt yuv420p                       \
+    -preset veryslow                       \
+    -map_metadata -1                       \
+    -movflags +faststart                   \
+    -pass 2                                \
     ${X264_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4
-  done
+ done
 }
 
 transcode caught-in-the-rain 0.8 11 true
