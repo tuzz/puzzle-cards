@@ -18,54 +18,53 @@ function transcode() {
   puzzle_slug=$1
   start_time=${2:-0}
   duration=${3:-999999}
-  all_formats=$4
 
   echo "Transcoding $puzzle_slug..."
 
   # Use hardware encoding to make a quick preview so I can decide where to trim.
-  echo "Preview:"
-  ffmpeg                                 \
-  -hide_banner                           \
-  -loglevel error                        \
-  -stats                                 \
-  -y                                     \
-  -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
-  -ss $start_time                        \
-  -t $duration                           \
-  -level 4.0                             \
-  -map_metadata -1                       \
-  -movflags +faststart                   \
-  -pix_fmt yuv420p                       \
-  -c:v hevc_videotoolbox                 \
-  -allow_sw 1                            \
-  -vtag hvc1                             \
-  $PREVIEW_DIRECTORY/$puzzle_slug.mov
-
-  if [ -z "$all_formats" ]; then
-    return;
+  if [ ! -f "$PREVIEW_DIRECTORY/$puzzle_slug.mov" ]; then
+    echo "Preview:"
+    ffmpeg                                 \
+    -hide_banner                           \
+    -loglevel error                        \
+    -stats                                 \
+    -y                                     \
+    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+    -ss $start_time                        \
+    -t $duration                           \
+    -level 4.0                             \
+    -map_metadata -1                       \
+    -movflags +faststart                   \
+    -pix_fmt yuv420p                       \
+    -c:v hevc_videotoolbox                 \
+    -allow_sw 1                            \
+    -vtag hvc1                             \
+    $PREVIEW_DIRECTORY/$puzzle_slug.mov
   fi
 
   # Trim the lossless input to a new output so it can be uploaded to YouTube.
-  echo "YouTube:"
-  ffmpeg                                 \
-  -hide_banner                           \
-  -loglevel error                        \
-  -stats                                 \
-  -y                                     \
-  -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
-  -ss $start_time                        \
-  -t $duration                           \
-  -s 3840x2160                           \
-  -c:v copy                              \
-  -c:a copy                              \
-  -map_metadata -1                       \
-  $YOUTUBE_DIRECTORY/$puzzle_slug.mov
+  if [ ! -f "$YOUTUBE_DIRECTORY/$puzzle_slug.mov" ]; then
+    echo "YouTube:"
+    ffmpeg                                 \
+    -hide_banner                           \
+    -loglevel error                        \
+    -stats                                 \
+    -y                                     \
+    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+    -ss $start_time                        \
+    -t $duration                           \
+    -s 3840x2160                           \
+    -c:v copy                              \
+    -c:a copy                              \
+    -map_metadata -1                       \
+    $YOUTUBE_DIRECTORY/$puzzle_slug.mov
+  fi
 
   # Produce multiple low and high quality videos using different encodings so
   # that the videos can be played a wide range of devices. The encodings are
   # listed in order of preference, i.e. AV1 is way way better than X264.
 
-  for quality in low high; do
+  for quality in high; do
     if [ $quality = low ]; then res="1050:590"; else res="1350:760"; fi
 
     mkdir -p ${AV1_DIRECTORY}_${quality}_quality
@@ -76,200 +75,355 @@ function transcode() {
     # Most puzzle videos are about 10 seconds. Aim for file sizes of 1MB/8MB
     # for AV1 which compresses more efficiently and 1.25/10MB for the others.
 
-    echo "AV1 ($quality):"
-    if [ $quality = low ]; then bitrate=800k; else bitrate=6.4M; fi
+    if [ ! -f "${AV1_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4" ]; then
+      echo "AV1 ($quality):"
+      if [ $quality = low ]; then bitrate=800k; else bitrate=6.4M; fi
 
-    ffmpeg                                 \
-    -hide_banner                           \
-    -loglevel error                        \
-    -stats                                 \
-    -y                                     \
-    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
-    -ss $start_time                        \
-    -t $duration                           \
-    -an                                    \
-    -c:v libaom-av1                        \
-    -cpu-used 8                            \
-    -row-mt true                           \
-    -threads 12                            \
-    -tile-columns 1                        \
-    -tile-rows 0                           \
-    -vf scale=$res                         \
-    -b:v $bitrate                          \
-    -level 4.0                             \
-    -pix_fmt yuv420p                       \
-    -preset veryslow                       \
-    -map_metadata -1                       \
-    -movflags +faststart                   \
-    -pass 1                                \
-    -f null /dev/null                   && \
-                                           \
-    ffmpeg                                 \
-    -hide_banner                           \
-    -loglevel error                        \
-    -stats                                 \
-    -y                                     \
-    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
-    -ss $start_time                        \
-    -t $duration                           \
-    -an                                    \
-    -c:v libaom-av1                        \
-    -cpu-used 8                            \
-    -row-mt true                           \
-    -threads 12                            \
-    -tile-columns 1                        \
-    -tile-rows 0                           \
-    -vf scale=$res                         \
-    -b:v $bitrate                          \
-    -level 4.0                             \
-    -pix_fmt yuv420p                       \
-    -preset veryslow                       \
-    -map_metadata -1                       \
-    -movflags +faststart                   \
-    -pass 2                                \
-    ${AV1_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4
-
-
-
-    echo "VP9 ($quality):"
-    if [ $quality = low ]; then bitrate=1M; else bitrate=8M; fi
-
-    ffmpeg                                 \
-    -hide_banner                           \
-    -loglevel error                        \
-    -stats                                 \
-    -y                                     \
-    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
-    -ss $start_time                        \
-    -t $duration                           \
-    -an                                    \
-    -c:v libvpx-vp9                        \
-    -vf scale=$res                         \
-    -b:v $bitrate                          \
-    -level 4.0                             \
-    -pix_fmt yuv420p                       \
-    -preset veryslow                       \
-    -map_metadata -1                       \
-    -movflags +faststart                   \
-    -pass 1                                \
-    -f null /dev/null                   && \
-                                           \
-    ffmpeg                                 \
-    -hide_banner                           \
-    -loglevel error                        \
-    -stats                                 \
-    -y                                     \
-    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
-    -ss $start_time                        \
-    -t $duration                           \
-    -an                                    \
-    -c:v libvpx-vp9                        \
-    -vf scale=$res                         \
-    -b:v $bitrate                          \
-    -level 4.0                             \
-    -pix_fmt yuv420p                       \
-    -preset veryslow                       \
-    -map_metadata -1                       \
-    -movflags +faststart                   \
-    -pass 2                                \
-    ${VP9_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4
+      ffmpeg                                 \
+      -hide_banner                           \
+      -loglevel error                        \
+      -stats                                 \
+      -y                                     \
+      -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+      -ss $start_time                        \
+      -t $duration                           \
+      -an                                    \
+      -c:v libaom-av1                        \
+      -cpu-used 8                            \
+      -row-mt true                           \
+      -threads 12                            \
+      -tile-columns 1                        \
+      -tile-rows 0                           \
+      -vf scale=$res                         \
+      -b:v $bitrate                          \
+      -level 4.0                             \
+      -pix_fmt yuv420p                       \
+      -preset veryslow                       \
+      -map_metadata -1                       \
+      -movflags +faststart                   \
+      -pass 1                                \
+      -f null /dev/null                   && \
+                                             \
+      ffmpeg                                 \
+      -hide_banner                           \
+      -loglevel error                        \
+      -stats                                 \
+      -y                                     \
+      -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+      -ss $start_time                        \
+      -t $duration                           \
+      -an                                    \
+      -c:v libaom-av1                        \
+      -cpu-used 8                            \
+      -row-mt true                           \
+      -threads 12                            \
+      -tile-columns 1                        \
+      -tile-rows 0                           \
+      -vf scale=$res                         \
+      -b:v $bitrate                          \
+      -level 4.0                             \
+      -pix_fmt yuv420p                       \
+      -preset veryslow                       \
+      -map_metadata -1                       \
+      -movflags +faststart                   \
+      -pass 2                                \
+      ${AV1_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4
+    fi
 
 
 
-    echo "HEVC ($quality):"
-    if [ $quality = low ]; then bitrate=1M; else bitrate=8M; fi
+    if [ ! -f "${VP9_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4" ]; then
+      echo "VP9 ($quality):"
+      if [ $quality = low ]; then bitrate=1M; else bitrate=8M; fi
 
-    ffmpeg                                 \
-    -hide_banner                           \
-    -loglevel error                        \
-    -stats                                 \
-    -y                                     \
-    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
-    -ss $start_time                        \
-    -t $duration                           \
-    -an                                    \
-    -c:v libx265                           \
-    -x265-params log-level=error           \
-    -vf scale=$res                         \
-    -b:v $bitrate                          \
-    -level 4.0                             \
-    -pix_fmt yuv420p                       \
-    -preset veryslow                       \
-    -map_metadata -1                       \
-    -movflags +faststart                   \
-    -vtag hvc1                             \
-    -pass 1                                \
-    -f null /dev/null                   && \
-                                           \
-    ffmpeg                                 \
-    -hide_banner                           \
-    -loglevel error                        \
-    -stats                                 \
-    -y                                     \
-    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
-    -ss $start_time                        \
-    -t $duration                           \
-    -an                                    \
-    -c:v libx265                           \
-    -x265-params log-level=error           \
-    -vf scale=$res                         \
-    -b:v $bitrate                          \
-    -level 4.0                             \
-    -pix_fmt yuv420p                       \
-    -preset veryslow                       \
-    -map_metadata -1                       \
-    -movflags +faststart                   \
-    -vtag hvc1                             \
-    -pass 2                                \
-    ${HEVC_DIRECTORY}_${quality}_quality/$puzzle_slug.mov
+      ffmpeg                                 \
+      -hide_banner                           \
+      -loglevel error                        \
+      -stats                                 \
+      -y                                     \
+      -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+      -ss $start_time                        \
+      -t $duration                           \
+      -an                                    \
+      -c:v libvpx-vp9                        \
+      -vf scale=$res                         \
+      -b:v $bitrate                          \
+      -level 4.0                             \
+      -pix_fmt yuv420p                       \
+      -preset veryslow                       \
+      -map_metadata -1                       \
+      -movflags +faststart                   \
+      -pass 1                                \
+      -f null /dev/null                   && \
+                                             \
+      ffmpeg                                 \
+      -hide_banner                           \
+      -loglevel error                        \
+      -stats                                 \
+      -y                                     \
+      -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+      -ss $start_time                        \
+      -t $duration                           \
+      -an                                    \
+      -c:v libvpx-vp9                        \
+      -vf scale=$res                         \
+      -b:v $bitrate                          \
+      -level 4.0                             \
+      -pix_fmt yuv420p                       \
+      -preset veryslow                       \
+      -map_metadata -1                       \
+      -movflags +faststart                   \
+      -pass 2                                \
+      ${VP9_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4
+    fi
 
 
 
-    echo "X264 ($quality):"
-    if [ $quality = low ]; then bitrate=1M; else bitrate=8M; fi
+    if [ ! -f "${HEVC_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4" ]; then
+      echo "HEVC ($quality):"
+      if [ $quality = low ]; then bitrate=1M; else bitrate=8M; fi
 
-    ffmpeg                                 \
-    -hide_banner                           \
-    -loglevel error                        \
-    -stats                                 \
-    -y                                     \
-    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
-    -ss $start_time                        \
-    -t $duration                           \
-    -an                                    \
-    -c:v libx264                           \
-    -vf scale=$res                         \
-    -b:v $bitrate                          \
-    -profile:v high                        \
-    -level 4.0                             \
-    -pix_fmt yuv420p                       \
-    -preset veryslow                       \
-    -map_metadata -1                       \
-    -movflags +faststart                   \
-    -pass 1                                \
-    -f null /dev/null                   && \
-                                           \
-    ffmpeg                                 \
-    -hide_banner                           \
-    -loglevel error                        \
-    -stats                                 \
-    -y                                     \
-    -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
-    -ss $start_time                        \
-    -t $duration                           \
-    -an                                    \
-    -c:v libx264                           \
-    -vf scale=$res                         \
-    -b:v $bitrate                          \
-    -profile:v high                        \
-    -level 4.0                             \
-    -pix_fmt yuv420p                       \
-    -preset veryslow                       \
-    -map_metadata -1                       \
-    -movflags +faststart                   \
-    -pass 2                                \
-    ${X264_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4
+      ffmpeg                                 \
+      -hide_banner                           \
+      -loglevel error                        \
+      -stats                                 \
+      -y                                     \
+      -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+      -ss $start_time                        \
+      -t $duration                           \
+      -an                                    \
+      -c:v libx265                           \
+      -x265-params log-level=error           \
+      -vf scale=$res                         \
+      -b:v $bitrate                          \
+      -level 4.0                             \
+      -pix_fmt yuv420p                       \
+      -preset veryslow                       \
+      -map_metadata -1                       \
+      -movflags +faststart                   \
+      -vtag hvc1                             \
+      -pass 1                                \
+      -f null /dev/null                   && \
+                                             \
+      ffmpeg                                 \
+      -hide_banner                           \
+      -loglevel error                        \
+      -stats                                 \
+      -y                                     \
+      -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+      -ss $start_time                        \
+      -t $duration                           \
+      -an                                    \
+      -c:v libx265                           \
+      -x265-params log-level=error           \
+      -vf scale=$res                         \
+      -b:v $bitrate                          \
+      -level 4.0                             \
+      -pix_fmt yuv420p                       \
+      -preset veryslow                       \
+      -map_metadata -1                       \
+      -movflags +faststart                   \
+      -vtag hvc1                             \
+      -pass 2                                \
+      ${HEVC_DIRECTORY}_${quality}_quality/$puzzle_slug.mov
+    fi
+
+
+
+    if [ ! -f "${X264_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4" ]; then
+      echo "X264 ($quality):"
+      if [ $quality = low ]; then bitrate=1M; else bitrate=8M; fi
+
+      ffmpeg                                 \
+      -hide_banner                           \
+      -loglevel error                        \
+      -stats                                 \
+      -y                                     \
+      -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+      -ss $start_time                        \
+      -t $duration                           \
+      -an                                    \
+      -c:v libx264                           \
+      -vf scale=$res                         \
+      -b:v $bitrate                          \
+      -profile:v high                        \
+      -level 4.0                             \
+      -pix_fmt yuv420p                       \
+      -preset veryslow                       \
+      -map_metadata -1                       \
+      -movflags +faststart                   \
+      -pass 1                                \
+      -f null /dev/null                   && \
+                                             \
+      ffmpeg                                 \
+      -hide_banner                           \
+      -loglevel error                        \
+      -stats                                 \
+      -y                                     \
+      -i $INPUT_DIRECTORY/$puzzle_slug.mov   \
+      -ss $start_time                        \
+      -t $duration                           \
+      -an                                    \
+      -c:v libx264                           \
+      -vf scale=$res                         \
+      -b:v $bitrate                          \
+      -profile:v high                        \
+      -level 4.0                             \
+      -pix_fmt yuv420p                       \
+      -preset veryslow                       \
+      -map_metadata -1                       \
+      -movflags +faststart                   \
+      -pass 2                                \
+      ${X264_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4
  done
 }
 
-transcode caught-in-the-rain 0.8 11 true
+# The Beginning
+transcode what-is-this 0 999
+transcode hidden-entrance 0 999
+transcode death-pit 0 999
+transcode god-rays 0.4 999
+
+# Getting Started
+transcode unlock-the-door 0 999
+transcode in-the-dark 0 999
+transcode locked-out 0 999
+transcode one-way-up 0 999
+transcode red-room 0 999
+transcode above-and-below 0 999
+transcode yellow-moon-maze 0 11.2
+transcode stuck-on-the-roof 0 999
+transcode one-of-each 0 999
+
+# Escape
+transcode locked-in 0 999
+transcode be-patient 0 999
+transcode out-of-reach 0 999
+transcode mini-gauntlet 0 999
+transcode need-a-lift 0 999
+transcode prior-descent 0 999
+transcode missing-moon 0 999
+transcode rising-pillars 0 999
+transcode forbidden-door 0 999
+transcode up-we-go 0 999
+transcode the-way-back 0 12.15
+transcode pit-stop 0 999
+transcode platform-ride 0 999
+
+# Darkness Yields Light
+transcode beach-vandals 0 999
+transcode buried-in-the-sand 0 999
+transcode underwater-impasse 0 10.8
+transcode too-dark-to-see 0 999
+transcode watch-those-stings 0 999
+transcode my-beautiful-children 3 999
+transcode bask-briefly 1.4 999
+
+# Teamwork
+transcode sand-pit 0 9.3
+transcode along-for-the-ride 0 999
+transcode asymmetry 0 11
+transcode down-down-down 0 999
+transcode sand-trap 0 11
+transcode not-helpful 0 11
+transcode catch-a-star 0 9.5
+transcode alternating-pillars 0 999
+transcode pillar-of-crabs 0 999
+transcode beach-obstacle 0 11
+transcode crab-construction 0 11.5
+transcode balancing-act-i 0 11.5
+transcode balancing-act-ii 0 11.5
+transcode hidden-blockade 0 10
+
+# Star Gazing
+transcode cryptic-conversation 0.5 999
+transcode asteroid-hopping 0 999
+transcode mysterious-aura 0.5 11.2
+
+# Mutual Exclusion
+transcode three-pillars 0 999
+transcode time-to-stack 0 10.5
+transcode oscillator 0 12.1
+transcode stepping-stones 0 999
+transcode pink-gauntlet 0 999
+transcode remote-control 0 10
+transcode crab-sticks 0 9.4
+transcode friendly-support 0.3 11
+transcode mind-your-head 0 10
+transcode moon-stairs 0 11
+transcode all-aboard 0 11
+transcode vertical-stack 0 999
+transcode side-by-side 0 11
+transcode build-a-bridge 0 999
+
+# Sands of Time
+transcode come-back-earlier 0 9
+transcode missed-the-drop 0 999
+transcode sky-crab 0 9.5
+transcode spawn-points 0 999
+transcode star-up-high 0 8
+transcode hop-the-barrier 0 999
+transcode state-change 0 999
+transcode they-see-me-rollin 0 999
+
+# Dark Channel
+transcode hungry-for-crab 0 999
+transcode ghost-raft 0 10
+transcode guarded-door 0 999
+
+# Crab's Day Out
+transcode out-to-sea 0 11.5
+transcode tree-timer 0 9
+transcode ahoy-me-crab 0 10
+transcode crows-star 0 11
+
+# Contending Claws
+transcode island-hopping 0 10.5
+transcode rock-moon 0 10
+transcode crab-island 0 11
+transcode phase 0 10
+
+# Trial of Rebirth
+transcode rock-jellyfish 0 999
+transcode superlumi-nonsense 0 999
+transcode base-pair 0 999
+transcode gerald-ellyfish-i 1.5 999
+transcode gerald-ellyfish-ii 4 10
+
+# Pitch Black
+transcode dark-star 2 999
+transcode squashed 0 11
+transcode mental-model 0 999
+transcode broken-ladder 0 999
+transcode misdirection 0 999
+transcode sunken-ring 0 999
+
+# Two by Two
+transcode brief-bridge 0 10
+transcode a-leg-up 0 999
+transcode my-visiting-children 0 9.5
+transcode self-support 0 999
+transcode stack-building 0 999
+transcode not-high-enough 0 999
+transcode opposite-ends 0 10
+transcode prior-ascent 0 10
+
+# Trial of Logic
+transcode the-wrong-side 0 999
+transcode red-moon-maze 0 999
+transcode green-moon-maze 0 10
+transcode mesh 0 999
+
+# Trial of Skill
+transcode six-crabs 0 999
+transcode muscle-memory 0 11
+transcode decoy-step 0 999
+transcode over-the-wall 0 999
+transcode waterfall 0 9
+transcode forbidden-tv 0 999
+
+# Trial of Reign
+transcode hands-gruber-i 0 11.5
+transcode hands-gruber-ii 0 13
+transcode hands-gruber-iii 0 999
+transcode hands-gruber-iv 0 999
