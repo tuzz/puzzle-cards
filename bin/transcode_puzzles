@@ -310,6 +310,11 @@ transcode the-way-back 0 12.15
 transcode pit-stop 0 999
 transcode platform-ride 0 999
 
+# Star Gazing
+transcode cryptic-conversation 0.5 999
+transcode asteroid-hopping 0 999
+transcode mysterious-aura 0.5 11.2
+
 # Darkness Yields Light
 transcode beach-vandals 0 999
 transcode buried-in-the-sand 0 999
@@ -335,11 +340,6 @@ transcode balancing-act-i 0 11.5
 transcode balancing-act-ii 0 11.5
 transcode hidden-blockade 0 10
 
-# Star Gazing
-transcode cryptic-conversation 0.5 999
-transcode asteroid-hopping 0 999
-transcode mysterious-aura 0.5 11.2
-
 # Mutual Exclusion
 transcode three-pillars 0 999
 transcode time-to-stack 0 10.5
@@ -356,6 +356,17 @@ transcode vertical-stack 0 999
 transcode side-by-side 0 11
 transcode build-a-bridge 0 999
 
+# Crab's Day Out
+transcode out-to-sea 0 11.5
+transcode tree-timer 0 9
+transcode ahoy-me-crab 0 10
+transcode crows-star 0 11
+
+# Dark Channel
+transcode hungry-for-crab 0 999
+transcode ghost-raft 0 10
+transcode guarded-door 0 999
+
 # Sands of Time
 transcode come-back-earlier 0 9
 transcode missed-the-drop 0 999
@@ -365,17 +376,6 @@ transcode star-up-high 0 8
 transcode hop-the-barrier 0 999
 transcode state-change 0 999
 transcode they-see-me-rollin 0 999
-
-# Dark Channel
-transcode hungry-for-crab 0 999
-transcode ghost-raft 0 10
-transcode guarded-door 0 999
-
-# Crab's Day Out
-transcode out-to-sea 0 11.5
-transcode tree-timer 0 9
-transcode ahoy-me-crab 0 10
-transcode crows-star 0 11
 
 # Contending Claws
 transcode island-hopping 0 10.5

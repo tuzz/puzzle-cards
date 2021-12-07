@@ -114,7 +114,7 @@ class PuzzleCard {
   }
 
   puzzleSlug() {
-    return this.puzzle.toLowerCase().replaceAll(" ", "-");
+    return this.puzzle.toLowerCase().replaceAll(" ", "-").replaceAll(/[^a-z-]/g, "");
   }
 
   editionsKey() {
@@ -702,8 +702,8 @@ class PuzzleCard {
 
 // constants
 
-PuzzleCard.SERIES_NAMES = ["Darkness Yields Light", "Teamwork"];
-PuzzleCard.PUZZLE_NAMES = ["Darkness Yields Light I", "Darkness Yields Light II", "Darkness Yields Light III", "Darkness Yields Light IV", "Teamwork I", "Teamwork II", "Teamwork III", "Teamwork IV", "Teamwork V", "Teamwork VI"];
+PuzzleCard.SERIES_NAMES = ["The Beginning", "Getting Started", "Escape", "Star Gazing", "Darkness Yields Light", "Teamwork", "Mutual Exclusion", "Crab’s Day Out", "Dark Channel", "Sands of Time", "Contending Claws", "Trial of Rebirth", "Pitch Black", "Two by Two", "Trial of Logic", "Trial of Skill", "Trial of Reign"];
+PuzzleCard.PUZZLE_NAMES = ["What is this?", "Hidden Entrance", "Death Pit", "God Rays", "Unlock the Door", "In the Dark", "Locked Out", "One Way Up", "Red Room", "Above and Below", "Yellow Moon Maze", "Stuck on the Roof", "One of Each", "Locked In", "Be Patient", "Out of Reach", "Mini Gauntlet", "Need a Lift", "Prior Descent", "Missing Moon", "Rising Pillars", "Forbidden Door", "Up We Go", "The Way Back", "Pit Stop", "Platform Ride", "Cryptic Conversation", "Asteroid Hopping", "Mysterious Aura", "Beach Vandals", "Buried in the Sand", "Underwater Impasse", "Too Dark To See", "Watch Those Stings", "My Beautiful Children", "Bask Briefly", "Sand Pit", "Along for the Ride", "Asymmetry", "Down Down Down", "Sand Trap", "Not Helpful", "Catch a Star", "Alternating Pillars", "Pillar of Crabs", "Beach Obstacle", "Crab Construction", "Balancing Act I", "Balancing Act II", "Hidden Blockade", "Three Pillars", "Time to Stack", "Oscillator", "Stepping Stones", "Pink Gauntlet", "Remote Control", "Crab Sticks", "Friendly Support", "Mind Your Head", "Moon Stairs", "All Aboard", "Vertical Stack", "Side by Side", "Build a Bridge", "Out to Sea", "Tree Timer", "Ahoy, Me Crab", "Crow’s Star", "Hungry for Crab", "Ghost Raft", "Guarded Door", "Come Back Earlier", "Missed the Drop", "Sky Crab", "Spawn Points", "Star Up High", "Hop the Barrier", "State Change", "They See Me Rollin’", "Island Hopping", "Rock Moon", "Crab Island", "Phase", "Rock Jellyfish", "Superlumi-Nonsense", "Base Pair", "Gerald Ellyfish I", "Gerald Ellyfish II", "Dark Star", "Squashed", "Mental Model", "Broken Ladder", "Misdirection", "Sunken Ring", "Brief Bridge", "A Leg Up", "My Visiting Children", "Self Support", "Stack Building", "Not High Enough", "Opposite Ends", "Prior Ascent", "The Wrong Side", "Red Moon Maze", "Green Moon Maze", "Mesh", "Six Crabs", "Muscle Memory", "Decoy Step", "Over the Wall", "Waterfall", "Forbidden TV", "Hands Gruber I", "Hands Gruber II", "Hands Gruber III", "Hands Gruber IV"];
 PuzzleCard.TIER_NAMES = ["Mortal", "Immortal", "Ethereal", "Virtual", "Celestial", "Godly", "Master"];
 PuzzleCard.TYPE_NAMES = ["Player", "Crab", "Cloak", "Inactive", "Active", "Telescope", "Helix", "Beacon", "Torch", "Map", "Teleport", "Glasses", "Eclipse", "Door", "Hidden", "Star", "Artwork"];
 PuzzleCard.COLOR_NAMES = ["None", "Yellow", "Black", "Green", "White", "Blue", "Red", "Pink"];
@@ -713,9 +713,9 @@ PuzzleCard.EDITION_NAMES = ["Standard", "Signed", "Limited", "Master Copy"];
 PuzzleCard.ACTION_NAMES = ["activateSunOrMoon", "changeLensColor", "discard2Pickup1", "goThroughStarDoor", "jumpIntoBeacon", "jumpIntoEclipse", "lookThroughGlasses", "lookThroughTelescope", "puzzleMastery1", "puzzleMastery2", "shineTorchOnBasePair", "teleportToNextArea"];
 PuzzleCard.CAN_ACTION_NAMES = PuzzleCard.ACTION_NAMES.map(s => "can" + s[0].toUpperCase() + s.slice(1));
 
-PuzzleCard.NUM_PUZZLES_PER_SERIES = [4, 6];
-PuzzleCard.SERIES_FOR_EACH_PUZZLE = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1];
-PuzzleCard.PUZZLE_OFFSET_PER_SERIES = [0, 4];
+PuzzleCard.NUM_PUZZLES_PER_SERIES = [4, 9, 13, 3, 7, 14, 14, 4, 3, 8, 4, 5, 6, 8, 4, 6, 4];
+PuzzleCard.SERIES_FOR_EACH_PUZZLE = [0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 16, 16, 16, 16];
+PuzzleCard.PUZZLE_OFFSET_PER_SERIES = [0, 4, 13, 26, 29, 36, 50, 64, 68, 71, 79, 83, 88, 94, 102, 106, 112];
 PuzzleCard.NUM_COLOR_SLOTS_PER_TYPE = [0, 0, 1, 1, 1, 1, 2, 1, 2, 0, 0, 2, 0, 0, 0, 1, 0];
 PuzzleCard.NUM_VARIANTS_PER_TYPE = [56, 6, 0, 2, 2, 2, 0, 0, 0, 8, 0, 0, 0, 2, 0, 0, 23];
 PuzzleCard.VARIANT_OFFSET_PER_TYPE = [5, 61, 0, 1, 1, 1, 0, 0, 0, 67, 0, 0, 0, 3, 0, 0, 75];
