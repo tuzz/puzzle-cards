@@ -216,8 +216,8 @@
     height: 10%;
     right: 1.7%;
 
-    * {
-      fill: white; // TODO: dependent on puzzle
+    &.dark_mode * {
+      fill: white;
     }
   }
 }

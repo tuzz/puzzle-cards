@@ -67,7 +67,7 @@ const CardFront = ({ card, random, defects, scaleShadows, videoQuality, onLoaded
             <VectorText className={styles.master_copy_text} text={"Master Copy"} />
           </div>}
 
-          <VectorText className={styles.number} text={puzzleNumberInSet} referenceText="123 / 123" padSide="left" />
+          <VectorText className={`${styles.number} ${darkMode(card) && styles.dark_mode}`} text={puzzleNumberInSet} referenceText="123 / 123" padSide="left" />
         </div>
       </div>
 
@@ -153,6 +153,31 @@ const tierIcons = {
   Godly: ["shield", "walls", "glasses", "helix"],
   Master: [],
 }
+
+const darkMode = (card) => (
+  darkSeries[card.series] && !darkSeriesExceptions[card.puzzle]
+);
+
+const darkSeries = {
+  "The Beginning": true,
+  "Getting Started": true,
+  "Escape": true,
+  "Star Gazing": true,
+  "Darkness Yields Light": true,
+  "Dark Channel": true,
+  "Trial of Rebirth": true,
+  "Pitch Black": true,
+  "Two by Two": true,
+  "Trial of Logic": true,
+  "Trial of Skill": true,
+  "Trial of Reign": true,
+};
+
+const darkSeriesExceptions = {
+  "Beach Vandals": true,
+  "Buried in the Sand": true,
+  "Underwater Impasse": true,
+};
 
 CardFront.stableRandom = stableRandom;
 CardFront.randomDefects = randomDefects;
