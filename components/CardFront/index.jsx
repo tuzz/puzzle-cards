@@ -50,16 +50,16 @@ const CardFront = ({ card, random, defects, scaleShadows, videoQuality, onLoaded
       <div className={styles.video}>
         <video autoPlay muted loop playsInline onCanPlay={onLoaded} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>
           <source src={card.puzzleVideoURL({ encoding: "av1", quality: videoQuality })} type="video/mp4" />
-          {videoQuality === "high" && <source src={card.puzzleVideoURL({ encoding: "av1", quality: "low" })} type="video/mp4" />}
-
           <source src={card.puzzleVideoURL({ encoding: "vp9", quality: videoQuality })} type="video/mp4" />
-          {videoQuality === "high" && <source src={card.puzzleVideoURL({ encoding: "vp9", quality: "low" })} type="video/mp4" />}
-
           <source src={card.puzzleVideoURL({ encoding: "hevc", quality: videoQuality })} type="video/mov" />
-          {videoQuality === "high" && <source src={card.puzzleVideoURL({ encoding: "hevc", quality: "low" })} type="video/mov" />}
-
           <source src={card.puzzleVideoURL({ encoding: "x264", quality: videoQuality })} type="video/mp4" />
-          {videoQuality === "high" && <source src={card.puzzleVideoURL({ encoding: "x264", quality: "low" })} type="video/mp4" />}
+
+          {videoQuality === "high" && <>
+            <source src={card.puzzleVideoURL({ encoding: "av1", quality: "low" })} type="video/mp4" />
+            <source src={card.puzzleVideoURL({ encoding: "vp9", quality: "low" })} type="video/mp4" />
+            <source src={card.puzzleVideoURL({ encoding: "hevc", quality: "low" })} type="video/mov" />
+            <source src={card.puzzleVideoURL({ encoding: "x264", quality: "low" })} type="video/mp4" />
+          </>}
         </video>
 
         <div className={styles.overlay} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>
