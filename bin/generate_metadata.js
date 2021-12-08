@@ -48,7 +48,7 @@ const main = async () => {
 
                 for (let edition of editionChoices) {
                   const card = new PuzzleCard({ series, puzzle, tier, type, color1, color2, variant, condition, edition });
-                  const filename = `public/metadata/${card.metadataID()}.json`;
+                  const filename = `public_s3/metadata_api/${card.metadataID()}.json`;
 
                   const metadata = {
                     name: openSeaTitle(card),
@@ -70,7 +70,10 @@ const main = async () => {
     }
   }
 
-  console.log(`${cardCombinations} card combinations written to public/metadata/`);
+  console.log(`${cardCombinations} card combinations written to public_s3/metadata_api/`);
+
+  writeContractMetadata();
+  console.log(`contract metadata written to public_s3/metadata_api/contract.json`);
 };
 
 const openSeaTitle = (card) => {
@@ -109,7 +112,7 @@ const openSeaTitle = (card) => {
   return name;
 }
 
-const openSeaDescription = (card, PuzzleCard) => {
+const openSeaDescription = (card) => {
   let text = "Click above ^ for fullscreen.\n\n";
 
   switch (card.edition) {
@@ -124,7 +127,7 @@ const openSeaDescription = (card, PuzzleCard) => {
   }
 
   if (card.edition === "Master Copy") {
-    text += "\n\nOwnership of this card represents ownership of the **actual puzzle from the video game**.";
+    text += "\n\nOwnership of this card represents **ownership of the actual puzzle from the video game**.";
     text += " Each puzzle is a discrete piece of artwork that includes all the design, iterative development and testing that goes into making an enjoyable experience.";
   }
 
@@ -160,6 +163,31 @@ const openSeaProperties = (card) => {
     value !== "None" || card.type === "Artwork" && trait_type.includes("Signature")
   ));
 }
+
+const writeContractMetadata = () => {
+  const filename = `public_s3/metadata_api/contract.json`;
+
+  const metadata = {
+    name: "Worship the Sun Puzzle Cards",
+    description: [
+      `Worship the Sun is an upcoming puzzle/platformer by [Chris Patuzzo](https://twitter.com/chrispatuzzo). These Puzzle Cards were created to help fund the video game and to celebrate all of the intricately designed puzzles and hand drawn artwork from the game. By playing the card game, you are directly supporting its creator.`,
+      `The card game uses many unique mechanics from the video game. For example, there are recipes such as 'LookThroughTelescope' and 'ShineTorchOnBasePair' that correspond to actions from the game. However, the card game is entirely self-contained and plays separately from the video game.`,
+      `I've tried to keep prices as low as possible so that lots of people can play and get a glimpse at some of the puzzles. Cards can be minted from just $0.01, rising to $1 at the highest tier. To avoid spoilers, the videos featured on the cards do not show the solutions to puzzles - only a general sense of them.`,
+      `At the $1 tier, cards can be combined to produce Signed, Limited Edition and Master Copy cards. This endgame is optional and is for people who want to own a significant piece of the video game itself as these cards are limited in supply and represent ownership over portions of the game.`,
+      `There will only ever be ${PuzzleCard.MAX_LIMITED_EDITIONS} Limited Edition cards for each puzzle and one of these will be randomly chosen as the Master Copy. Ownership of this card represents ownership of the puzzle itself, as a discrete piece of artwork– all of the design, iterative development and testing that goes into making an enjoyable puzzle.`,
+      `When the game launches, my hope is that all puzzles are owned by the community because 1) that will have helped support me during its development and 2) a number of people will feel a stronger connection to the game and appreciate it more– stumbling upon the puzzle they own at some point during that experience.`,
+      `Going forwards, I plan to update the card game to include new puzzles and artwork from the video game as it is developed. Eventually, I might introduce cards that allow early access to the video game or free copies of it, but I haven't figured out the details yet. I'd also like to introduce a 'PuzzléDex' and a global leaderboard so that you can exhibit your deck, compare it to others' and hunt down cards you're missing.`,
+      `It is important to me that the rules of the game remain fixed so that you can trust I won't dillute the rarity or value of cards later. This is enforced by the contract which only allows a small sert of things to change, e.g. to add new puzzles and artwork. Everything else, e.g. the number of limited editions, cannot change. All of the code is on GitHub (the contract, the website... everything) so you're welcome to verify it yourself.`,
+      `Thanks for checking out Puzzle Cards. I really appreciate it.`,
+    ].join("\n\n"),
+    image: "https://openseacreatures.io/image.png", // TODO
+    external_link: "https://puzzlecards.github.io",
+    seller_fee_basis_points: 500,
+    fee_recipient: PuzzleCard.CONTRACT_OWNER,
+  };
+
+  fs.writeFileSync(filename, JSON.stringify(metadata, null, 2) + "\n");
+};
 
 main().then(() => process.exit(0)).catch(error => {
   console.error(error);
