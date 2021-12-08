@@ -12,6 +12,7 @@ const main = async () => {
   let cardCombinations = 0;
 
   for (let puzzleIndex = 0; puzzleIndex < PuzzleCard.PUZZLE_NAMES.length; puzzleIndex += 1) {
+    console.log(`${puzzleIndex + 1} / ${PuzzleCard.PUZZLE_NAMES.length}`);
     const puzzle = PuzzleCard.PUZZLE_NAMES[puzzleIndex];
 
     const seriesIndex = PuzzleCard.SERIES_FOR_EACH_PUZZLE[puzzleIndex];
@@ -51,7 +52,7 @@ const main = async () => {
 
                   const metadata = {
                     name: openSeaTitle(card),
-                    description: "Description",
+                    description: openSeaDescription(card, PuzzleCard),
                     image: card.imageURL(),
                     animation_url: card.viewURL({ referrer: "animation_url" }),
                     external_url: card.viewURL({ referrer: "external_url" }),
@@ -107,6 +108,33 @@ const openSeaTitle = (card) => {
 
   return name;
 }
+
+const openSeaDescription = (card, PuzzleCard) => {
+  let text = "Click above ^ for fullscreen.\n\n";
+
+  switch (card.edition) {
+    case "Standard": text += "This puzzle card can be combined with others as part of an original card game by [Chris Patuzzo](https://twitter.com/chrispatuzzo)."; break;
+    case "Signed": text += `This puzzle card is a Signed edition of the '${card.puzzle}' puzzle.`; break;
+    case "Limited": text += `This puzzle card is one of ${PuzzleCard.MAX_LIMITED_EDITIONS} Limited Editions of the '${card.puzzle}' puzzle.`; break;
+    case "Master Copy": text += `This puzzle card is the Master Copy card of the '${card.puzzle}' puzzle.`; break;
+  }
+
+  if (card.type === "Artwork") {
+    text += ` It features the '${card.variant}' artwork.`;
+  }
+
+  if (card.edition === "Master Copy") {
+    text += "\n\nOwnership of this card represents ownership of the **actual puzzle from the video game**.";
+    text += " Each puzzle is a discrete piece of artwork that includes all the design, iterative development and testing that goes into making an enjoyable experience.";
+  }
+
+  text += "\n\nAll artwork is hand drawn and is from the upcoming video game 'Worship the Sun' releasing in 2022.";
+  text += "\n\nYou can play the card game for yourself and mint cards (from just $0.01) by visiting [this website](https://puzzlecards.github.io).";
+
+  text += "\n\nSee 'About Worship the Sun Puzzle Cards' for more details.";
+
+  return text;
+};
 
 const openSeaProperties = (card) => {
   const isLimited = card.edition === "Limited" || card.edition === "Master Copy";
