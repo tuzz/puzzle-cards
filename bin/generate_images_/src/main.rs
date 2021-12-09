@@ -1,7 +1,7 @@
 use headless_chrome::{Browser, LaunchOptionsBuilder, protocol::page::ScreenshotFormat, Tab};
 use std::{fs, collections::BTreeSet, sync::Arc, sync::atomic::{AtomicUsize, Ordering}, time::Duration, thread};
 use std::io::{Cursor, Write};
-use image::{io::Reader, imageops::FilterType, ImageFormat, jpeg::JpegEncoder};
+use image::{io::Reader, imageops::FilterType, ImageFormat, jpeg::JpegEncoder, GenericImageView};
 use crossbeam_queue::ArrayQueue;
 
 const CAPTURE_HEIGHT: u32 = 2000;
@@ -13,6 +13,7 @@ const OUTPUT_HEIGHT: u32 = 350;
 const OUTPUT_DIRECTORY: &str = "../../public_s3/card_images";
 const JPEG_QUALITY: Option<u8> = Some(75); // Or output a lossless PNG if None.
 
+const MENU_BAR_HEIGHT: u32 = 124;
 const NUM_THREADS: u32 = 3;
 
 fn main() {
@@ -73,7 +74,7 @@ fn main() {
 fn new_instance_of_chrome_with_one_tab() -> (Browser, Arc<Tab>) {
     let options = LaunchOptionsBuilder::default()
         .headless(false) // Otherwise, it tends to time out.
-        .window_size(Some((CAPTURE_WIDTH / 2, CAPTURE_HEIGHT / 2)))
+        .window_size(Some((CAPTURE_WIDTH / 2, CAPTURE_HEIGHT / 2 + MENU_BAR_HEIGHT)))
         .idle_browser_timeout(Duration::from_secs(999999999))
         .build().unwrap();
 
@@ -89,7 +90,7 @@ fn new_instance_of_chrome_with_one_tab() -> (Browser, Arc<Tab>) {
 fn token_ids_from_metadata_directory() -> BTreeSet<u128> {
     let mut token_ids = BTreeSet::new();
 
-    for result in fs::read_dir("../../public/metadata").unwrap() {
+    for result in fs::read_dir("../../public_s3/metadata_api").unwrap() {
         let dir_entry = result.unwrap();
 
         let metadata = dir_entry.metadata().unwrap();
@@ -166,7 +167,12 @@ fn capture_screenshot_of_card_page(tab: &Arc<Tab>, token_id: &str, extension: &s
 
         // Capture at a higher resolution then downsample to produce a higher quality result.
         let png_image = Reader::with_format(Cursor::new(png_bytes), ImageFormat::Png).decode().unwrap();
+        assert_eq!(png_image.width(), CAPTURE_WIDTH);
+        assert_eq!(png_image.height(), CAPTURE_HEIGHT);
+
         let png_image = png_image.resize(OUTPUT_WIDTH, OUTPUT_HEIGHT, FilterType::Lanczos3);
+        assert_eq!(png_image.width(), OUTPUT_WIDTH);
+        assert_eq!(png_image.height(), OUTPUT_HEIGHT);
 
         let out_path = format!("{}/{}{}", OUTPUT_DIRECTORY, token_id, extension);
         let mut file = std::fs::File::create(out_path).unwrap();
