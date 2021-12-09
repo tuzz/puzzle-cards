@@ -1,6 +1,4 @@
-const { withSentryConfig } = require("@sentry/nextjs");
-
-module.exports = withSentryConfig({
+module.exports = {
   async headers() {
     return [
       {
@@ -12,4 +10,4 @@ module.exports = withSentryConfig({
       },
     ]
   },
-}, { silent: true });
+};
