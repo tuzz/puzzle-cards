@@ -4,8 +4,8 @@ use std::io::{Cursor, Write};
 use image::{io::Reader, imageops::FilterType, ImageFormat, jpeg::JpegEncoder, GenericImageView};
 use crossbeam_queue::ArrayQueue;
 
-const CAPTURE_HEIGHT: u32 = 2000;
-const CAPTURE_WIDTH: u32 = 2000;
+const CAPTURE_WIDTH: u32 = 1050;
+const CAPTURE_HEIGHT: u32 = 1050;
 
 const OUTPUT_WIDTH: u32 = 350;
 const OUTPUT_HEIGHT: u32 = 350;
