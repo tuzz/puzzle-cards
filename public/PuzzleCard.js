@@ -135,7 +135,7 @@ class PuzzleCard {
   }
 
   puzzleVideoURL({ encoding = "av1", quality = "high" }) {
-    return PuzzleCard.PUZZLE_VIDEO_URIS[encoding].replace("{quality}", quality).replace("{slug}", this.puzzleSlug());
+    return PuzzleCard.PUZZLE_VIDEOS_URI.replace("{encoding}", encoding).replace("{quality}", quality).replace("{slug}", this.puzzleSlug());
   }
 
   viewURL({ referrer }) {
@@ -737,25 +737,19 @@ PuzzleCard.MASTER_TYPE_PROBABILITIES = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 PuzzleCard.TOKEN_METADATA_URI = "https://d3fjxldyah6ziy.cloudfront.net/metadata_api/{id}.json";
 PuzzleCard.CONTRACT_METADATA_URI = PuzzleCard.TOKEN_METADATA_URI.replace("{id}", "contract");
 
-PuzzleCard.DECK_INDEXES_URI = "https://puzzlecards.github.io/decks/{address}.json";
-PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
+PuzzleCard.CARD_IMAGES_URI = "https://d3fjxldyah6ziy.cloudfront.net/card_images/{id}.jpeg"
+PuzzleCard.PUZZLE_VIDEOS_URI = "https://d3fjxldyah6ziy.cloudfront.net/puzzle_videos/{encoding}_{quality}_quality/{slug}.mp4",
 
 PuzzleCard.CARD_VIEWS_URI = "https://puzzlecards.github.io/card?tokenID={id}&referrer={referrer}";
-PuzzleCard.CARD_IMAGES_URI = "https://d3fjxldyah6ziy.cloudfront.net/card_images/{id}.jpeg"
 
-PuzzleCard.PUZZLE_VIDEO_URIS = {
-  av1: "https://puzzlecards.github.io/videos/puzzle_videos/av1_{quality}_quality/{slug}.mp4",
-  vp9: "https://d3fjxldyah6ziy.cloudfront.net/puzzle_videos/vp9_{quality}_quality/{slug}.mp4",
-  hevc: "https://d3fjxldyah6ziy.cloudfront.net/puzzle_videos/hevc_{quality}_quality/{slug}.mov",
-  x264: "https://d3fjxldyah6ziy.cloudfront.net/puzzle_videos/x264_{quality}_quality/{slug}.mp4",
-};
+PuzzleCard.DECK_INDEXES_URI = "https://puzzlecards.github.io/decks/{address}.json";
+PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
 
 // TMP
 PuzzleCard.TOKEN_METADATA_URI = "https://daff-2a02-6b6c-a0-0-20f9-d21-5e6a-f18.ngrok.io/metadata/{id}.json";
 PuzzleCard.DECK_INDEXES_URI = "http://localhost:3000/decks/{address}.json";
 PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
 PuzzleCard.CARD_VIEWS_URI = "https://daff-2a02-6b6c-a0-0-20f9-d21-5e6a-f18.ngrok.io/card?tokenID={id}&referrer={referrer}";
-PuzzleCard.PUZZLE_VIDEO_URIS.av1 = "http://localhost:3000/videos/puzzle_videos/av1_{quality}_quality/{slug}.mp4";
 
 // Set a minimum gas limit that provides enough headroom for all actions.
 // Set a maximum gas limit that matches the limit for the polygon network.
