@@ -746,7 +746,6 @@ PuzzleCard.DECK_INDEXES_URI = "https://puzzlecards.github.io/decks/{address}.jso
 PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
 
 // TMP
-PuzzleCard.TOKEN_METADATA_URI = "https://daff-2a02-6b6c-a0-0-20f9-d21-5e6a-f18.ngrok.io/metadata/{id}.json";
 PuzzleCard.DECK_INDEXES_URI = "http://localhost:3000/decks/{address}.json";
 PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
 PuzzleCard.CARD_VIEWS_URI = "https://daff-2a02-6b6c-a0-0-20f9-d21-5e6a-f18.ngrok.io/card?tokenID={id}&referrer={referrer}";
@@ -806,9 +805,9 @@ PuzzleCard.ERROR_STRINGS = [
 PuzzleCard.PROXY_REGISTRY_ADDRESS = "0xff7ca10af37178bdd056628ef42fd7f799fac77c";
 PuzzleCard.ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-PuzzleCard.CONTRACT_ADDRESS = "0xf21d39f44f934088f4f5124da911225f274115b1";
+PuzzleCard.CONTRACT_ADDRESS = "0x46cb44a17fb05c9a4dd6b0b4c45e3e1d3dd33b7b";
 PuzzleCard.CONTRACT_OWNER = "0xbc50c6815ff8c11fb35ea70d9f79f90d5744182a";
-PuzzleCard.CONTRACT_BLOCK = 22144962;
+PuzzleCard.CONTRACT_BLOCK = 22442732;
 PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://matic-mumbai.chainstacklabs.com","url2":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
 
 PuzzleCard.CONTRACT_ABI = [

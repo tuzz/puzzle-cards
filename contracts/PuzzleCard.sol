@@ -57,9 +57,9 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
 
     constructor(address proxyRegistryAddress) ERC1155("") {
         PROXY_REGISTRY_ADDRESS = proxyRegistryAddress;
-        CONTRACT_METADATA_URI = "https://puzzlecards.github.io/metadata/contract.json";
+        CONTRACT_METADATA_URI = "https://d3fjxldyah6ziy.cloudfront.net/metadata_api/contract.json";
 
-        _setURI("https://puzzlecards.github.io/metadata/{id}.json");
+        _setURI("https://d3fjxldyah6ziy.cloudfront.net/metadata_api/{id}.json");
         _initializeEIP712(name);
     }
 
