@@ -6,14 +6,14 @@
 # with it still being financially viable for me.
 
 # Fairly conservative numbers:
-NUM_PUZZLES = 100
+NUM_PUZZLES = 116
 YEARS_TO_MAKE_GAME = 3
 CORPORATION_TAX = 0.19
 INCOME_TAX = 0.4
 TAX_RATE = (1 - CORPORATION_TAX) * (1 - INCOME_TAX)
 
 # Play with these:
-MAX_LIMITED_EDITIONS = 151
+MAX_LIMITED_EDITIONS = 100
 PRISTINE_MINT_PROBABILITY = 50.to_f / 100
 DEGRADE_PROBABILITY = 50.to_f / 100
 DISCARD_RESETS_CONDITION = false

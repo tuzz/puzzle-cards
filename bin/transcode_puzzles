@@ -5,7 +5,7 @@ PREVIEW_DIRECTORY="/Volumes/hdd/puzzles/previews"
 YOUTUBE_DIRECTORY="/Volumes/hdd/puzzles/youtube"
 
 # Store the first choice of encodings on GitHub and the rest in S3 with CloudFront.
-AV1_DIRECTORY="public/videos/puzzle_videos/av1"
+AV1_DIRECTORY="public_s3/puzzle_videos/av1"
 VP9_DIRECTORY="public_s3/puzzle_videos/vp9"
 HEVC_DIRECTORY="public_s3/puzzle_videos/hevc"
 X264_DIRECTORY="public_s3/puzzle_videos/x264"

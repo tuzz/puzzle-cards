@@ -1,7 +1,3 @@
 #!/bin/bash
 
-sleep 5 && mv public_ public &
-
-mv public public_ &&
-open http://localhost:3000 &&
-yarn run next dev
+open http://localhost:3000 && yarn run next dev

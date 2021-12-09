@@ -11,8 +11,8 @@
 # in anywhere (they're on a hard drive). However, all videos will be uploaded in
 # 4K to YouTube so they too can be recreated if needs be.
 
-aws-vault exec personal -- \
-aws s3 sync public_s3 s3://puzzlecards --delete --dryrun
+aws-vault exec personal --no-session -- \
+aws s3 sync --size-only --delete --dryrun public_s3 s3://puzzlecards
 
 echo
 echo "Manually edit this script and remove --dryrun to apply changes."
