@@ -64,7 +64,7 @@ function transcode() {
   # that the videos can be played a wide range of devices. The encodings are
   # listed in order of preference, i.e. AV1 is way way better than X264.
 
-  for quality in high; do
+  for quality in low high; do
     if [ $quality = low ]; then res="1050:590"; else res="1350:760"; fi
 
     mkdir -p ${AV1_DIRECTORY}_${quality}_quality
@@ -88,6 +88,7 @@ function transcode() {
       -ss $start_time                        \
       -t $duration                           \
       -an                                    \
+      -vsync cfr                             \
       -c:v libaom-av1                        \
       -cpu-used 8                            \
       -row-mt true                           \
@@ -145,6 +146,7 @@ function transcode() {
       -ss $start_time                        \
       -t $duration                           \
       -an                                    \
+      -vsync cfr                             \
       -c:v libvpx-vp9                        \
       -vf scale=$res                         \
       -b:v $bitrate                          \
@@ -179,7 +181,7 @@ function transcode() {
 
 
 
-    if [ ! -f "${HEVC_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4" ]; then
+    if [ ! -f "${HEVC_DIRECTORY}_${quality}_quality/$puzzle_slug.mov" ]; then
       echo "HEVC ($quality):"
       if [ $quality = low ]; then bitrate=1M; else bitrate=8M; fi
 
@@ -192,6 +194,7 @@ function transcode() {
       -ss $start_time                        \
       -t $duration                           \
       -an                                    \
+      -vsync cfr                             \
       -c:v libx265                           \
       -x265-params log-level=error           \
       -vf scale=$res                         \
@@ -243,6 +246,7 @@ function transcode() {
       -ss $start_time                        \
       -t $duration                           \
       -an                                    \
+      -vsync cfr                             \
       -c:v libx264                           \
       -vf scale=$res                         \
       -b:v $bitrate                          \
@@ -275,6 +279,7 @@ function transcode() {
       -movflags +faststart                   \
       -pass 2                                \
       ${X264_DIRECTORY}_${quality}_quality/$puzzle_slug.mp4
+    fi
  done
 }
 
