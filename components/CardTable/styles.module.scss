@@ -2,6 +2,7 @@
   background: #191919;
   padding-top: 10rem;
   overflow: hidden;
+  position: relative;
 }
 
 .worship_stick {
@@ -36,5 +37,62 @@
 @media only screen and (max-width: 1230px) {
   .felt_cloth {
     height: 85rem;
+  }
+}
+
+.rain1 {
+  --s: 1px 12px;
+  --c: rgba(255, 255, 255, 0.3);
+  --a: -15deg;
+  --w: 212px;
+  --h: 220px;
+
+  animation: rain 0.8s linear infinite;
+}
+
+.rain2 {
+  --w: 280px;
+  --c: rgba(255, 255, 255, 0.2);
+  --a: -14deg;
+  --h: 300px;
+  --s: 0.7px 15px;
+
+  animation: rain 0.75s linear infinite;
+}
+
+.rain3 {
+  --w: 240px;
+  --c: rgba(255, 255, 255, 0.4);
+  --a: -16deg;
+  --h: 250px;
+  --s: 0.5px 10px;
+
+  pointer-events: none;
+  animation: rain 0.85s linear infinite;
+}
+
+.rain1, .rain2, .rain3 {
+  position: absolute;
+  height: calc(100% + var(--h));
+  bottom: 0;
+  left: -30%;
+  right: -30%;
+
+  background:
+    radial-gradient(var(--s), var(--c) 100%, transparent 100%) -24px 6px,
+    radial-gradient(var(--s), var(--c) 100%, transparent 100%) 78px 0,
+    radial-gradient(var(--s), var(--c) 100%, transparent 100%) 24px 48px,
+    radial-gradient(var(--s), var(--c) 100%, transparent 100%) 96px 92px,
+    radial-gradient(var(--s), var(--c) 100%, transparent 100%) 156px 120px,
+    radial-gradient(var(--s), var(--c) 100%, transparent 100%) 20px 172px;
+
+  background-size: var(--w) var(--h);
+  transform: skew(var(--a));
+}
+
+
+@keyframes rain {
+  to {
+    transform: skew(var(--a)) translateY(var(--h));
   }
 }

@@ -154,8 +154,13 @@ const CardTable = () => {
 
   return (
     <div className={styles.card_table}>
+      <div className={styles.rain1}></div>
+      <div className={styles.rain2}></div>
+
       <WorshipStick rockHeight={0.8} spinning={stickSpinning} buttonEnabled={buttonEnabled} buttonFlashing={buttonFlashing} onButtonClick={performAction} raised={stickRaised} className={styles.worship_stick} channel={channel} />
       <YellowSun stickRaised={stickRaised} channel={channel} />
+
+      <div className={styles.rain3}></div>
 
       <div className={styles.table_edge}>
         <FilterRows filters={filters} setFilters={setFilters} />
