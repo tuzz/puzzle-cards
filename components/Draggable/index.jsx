@@ -99,13 +99,15 @@ const Draggable = ({ nodeRef, startPosition = {}, position, withinY, zoomed, zoo
     position = { left, top };
   }
 
-  return (
+  return <>
     <ReactDraggable {...props} disabled={disabled || !!position} {...detectClicks}>
       <div ref={ref} className={`${styles.inner} ${className} ${position && styles.controlled}`} style={{ ...startPosition, zIndex, ...(position || {}) }}>
         {children}
       </div>
     </ReactDraggable>
-  )
+
+    <div className={`${styles.dark_background} ${zoomed && styles.visible}`} style={{ transitionDuration: `${zoomDuration}s` }}></div>
+  </>;
 };
 
 export default Draggable;
