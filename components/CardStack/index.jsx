@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Draggable from "../Draggable";
 import Zoomable from "../Zoomable";
 import Flippable from "../Flippable";
 import CardFront from "../CardFront";
 import CardBack from "../CardBack";
+import CardMenu from "../CardMenu";
 import styles from "./styles.module.scss";
 
 const CardStack = ({ cardStack, startPosition, position, withinY, dealDelay, fadeIn = true, flipped, flipDirection = 1, onMoved = () => {} }) => {
@@ -13,6 +14,8 @@ const CardStack = ({ cardStack, startPosition, position, withinY, dealDelay, fad
 
   const random = CardFront.stableRandom(cardStack.card);
   const defects = CardFront.randomDefects(cardStack.card, random);
+
+  const menuRef = useRef();
 
   useEffect(() => {
     if (!dealDelay) { return; }
@@ -31,7 +34,10 @@ const CardStack = ({ cardStack, startPosition, position, withinY, dealDelay, fad
     }, 0);
   };
 
-  const zoomOut = () => {
+  const zoomOut = (event) => {
+    const path = event.path || (event.composedPath && event.composedPath());
+    if (path.some(node => node === menuRef.current)) { return; }
+
     removeEventListener("mousedown", zoomOut);
     removeEventListener("scroll", zoomOut);
     setZoomed(false);
@@ -45,7 +51,7 @@ const CardStack = ({ cardStack, startPosition, position, withinY, dealDelay, fad
 
   const rotation = (position || {}).rotation || startPosition.rotation || { base: 0, random: 4 };
 
-  return (
+  return <>
     <Draggable bounds="parent" startPosition={startPosition} position={position} withinY={withinY} zoomed={zoomed} onClick={zoomIn} onStop={handleStop} disabled={zoomed} className={`${fadeIn && styles.fade_in}`}>
       <Zoomable zoomed={zoomed} rotateWhenZoomedOut={true} rotation={rotation}>
         <Flippable flipped={!loaded || flipped} direction={flipDirection} className={styles.flippable}>
@@ -54,7 +60,9 @@ const CardStack = ({ cardStack, startPosition, position, withinY, dealDelay, fad
         </Flippable>
       </Zoomable>
     </Draggable>
-  );
+
+    <CardMenu menuRef={menuRef} cardStack={cardStack} visible={zoomed} />
+  </>;
 };
 
 export default CardStack;

@@ -146,6 +146,10 @@ class PuzzleCard {
     return PuzzleCard.CARD_IMAGES_URI.replace("{id}", this.tokenID());
   }
 
+  openSeaURL() {
+    return PuzzleCard.OPEN_SEA_URI.replace("{contract}", PuzzleCard.CONTRACT_ADDRESS).replace("{id}", this.tokenID());
+  }
+
   // deck sync methods
 
   static async fetchDeck(address, onChange, onProgress = () => {}) {
@@ -743,6 +747,7 @@ PuzzleCard.CARD_IMAGES_URI = "https://d3fjxldyah6ziy.cloudfront.net/card_images/
 PuzzleCard.PUZZLE_VIDEOS_URI = "https://d3fjxldyah6ziy.cloudfront.net/puzzle_videos/{encoding}_{quality}_quality/{slug}.mp4",
 
 PuzzleCard.CARD_VIEWS_URI = "https://puzzlecards.github.io/card?tokenID={id}&referrer={referrer}";
+PuzzleCard.OPEN_SEA_URI = "https://opensea.io/assets/mumbai/{contract}/{id}";
 
 PuzzleCard.DECK_INDEXES_URI = "https://puzzlecards.github.io/decks/{address}.json";
 PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
@@ -751,6 +756,7 @@ PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.jso
 PuzzleCard.DECK_INDEXES_URI = "http://localhost:3000/decks/{address}.json";
 PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
 PuzzleCard.CARD_VIEWS_URI = "https://daff-2a02-6b6c-a0-0-20f9-d21-5e6a-f18.ngrok.io/card?tokenID={id}&referrer={referrer}";
+PuzzleCard.OPEN_SEA_URI = "https://testnets.opensea.io/assets/mumbai/{contract}/{id}";
 
 // Set a minimum gas limit that provides enough headroom for all actions.
 // Set a maximum gas limit that matches the limit for the polygon network.
