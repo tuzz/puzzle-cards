@@ -42,7 +42,7 @@
 
 .rain1 {
   --s: 1px 12px;
-  --c: rgba(255, 255, 255, 0.3);
+  --c: rgba(255, 255, 255, 0.2);
   --a: -15deg;
   --w: 212px;
   --h: 220px;
@@ -51,21 +51,21 @@
 }
 
 .rain2 {
-  --w: 280px;
-  --c: rgba(255, 255, 255, 0.2);
+  --s: 1px 15px;
+  --c: rgba(255, 255, 255, 0.1);
   --a: -14deg;
+  --w: 280px;
   --h: 300px;
-  --s: 0.7px 15px;
 
   animation: rain 0.75s linear infinite;
 }
 
 .rain3 {
-  --w: 240px;
-  --c: rgba(255, 255, 255, 0.4);
+  --s: 1px 10px;
+  --c: rgba(255, 255, 255, 0.3);
   --a: -16deg;
+  --w: 240px;
   --h: 250px;
-  --s: 0.5px 10px;
 
   pointer-events: none;
   animation: rain 0.85s linear infinite;
@@ -73,7 +73,7 @@
 
 .rain1, .rain2, .rain3 {
   position: absolute;
-  height: calc(100% + var(--h));
+  height: calc(150% + var(--h));
   bottom: 0;
   left: -30%;
   right: -30%;
