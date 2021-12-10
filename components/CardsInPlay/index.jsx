@@ -23,7 +23,7 @@ const CardsInPlay = ({ onStackMoved = () => {}, transactState, chosenStacks, fil
     const alreadyLoaded = address === loadedAddress;
 
     if (alreadyLoaded) { // The change was caused by new cards being minted.
-      updateTopArea(decks[address], 50);
+      updateTopArea(decks[address], 10);
     } else {
       setLoadedAddress(address);
       updateMainArea();
