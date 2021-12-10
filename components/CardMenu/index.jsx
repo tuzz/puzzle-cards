@@ -10,7 +10,7 @@ const CardMenu = ({ menuRef, cardStack, visible }) => (
       <OpenSeaLogo className={styles.open_sea_logo} textBaseLine={3} />
     </a>
 
-    <span className={styles.number_owned}>Number owned: {cardStack.quantity}</span>
+    <span className={styles.copies_owned}>Copies owned: {cardStack.quantity}</span>
   </div>
 );
 
