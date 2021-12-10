@@ -9,20 +9,72 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
 }
 
 .card {
   position: relative;
   width: 64.2857142857vh;
   height: 90vh;
+  flex-shrink: 0;
   border-radius: 5% / 3.5714285714%; // 5 * 15/21
+  margin: 0 5vh;
+}
+
+.flippable {
+  perspective: 140vh;
+}
+
+.tick_mark {
+  border-top: 5vh solid transparent;
+  border-bottom: 5vh solid transparent;
+  border-left: none;
+  border-right: none;
+
+  background: none;
+  padding: 0;
+  cursor: pointer;
+
+  &:hover {
+    border-left-color: white;
+  }
+
+  &.flip_right {
+    border-left: 10vh solid rgba(255, 255, 255, 0.7);
+  }
+
+  &.flip_left {
+    border-right: 10vh solid rgba(255, 255, 255, 0.7);
+  }
+}
+
+.link_to_site {
+  position: absolute;
+  width: 100%;
+  bottom: 0.5rem;
+  font-family: Arial, sans-serif;
+  font-size: 2.5vh;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+
+:global(.referrer_animation_url) {
+  .card {
+    cursor: pointer;
+  }
+
+  .link_to_site {
+    display: none;
+  }
 }
 
 :global(.referrer_generate_images) {
   .card {
     width: 67.8571428571vh;
     height: 94vh;
+  }
+
+  .tick_mark, .link_to_site {
+    display: none;
   }
 }
 
@@ -43,5 +95,12 @@
 @media (min-width: 1000px) {
   .card_viewer {
     background-size: 25rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .link_to_site {
+    text-align: left;
+    left: 0.5rem;
   }
 }

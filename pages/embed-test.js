@@ -10,12 +10,12 @@ const Page = () => {
         <iframe
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowFullscreen=""
-          frameborder="0"
+          frameBorder="0"
           width="100%"
           height="100%"
           sandbox="allow-scripts"
-          src={`/card?tokenID=${tokenID}`}
-          style={{ minHeight: "500px", display: "block" }}>
+          src={`/card?tokenID=${tokenID}&referrer=animation_url`}
+          style={{ minHeight: "500px", display: "block", resize: "both" }}>
         </iframe>
       </div>
     </div>
