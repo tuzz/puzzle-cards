@@ -20,3 +20,28 @@
 .morphing {
   filter: url(#threshold) blur(0.5px);
 }
+
+.arrow {
+  pointer-events: none;
+  transform: translateX(-0.7rem) rotate(-4deg);
+  opacity: 0;
+
+  &.visible {
+    opacity: 1;
+    transition: opacity 0.25s linear 0.25s, left 1s, width 1s;
+  }
+
+  & > path {
+    stroke: rgba(255, 255, 255, 0.6);
+    fill: transparent;
+    stroke-width: 2px;
+    stroke-dasharray: 14px;
+    transition: d 1s;
+  }
+
+  & > g {
+    stroke: rgba(255, 255, 255, 0.6);
+    stroke-width: 2px;
+    transition: transform 1s;
+  }
+}

@@ -1285,6 +1285,13 @@ array-unique@^0.3.2:
   resolved "https://registry.yarnpkg.com/array-unique/-/array-unique-0.3.2.tgz#a894b75d4bc4f6cd679ef3244a9fd8f46ae2d428"
   integrity sha1-qJS3XUvE9s1nnvMkSp/Y9Gri1Cg=
 
+arrows-svg@^1.4.1:
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/arrows-svg/-/arrows-svg-1.5.5.tgz#0e245d25cd52b2ee99300386a594a568b1b81bf7"
+  integrity sha512-tbtGeNQzZHyqVucOg8oMQQES10bivzeLBARMfLIHdVwx7mkA+EcTdjnqQX8VYn7n1B36MSrBXSDFspGjK3cMsg==
+  dependencies:
+    preact "^10.5.7"
+
 asn1.js@^5.2.0:
   version "5.4.1"
   resolved "https://registry.yarnpkg.com/asn1.js/-/asn1.js-5.4.1.tgz#11a980b84ebb91781ce35b0fdc2ee294e3783f07"
@@ -5955,6 +5962,11 @@ postcss@8.2.15:
     nanoid "^3.1.23"
     source-map "^0.6.1"
 
+preact@^10.5.7:
+  version "10.6.4"
+  resolved "https://registry.yarnpkg.com/preact/-/preact-10.6.4.tgz#ad12c409ff1b4316158486e0a7b8d43636f7ced8"
+  integrity sha512-WyosM7pxGcndU8hY0OQlLd54tOU+qmG45QXj2dAYrL11HoyU/EzOSTlpJsirbBr1QW7lICxSsVJJmcmUglovHQ==
+
 prepend-http@^1.0.1:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/prepend-http/-/prepend-http-1.0.4.tgz#d4f4562b0ce3696e41ac52d0e002e57a635dc6dc"
@@ -6144,6 +6156,13 @@ raw-body@2.4.1, raw-body@^2.4.1:
     http-errors "1.7.3"
     iconv-lite "0.4.24"
     unpipe "1.0.0"
+
+react-arrows@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-arrows/-/react-arrows-1.2.0.tgz#e2139ed1d1fd7d6f17827e1d61f81b29a02c0642"
+  integrity sha512-jiuOAWAZ+Qka0fvM4MCC5w/nKnyPooBgEMzGTI8cBA0shD7t7NlSkNCStLENFOuYtcR1ERUmIK6KiMvcoRnI9Q==
+  dependencies:
+    arrows-svg "^1.4.1"
 
 react-dom@^17.0.2:
   version "17.0.2"

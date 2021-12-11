@@ -50,7 +50,7 @@ const WorshipStick = ({ className, spinning = false, rockHeight = 1, raised = tr
 
       {rockHeight > 0 && <div className={styles.rock} style={{ paddingTop: `${rockHeight * 100}%` }}>
         {onButtonClick && <div className={styles.rock_inner}>
-          <button onClick={onButtonClick} disabled={!buttonEnabled} className={`${buttonFlashing && styles.flashing}`}></button>
+          <button id="metamask-button" onClick={onButtonClick} disabled={!buttonEnabled} className={`${buttonFlashing && styles.flashing}`}></button>
         </div>}
       </div>}
     </div>

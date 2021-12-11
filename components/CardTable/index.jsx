@@ -172,7 +172,7 @@ const CardTable = () => {
         </DragRegion>
 
         <div className={styles.felt_cloth}>
-          <ActionName name={isPuzzleCardAction && buttonAction !== "mint" && buttonAction} />
+          <ActionName name={isPuzzleCardAction && buttonAction !== "mint" && buttonAction} stickRaised={stickRaised} />
           <CardOutline channel={channel} />
           <WoodSliders transactState={transactState} onButtonClick={alignCardsWithSliders} onSlidersClosed={clearHourglassStacks} />
           <Pagination filters={filters} setFilters={setFilters} />
