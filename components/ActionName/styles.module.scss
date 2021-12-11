@@ -45,3 +45,9 @@
     transition: transform 1s;
   }
 }
+
+@media only screen and (max-width: 675px) {
+  .arrow.showing_filters {
+    display: none;
+  }
+}

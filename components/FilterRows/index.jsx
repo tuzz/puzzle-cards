@@ -3,8 +3,7 @@ import DeckContext from "../DeckLoader/context";
 import Dropdown from "./dropdown";
 import styles from "./styles.module.scss";
 
-const FilterRows = ({ filters, setFilters }) => {
-  const [showingFilters, setShowingFilters] = useState(false);
+const FilterRows = ({ filters, setFilters, showingFilters, setShowingFilters }) => {
   const { PuzzleCard, address, decks } = useContext(DeckContext);
 
   const unnecessary = !address || decks[address].length <= 6;

@@ -23,6 +23,7 @@ const CardTable = () => {
   const [buttonAction, setButtonAction] = useState();
   const [transactState, setTransactState] = useState(TransactState.INITIAL);
   const [filters, setFilters] = useState(new Filters());
+  const [showingFilters, setShowingFilters] = useState(false);
 
   const channel = {};
 
@@ -164,7 +165,7 @@ const CardTable = () => {
       <div className={styles.rain3}></div>
 
       <div className={styles.table_edge}>
-        <FilterRows filters={filters} setFilters={setFilters} />
+        <FilterRows filters={filters} setFilters={setFilters} showingFilters={showingFilters} setShowingFilters={setShowingFilters} />
 
         <DragRegion>
           <CardsInPlay onStackMoved={handleStackMoved} transactState={transactState} chosenStacks={chosenStacks} filters={filters} setFilters={setFilters} channel={channel} />
@@ -172,7 +173,7 @@ const CardTable = () => {
         </DragRegion>
 
         <div className={styles.felt_cloth}>
-          <ActionName name={isPuzzleCardAction && buttonAction !== "mint" && buttonAction} stickRaised={stickRaised} />
+          <ActionName name={isPuzzleCardAction && buttonAction !== "mint" && buttonAction} stickRaised={stickRaised} showingFilters={showingFilters} />
           <CardOutline channel={channel} />
           <WoodSliders transactState={transactState} onButtonClick={alignCardsWithSliders} onSlidersClosed={clearHourglassStacks} />
           <Pagination filters={filters} setFilters={setFilters} />

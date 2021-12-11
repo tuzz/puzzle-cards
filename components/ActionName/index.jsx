@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import styles from "./styles.module.scss";
 let { default: Arrow, DIRECTION } = typeof window === "undefined" ? {} : require("react-arrows");
 
-const ActionName = ({ name, stickRaised }) => {
+const ActionName = ({ name, stickRaised, showingFilters }) => {
   const [morph, setMorph] = useState({ from: "", to: "", ratio: 0, animate: null });
 
   const linkRef = useRef();
@@ -51,6 +51,7 @@ const ActionName = ({ name, stickRaised }) => {
   }
 
   setClass(arrowRef.current, styles.visible, morph.to && !stickRaised);
+  setClass(arrowRef.current, styles.showing_filters, showingFilters);
 
   return (
     <div className={`${styles.action_name} ${morph.ratio > 0 && morph.ratio < 1 && styles.morphing}`}>
