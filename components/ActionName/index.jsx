@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import styles from "./styles.module.scss";
 let { default: Arrow, DIRECTION } = typeof window === "undefined" ? {} : require("react-arrows");
 
-const ActionName = ({ name, stickRaised, showingFilters, channel, generation }) => {
+const ActionName = ({ name, transactState, showingFilters, channel, generation }) => {
   const [morph, setMorph] = useState({ from: "", to: "", ratio: 0, animate: null });
 
   const linkRef = useRef();
@@ -58,7 +58,9 @@ const ActionName = ({ name, stickRaised, showingFilters, channel, generation }) 
     arrowRef.current = document.getElementsByClassName(styles.arrow)[0];
   }
 
-  setClass(arrowRef.current, styles.visible, morph.to && !stickRaised);
+  const stickGrounded = transactState.initial() || transactState.requesting() || transactState.allCancelled();
+
+  setClass(arrowRef.current, styles.visible, morph.to && stickGrounded);
   setClass(arrowRef.current, styles.showing_filters, showingFilters);
 
   const hrefProp = name && !name.includes("connect") && { href: `/recipes#${name}` };

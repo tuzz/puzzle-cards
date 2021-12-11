@@ -174,7 +174,7 @@ const CardTable = () => {
         </DragRegion>
 
         <div className={styles.felt_cloth}>
-          <ActionName name={buttonAction} stickRaised={stickRaised} showingFilters={showingFilters} channel={channel} generation={nameGeneration} />
+          <ActionName name={buttonAction} transactState={transactState} showingFilters={showingFilters} channel={channel} generation={nameGeneration} />
           <CardOutline channel={channel} />
           <WoodSliders transactState={transactState} onButtonClick={alignCardsWithSliders} onSlidersClosed={clearHourglassStacks} />
           <Pagination filters={filters} setFilters={setFilters} />
