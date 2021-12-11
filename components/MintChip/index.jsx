@@ -6,7 +6,7 @@ import Flippable from "../Flippable";
 import Dropdown from "./dropdown";
 import styles from "./styles.module.scss";
 
-const MintChip = ({ filters, onMoved = () => {}, channel }) => {
+const MintChip = ({ filters, onMoved = () => {}, onChange = () => {}, channel }) => {
   const { PuzzleCard, address, chainId, maxTiers, updateMaxTier } = useContext(DeckContext);
   const maxTier = maxTiers[address];
 
@@ -69,6 +69,11 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
     return tierIndex !== 0 && tierIndex > maxIndex;
   };
 
+  const handleNumChange = (numCards) => {
+    setNumCards(numCards);
+    onChange({ numCards, tierName });
+  };
+
   const handleTierChange = async (tierName, event) => {
     if (tierName === "unlock") {
       event.stopPropagation();
@@ -92,6 +97,7 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
       event.stopPropagation();
     } else {
       setTierName(tierName);
+      onChange({ numCards, tierName });
     }
   }
 
@@ -136,7 +142,7 @@ const MintChip = ({ filters, onMoved = () => {}, channel }) => {
                 <span className={styles.mint}>Mint</span>
                 <span className={styles.price}>${displayPrice}</span>
 
-                <Dropdown object={dropdowns[0]} className={styles.number_dropdown} value={numCards} onChange={setNumCards} options={[
+                <Dropdown object={dropdowns[0]} className={styles.number_dropdown} value={numCards} onChange={handleNumChange} options={[
                   { label: "1 card", value: 1 },
                   { label: "2 cards", value: 2 },
                   { label: "5 cards", value: 5 },

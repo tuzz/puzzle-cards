@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import styles from "./styles.module.scss";
 let { default: Arrow, DIRECTION } = typeof window === "undefined" ? {} : require("react-arrows");
 
-const ActionName = ({ name, stickRaised, showingFilters }) => {
+const ActionName = ({ name, stickRaised, showingFilters, channel, generation }) => {
   const [morph, setMorph] = useState({ from: "", to: "", ratio: 0, animate: null });
 
   const linkRef = useRef();
@@ -10,13 +10,21 @@ const ActionName = ({ name, stickRaised, showingFilters }) => {
 
   useEffect(() => {
     setMorph(previous => {
-      if (name === previous.to) {
+      const [numCards, tierName] = channel.mintArgs ? channel.mintArgs() : [];
+
+      const displayText = !name ? "" :
+        name === "mint" && numCards === 1 ? `mint1${tierName}Card` :
+        name === "mint" ? `mint${numCards}${tierName}Cards` :
+        name.includes("connect") ? "connectToMetaMask" :
+        name;
+
+      if (displayText === previous.to) {
         return previous;
       } else {
-        return { from: previous.to, to: name, ratio: 0, animate: requestAnimationFrame(morphText) };
+        return { from: previous.to, to: displayText, ratio: 0, animate: requestAnimationFrame(morphText) };
       }
     });
-  }, [name]);
+  }, [name, generation]);
 
   useEffect(() => {
     return () => cancelAnimationFrame(morph.animate);
@@ -53,10 +61,12 @@ const ActionName = ({ name, stickRaised, showingFilters }) => {
   setClass(arrowRef.current, styles.visible, morph.to && !stickRaised);
   setClass(arrowRef.current, styles.showing_filters, showingFilters);
 
+  const hrefProp = name && !name.includes("connect") && { href: `/recipes#${name}` };
+
   return (
     <div className={`${styles.action_name} ${morph.ratio > 0 && morph.ratio < 1 && styles.morphing}`}>
       <a style={style(1 - morph.ratio)}>{morph.from}</a>
-      <a ref={linkRef} href={`/recipes#${morph.to}`} target="_blank" style={style(morph.ratio)}>{morph.to}</a>
+      <a ref={linkRef} {...hrefProp} target="_blank" style={style(morph.ratio)}>{morph.to}</a>
 
       <svg style={{ pointerEvents: "none" }}>
         <defs>

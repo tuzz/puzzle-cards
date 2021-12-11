@@ -24,6 +24,7 @@ const CardTable = () => {
   const [transactState, setTransactState] = useState(TransactState.INITIAL);
   const [filters, setFilters] = useState(new Filters());
   const [showingFilters, setShowingFilters] = useState(false);
+  const [nameGeneration, setNameGeneration] = useState(0);
 
   const channel = {};
 
@@ -169,11 +170,11 @@ const CardTable = () => {
 
         <DragRegion>
           <CardsInPlay onStackMoved={handleStackMoved} transactState={transactState} chosenStacks={chosenStacks} filters={filters} setFilters={setFilters} channel={channel} />
-          <MintChip onMoved={handleChipMoved} filters={filters} channel={channel} />
+          <MintChip onMoved={handleChipMoved} onChange={() => setNameGeneration(g => g + 1)} filters={filters} channel={channel} />
         </DragRegion>
 
         <div className={styles.felt_cloth}>
-          <ActionName name={isPuzzleCardAction && buttonAction !== "mint" && buttonAction} stickRaised={stickRaised} showingFilters={showingFilters} />
+          <ActionName name={buttonAction} stickRaised={stickRaised} showingFilters={showingFilters} channel={channel} generation={nameGeneration} />
           <CardOutline channel={channel} />
           <WoodSliders transactState={transactState} onButtonClick={alignCardsWithSliders} onSlidersClosed={clearHourglassStacks} />
           <Pagination filters={filters} setFilters={setFilters} />

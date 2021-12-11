@@ -11,7 +11,7 @@
     text-decoration: none;
     position: absolute;
 
-    &:hover {
+    &[href]:hover {
       color: rgba(230, 225, 80, 0.8);
     }
   }
