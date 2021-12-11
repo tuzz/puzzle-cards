@@ -8,6 +8,7 @@ import FilterRows from "../FilterRows";
 import DragRegion from "../DragRegion";
 import CardsInPlay from "../CardsInPlay";
 import MintChip from "../MintChip";
+import ActionName from "../ActionName";
 import CardOutline from "../CardOutline";
 import WoodSliders from "../WoodSliders";
 import Pagination from "../Pagination";
@@ -171,6 +172,7 @@ const CardTable = () => {
         </DragRegion>
 
         <div className={styles.felt_cloth}>
+          <ActionName name={isPuzzleCardAction && buttonAction !== "mint" && buttonAction} />
           <CardOutline channel={channel} />
           <WoodSliders transactState={transactState} onButtonClick={alignCardsWithSliders} onSlidersClosed={clearHourglassStacks} />
           <Pagination filters={filters} setFilters={setFilters} />
