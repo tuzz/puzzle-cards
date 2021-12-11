@@ -90,6 +90,14 @@
   transform: skew(var(--a));
 }
 
+// Safari doesn't support the first argument in radial gradients.
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) {
+    .rain1, .rain2, .rain3 {
+      display: none;
+    }
+  }
+}
 
 @keyframes rain {
   to {
