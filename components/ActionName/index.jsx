@@ -46,10 +46,10 @@ const ActionName = ({ name }) => {
 
   return (
     <div className={`${styles.action_name} ${morph.ratio > 0 && morph.ratio < 1 && styles.morphing}`}>
-      <span style={style(1 - morph.ratio)}>{morph.from}</span>
-      <span style={style(morph.ratio)}>{morph.to}</span>
+      <a style={style(1 - morph.ratio)}>{morph.from}</a>
+      <a href={`/recipes#${morph.to}`} target="_blank" style={style(morph.ratio)}>{morph.to}</a>
 
-      <svg>
+      <svg style={{ display: "none" }}>
         <defs>
           <filter id="threshold">
             <feColorMatrix in="SourceGraphic" type="matrix" values="0.8 0 0 0 0 0 0.8 0 0 0 0 0 0.8 0 0 0 0 0 255 -140" />

@@ -4,11 +4,16 @@
   align-items: center;
   justify-content: center;
   font-family: "Trebuchet MS";
-  color: rgba(255, 255, 255, 0.8);
   font-size: 1.4rem;
 
-  span {
+  a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
     position: absolute;
+
+    &:hover {
+      color: rgba(230, 225, 80, 0.8);
+    }
   }
 }
 
