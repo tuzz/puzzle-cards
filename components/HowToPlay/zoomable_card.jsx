@@ -1,30 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CardFront from "../CardFront";
 import Zoomable from "../Zoomable";
 import styles from "./styles.module.scss";
 
 const ZoomableCard = ({ card, title, subtitle }) => {
   const [zoomed, setZoomed] = useState(false);
+  const [zIndex, setZIndex] = useState(0);
 
-  const zoomIn = () => {
-    setZoomed(true);
-    setTimeout(() => {
-      addEventListener("mousedown", zoomOut);
-      addEventListener("scroll", zoomOut);
-    }, 0);
-  };
+  useEffect(() => {
+    addEventListener("scroll", zoomOut);
+    return () => removeEventListener("scroll", zoomOut);
+  }, []);
 
-  const zoomOut = (event) => {
-    removeEventListener("mousedown", zoomOut);
-    removeEventListener("scroll", zoomOut);
-    setZoomed(false);
-  };
+  useEffect(() => {
+    if (zoomed) {
+      setZIndex(99999);
+    } else {
+      setTimeout(() => setZIndex(0), 500);
+    }
+  }, [zoomed]);
+
+  const zoomOut = () => setZoomed(false);
 
   return (
-    <div className={styles.zoomable_card}>
+    <div className={styles.zoomable_card} style={{ zIndex }}>
       {title && <span className={styles.title}>{title}</span>}
       <Zoomable zoomed={zoomed}>
-        <div className={styles.card} onClick={zoomIn}>
+        <div className={styles.card} onClick={() => setZoomed(z => !z)}>
           <CardFront card={card} videoQuality="high" />
         </div>
       </Zoomable>
