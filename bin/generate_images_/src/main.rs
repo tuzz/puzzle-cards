@@ -47,9 +47,18 @@ fn main() {
         thread::spawn(move || {
             let (mut chrome, mut tab) = new_instance_of_chrome_with_one_tab();
 
-            while let Some(token_id) = queue.pop() {
+            let mut next_token_id = queue.pop();
+            let mut preloaded = false;
+
+            loop {
+                let token_id = match next_token_id { Some(t) => t, _ => break };
+                next_token_id = queue.pop();
+
                 loop {
-                    if capture_screenshot_of_card_page(&tab, &token_id, &extension) {
+                    let (success, preloaded_next) = capture_screenshot_of_card_page(&tab, &token_id, &extension, preloaded, &next_token_id);
+                    preloaded = preloaded_next;
+
+                    if success {
                         break;
                     } else {
                         println!("Chrome instance {} is stuck, restarting...", i);
@@ -150,19 +159,28 @@ fn check_if_server_running(tab: &Arc<Tab>) {
     }
 }
 
-fn capture_screenshot_of_card_page(tab: &Arc<Tab>, token_id: &str, extension: &str) -> bool {
+fn capture_screenshot_of_card_page(tab: &Arc<Tab>, token_id: &str, extension: &str, mut preloaded: bool, next_token_id: &Option<String>) -> (bool, bool) {
     let mut attempts = 3;
 
     loop {
-        if attempts == 0 { return false; }
+        if attempts == 0 { return (false, false); }
         attempts -= 1;
 
-        if let Err(_) = tab.navigate_to(&format!("http://localhost:5000/card?tokenID={}&referrer=generate_images", token_id)) { continue; }
-        if let Err(_) = tab.wait_until_navigated() { continue; }
+        if !preloaded {
+            if let Err(_) = tab.navigate_to(&format!("http://localhost:5000/card?tokenID={}&referrer=generate_images", token_id)) { continue; }
+        }
+
+        if let Err(_) = tab.wait_until_navigated() { preloaded = false; continue; }
 
         let png_bytes = match tab.capture_screenshot(ScreenshotFormat::PNG, None, true) {
             Ok(png_bytes) => png_bytes,
-            Err(_) => continue, // Restart this loop iteration to try again.
+            Err(_) => { preloaded = false; continue; }, // Restart this loop iteration to try again.
+        };
+
+        // Try to preload the next page in Chrome while we're processing the current screenshot.
+        let preloaded_next = match next_token_id {
+            Some(t) => tab.navigate_to(&format!("http://localhost:5000/card?tokenID={}&referrer=generate_images", t)).is_ok(),
+            None => false,
         };
 
         // Capture at a higher resolution then downsample to produce a higher quality result.
@@ -188,6 +206,6 @@ fn capture_screenshot_of_card_page(tab: &Arc<Tab>, token_id: &str, extension: &s
             png_image.write_to(&mut file, image::ImageOutputFormat::Png).unwrap();
         }
 
-        return true;
+        return (true, preloaded_next);
     }
 }
