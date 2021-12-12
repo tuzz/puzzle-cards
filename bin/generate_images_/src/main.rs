@@ -14,7 +14,7 @@ const OUTPUT_DIRECTORY: &str = "../../public_s3/card_images";
 const JPEG_QUALITY: Option<u8> = Some(75); // Or output a lossless PNG if None.
 
 const MENU_BAR_HEIGHT: u32 = 124;
-const NUM_THREADS: u32 = 3;
+const NUM_THREADS: u32 = 4;
 
 fn main() {
     fs::create_dir_all(OUTPUT_DIRECTORY).unwrap();
