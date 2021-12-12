@@ -90,6 +90,20 @@
   }
 }
 
+.dark_background {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 99998;
+  pointer-events: none;
+
+  &.visible {
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
 @media only screen and (max-width: 900px) {
   .how_to_play p, .game_type span {
     font-size: 1.3rem;

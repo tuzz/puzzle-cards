@@ -22,7 +22,7 @@ const ZoomableCard = ({ card, title, subtitle }) => {
 
   const zoomOut = () => setZoomed(false);
 
-  return (
+  return <>
     <div className={styles.zoomable_card} style={{ zIndex }}>
       {title && <span className={styles.title}>{title}</span>}
       <Zoomable zoomed={zoomed}>
@@ -32,7 +32,9 @@ const ZoomableCard = ({ card, title, subtitle }) => {
       </Zoomable>
       {subtitle && <span className={styles.subtitle}>{subtitle}</span>}
     </div>
-  );
+
+    <div className={`${styles.dark_background} ${zoomed && styles.visible}`} style={{ transitionDuration: "0.5s" }}></div>
+  </>;
 };
 
 export default ZoomableCard;
