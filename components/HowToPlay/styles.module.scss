@@ -22,10 +22,33 @@
     margin-top: 6rem;
   }
 
-  p {
+  section {
+    margin: auto;
+    padding: 0 1.5rem;
+    max-width: 50rem;
+  }
+
+  p, ol {
     font-family: Helvetica Neue, Arial, sans-serif;
     font-size: 1.5rem;
     line-height: 1.5;
+  }
+
+  ol {
+    margin: 2rem 0;
+  }
+
+  li {
+    line-height: 1.7;
+  }
+
+  a {
+    color: rgba(230, 225, 80, 0.8);
+    text-decoration: none;
+  }
+
+  strong {
+    color: white;
   }
 }
 
@@ -53,32 +76,28 @@
   }
 }
 
-.centered {
-  margin: auto;
-  padding: 0 1.5rem;
-  max-width: 50rem;
-}
-
 .spacer {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
-  margin: 2rem 0;
+  margin: 1rem 0;
+  padding-right: 0.5rem;
+  position: relative;
 }
 
 .zoomable_card {
+  margin: 3rem 1rem;
+
   .title {
     display: block;
-    color: rgba(230, 225, 80, 0.9);
     font-size: 1.5rem;
     text-align: center;
-    margin-top: 2rem;
   }
 
   .card {
     width: 15rem;
     height: 21rem;
-    margin: 1.5rem 0;
+    margin: 1.2rem 0;
     cursor: pointer;
   }
 
@@ -86,7 +105,6 @@
     display: block;
     font-size: 1.2rem;
     text-align: center;
-    margin-bottom: 2rem;
   }
 }
 
@@ -105,7 +123,7 @@
 }
 
 @media only screen and (max-width: 900px) {
-  .how_to_play p, .game_type span {
+  .how_to_play p, .how_to_play ol, .game_type span {
     font-size: 1.3rem;
   }
 }
