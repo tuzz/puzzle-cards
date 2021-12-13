@@ -1,0 +1,128 @@
+.introduction {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  font-family: "Trebuchet MS";
+  color: rgba(255, 255, 255, 0.8);
+
+  p {
+    font-family: Helvetica Neue, Arial, sans-serif;
+  }
+
+  a {
+    color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+.top_section {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  background-color: rgb(50, 90, 63);
+  background-image: url("/images/felt_cloth.jpeg");
+  background-repeat: repeat;
+  background-size: 10rem;
+}
+
+.card_fan {
+  margin-top: 2.5rem;
+
+  .back, .middle, .front {
+    width: 18rem;
+    height: 25.2rem;
+  }
+
+  .back {
+    position: absolute;
+    transform: rotate(20deg);
+
+    & > div {
+      box-shadow: none;
+    }
+  }
+
+  .middle {
+    position: absolute;
+    transform: rotate(10deg);
+  }
+
+  .front {
+    position: relative;
+  }
+}
+
+.hero_text {
+  margin: 4rem 1rem 0 1rem;
+  font-size: 2rem;
+  text-align: center;
+  line-height: 1.6;
+
+  a {
+    white-space: nowrap;
+  }
+
+  .calls_to_action {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.7rem;
+
+    a {
+      margin-top: 2rem;
+      color: rgba(230, 225, 80, 0.8);
+    }
+  }
+}
+
+.table_edge {
+  height: 5rem;
+
+  background-color: #4e3a28;
+  background-image: url("/images/dirt.jpeg");
+  background-repeat: repeat;
+  background-size: 25rem;
+
+  border-top: 0.7rem solid #38261b;
+  box-sizing: border-box;
+}
+
+@media only screen and (max-width: 620px) {
+  .card_fan {
+    .back, .middle, .front {
+      width: 15rem;
+      height: 21rem;
+    }
+  }
+
+  .hero_text {
+    font-size: 1.67rem;
+
+    .calls_to_action {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+@media only screen and (max-width: 510px) {
+  .hero_text {
+    .calls_to_action {
+      display: block;
+
+      a {
+        margin-top: 4rem;
+        display: block;
+        font-size: 1.67rem;
+      }
+    }
+  }
+}
+
+@media only screen and (max-height: 950px) {
+  .table_edge {
+    display: none;
+  }
+}

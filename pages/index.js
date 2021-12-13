@@ -1,5 +1,3 @@
-const Page = () => (
-  <p>index page</p>
-);
+import Introduction from "../components/Introduction";
 
-export default Page;
+export default Introduction;
