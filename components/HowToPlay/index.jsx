@@ -1,5 +1,6 @@
 import PuzzleCard from "../../public/PuzzleCard";
 import ZoomableCard from "./zoomable_card";
+import CardBack from "../CardBack";
 import A from "./anchor";
 import styles from "./styles.module.scss";
 
@@ -175,8 +176,34 @@ const HowToPlay = () => (
     </section>
 
     <section>
-      <h2 id="wooden-sliders">Wooden Sliders</h2>
-      <p>TODO</p>
+      <h2 id="applying-recipes">Applying Recipes</h2>
+      <p>
+        To apply one of the <A>recipes</A>, drag the necessary cards over the
+        card outline. The name of the recipe should appear above the outline.
+        Press the MetaMask button and confirm the transaction to apply the recipe.
+      </p>
+      <p>
+        Recipes only work on cards that have the <strong>same tier</strong> and the
+        Mint chip must be removed from the card outline first. While a recipe is
+        being applied, the cards will flip over you won't be able to move them.
+      </p>
+      <div className={styles.spacer}>
+        <div className={styles.card_outline_example}>
+          <div className={styles.text_above}><A>activateSunOrMoon</A></div>
+          <div className={styles.back}><CardBack defects={{}} isMasterCopy={false} /></div>
+          <div className={styles.front}><CardBack defects={{}} isMasterCopy={false} /></div>
+        </div>
+      </div>
+      <p>
+        If you own multiple copies of a card, you may be able to apply the same
+        recipe several times. MetaMask will ask you to confirm or reject each
+        transaction separately, allowing you choose how many times to apply it.
+      </p>
+      <p>
+        It does not cost anything to apply recipes besides a tiny transaction fee (less than $0.001).
+        The cards have already been paid for. If nothing seems to be happening, check you
+        have confirmed all MetaMask popups.
+      </p>
     </section>
 
     <section>
@@ -225,7 +252,7 @@ const HowToPlay = () => (
 
       <h3>Celestial Tier</h3>
       <p>
-        Helix cards always spawn with two matching colors (e.g. Red, Red).
+        Helix cards always spawn with two matching colors (e.g. Blue, Blue).
       </p>
 
       <h3>Godly Tier</h3>
@@ -241,7 +268,7 @@ const HowToPlay = () => (
       <p style={{ marginTop: "4rem" }}>
         It is up to you to figure out how to adapt your play (if at all) to cope
         with these changes. It is helpful to familize yourself with the <A>Recipes</A>.
-        A brief reminder of tier's effects are shown at the bottom of each card:
+        A brief reminder of the tier's effects are shown at the bottom of each card:
       </p>
       <div className={styles.spacer}>
         <ZoomableCard subtitle="(click to zoom)" card={new PuzzleCard({
@@ -318,6 +345,11 @@ const HowToPlay = () => (
       <p>TODO: on-chain, contract locked down, non-upgradeable, i abide by the same rules</p>
       <p>can change the exchange rate, can add new puzzles/artwork</p>
       <p>link to contract, link to github, etc</p>
+    </section>
+
+    <section>
+      <h2 id="personal-details">Personal Details</h2>
+      <p>TODO: who made the game and why</p>
     </section>
   </div>
 );

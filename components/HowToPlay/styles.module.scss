@@ -224,6 +224,40 @@
       right: -13.5rem;
     }
   }
+
+  .text_above {
+    position: absolute;
+    top: -2.4rem;
+    font-family: "Trebuchet MS";
+    font-size: 1.4rem;
+
+    a {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    a:hover {
+      color: rgba(230, 225, 80, 0.8);
+    }
+  }
+
+
+  .back, .front {
+    width: 15rem;
+    height: 21rem;
+
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+  }
+
+  .back {
+    position: absolute;
+    animation-name: move-over-outline-1
+  }
+
+  .front {
+    animation-name: move-over-outline-2
+  }
 }
 
 .rarity1 { color: lime; }
@@ -255,4 +289,14 @@
       }
     }
   }
+}
+
+@keyframes move-over-outline-1 {
+  0%, 10%, 100% { transform: rotate(5deg) translate(4rem, 1rem); }
+  20%, 30%, 80%, 90% { transform: none; }
+}
+
+@keyframes move-over-outline-2 {
+  0%, 10%, 100% { transform: rotate(-3deg) translate(-1rem, 4rem); }
+  20%, 30%, 80%, 90% { transform: none; }
 }
