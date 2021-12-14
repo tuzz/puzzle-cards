@@ -19,7 +19,8 @@
     font-size: 2.2rem;
     font-weight: 300;
     text-align: center;
-    margin-top: 6rem;
+    margin-top: 4rem;
+    padding-top: 2rem;
   }
 
   h3 {
@@ -35,7 +36,7 @@
     max-width: 50rem;
   }
 
-  p, ol {
+  p, ol, ul {
     font-family: Helvetica Neue, Arial, sans-serif;
     font-size: 1.5rem;
     line-height: 1.5;
@@ -43,6 +44,10 @@
 
   ol {
     margin: 2rem 0;
+  }
+
+  ul {
+    font-size: 1.5rem;
   }
 
   li {
@@ -92,8 +97,14 @@
   position: relative;
 }
 
+.compact_cards {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .zoomable_card {
   margin: 3rem 1rem;
+  display: inline-block;
 
   .title {
     display: block;
@@ -214,6 +225,13 @@
     }
   }
 }
+
+.rarity1 { color: lime; }
+.rarity2 { color: yellow; }
+.rarity3 { color: orange; }
+.rarity4 { color: rgb(255, 60, 60); }
+.rarity5 { color: cyan; }
+.rarity6 { color: #b9f; }
 
 @media only screen and (max-width: 900px) {
   .how_to_play p, .how_to_play ol, .game_type span {

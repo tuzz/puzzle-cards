@@ -1,6 +1,5 @@
 import PuzzleCard from "../../public/PuzzleCard";
 import ZoomableCard from "./zoomable_card";
-import CardBack from "../CardBack";
 import A from "./anchor";
 import styles from "./styles.module.scss";
 
@@ -16,12 +15,16 @@ const HowToPlay = () => (
     </div>
 
     <section>
-      <h2>Brief Idea of the Game</h2>
+      <h2 id="video">Watch the Video</h2>
+      <p>TODO</p>
+    </section>
+
+    <section>
+      <h2 id="overview">Brief Idea of the Game</h2>
       <p>
         The idea of the game is to combine cards according to 'recipes'. A
-        recipe typically takes two or three cards as ingredients and produces a
-        new card as the result. This is a bit like 'crafting' in video games, like
-        Minecraft.
+        recipe takes two or three cards as ingredients and produces a new card
+        as the result. This is a bit like 'crafting' in video games, e.g. Minecraft.
       </p>
       <p>
         Recipes are named after actions. For example, the <A>goThroughStarDoor</A> recipe
@@ -55,24 +58,24 @@ const HowToPlay = () => (
       </div>
       <p>
         The <strong>upper half</strong> of each card features a puzzle from the upcoming game
-        'Worship the Sun', releasing in 2022. The puzzle shows a glimpse of the video
+        'Worship the Sun', releasing in 2022. It shows a preview of the video
         game and has no bearing on recipes until the <A>Optional Endgame</A>.
       </p>
       <p>
-        Every card has a tier (shown in the <strong>lower right</strong>). The
-        aim of the game is to promote a card from Mortal to Master tier
-        which is the highest available. This goal is achieved by applying a correct
-        sequence of recipes.
+        Every card has a tier which is shown in the <strong>lower right</strong> corner. The
+        aim of the game is to successfully promote a card from 'Mortal' tier to
+        'Master' tier (the highest available) by applying a correct sequence of
+        recipes.
       </p>
     </section>
 
     <section>
-      <h2>Setting Up</h2>
+      <h2 id="setting-up">Setting Up</h2>
       <p>
         The game runs on the Polygon network due to its vastly reduced
         environmental impact and tiny transaction fees (less than $0.001). Its
         native currency is <strong>MATIC</strong> so you'll need some to play
-        the game:
+        the game.
       </p>
       <ol>
         <li>Open Chrome, Firefox or Edge</li>
@@ -91,11 +94,11 @@ const HowToPlay = () => (
     </section>
 
     <section>
-      <h2>Minting Cards</h2>
+      <h2 id="mint">Minting Cards</h2>
       <p>
         The first step in playing the game is to mint some cards. Place the Mint
         chip over the card outline (if it isn't already) and click on the MetaMask
-        button. After confirming the transaction you will receive a random card.
+        button. After confirming the transaction you will receive a starter card.
       </p>
       <div className={styles.card_outline_example}>
         <div className={styles.mint_chip}>
@@ -115,7 +118,7 @@ const HowToPlay = () => (
         </div>
       </div>
       <p>
-        All actions in the game are performed by placing items over the card
+        All actions in the game are performed by dragging objects over the card
         outline and pressing the MetaMask button. The <strong>Worship Stick</strong> will rise
         and a few seconds later, the transaction will be confirmed.
       </p>
@@ -124,27 +127,82 @@ const HowToPlay = () => (
         You can click on it to open the relevant section in this guide.
       </p>
       <p>
-        To mint more than one card, click on the Mint chip to flip it over. You can
-        select a different number the back as well as change the tier.
+        To mint several cards at once, click on the Mint chip to flip it over. You can
+        select a different number on the back. You can also change the <A id="card-tiers">tier</A>.
         If lots of cards are minted at once, only the first 10 will appear over the outline.
       </p>
     </section>
 
     <section>
-      <h2>Card Types</h2>
+      <h2 id="card-types">Card Types</h2>
+      <p>
+        There are 17 types of card. When a card is minted, or promoted to the next tier,
+        you will receive a random 'starter' card for that tier. The probability of
+        minting each type of card is shown below.
+      </p>
+      <div className={styles.spacer}>
+        <div>
+          <p>Player (<span className={styles.rarity1}>30%</span>)</p>
+          <p>Inactive (<span className={styles.rarity1}>20%</span>)</p>
+          <p>Crab (<span className={styles.rarity2}>10%</span>)</p>
+          <p>Cloak (<span className={styles.rarity2}>10%</span>)</p>
+          <p>Active (<span className={styles.rarity2}>10%</span>)</p>
+          <p>Telescope (<span className={styles.rarity2}>10%</span>)</p>
+          <p>Helix (<span className={styles.rarity3}>2%</span>)</p>
+          <p>Beacon (<span className={styles.rarity3}>2%</span>)</p>
+          <p>Torch (<span className={styles.rarity3}>2%</span>)</p>
+        </div>
+        <div>
+          <p>Map (<span className={styles.rarity4}>1%</span>)</p>
+          <p>Teleport (<span className={styles.rarity4}>1%</span>)</p>
+          <p>Glasses (<span className={styles.rarity4}>1%</span>)</p>
+          <p>Door (<span className={styles.rarity5}>0.6%</span>)</p>
+          <p>Eclipse (<span className={styles.rarity5}>0.4%</span>)</p>
+          <p>Hidden (<span className={styles.rarity6}>0%</span>)</p>
+          <p>Star (<span className={styles.rarity6}>0%</span>)</p>
+          <p>Artwork (<span className={styles.rarity6}>0%</span>)</p>
+        </div>
+      </div>
+      <p>
+        As you can see, Player cards are most common, closely followed by Inactive
+        sun and moon cards. At the end of the list there are cards that cannot
+        normally be obtained except at special <A id="card-tiers">tiers</A>.
+      </p>
+      <p>
+        If you are fortunate enough to receive the more uncommon cards, you can
+        skip ahead past a few recipes and reach the next tier sooner.
+      </p>
+    </section>
+
+    <section>
+      <h2 id="wooden-sliders">Wooden Sliders</h2>
       <p>TODO</p>
     </section>
 
     <section>
-      <h2>Card Tiers</h2>
+      <h2 id="wooden-sliders">Wooden Sliders</h2>
+      <p>TODO</p>
+    </section>
+
+    <section>
+      <h2 id="card-conditions">Card Conditions</h2>
+      <p>TODO</p>
+    </section>
+
+
+    <section>
+      <h2 id="card-tiers">Card Tiers</h2>
       <p>
-        At the start of the game you can only mint cards at 'Mortal' tier. The
-        aim of the game is to successfully promote a card to 'Master' tier.
+        At the start of the game you can only mint cards at Mortal tier. The
+        aim of the game is to successfully promote a card to Master tier. You
+        unlock the ability to mint at the next tier when you successfully promote
+        a card to it.
       </p>
       <p>
-        There are <strong>seven tiers</strong> in total. At each tier the game
-        rules are modified slightly. You will usually face a new obstacle that you
-        must overcome to progress to the tier above. These rule changes are explained below.
+        There are <strong>seven tiers</strong> in total. At each tier, the game rules
+        are modified slightly. You will usually face a new obstacle that you
+        must overcome to progress to the tier above. These rule changes are
+        summarized below.
       </p>
 
       <h3>Mortal Tier</h3>
@@ -161,7 +219,8 @@ const HowToPlay = () => (
 
       <h3>Virtual Tier</h3>
       <p>
-        Instead of the usual probabilities, starter cards spawn as either Player, Glasses or Hidden cards with equal probability.
+        Instead of the <A id="card-types">usual probabilities</A>, starter cards
+        spawn as either Player, Glasses or Hidden cards with equal probability.
       </p>
 
       <h3>Celestial Tier</h3>
@@ -178,10 +237,29 @@ const HowToPlay = () => (
       <p>
         All starter cards are Artwork cards. This is the <A>Optional Endgame</A>.
       </p>
+
+      <p style={{ marginTop: "4rem" }}>
+        It is up to you to figure out how to adapt your play (if at all) to cope
+        with these changes. It is helpful to familize yourself with the <A>Recipes</A>.
+        A brief reminder of tier's effects are shown at the bottom of each card:
+      </p>
+      <div className={styles.spacer}>
+        <ZoomableCard subtitle="(click to zoom)" card={new PuzzleCard({
+            series: "Two by Two",
+            puzzle: "My Visiting Children",
+            tier: "Godly",
+            type: "Glasses",
+            color1: "Black",
+            color2: "Pink",
+            variant: "None",
+            condition: "Pristine",
+            edition: "Standard",
+        })} />
+      </div>
     </section>
 
     <section>
-      <h2>Optional Endgame (NFTs)</h2>
+      <h2 id="optional-endgame">Optional Endgame (NFTs)</h2>
       <p>
         If you are successful in promoting a card all the way to Master tier
         you will unlock special recipes that allow you to create Limited Edition
@@ -224,10 +302,22 @@ const HowToPlay = () => (
       </p>
       <p>
         Ownership of a Limited Edition card represents 1% ownership over the
-        intended solution for the puzzle, the cleverness of it and the invisible
-        dialogue between game designer and player. There are 100 available.
+        intended solution for the puzzle, its cleverness (or not) and the
+        invisible dialogue between game designer and player. There are 100 available.
         Together, Limited Editions and Master Copies complement each other.
       </p>
+    </section>
+
+    <section>
+      <h2 id="future-roadmap">Future Roadmap</h2>
+      <p>TODO</p>
+    </section>
+
+    <section>
+      <h2 id="technical-details">Technical Details</h2>
+      <p>TODO: on-chain, contract locked down, non-upgradeable, i abide by the same rules</p>
+      <p>can change the exchange rate, can add new puzzles/artwork</p>
+      <p>link to contract, link to github, etc</p>
     </section>
   </div>
 );

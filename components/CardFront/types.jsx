@@ -191,7 +191,7 @@ module.exports.Map = ({ card, random }) => {
   const withTime = card.variant.includes("Time");
 
   return (
-    <div className={`${styles.map} ${styles[name]}`}>
+    <div className={styles.map}>
       <img src="/images/types/map.png" />
 
       {withLocation && <img
