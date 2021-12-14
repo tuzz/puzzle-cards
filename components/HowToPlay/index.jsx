@@ -201,9 +201,9 @@ const HowToPlay = () => (
         transaction separately, allowing you choose how many times to apply it.
       </p>
       <p>
-        It does not cost anything to apply recipes besides a tiny transaction fee (less than $0.001).
-        The cards have already been paid for. If nothing seems to be happening, check you
-        have confirmed all MetaMask popups.
+        It does not cost anything to apply recipes besides a tiny transaction
+        fee seeing as the cards have already been paid for. If nothing seems to be
+        happening, check you have confirmed all MetaMask popups.
       </p>
     </section>
 
@@ -222,8 +222,8 @@ const HowToPlay = () => (
       </ol>
       <div className={styles.wood_sliders_spacer}></div>
       <p>
-        The working area is the region above the dashed lines. Any cards placed
-        in this area won't be cleared when searching your deck.
+        The working area is the region above the dashed lines. Any cards that
+        overlap this area won't be cleared when searching your deck.
       </p>
       <p>
         For example, you might use the working area to make a pile of Glasses
@@ -253,9 +253,55 @@ const HowToPlay = () => (
 
     <section>
       <h2 id="card-conditions">Card Conditions</h2>
-      <p>TODO</p>
+      <p>
+        Every card has a condition. When a card is minted its condition is either
+        Pristine, Excellent or Reasonable with equal probability.
+      </p>
+      <p>
+        When a recipe is applied, the condition of the resulting card will either
+        be the same as the combined cards or it will degrade by one level. There
+        is a 50/50 chance that it will degrade (until the lowest level is reached).
+      </p>
+      <p>
+        Cards of a lower condition have more defects. For example, cards might
+        be yellowed, contain fingerprints or coffee/ink stains. Their corners
+        might be folded over or the foil might be peeling around the edges. In
+        some cases, the puzzle might have slipped into a tilted position:
+      </p>
+      <div className={styles.spacer}>
+        <ZoomableCard subtitle="(click to zoom)" card={new PuzzleCard({
+            series: "Teamwork",
+            puzzle: "Pillar of Crabs",
+            tier: "Mortal",
+            type: "Cloak",
+            color1: "Black",
+            color2: "None",
+            variant: "None",
+            condition: "Dire",
+            edition: "Standard",
+        })} />
+        <ZoomableCard subtitle="(click to zoom)" card={new PuzzleCard({
+            series: "Contending Claws",
+            puzzle: "Island Hopping",
+            tier: "Mortal",
+            type: "Telescope",
+            color1: "Red",
+            color2: "None",
+            variant: "Sun",
+            condition: "Dire",
+            edition: "Standard",
+        })} />
+      </div>
+      <p>
+        There are five conditions: Pristine, Excellent, Reasonable, Poor and Dire.
+        Defects are selected randomly based on the severity of the condition.
+      </p>
+      <p>
+        If cards with different conditions are used in a recipe, the lowest
+        condition is used when deciding whether to randomly degrade or not. Once
+        a card reaches the lowest condition (Dire) it will not degrade further.
+      </p>
     </section>
-
 
     <section>
       <h2 id="card-tiers">Card Tiers</h2>

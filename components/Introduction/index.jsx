@@ -14,7 +14,7 @@ const Introduction = () => (
         <p>An original card game by <a href="https://twitter.com/chrispatuzzo" target="_blank">Chris Patuzzo</a>.</p>
 
         <div className={styles.calls_to_action}>
-          <a href="/how-to-play#video" target="_blank">Watch the video &gt;</a>
+          <a href="/how-to-play" target="_blank">Watch the video &gt;</a>
           <a href="/card-table" target="_blank">Play the game &gt;</a>
         </div>
       </div>
