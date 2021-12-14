@@ -172,11 +172,11 @@ describe("MintingRandomly", () => {
       const cards = await PuzzleCard.mint(1000, "Mortal", owner.address);
       const frequencies = TestUtils.tallyFrequencies(cards.map(c => c.condition));
 
-      expect(frequencies["Dire"]).to.be.undefined;                // 0%
-      expect(frequencies["Poor"]).to.be.undefined;                // 0%
-      expect(frequencies["Reasonable"]).to.be.undefined;          // 0%
-      expect(frequencies["Excellent"]).to.be.within(0.47, 0.53);  // 50%
-      expect(frequencies["Pristine"]).to.be.within(0.47, 0.53);   // 50%
+      expect(frequencies["Dire"]).to.be.undefined;                  // 0%
+      expect(frequencies["Poor"]).to.be.undefined;                  // 0%
+      expect(frequencies["Reasonable"]).to.be.within(0.233, 0.433); // 33.3%
+      expect(frequencies["Excellent"]).to.be.within(0.233, 0.433);  // 33.3%
+      expect(frequencies["Pristine"]).to.be.within(0.233, 0.433);   // 33.3%
     });
   });
 });

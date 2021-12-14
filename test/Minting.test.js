@@ -86,7 +86,7 @@ describe("Minting", () => {
       await PuzzleCard.mint(1, "Master", user1.address);
     });
 
-    it("allows the contract owner to unlock minting for a user without having to pay themself", async () => {
+    it("allows the contract owner to unlock minting for a user without having to send funds to themself", async () => {
       await PuzzleCard.unlockMintingAtAllTiers(user1.address); // Called as owner.
       PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
 
@@ -139,7 +139,7 @@ describe("Minting", () => {
     });
   });
 
-  it("allows the contract owner to mint cards without having to pay themself", async () => {
+  it("allows the contract owner to mint cards without having to send funds to themself", async () => {
     const cards = await PuzzleCard.mint(1, "Mortal", user1.address);
     expect(cards.length).to.equal(1);
 

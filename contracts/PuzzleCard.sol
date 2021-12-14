@@ -108,7 +108,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         uint256[] memory oneOfEach = new uint256[](numberToMint);
 
         for (uint256 i = 0; i < numberToMint; i += 1) {
-            uint8 condition = PRISTINE_CONDITION - uint8(randomNumber() % 2);
+            uint8 condition = PRISTINE_CONDITION - uint8(randomNumber() % 3);
             uint256 newCardID = tokenIDForCard(starterCardForTier(tier, condition));
 
             tokenIDs[i] = newCardID;
