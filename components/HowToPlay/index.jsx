@@ -353,7 +353,7 @@ const HowToPlay = () => (
 
       <p style={{ marginTop: "4rem" }}>
         It is up to you to figure out how to adapt your play (if at all) to cope
-        with these changes. It is helpful to familize yourself with the <A>Recipes</A>.
+        with these changes. It is helpful to familiarize yourself with the <A>Recipes</A>.
         A brief reminder of the tier's effects are shown at the bottom of each card:
       </p>
       <div className={styles.spacer}>
@@ -369,6 +369,13 @@ const HowToPlay = () => (
             edition: "Standard",
         })} />
       </div>
+    </section>
+
+    <section>
+      <h2 id="recipes">Recipes</h2>
+      <p>
+        TODO: maybe a show/hide toggle to keep it short and load videos in on demand
+      </p>
     </section>
 
     <section>
@@ -445,9 +452,66 @@ const HowToPlay = () => (
 
     <section>
       <h2 id="technical-details">Technical Details</h2>
-      <p>TODO: on-chain, contract locked down, non-upgradeable, i abide by the same rules</p>
-      <p>can change the exchange rate, can add new puzzles/artwork</p>
-      <p>link to contract, link to github, etc</p>
+      <p>
+        The game rules are enforced by
+        the <a href={`${PuzzleCard.CONTRACT_NETWORK.explorer}/address/${PuzzleCard.CONTRACT_ADDRESS}`} target="_blank">Puzzle Card contract</a> which has had its source code verified on Polygonscan.
+        All card attributes are stored on chain in the contract. All code is <a href="https://github.com/tuzz/puzzle-cards/" target="_blank">open on GitHub</a>, including this website.
+      </p>
+      <p>
+        The contract is non-upgradeable except
+        in very particular ways. I am
+        able to add new puzzles/artwork and update the exchange rate. The number of
+        limited editions <a href="https://github.com/tuzz/puzzle-cards/blob/main/contracts/PuzzleCard.sol#L716" target="_blank">cannot change</a> to prevent diluting their value (rug pulls).
+      </p>
+      <p>
+        Additionally, I am unable to mint arbitrary cards and have no control
+        over those that belong to people. They are truly yours. I abide by the same
+        game rules as everyone else and have not pre-claimed any NFTs.
+      </p>
+      <p>
+        The contract is <a href="https://github.com/tuzz/puzzle-cards/tree/main/test" target="_blank">extensively tested</a> with a suite that takes ~an hour to run.
+        This includes a test that automatically plays the game using
+        a <a href="https://github.com/tuzz/puzzle-cards/blob/main/test/Promotion.test.js#L118-L122" target="_blank">recursive</a> strategy.
+        This test was used to balance the game and its <A id="card-tiers">rule modifers</A>.
+      </p>
+      <p>
+        This website is written in React and hosted on GitHub pages. There are
+        8,631 card combinations per puzzle and 116 puzzles meaning there
+        are 1,001,196 card combinations. This will increase as puzzles are added.
+      </p>
+      <p>
+        All metadata and card images were precomputed over several days. This data
+        resides in an S3 bucket so that it can be updated, e.g. to change
+        the <a href="https://puzzlecards.s3.eu-west-1.amazonaws.com/metadata_api/0000000000000000000000000000000000000000000000000000000000000000.json" target="_blank">OpenSea description</a> or
+        increase the resolution of <a href="https://puzzlecards.s3.eu-west-1.amazonaws.com/card_images/0.jpeg" target="_blank">the images</a>.
+      </p>
+      <p>
+        All metadata and images can be regenerated from <a href="https://github.com/tuzz/puzzle-cards/tree/main/bin" target="_blank">scripts in the project</a> which is open on GitHub.
+        High resolution videos are <a href="https://www.youtube.com/channel/UCGNBLgDrODwRMEuS9Zjh7Xw" target="_blank">stored on YouTube</a> so that the (smaller) puzzle videos can be recreated if necessary.
+      </p>
+      <p>
+        Puzzle videos <a href="https://github.com/tuzz/puzzle-cards/blob/main/bin/transcode_puzzles" target="_blank">were transcoded</a> from raw 4K60 captures of real game footage.
+        They are transcoded into AV1, VP9, HEVC and X264 to support a wide variety
+        of browsers with low file sizes so that they load quickly.
+      </p>
+      <p>
+        Cloak and Teleport cards make use of VP9 and HEVC's support for transparent
+        video. This is quite new and has a few <a href="https://trac.ffmpeg.org/ticket/9531" target="_blank">rough edges</a> in Safari.
+      </p>
+      <p>
+        When viewing cards on OpenSea, an iframe is embedded that links back to this site via
+        the <a href="https://docs.opensea.io/docs/metadata-standards#metadata-structure" target="_blank">animation_url field</a> in the metadata.
+      </p>
+      <p>
+       All of the contract and website code is fully auditable and open on GitHub.
+       Puzzle Cards can be freely shared on social media, OpenSea, etc. Everything
+       else is Copyright 2022, Chris Patuzzo, All Rights Reserved.
+      </p>
+      <p>
+        If you wish to interact with the contract programmatically in your project,
+        you may include <a href="https://puzzlecards.github.io/PuzzleCard.js" target="_blank">PuzzleCard.js</a> which
+        provides lots of helper methods for working with the project, e.g. methods for fetching a user's deck.
+      </p>
     </section>
 
     <section>
