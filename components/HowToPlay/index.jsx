@@ -423,7 +423,24 @@ const HowToPlay = () => (
 
     <section>
       <h2 id="future-roadmap">Future Roadmap</h2>
-      <p>TODO</p>
+      <p>
+        The highest priority item is to finish building the video game and release it to the public.
+        Brand new puzzles and artwork will be added into the card game as they are developed.
+        I estimate there will be around 300 puzzles.
+      </p>
+      <p>
+        If there is enough interest in Puzzle Cards, I will add features, such as:
+      </p>
+      <ul>
+        <li>A 'PuzzléDex' so that owners can exhibit their decks, hunt down cards they are missing and receive a numeric score for their deck</li>
+        <li>A global leaderboard to compare your deck against others'</li>
+        <li>A dashboard that shows which Master Copies and Limited Edition cards have been claimed and the players that claimed them</li>
+        <li>Special cards that grant early access/free copies of the video game</li>
+        <li>A mechanism that distributes tokens to owners of Limited Edition and Master Copy cards that can be redeemed in future projects</li>
+      </ul>
+      <p>
+        If you have an idea for a feature you'd like to see please <a href="https://twitter.com/chrispatuzzo" target="_blank">let me know</a>.
+      </p>
     </section>
 
     <section>
