@@ -3,13 +3,13 @@ import DeckContext from "../DeckLoader/context"
 import Head from "next/head";
 import styles from "./styles.module.scss";
 
-const WoodSliders = ({ transactState, onButtonClick = () => {}, onSlidersClosed = () => {} }) => {
+const WoodSliders = ({ transactState, alwaysShow, onButtonClick = () => {}, onSlidersClosed = () => {} }) => {
   const { address, decks } = useContext(DeckContext);
   const [state, setState] = useState(0);
   const [showing, setShowing] = useState(false);
 
   useEffect(() => {
-    setShowing(bool => bool || address && decks[address].length > 6);
+    setShowing(bool => bool || address && decks[address].length > 6 || alwaysShow);
   }, [address, decks]);
 
   useEffect(() => {
@@ -30,12 +30,12 @@ const WoodSliders = ({ transactState, onButtonClick = () => {}, onSlidersClosed 
   };
 
   const stateName = patterns[state][0];
-  const disabled = stateName !== "initial" || !transactState.initial();
+  const disabled = stateName !== "initial" || (transactState && !transactState.initial());
 
   if (!showing) { return null; }
 
   return <>
-    <div className={`${styles.wood_sliders} ${stateName}_state ${!showing && styles.off_screen}`}>
+    <div className={`${styles.wood_sliders} ${stateName}_state ${!showing && styles.off_screen} ${alwaysShow && styles.always_showing}`}>
       <div className={styles.left}>
         <button onClick={nextState} disabled={disabled} className={styles.hourglass}></button>
       </div>

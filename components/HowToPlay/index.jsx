@@ -1,6 +1,7 @@
 import PuzzleCard from "../../public/PuzzleCard";
 import ZoomableCard from "./zoomable_card";
 import CardBack from "../CardBack";
+import WoodSliders from "../WoodSliders";
 import A from "./anchor";
 import styles from "./styles.module.scss";
 
@@ -179,7 +180,7 @@ const HowToPlay = () => (
       <h2 id="applying-recipes">Applying Recipes</h2>
       <p>
         To apply one of the <A>recipes</A>, drag the necessary cards over the
-        card outline. The name of the recipe should appear above the outline.
+        card outline. The name of the recipe will appear above the outline.
         Press the MetaMask button and confirm the transaction to apply the recipe.
       </p>
       <p>
@@ -208,7 +209,46 @@ const HowToPlay = () => (
 
     <section>
       <h2 id="wooden-sliders">Wooden Sliders</h2>
-      <p>TODO</p>
+      <div className={styles.wood_sliders}>
+        <WoodSliders alwaysShow={true} />
+      </div>
+      <p className={styles.obscured_when_narrow}>
+        The wooden sliders on either side of the screen show up when you have
+        at least seven cards in your deck. They serve two purposes:
+      </p>
+      <ol className={styles.obscured_when_narrow}>
+        <li>They show the boundary of the 'working area'</li>
+        <li>They allow you to clear the 'working area'</li>
+      </ol>
+      <div className={styles.wood_sliders_spacer}></div>
+      <p>
+        The working area is the region above the dashed lines. Any cards placed
+        in this area won't be cleared when searching your deck.
+      </p>
+      <p>
+        For example, you might use the working area to make a pile of Glasses
+        cards on the left and Hidden cards on the right. This will make it easier to
+        apply the <A>lookThroughGlasses</A> recipe because these cards will be
+        at hand.
+      </p>
+      <p>
+        To clear the working area, press the hourglass button on one of the sliders.
+        This will return all cards in this area to your deck. The wooden sliders
+        cycle through different patterns, much like the 'Hands Gruber' puzzle:
+      </p>
+      <div className={styles.spacer}>
+        <ZoomableCard subtitle="(click to zoom)" card={new PuzzleCard({
+            series: "Trial of Reign",
+            puzzle: "Hands Gruber II",
+            tier: "Mortal",
+            type: "Active",
+            color1: "Blue",
+            color2: "None",
+            variant: "Sun",
+            condition: "Pristine",
+            edition: "Standard",
+        })} />
+      </div>
     </section>
 
     <section>

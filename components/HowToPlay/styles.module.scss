@@ -6,6 +6,7 @@
   font-family: "Trebuchet MS";
   color: rgba(255, 255, 255, 0.8);
 
+  position: relative;
   overflow: hidden;
   padding-bottom: 6rem;
 
@@ -267,6 +268,32 @@
 .rarity5 { color: cyan; }
 .rarity6 { color: #b9f; }
 
+.wood_sliders {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.wood_sliders_spacer { height: 11rem; }
+
+@media only screen and (max-width: 1050px) { .wood_sliders_spacer { height: 8rem; } }
+@media only screen and (max-width: 900px) { .wood_sliders_spacer { height: 12rem; } }
+@media only screen and (max-width: 750px) { .wood_sliders_spacer { height: 10rem; } }
+@media only screen and (max-width: 700px) { .wood_sliders_spacer { height: 8rem; } }
+@media only screen and (max-width: 650px) { .wood_sliders_spacer { height: 6rem; } }
+@media only screen and (max-width: 600px) { .wood_sliders_spacer { height: 4rem; } }
+@media only screen and (max-width: 500px) { .wood_sliders_spacer { height: 2rem; } }
+
+@media only screen and (max-width: 1050px) {
+  .obscured_when_narrow {
+    padding: 0 4.5rem;
+  }
+
+  ol.obscured_when_narrow {
+    margin-left: 1.5rem;
+  }
+}
+
 @media only screen and (max-width: 900px) {
   .how_to_play p, .how_to_play ol, .game_type span {
     font-size: 1.3rem;
@@ -288,6 +315,10 @@
         display: none;
       }
     }
+  }
+
+  .how_to_play li {
+    margin: 1.2rem 0;
   }
 }
 
