@@ -203,7 +203,6 @@
     width: 17%;
     height: 9.7%;
     left: 1.7%;
-    text-shadow: 0 0 0.5rem black;
 
     * {
       fill: #97f;
@@ -1324,12 +1323,6 @@
   .card_front.scale_shadows {
     &.master_copy {
       filter: drop-shadow(0 0 3rem #97f);
-    }
-
-    .overlay {
-      .master_copy_text {
-        text-shadow: 0 0 1rem black;
-      }
     }
 
     .type .helix {
