@@ -289,7 +289,7 @@
   border-top: 0.7rem solid #38261b;
   box-sizing: border-box;
   position: relative;
-  box-shadow: 0 1rem 1rem rgba(153, 119, 255, 0.2);
+  box-shadow: 0 1rem 1rem rgba(153, 119, 255, 0.15);
 }
 
 .recipes {
@@ -364,6 +364,7 @@
   .disjunction {
     display: flex;
     align-items: flex-start;
+    position: relative;
 
     .or {
       font-size: 2rem;
@@ -371,31 +372,23 @@
       vertical-align: top;
       text-shadow: 0 0 0.3rem #97f;
       text-transform: uppercase;
-    }
-
-    .left_bracket, .right_bracket {
-      font-size: 16rem;
-      font-family: Courier;
-      transform: scale(0.7, 1);
-      color: #97f;
-      text-shadow: 0 0 0.5rem #97f;
-    }
-
-    .left_bracket {
-      margin: 0.6rem -2.5rem 0 -4rem;
-    }
-
-    .right_bracket {
-      margin: 0.6rem -4rem 0 -2.5rem;
+      margin: 0 -0.7rem;
     }
   }
 
   .plus, .equals {
     font-size: 10rem;
     align-self: center;
-    margin: 0 2rem;
     color: #97f;
     text-shadow: 0 0 0.7rem #97f;
+  }
+
+  .plus {
+    margin: -3.5rem 0.7rem -2rem 0.7rem;
+  }
+
+  .equals {
+    margin: -3.5rem 1rem -2rem 1rem;
   }
 }
 
@@ -406,6 +399,12 @@
 @media only screen and (max-width: 650px) { .wood_sliders_spacer { height: 6rem; } }
 @media only screen and (max-width: 600px) { .wood_sliders_spacer { height: 4rem; } }
 @media only screen and (max-width: 500px) { .wood_sliders_spacer { height: 2rem; } }
+
+@media only screen and (max-width: 1250px) {
+  .recipe {
+    flex-direction: column;
+  }
+}
 
 @media only screen and (max-width: 1050px) {
   .obscured_when_narrow {
@@ -442,6 +441,14 @@
 
   .how_to_play li {
     margin: 1.2rem 0;
+  }
+
+  .recipe .disjunction .or {
+    margin: 0 -2.7rem;
+  }
+
+  .recipe .disjunction .zoomable_card:first-child .title {
+    transform: translateX(-0.5rem);
   }
 }
 

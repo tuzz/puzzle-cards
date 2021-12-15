@@ -523,9 +523,7 @@ const HowToPlay = () => (
 
       <div className={styles.recipe}>
         <div className={styles.disjunction}>
-          <span className={styles.left_bracket}>(</span>
-
-          <ZoomableCard title="Player" className={styles.recipe_card} card={new PuzzleCard({
+          <ZoomableCard title="Player" className={`${styles.recipe_card} ${styles.first}`} card={new PuzzleCard({
               series: "Star Gazing",
               puzzle: "Asteroid Hopping",
               tier: "Mortal",
@@ -537,7 +535,7 @@ const HowToPlay = () => (
               edition: "Standard",
           })} />
           <span className={styles.or}>or</span>
-          <ZoomableCard title="Crab" className={styles.recipe_card} card={new PuzzleCard({
+          <ZoomableCard title="Crab" className={`${styles.recipe_card} ${styles.second}`} card={new PuzzleCard({
               series: "Star Gazing",
               puzzle: "Asteroid Hopping",
               tier: "Mortal",
@@ -549,7 +547,7 @@ const HowToPlay = () => (
               edition: "Standard",
           })} />
           <span className={styles.or}>or</span>
-          <ZoomableCard title="Cloak" className={styles.recipe_card} card={new PuzzleCard({
+          <ZoomableCard title="Cloak" className={`${styles.recipe_card} ${styles.third}`} card={new PuzzleCard({
               series: "Star Gazing",
               puzzle: "Asteroid Hopping",
               tier: "Mortal",
@@ -560,8 +558,6 @@ const HowToPlay = () => (
               condition: "Pristine",
               edition: "Standard",
           })} />
-
-          <span className={styles.right_bracket}>)</span>
         </div>
 
         <span className={styles.plus}>+</span>
