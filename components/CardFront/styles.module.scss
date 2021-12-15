@@ -1390,4 +1390,12 @@
       transform: scale(1.8) translateX(-5%);
     }
   }
+
+  .type {
+    .black_hourglass, .white_hourglass {
+      img {
+        animation-name: none;
+      }
+    }
+  }
 }
