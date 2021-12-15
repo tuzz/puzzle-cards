@@ -38,7 +38,7 @@ fn main() {
     println!("\n{}/{} images already captured.\n", expected_token_ids.len() - missing_token_ids.len(), expected_token_ids.len());
 
     let num_captured = Arc::new(AtomicUsize::new(0));
-    let num_total = missing_token_ids.len();
+    let num_total = queue.len();
 
     let mut threads = (0..NUM_THREADS).map(|i| {
         let queue = Arc::clone(&queue);
@@ -55,7 +55,7 @@ fn main() {
                 next_token_id = queue.pop();
 
                 loop {
-                    let (success, preloaded_next) = capture_screenshot_of_card_page(&tab, &token_id, &extension, preloaded, &next_token_id);
+                    let (success, preloaded_next) = capture_screenshot_of_card_page(&tab, token_id, &extension, preloaded, next_token_id);
                     preloaded = preloaded_next;
 
                     if success {
@@ -159,7 +159,7 @@ fn check_if_server_running(tab: &Arc<Tab>) {
     }
 }
 
-fn capture_screenshot_of_card_page(tab: &Arc<Tab>, token_id: &str, extension: &str, mut preloaded: bool, next_token_id: &Option<String>) -> (bool, bool) {
+fn capture_screenshot_of_card_page(tab: &Arc<Tab>, token_id: u128, extension: &str, mut preloaded: bool, next_token_id: Option<u128>) -> (bool, bool) {
     let mut attempts = 3;
 
     loop {
@@ -182,6 +182,11 @@ fn capture_screenshot_of_card_page(tab: &Arc<Tab>, token_id: &str, extension: &s
             Some(t) => tab.navigate_to(&format!("http://localhost:5000/card?tokenID={}&referrer=generate_images", t)).is_ok(),
             None => false,
         };
+
+        // Give cloak cards longer to load.
+        if is_cloak(token_id) {
+            thread::sleep(Duration::from_secs(2));
+        }
 
         // Capture at a higher resolution then downsample to produce a higher quality result.
         let png_image = Reader::with_format(Cursor::new(png_bytes), ImageFormat::Png).decode().unwrap();
@@ -208,4 +213,12 @@ fn capture_screenshot_of_card_page(tab: &Arc<Tab>, token_id: &str, extension: &s
 
         return (true, preloaded_next);
     }
+}
+
+fn is_cloak(token_id: u128) -> bool {
+    ((token_id >> 40) as u8) == 2
+}
+
+fn is_master_copy(token_id: u128) -> bool {
+    ((token_id >> 48) as u8) == 6
 }
