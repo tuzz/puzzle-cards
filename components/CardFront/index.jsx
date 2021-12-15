@@ -6,11 +6,14 @@ import stableRandom from "./stableRandom";
 import randomDefects from "./defects";
 import styles from "./styles.module.scss";
 
-const CardFront = ({ card, random, defects, scaleShadows, videoQuality, onLoaded = () => {} }) => {
+const CardFront = ({ card, random, defects, scaleShadows, videoQuality, autoPlay=true, hideType, onLoaded = () => {} }) => {
   random = random || stableRandom(card);
   defects = defects || randomDefects(card, random);
 
   if (!videoQuality) { throw new Error("Please set videoQuality to high or low."); }
+
+  const videoRef = useRef();
+  useEffect(() => autoPlay ? videoRef.current.play() : videoRef.current.pause(), [autoPlay]);
 
   const editionText = card.editionIndex() < 2  ? "Standard Edition" : "Limited Edition";
   const tierText = `${card.tier} Tier`;
@@ -48,7 +51,7 @@ const CardFront = ({ card, random, defects, scaleShadows, videoQuality, onLoaded
       </div>
 
       <div className={styles.video}>
-        <video autoPlay muted loop playsInline onCanPlay={onLoaded} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>
+        <video ref={videoRef} autoPlay={autoPlay} muted loop playsInline onCanPlay={onLoaded} style={{ transform: `rotate(${defects.puzzle_rotation}deg)` }}>
           <source src={card.puzzleVideoURL({ encoding: "av1", quality: videoQuality })} type="video/mp4" />
           <source src={card.puzzleVideoURL({ encoding: "vp9", quality: videoQuality })} type="video/mp4" />
           <source src={card.puzzleVideoURL({ encoding: "hevc", quality: videoQuality })} type="video/mov" />
@@ -71,9 +74,9 @@ const CardFront = ({ card, random, defects, scaleShadows, videoQuality, onLoaded
         </div>
       </div>
 
-      <div className={styles.type}>
+      {!hideType && <div className={styles.type}>
         <TypeComponent card={card} random={random} />
-      </div>
+      </div>}
 
       {defects.fingerprint && <div className={`${styles.fingerprint} ${clippingClass}`}>
         <img src={`/images/fingerprint_${defects.fingerprint.image}.png`} style={{

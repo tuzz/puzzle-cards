@@ -294,7 +294,6 @@
 
 .recipes {
   width: 100%;
-  height: 200rem;
 
   background-color: black;
   background-image: url(/images/color_particles.jpeg);
@@ -307,6 +306,22 @@
   h2 {
     font-size: 4rem;
   }
+
+  h3 {
+    color: #97f;
+    font-size: 2rem;
+    text-decoration: none;
+    text-shadow: 0 0 0.5rem black;
+    margin-top: 6rem;
+  }
+
+  strong {
+    text-decoration: underline;
+  }
+
+  p {
+    text-shadow: 0 0 0.5rem black;
+  }
 }
 
 .asteroid1 {
@@ -316,6 +331,7 @@
   animation-timing-function: linear;
   animation-duration: 41s;
   animation-delay: -7s;
+  display: none;
 }
 
 .asteroid2 {
@@ -327,6 +343,7 @@
   animation-delay: -10s;
   width: 15rem;
   margin-top: 30rem;
+  display: none;
 }
 
 .asteroid3 {
@@ -338,18 +355,20 @@
   animation-delay: -10s;
   width: 5rem;
   margin-top: 50rem;
+  display: none;
 }
-
 
 .recipe {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 5rem 0 36rem 0;
 
   .recipe_card {
     margin: 0;
+    position: relative;
 
-    & > span {
+    & > span:first-child {
       font-size: 2rem;
       text-shadow: 0 0 0.4rem rgba(255, 255, 255, 0.7);
     }
@@ -358,6 +377,22 @@
       filter: drop-shadow(0 0 0.6rem rgba(255, 255, 255, 0.6));
       width: 12rem;
       height: 16.8rem;
+    }
+
+    &.starter_card:after {
+      content: "Starter Card";
+      position: absolute;
+      top: 70%;
+      width: 100%;
+      text-align: center;
+      color: rgba(0, 0, 0, 0.8);
+      font-size: 1.3rem;
+      font-family: "Trebuchet MS";
+      font-weight: bold;
+    }
+
+    .subtitle {
+      height: 0;
     }
   }
 
@@ -390,6 +425,10 @@
   .equals {
     margin: -3.5rem 1rem -2rem 1rem;
   }
+}
+
+.promotes {
+  color: orange;
 }
 
 @media only screen and (max-width: 1050px) { .wood_sliders_spacer { height: 8rem; } }
@@ -444,11 +483,11 @@
   }
 
   .recipe .disjunction .or {
-    margin: 0 -2.7rem;
+    margin: 0 -3rem;
   }
 
   .recipe .disjunction .zoomable_card:first-child .title {
-    transform: translateX(-0.5rem);
+    transform: translateX(-0.7rem);
   }
 }
 

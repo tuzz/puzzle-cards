@@ -3,7 +3,7 @@ import CardFront from "../CardFront";
 import Zoomable from "../Zoomable";
 import styles from "./styles.module.scss";
 
-const ZoomableCard = ({ card, title, subtitle, className }) => {
+const ZoomableCard = ({ card, title, subtitle, className, hideType, autoPlay=true, disabled }) => {
   const [zoomed, setZoomed] = useState(false);
   const [zIndex, setZIndex] = useState(0);
 
@@ -26,8 +26,8 @@ const ZoomableCard = ({ card, title, subtitle, className }) => {
     <div className={`${styles.zoomable_card} ${className}`} style={{ zIndex }}>
       {title && <span className={styles.title}>{title}</span>}
       <Zoomable zoomed={zoomed}>
-        <div className={styles.card} onClick={() => setZoomed(z => !z)}>
-          <CardFront card={card} videoQuality="high" />
+        <div className={styles.card} onClick={() => !disabled && setZoomed(z => !z)}>
+          <CardFront card={card} videoQuality="high" autoPlay={autoPlay || zoomed} hideType={hideType} />
         </div>
       </Zoomable>
       {subtitle && <span className={styles.subtitle}>{subtitle}</span>}

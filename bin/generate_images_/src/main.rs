@@ -29,7 +29,7 @@ fn main() {
     if missing_token_ids.is_empty() { println!("All images already captured. Exiting."); return; }
 
     let queue = Arc::new(ArrayQueue::new(missing_token_ids.len()));
-    missing_token_ids.iter().for_each(|t| queue.push(t.to_string()).unwrap());
+    missing_token_ids.iter().for_each(|t| queue.push(**t).unwrap());
 
     surplus_token_ids.iter().for_each(|t| fs::remove_file(format!("{}/{}{}", OUTPUT_DIRECTORY, t, extension)).unwrap());
     if !surplus_token_ids.is_empty() { println!("\nRemoved {} images that have no corresponding metadata.", surplus_token_ids.len()); }
@@ -219,6 +219,7 @@ fn is_cloak(token_id: u128) -> bool {
     ((token_id >> 40) as u8) == 2
 }
 
+#[allow(dead_code)]
 fn is_master_copy(token_id: u128) -> bool {
     ((token_id >> 48) as u8) == 6
 }

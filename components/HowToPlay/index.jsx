@@ -29,7 +29,7 @@ const HowToPlay = () => (
         as the result. This is a bit like 'crafting' in video games, e.g. Minecraft.
       </p>
       <p>
-        Recipes are named after actions. For example, the <A>goThroughStarDoor</A> recipe
+        Recipes are named after actions. For example, the <A id="goThroughStarDoor">goThroughStarDoor</A> recipe
         takes a Player card and a Door card and produces a new card. The type of card
         (e.g. Player) is shown on the <strong>lower half</strong> of each card.
       </p>
@@ -190,7 +190,7 @@ const HowToPlay = () => (
       </p>
       <div className={styles.spacer}>
         <div className={styles.card_outline_example}>
-          <div className={styles.text_above}><A>activateSunOrMoon</A></div>
+          <div className={styles.text_above}><A id="activateSunOrMoon">activateSunOrMoon</A></div>
           <div className={styles.back}><CardBack defects={{}} isMasterCopy={false} /></div>
           <div className={styles.front}><CardBack defects={{}} isMasterCopy={false} /></div>
         </div>
@@ -515,15 +515,518 @@ const HowToPlay = () => (
     <div className={styles.table_edge}></div>
 
     <div className={styles.recipes}>
-      <h2>Recipes</h2>
-
       <img src="/images/asteroid1.png" className={styles.asteroid1} />
       <img src="/images/asteroid2.png" className={styles.asteroid2} />
       <img src="/images/asteroid3.png" className={styles.asteroid3} />
 
-      <div className={styles.recipe}>
-        <div className={styles.disjunction}>
-          <ZoomableCard title="Player" className={`${styles.recipe_card} ${styles.first}`} card={new PuzzleCard({
+      <h2>Recipes</h2>
+
+      <section>
+        <p>
+          There are <strong>12</strong> recipes in total, explained below. All cards must be the
+          same tier when applying a recipe, see <A id="applying-recipes">Applying Recipes</A>.
+        </p>
+      </section>
+
+      <section>
+        <h3 id="activateSunOrMoon">activateSunOrMoon</h3>
+        <p><em>Activates a sun or moon by walking (or flying) into it.</em></p>
+        <p>
+          Takes either a <strong>Player</strong>, <strong>Crab</strong> or <strong>Cloak</strong> card
+          and an <strong>Inactive</strong> sun or moon card
+          and produces an <strong>Active</strong> card of the same kind.
+        </p>
+        <p>
+          If a <strong>Cloak</strong> card is used, its color must match
+          the <strong>Inactive</strong> card. Only a <strong>Cloak</strong> card
+          will work at Ethereal and Godly <A id="card-tiers">tiers</A>.
+        </p>
+
+        <div className={styles.recipe}>
+          <div className={styles.disjunction}>
+            <ZoomableCard title="Player" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
+                series: "Star Gazing",
+                puzzle: "Asteroid Hopping",
+                tier: "Mortal",
+                type: "Player",
+                color1: "None",
+                color2: "None",
+                variant: "Idle Front",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+            <span className={styles.or}>or</span>
+            <ZoomableCard title="Crab" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+                series: "Star Gazing",
+                puzzle: "Asteroid Hopping",
+                tier: "Mortal",
+                type: "Crab",
+                color1: "None",
+                color2: "None",
+                variant: "Standing",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+            <span className={styles.or}>or</span>
+            <ZoomableCard title="Cloak" className={`${styles.recipe_card} ${styles.third}`} autoPlay={false} card={new PuzzleCard({
+                series: "Star Gazing",
+                puzzle: "Asteroid Hopping",
+                tier: "Mortal",
+                type: "Cloak",
+                color1: "Red",
+                color2: "None",
+                variant: "Standing",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+          </div>
+
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Inactive" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+              series: "Star Gazing",
+              puzzle: "Asteroid Hopping",
+              tier: "Mortal",
+              type: "Inactive",
+              color1: "Red",
+              color2: "None",
+              variant: "Sun",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+
+          <span className={styles.equals}>=</span>
+          <ZoomableCard title="Active" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+              series: "Star Gazing",
+              puzzle: "Asteroid Hopping",
+              tier: "Mortal",
+              type: "Active",
+              color1: "Red",
+              color2: "None",
+              variant: "Sun",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+        </div>
+      </section>
+
+      <section>
+        <h3 id="lookThroughTelescope">lookThroughTelescope</h3>
+        <p><em>Reveals something useful in a faraway place.</em></p>
+        <p>
+          Takes a <strong>Player</strong> card, a <strong>Telescope</strong> card and an <strong>Active</strong> sun or moon card and
+          produces either a <strong>Helix</strong>, <strong>Torch</strong> or <strong>Beacon</strong> card with equal probability.
+          The <strong>Active</strong> sun or moon card must match the <strong>Telescope</strong>.
+        </p>
+
+        <div className={styles.recipe}>
+          <ZoomableCard title="Player" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
+              series: "Crab’s Day Out",
+              puzzle: "Out to Sea",
+              tier: "Mortal",
+              type: "Player",
+              color1: "None",
+              color2: "None",
+              variant: "Idle Front",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+        <span className={styles.plus}>+</span>
+          <ZoomableCard title="Telescope" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+              series: "Crab’s Day Out",
+              puzzle: "Out to Sea",
+              tier: "Mortal",
+              type: "Telescope",
+              color1: "Blue",
+              color2: "None",
+              variant: "Moon",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Active" className={`${styles.recipe_card} ${styles.third}`} autoPlay={false} card={new PuzzleCard({
+              series: "Crab’s Day Out",
+              puzzle: "Out to Sea",
+              tier: "Mortal",
+              type: "Active",
+              color1: "Blue",
+              color2: "None",
+              variant: "Moon",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+
+          <span className={styles.equals}>=</span>
+          <div className={styles.disjunction}>
+            <ZoomableCard title="Helix" subtitle="33.3%" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+                series: "Crab’s Day Out",
+                puzzle: "Out to Sea",
+                tier: "Mortal",
+                type: "Helix",
+                color1: "Red",
+                color2: "Green",
+                variant: "None",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+            <span className={styles.or}>or</span>
+            <ZoomableCard title="Torch" subtitle="33.3%" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+                series: "Crab’s Day Out",
+                puzzle: "Out to Sea",
+                tier: "Mortal",
+                type: "Torch",
+                color1: "Red",
+                color2: "Green",
+                variant: "None",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+            <span className={styles.or}>or</span>
+            <ZoomableCard title="Beacon" subtitle="33.3%" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+                series: "Crab’s Day Out",
+                puzzle: "Out to Sea",
+                tier: "Mortal",
+                type: "Beacon",
+                color1: "Red",
+                color2: "None",
+                variant: "None",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3 id="lookThroughGlasses">lookThroughGlasses</h3>
+        <p><em>Reveals a hidden card seen through augmented reality sunglassses.</em></p>
+        <p>
+          Takes a <strong>Player</strong> card, a <strong>Glasses</strong> card and a <strong>Hidden</strong> card and
+          produces a random starter card based on the <A id="card-types">type probabilities</A>.
+        </p>
+        <p>
+          If the <strong>Glasses</strong> have the same lens color you will receive one card.
+          If they have different colors you will receive two cards.
+        </p>
+
+        <div className={styles.recipe}>
+          <ZoomableCard title="Player" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
+              series: "Teamwork",
+              puzzle: "Crab Construction",
+              tier: "Mortal",
+              type: "Player",
+              color1: "None",
+              color2: "None",
+              variant: "Idle Front",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+        <span className={styles.plus}>+</span>
+          <ZoomableCard title="Glasses" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+              series: "Teamwork",
+              puzzle: "Crab Construction",
+              tier: "Mortal",
+              type: "Glasses",
+              color1: "Green",
+              color2: "Black",
+              variant: "None",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Hidden" className={`${styles.recipe_card} ${styles.third}`} autoPlay={false} card={new PuzzleCard({
+              series: "Teamwork",
+              puzzle: "Crab Construction",
+              tier: "Mortal",
+              type: "Hidden",
+              color1: "None",
+              color2: "None",
+              variant: "None",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+
+          <span className={styles.equals}>=</span>
+          <ZoomableCard title="Random" subtitle="1 or 2 cards" hideType={true} disabled={true} className={`${styles.recipe_card} ${styles.starter_card}`} autoPlay={false} card={new PuzzleCard({
+              series: "Teamwork",
+              puzzle: "Crab Construction",
+              tier: "Mortal",
+              type: "Hidden",
+              color1: "None",
+              color2: "None",
+              variant: "None",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+        </div>
+      </section>
+
+      <section>
+        <h3 id="changeLensColor">changeLensColor</h3>
+        <p><em>Activates a sun or moon to re-augment an optical device.</em></p>
+        <p>
+          Takes either a <strong>Player</strong>, <strong>Crab</strong> or <strong>Cloak</strong> card, an <strong>Inactive</strong> card and an optical device that is either a <strong>Torch</strong> or <strong>Glasses</strong> card.
+          Produces a card of the same (optical) type but with different lens colors.
+        </p>
+        <p>
+          If one of the lens colors matches the color of the <strong>Inactive</strong> card, the lens colors will be swapped. Otherwise, one of the lens colors (chosen at random) will be changed to the <strong>Inactive</strong> card's color.
+        </p>
+        <p>
+          If a <strong>Cloak</strong> card is used, its color must match the <strong>Inactive</strong> card. Only a <strong>Cloak</strong> card will work at Ethereal and Godly <A id="card-tiers">tiers</A>.
+        </p>
+
+        <div className={styles.recipe}>
+          <div className={styles.disjunction}>
+            <ZoomableCard title="Player" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
+                series: "Escape",
+                puzzle: "Locked In",
+                tier: "Mortal",
+                type: "Player",
+                color1: "None",
+                color2: "None",
+                variant: "Idle Front",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+            <span className={styles.or}>or</span>
+            <ZoomableCard title="Crab" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+                series: "Escape",
+                puzzle: "Locked In",
+                tier: "Mortal",
+                type: "Crab",
+                color1: "None",
+                color2: "None",
+                variant: "Standing",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+            <span className={styles.or}>or</span>
+            <ZoomableCard title="Cloak" className={`${styles.recipe_card} ${styles.third}`} autoPlay={false} card={new PuzzleCard({
+                series: "Escape",
+                puzzle: "Locked In",
+                tier: "Mortal",
+                type: "Cloak",
+                color1: "Red",
+                color2: "None",
+                variant: "None",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+          </div>
+
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Inactive" className={`${styles.recipe_card} ${styles.third}`} autoPlay={false} card={new PuzzleCard({
+              series: "Escape",
+              puzzle: "Locked In",
+              tier: "Mortal",
+              type: "Inactive",
+              color1: "Red",
+              color2: "None",
+              variant: "Moon",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+
+          <span className={styles.plus}>+</span>
+          <div className={styles.disjunction}>
+            <ZoomableCard title="Torch" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
+                series: "Escape",
+                puzzle: "Locked In",
+                tier: "Mortal",
+                type: "Torch",
+                color1: "Red",
+                color2: "Green",
+                variant: "None",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+            <span className={styles.or}>or</span>
+            <ZoomableCard title="Glasses" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+                series: "Escape",
+                puzzle: "Locked In",
+                tier: "Mortal",
+                type: "Glasses",
+                color1: "Green",
+                color2: "Black",
+                variant: "None",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+          </div>
+
+          <span className={styles.equals}>=</span>
+          <div className={styles.disjunction}>
+            <ZoomableCard title="Torch" subtitle="(e.g. colors swapped)" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
+                series: "Escape",
+                puzzle: "Locked In",
+                tier: "Mortal",
+                type: "Torch",
+                color1: "Green",
+                color2: "Red",
+                variant: "None",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+            <span className={styles.or}>or</span>
+            <ZoomableCard title="Glasses" subtitle="(e.g. left changed)" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+                series: "Escape",
+                puzzle: "Locked In",
+                tier: "Mortal",
+                type: "Glasses",
+                color1: "Red",
+                color2: "Black",
+                variant: "None",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3 id="shineTorchOnBasePair">shineTorchOnBasePair</h3>
+        <p><em>Activates the photo sensors of a base pair in a strand of celestial DNA. The base pair opens to reveal the location of a secret object.</em></p>
+        <p>
+          Takes a <strong>Player</strong> card, a <strong>Torch</strong> card and a <strong>Helix</strong> card
+          and produces either a <strong>Map</strong> or <strong>Teleport</strong> card with equal probability.
+          The lens colors of the <strong>Torch</strong> must match the <strong>Helix</strong> and be in the same left-to-right order.
+        </p>
+
+        <div className={styles.recipe}>
+          <ZoomableCard title="Player" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
+              series: "Trial of Rebirth",
+              puzzle: "Base Pair",
+              tier: "Mortal",
+              type: "Player",
+              color1: "None",
+              color2: "None",
+              variant: "Idle Front",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Torch" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+              series: "Trial of Rebirth",
+              puzzle: "Base Pair",
+              tier: "Mortal",
+              type: "Torch",
+              color1: "Yellow",
+              color2: "Red",
+              variant: "None",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Helix" className={`${styles.recipe_card} ${styles.third}`} autoPlay={false} card={new PuzzleCard({
+              series: "Trial of Rebirth",
+              puzzle: "Base Pair",
+              tier: "Mortal",
+              type: "Helix",
+              color1: "Yellow",
+              color2: "Red",
+              variant: "None",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+
+          <span className={styles.equals}>=</span>
+          <div className={styles.disjunction}>
+            <ZoomableCard title="Map" subtitle="50%" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
+                series: "Trial of Rebirth",
+                puzzle: "Base Pair",
+                tier: "Mortal",
+                type: "Map",
+                color1: "None",
+                color2: "None",
+                variant: "With Time, Location",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+            <span className={styles.or}>or</span>
+            <ZoomableCard title="Teleport" subtitle="50%" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+                series: "Trial of Rebirth",
+                puzzle: "Base Pair",
+                tier: "Mortal",
+                type: "Teleport",
+                color1: "None",
+                color2: "None",
+                variant: "None",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3 id="teleportToNextArea">teleportToNextArea</h3>
+        <p><em>After checking the map, the player teleports to a new area.</em></p>
+        <p>
+          Takes a <strong>Player</strong>, <strong>Map</strong> and a <strong>Teleport</strong> card
+          and <span className={styles.promotes}>promotes</span> to the tier above. Unlocks minting at the next tier and produces a random <A id="card-types">starter card</A>.
+        </p>
+
+        <div className={styles.recipe}>
+          <ZoomableCard title="Player" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
+              series: "Darkness Yields Light",
+              puzzle: "Buried in the Sand",
+              tier: "Mortal",
+              type: "Player",
+              color1: "None",
+              color2: "None",
+              variant: "Idle Front",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Map" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+              series: "Darkness Yields Light",
+              puzzle: "Buried in the Sand",
+              tier: "Mortal",
+              type: "Map",
+              color1: "None",
+              color2: "None",
+              variant: "With Date",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Teleport" className={`${styles.recipe_card} ${styles.third}`} autoPlay={false} card={new PuzzleCard({
+              series: "Darkness Yields Light",
+              puzzle: "Buried in the Sand",
+              tier: "Mortal",
+              type: "Teleport",
+              color1: "None",
+              color2: "None",
+              variant: "None",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+
+          <span className={styles.equals}>=</span>
+          <ZoomableCard title="Random" subtitle="tier above" hideType={true} disabled={true} className={`${styles.recipe_card} ${styles.starter_card}`} autoPlay={false} card={new PuzzleCard({
+              series: "Darkness Yields Light",
+              puzzle: "Buried in the Sand",
+              tier: "Mortal",
+              type: "Hidden",
+              color1: "None",
+              color2: "None",
+              variant: "None",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+        </div>
+      </section>
+
+      <section>
+        <h3 id="goThroughStarDoor">goThroughStarDoor</h3>
+        <p><em>The player steps through a star door to reach a new area.</em></p>
+        <p>
+          Takes a <strong>Player</strong> card, an open <strong>Door</strong> card
+          and <span className={styles.promotes}>promotes</span> to the tier above. Unlocks minting at the next tier and produces a random <A id="card-types">starter card</A>.
+        </p>
+
+        <div className={styles.recipe}>
+          <ZoomableCard title="Player" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
               series: "Star Gazing",
               puzzle: "Asteroid Hopping",
               tier: "Mortal",
@@ -534,58 +1037,33 @@ const HowToPlay = () => (
               condition: "Pristine",
               edition: "Standard",
           })} />
-          <span className={styles.or}>or</span>
-          <ZoomableCard title="Crab" className={`${styles.recipe_card} ${styles.second}`} card={new PuzzleCard({
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Map" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
               series: "Star Gazing",
               puzzle: "Asteroid Hopping",
               tier: "Mortal",
-              type: "Crab",
+              type: "Door",
               color1: "None",
               color2: "None",
-              variant: "Standing",
+              variant: "Open",
               condition: "Pristine",
               edition: "Standard",
           })} />
-          <span className={styles.or}>or</span>
-          <ZoomableCard title="Cloak" className={`${styles.recipe_card} ${styles.third}`} card={new PuzzleCard({
+
+          <span className={styles.equals}>=</span>
+          <ZoomableCard title="Random" subtitle="tier above" hideType={true} disabled={true} className={`${styles.recipe_card} ${styles.starter_card}`} autoPlay={false} card={new PuzzleCard({
               series: "Star Gazing",
               puzzle: "Asteroid Hopping",
               tier: "Mortal",
-              type: "Cloak",
-              color1: "Red",
+              type: "Hidden",
+              color1: "None",
               color2: "None",
-              variant: "Standing",
+              variant: "None",
               condition: "Pristine",
               edition: "Standard",
           })} />
         </div>
-
-        <span className={styles.plus}>+</span>
-        <ZoomableCard title="Inactive" className={styles.recipe_card} card={new PuzzleCard({
-            series: "Star Gazing",
-            puzzle: "Asteroid Hopping",
-            tier: "Mortal",
-            type: "Inactive",
-            color1: "Red",
-            color2: "None",
-            variant: "Sun",
-            condition: "Pristine",
-            edition: "Standard",
-        })} />
-
-        <span className={styles.equals}>=</span>
-        <ZoomableCard title="Active" className={styles.recipe_card} card={new PuzzleCard({
-            series: "Star Gazing",
-            puzzle: "Asteroid Hopping",
-            tier: "Mortal",
-            type: "Active",
-            color1: "Red",
-            color2: "None",
-            variant: "Sun",
-            condition: "Pristine",
-            edition: "Standard",
-        })} />
-      </div>
+      </section>
     </div>
   </div>
 );
