@@ -8,7 +8,6 @@
 
   position: relative;
   overflow: hidden;
-  padding-bottom: 6rem;
 
   h1 {
     font-size: 4rem;
@@ -253,11 +252,11 @@
 
   .back {
     position: absolute;
-    animation-name: move-over-outline-1
+    animation-name: move_over_outline_1
   }
 
   .front {
-    animation-name: move-over-outline-2
+    animation-name: move_over_outline_2
   }
 }
 
@@ -274,7 +273,131 @@
   right: 0;
 }
 
-.wood_sliders_spacer { height: 11rem; }
+.wood_sliders_spacer {
+  height: 11rem;
+}
+
+.table_edge {
+  height: 5rem;
+  margin-top: 8rem;
+
+  background-color: #4e3a28;
+  background-image: url("/images/dirt.jpeg");
+  background-repeat: repeat;
+  background-size: 25rem;
+
+  border-top: 0.7rem solid #38261b;
+  box-sizing: border-box;
+  position: relative;
+  box-shadow: 0 1rem 1rem rgba(153, 119, 255, 0.2);
+}
+
+.recipes {
+  width: 100%;
+  height: 200rem;
+
+  background-color: black;
+  background-image: url(/images/color_particles.jpeg);
+  background-size: 30rem;
+  background-position: center;
+
+  overflow: hidden;
+  color: white;
+
+  h2 {
+    font-size: 4rem;
+  }
+}
+
+.asteroid1 {
+  position: absolute;
+  animation-name: asteroid_animation_1;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-duration: 41s;
+  animation-delay: -7s;
+}
+
+.asteroid2 {
+  position: absolute;
+  animation-name: asteroid_animation_2;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-duration: 63s;
+  animation-delay: -10s;
+  width: 15rem;
+  margin-top: 30rem;
+}
+
+.asteroid3 {
+  position: absolute;
+  animation-name: asteroid_animation_3;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-duration: 15s;
+  animation-delay: -10s;
+  width: 5rem;
+  margin-top: 50rem;
+}
+
+
+.recipe {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .recipe_card {
+    margin: 0;
+
+    & > span {
+      font-size: 2rem;
+      text-shadow: 0 0 0.4rem rgba(255, 255, 255, 0.7);
+    }
+
+    .card {
+      filter: drop-shadow(0 0 0.6rem rgba(255, 255, 255, 0.6));
+      width: 12rem;
+      height: 16.8rem;
+    }
+  }
+
+  .disjunction {
+    display: flex;
+    align-items: flex-start;
+
+    .or {
+      font-size: 2rem;
+      color: #97f;
+      vertical-align: top;
+      text-shadow: 0 0 0.3rem #97f;
+      text-transform: uppercase;
+    }
+
+    .left_bracket, .right_bracket {
+      font-size: 16rem;
+      font-family: Courier;
+      transform: scale(0.7, 1);
+      color: #97f;
+      text-shadow: 0 0 0.5rem #97f;
+    }
+
+    .left_bracket {
+      margin: 0.6rem -2.5rem 0 -4rem;
+    }
+
+    .right_bracket {
+      margin: 0.6rem -4rem 0 -2.5rem;
+    }
+  }
+
+  .plus, .equals {
+    font-size: 10rem;
+    align-self: center;
+    margin: 0 2rem;
+    color: #97f;
+    text-shadow: 0 0 0.7rem #97f;
+  }
+}
 
 @media only screen and (max-width: 1050px) { .wood_sliders_spacer { height: 8rem; } }
 @media only screen and (max-width: 900px) { .wood_sliders_spacer { height: 12rem; } }
@@ -322,12 +445,27 @@
   }
 }
 
-@keyframes move-over-outline-1 {
+@keyframes move_over_outline_1 {
   0%, 10%, 100% { transform: rotate(5deg) translate(4rem, 1rem); }
   20%, 30%, 80%, 90% { transform: none; }
 }
 
-@keyframes move-over-outline-2 {
+@keyframes move_over_outline_2 {
   0%, 10%, 100% { transform: rotate(-3deg) translate(-1rem, 4rem); }
   20%, 30%, 80%, 90% { transform: none; }
+}
+
+@keyframes asteroid_animation_1 {
+  0% { left: -30rem; transform: rotate(1080deg); }
+  100% { left: calc(100% + 30rem); transform: rotate(0deg); }
+}
+
+@keyframes asteroid_animation_2 {
+  0% { right: -30rem; transform: rotate(0deg); }
+  100% { right: calc(100% + 30rem); transform: rotate(1080deg); }
+}
+
+@keyframes asteroid_animation_3 {
+  0% { left: -30rem; transform: rotate(0deg); }
+  100% { left: calc(100% + 30rem); transform: rotate(3000deg); }
 }

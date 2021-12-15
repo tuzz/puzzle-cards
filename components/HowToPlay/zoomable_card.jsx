@@ -3,7 +3,7 @@ import CardFront from "../CardFront";
 import Zoomable from "../Zoomable";
 import styles from "./styles.module.scss";
 
-const ZoomableCard = ({ card, title, subtitle }) => {
+const ZoomableCard = ({ card, title, subtitle, className }) => {
   const [zoomed, setZoomed] = useState(false);
   const [zIndex, setZIndex] = useState(0);
 
@@ -23,7 +23,7 @@ const ZoomableCard = ({ card, title, subtitle }) => {
   const zoomOut = () => setZoomed(false);
 
   return <>
-    <div className={styles.zoomable_card} style={{ zIndex }}>
+    <div className={`${styles.zoomable_card} ${className}`} style={{ zIndex }}>
       {title && <span className={styles.title}>{title}</span>}
       <Zoomable zoomed={zoomed}>
         <div className={styles.card} onClick={() => setZoomed(z => !z)}>

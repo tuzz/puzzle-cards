@@ -271,6 +271,9 @@ fn settings_per_file() -> SettingsPerFile {
         ("../../image_sources/worship_stick_sun.png".to_string(), (480, true, 0)),
         ("../../image_sources/yellow_sun.png".to_string(), (960, true, 0)),
         ("../../image_sources/yellowing.png".to_string(), (600, true, 0)),
+        ("../../image_sources/asteroid1.png".to_string(), (150, false, 0)),
+        ("../../image_sources/asteroid2.png".to_string(), (147, false, 0)),
+        ("../../image_sources/asteroid3.png".to_string(), (148, false, 0)),
 
         ("../../image_sources/artwork/ancient_door.png".to_string(), (566, true, 0)),
         ("../../image_sources/artwork/anglerfish.png".to_string(), (1212, true, 0)),

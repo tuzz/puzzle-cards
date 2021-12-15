@@ -372,13 +372,6 @@ const HowToPlay = () => (
     </section>
 
     <section>
-      <h2 id="recipes">Recipes</h2>
-      <p>
-        TODO: maybe a show/hide toggle to keep it short and load videos in on demand
-      </p>
-    </section>
-
-    <section>
       <h2 id="optional-endgame">Optional Endgame (NFTs)</h2>
       <p>
         If you are successful in promoting a card all the way to Master tier
@@ -518,6 +511,86 @@ const HowToPlay = () => (
       <h2 id="personal-details">Personal Details</h2>
       <p>TODO: who made the game and why</p>
     </section>
+
+    <div className={styles.table_edge}></div>
+
+    <div className={styles.recipes}>
+      <h2>Recipes</h2>
+
+      <img src="/images/asteroid1.png" className={styles.asteroid1} />
+      <img src="/images/asteroid2.png" className={styles.asteroid2} />
+      <img src="/images/asteroid3.png" className={styles.asteroid3} />
+
+      <div className={styles.recipe}>
+        <div className={styles.disjunction}>
+          <span className={styles.left_bracket}>(</span>
+
+          <ZoomableCard title="Player" className={styles.recipe_card} card={new PuzzleCard({
+              series: "Star Gazing",
+              puzzle: "Asteroid Hopping",
+              tier: "Mortal",
+              type: "Player",
+              color1: "None",
+              color2: "None",
+              variant: "Idle Front",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.or}>or</span>
+          <ZoomableCard title="Crab" className={styles.recipe_card} card={new PuzzleCard({
+              series: "Star Gazing",
+              puzzle: "Asteroid Hopping",
+              tier: "Mortal",
+              type: "Crab",
+              color1: "None",
+              color2: "None",
+              variant: "Standing",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.or}>or</span>
+          <ZoomableCard title="Cloak" className={styles.recipe_card} card={new PuzzleCard({
+              series: "Star Gazing",
+              puzzle: "Asteroid Hopping",
+              tier: "Mortal",
+              type: "Cloak",
+              color1: "Red",
+              color2: "None",
+              variant: "Standing",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+
+          <span className={styles.right_bracket}>)</span>
+        </div>
+
+        <span className={styles.plus}>+</span>
+        <ZoomableCard title="Inactive" className={styles.recipe_card} card={new PuzzleCard({
+            series: "Star Gazing",
+            puzzle: "Asteroid Hopping",
+            tier: "Mortal",
+            type: "Inactive",
+            color1: "Red",
+            color2: "None",
+            variant: "Sun",
+            condition: "Pristine",
+            edition: "Standard",
+        })} />
+
+        <span className={styles.equals}>=</span>
+        <ZoomableCard title="Active" className={styles.recipe_card} card={new PuzzleCard({
+            series: "Star Gazing",
+            puzzle: "Asteroid Hopping",
+            tier: "Mortal",
+            type: "Active",
+            color1: "Red",
+            color2: "None",
+            variant: "Sun",
+            condition: "Pristine",
+            edition: "Standard",
+        })} />
+      </div>
+    </div>
   </div>
 );
 
