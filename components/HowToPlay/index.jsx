@@ -577,6 +577,9 @@ const HowToPlay = () => (
           The puzzles don't have to match to be used in a recipe, except in <a href="#puzzleMastery1">puzzleMastery1</a>.
           Puzzle videos are paused in the recipes below to avoid overloading your browser.
         </p>
+
+        <img src="/images/asteroid3.png" className={styles.asteroid1} />
+        <img src="/images/asteroid2.png" className={styles.asteroid2} />
       </section>
 
       <section>
@@ -660,7 +663,7 @@ const HowToPlay = () => (
           })} />
         </div>
 
-        <img src="/images/asteroid1.png" className={styles.asteroid1} />
+        <img src="/images/asteroid1.png" className={styles.asteroid3} />
       </section>
 
       <section>
@@ -713,6 +716,9 @@ const HowToPlay = () => (
               edition: "Standard",
           })} />
         </div>
+
+        <img src="/images/asteroid2.png" className={styles.asteroid5} />
+        <img src="/images/asteroid3.png" className={styles.asteroid2} />
       </section>
 
       <section>
@@ -780,12 +786,11 @@ const HowToPlay = () => (
           })} />
         </div>
 
-        <img src="/images/types/crab_standing.png" className={styles.spinning_crab} />
+        <img src="/images/types/crab_standing.png" className={styles.spinning_crab1} />
+        <img src="/images/asteroid1.png" className={styles.asteroid3} />
       </section>
 
       <section>
-        <img src="/images/asteroid2.png" className={styles.asteroid2} />
-
         <h3 id="lookThroughTelescope"><a href="#lookThroughTelescope">lookThroughTelescope</a></h3>
         <a className={styles.link_to_top} href="#recipes"><strong>^</strong> top</a>
         <p><em>Reveals something useful in a faraway place.</em></p>
@@ -871,6 +876,9 @@ const HowToPlay = () => (
             })} />
           </div>
         </div>
+
+        <img src="/images/asteroid2.png" className={styles.asteroid2} />
+        <img src="/images/asteroid3.png" className={styles.asteroid4} />
       </section>
 
       <section>
@@ -948,7 +956,8 @@ const HowToPlay = () => (
           </div>
         </div>
 
-        <img src="/images/asteroid3.png" className={styles.asteroid3} />
+        <img src="/images/asteroid3.png" className={styles.asteroid5} />
+        <img src="/images/asteroid1.png" className={styles.asteroid2} />
       </section>
 
       <section>
@@ -1010,6 +1019,9 @@ const HowToPlay = () => (
               edition: "Standard",
           })} />
         </div>
+
+        <img src="/images/asteroid2.png" className={styles.asteroid2} />
+        <img src="/images/types/crab_standing.png" className={styles.spinning_crab2} />
       </section>
 
       <section>
@@ -1133,6 +1145,9 @@ const HowToPlay = () => (
             })} />
           </div>
         </div>
+
+        <img src="/images/asteroid2.png" className={styles.asteroid5} />
+        <img src="/images/asteroid1.png" className={styles.asteroid1} />
       </section>
 
       <section>
@@ -1223,6 +1238,8 @@ const HowToPlay = () => (
             })} />
           </div>
         </div>
+        <img src="/images/asteroid3.png" className={styles.asteroid4} />
+        <img src="/images/asteroid1.png" className={styles.asteroid2} />
       </section>
 
       <section>
@@ -1283,6 +1300,9 @@ const HowToPlay = () => (
               edition: "Standard",
           })} />
         </div>
+
+        <img src="/images/asteroid1.png" className={styles.asteroid3} />
+        <img src="/images/asteroid2.png" className={styles.asteroid5} />
       </section>
 
       <section>
@@ -1332,6 +1352,9 @@ const HowToPlay = () => (
               edition: "Standard",
           })} />
         </div>
+
+        <img src="/images/asteroid2.png" className={styles.asteroid2} />
+        <img src="/images/asteroid3.png" className={styles.asteroid4} />
       </section>
 
       <section>
@@ -1382,6 +1405,9 @@ const HowToPlay = () => (
               edition: "Standard",
           })} />
         </div>
+
+        <img src="/images/types/crab_standing.png" className={styles.spinning_crab1} />
+        <img src="/images/asteroid3.png" className={styles.asteroid2} />
       </section>
 
       <section style={{ paddingBottom: "10rem" }}>

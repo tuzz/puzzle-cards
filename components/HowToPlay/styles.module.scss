@@ -380,44 +380,80 @@
   animation-name: asteroid_animation_1;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
-  animation-duration: 41s;
-  animation-delay: -7s;
+  animation-duration: 30s;
+  animation-delay: -9s;
 }
 
 .asteroid2 {
   position: absolute;
-  bottom: -20rem;
-  width: 15rem;
-  left: calc(50% - 7.5rem);
+  bottom: -13rem;
+  width: 7rem;
+  left: calc(50% - 3.5rem);
   animation-name: asteroid_animation_2;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
-  animation-duration: 63s;
-  animation-delay: -30s;
+  animation-duration: 17s;
+  animation-delay: -3s;
 }
 
-.spinning_crab {
+.asteroid3 {
+  position: absolute;
+  bottom: -25rem;
+  width: 10rem;
+  left: calc(50% - 5rem);
+  animation-name: asteroid_animation_3;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-duration: 41s;
+  animation-delay: -7s;
+}
+
+.asteroid4 {
+  position: absolute;
+  bottom: -20rem;
+  width: 15rem;
+  left: calc(50% - 7.5rem);
+  animation-name: asteroid_animation_4;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-duration: 63s;
+  animation-delay: -10s;
+}
+
+.asteroid5 {
+  position: absolute;
+  bottom: -35rem;
+  width: 5rem;
+  left: calc(50% - 2.5rem);
+  animation-name: asteroid_animation_5;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-duration: 15s;
+  animation-delay: -4s;
+}
+
+.spinning_crab1 {
   position: absolute;
   bottom: -30rem;
   width: 10rem;
   left: calc(50% - 5rem);
-  animation-name: spinning_crab_animation;
+  animation-name: crab_animation_1;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
   animation-duration: 15s;
   animation-delay: -5s;
 }
 
-.asteroid3 {
+.spinning_crab2 {
   position: absolute;
-  bottom: -35rem;
-  width: 5rem;
-  left: calc(50% - 2.5rem);
-  animation-name: asteroid_animation_3;
+  bottom: -15rem;
+  width: 10rem;
+  right: calc(50% - 5rem);
+  animation-name: crab_animation_2;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
-  animation-duration: 15s;
-  animation-delay: -10s;
+  animation-duration: 37s;
+  animation-delay: -3s;
 }
 
 .recipe {
@@ -678,21 +714,36 @@
 }
 
 @keyframes asteroid_animation_1 {
-  0% { transform: translateX(calc(-70vw - 10rem)) rotate(1080deg); }
+  0% { transform: translateX(calc(-70vw - 10rem)) rotate(540deg); }
   100% { transform: translateX(calc(70vw + 10rem)) rotate(0deg); }
 }
 
 @keyframes asteroid_animation_2 {
+  0% { transform: translateX(calc(70vw + 10rem)) rotate(2000deg); }
+  100% { transform: translate(calc(-70vw - 10rem), -13rem) rotate(0deg); }
+}
+
+@keyframes asteroid_animation_3 {
+  0% { transform: translateX(calc(-70vw - 10rem)) rotate(1080deg); }
+  100% { transform: translateX(calc(70vw + 10rem)) rotate(0deg); }
+}
+
+@keyframes asteroid_animation_4 {
   0% { transform: translateX(calc(70vw + 15rem)) rotate(0deg); }
   100% { transform: translateX(calc(-70vw - 15rem)) rotate(1080deg); }
 }
 
-@keyframes spinning_crab_animation {
-  0% { transform: translate(calc(100vw + 10rem), -50rem) rotate(0deg); }
-  100% { transform: translate(calc(-100vw - 10rem), 20rem) rotate(3000deg); }
-}
-
-@keyframes asteroid_animation_3 {
+@keyframes asteroid_animation_5 {
   0% { transform: translateX(calc(-70vw - 15rem)) rotate(0deg); }
   100% { transform: translateX(calc(70vw + 15rem)) rotate(3000deg); }
+}
+
+@keyframes crab_animation_1 {
+  0% { transform: translate(calc(70vw + 10rem), -50rem) rotate(0deg); }
+  100% { transform: translate(calc(-70vw - 10rem), 20rem) rotate(3000deg); }
+}
+
+@keyframes crab_animation_2 {
+  0% { transform: translate(calc(-70vw - 10rem), -10rem) rotate(0deg); }
+  100% { transform: translate(calc(70vw + 10rem), 10rem) rotate(1000deg); }
 }
