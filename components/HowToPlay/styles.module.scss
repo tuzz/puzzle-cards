@@ -12,6 +12,8 @@
   h1 {
     font-size: 4rem;
     text-align: center;
+    margin-top: 0;
+    padding-top: 2.6rem;
   }
 
   h2 {
@@ -300,7 +302,7 @@
   border-top: 0.7rem solid #38261b;
   box-sizing: border-box;
   position: relative;
-  box-shadow: 0 1rem 1rem rgba(153, 119, 255, 0.15);
+  box-shadow: 0 1rem 1rem rgba(153, 119, 255, 0.2);
 }
 
 .recipes {
@@ -343,6 +345,29 @@
 
   .recipes_list_section {
     margin-bottom: 30rem;
+  }
+
+  .link_to_top, .link_to_how_to_play {
+    position: absolute;
+    top: 4.5rem;
+    right: 1rem;
+    font-size: 1.5rem;
+
+    strong {
+      text-decoration: none;
+      color: rgba(230, 225, 80, 0.8);
+      font-size: 2.5rem;
+      position: absolute;
+      right: 2.5rem;
+    }
+  }
+
+  .link_to_how_to_play {
+    top: 0.3rem;
+
+    strong {
+      right: 8.5rem;
+    }
   }
 }
 
@@ -575,6 +600,18 @@
 
     &.helix_torch_beacon .beacon_card .title {
       transform: translateX(0.9rem);
+    }
+  }
+
+
+  .recipes {
+    .link_to_how_to_play {
+      font-size: 1.4rem;
+
+      strong {
+        right: 7.8rem;
+        top: -0.1rem;
+      }
     }
   }
 }

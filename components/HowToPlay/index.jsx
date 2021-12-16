@@ -7,7 +7,7 @@ import styles from "./styles.module.scss";
 
 const HowToPlay = () => (
   <div className={styles.how_to_play}>
-    <h1>How to Play</h1>
+    <h1 id="howToPlay">How to Play</h1>
 
     <div className={styles.dividing_line}></div>
 
@@ -29,7 +29,7 @@ const HowToPlay = () => (
         as the result. This is a bit like 'crafting' in video games, e.g. Minecraft.
       </p>
       <p>
-        Recipes are named after actions. For example, the <a href="#goThroughStarDoor">goThroughStarDoor</a> recipe
+        <a href="#recipes">Recipes</a> are named after actions. For example, the <a href="#goThroughStarDoor">goThroughStarDoor</a> recipe
         takes a Player card and a Door card and produces a new card. The type of card
         (e.g. Player) is shown on the <strong>lower half</strong> of each card.
       </p>
@@ -550,6 +550,7 @@ const HowToPlay = () => (
       <h2 id="recipes"><a href="#recipes">Recipes</a></h2>
 
       <section className={styles.recipes_list_section}>
+        <a className={styles.link_to_how_to_play} href="#howToPlay"><strong>^</strong> How to Play</a>
         <p>
           There are 12 recipes:
         </p>
@@ -580,6 +581,7 @@ const HowToPlay = () => (
 
       <section>
         <h3 id="activateSunOrMoon"><a href="#activateSunOrMoon">activateSunOrMoon</a></h3>
+        <a className={styles.link_to_top} href="#recipes"><strong>^</strong> top</a>
         <p><em>Activates a sun or moon by walking (or flying) into it.</em></p>
         <p>
           Takes either a <strong>Player</strong>, <strong>Crab</strong> or <strong>Cloak</strong> card
@@ -663,6 +665,7 @@ const HowToPlay = () => (
 
       <section>
         <h3 id="discard2Pickup1"><a href="#discard2Pickup1">discard2Pickup1</a></h3>
+        <a className={styles.link_to_top} href="#recipes"><strong>^</strong> top</a>
         <p><em>Sacrifice two cards to a sun god in exchange for a new one.</em></p>
         <p>
           Takes any two cards of the same tier and produces a random starter card, as though it was obtained by minting.
@@ -715,6 +718,7 @@ const HowToPlay = () => (
 
       <section>
         <h3 id="lookThroughGlasses"><a href="#lookThroughGlasses">lookThroughGlasses</a></h3>
+        <a className={styles.link_to_top} href="#recipes"><strong>^</strong> top</a>
         <p><em>Reveals a hidden card by looking through augmented reality sunglasses.</em></p>
         <p>
           Takes a <strong>Player</strong> card, a <strong>Glasses</strong> card and a <strong>Hidden</strong> card and
@@ -784,6 +788,7 @@ const HowToPlay = () => (
         <img src="/images/asteroid2.png" className={styles.asteroid2} />
 
         <h3 id="lookThroughTelescope"><a href="#lookThroughTelescope">lookThroughTelescope</a></h3>
+        <a className={styles.link_to_top} href="#recipes"><strong>^</strong> top</a>
         <p><em>Reveals something useful in a faraway place.</em></p>
         <p>
           Takes a <strong>Player</strong> card, a <strong>Telescope</strong> card and an <strong>Active</strong> sun or moon card and
@@ -871,6 +876,7 @@ const HowToPlay = () => (
 
       <section>
         <h3 id="shineTorchOnBasePair"><a href="#shineTorchOnBasePair">shineTorchOnBasePair</a></h3>
+        <a className={styles.link_to_top} href="#recipes"><strong>^</strong> top</a>
         <p><em>Activates the photo sensors of a base pair in a strand of celestial DNA. The base pair opens to reveal the location of a secret object.</em></p>
         <p>
           Takes a <strong>Player</strong> card, a <strong>Torch</strong> card and a <strong>Helix</strong> card
@@ -948,6 +954,7 @@ const HowToPlay = () => (
 
       <section>
         <h3 id="teleportToNextArea"><a href="#teleportToNextArea">teleportToNextArea</a></h3>
+        <a className={styles.link_to_top} href="#recipes"><strong>^</strong> top</a>
         <p><em>After checking the map, the player teleports to a new area.</em></p>
         <p>
           Takes a <strong>Player</strong>, <strong>Map</strong> and a <strong>Teleport</strong> card
@@ -1008,6 +1015,7 @@ const HowToPlay = () => (
 
       <section>
         <h3 id="changeLensColor"><a href="#changeLensColor">changeLensColor</a></h3>
+        <a className={styles.link_to_top} href="#recipes"><strong>^</strong> top</a>
         <p><em>Activates a sun or moon to re-augment an optical device.</em></p>
         <p>
           Takes either a <strong>Player</strong>, <strong>Crab</strong> or <strong>Cloak</strong> card, an <strong>Inactive</strong> card and an optical device that is either a <strong>Torch</strong> or <strong>Glasses</strong> card.
@@ -1130,6 +1138,7 @@ const HowToPlay = () => (
 
       <section>
         <h3 id="jumpIntoBeacon"><a href="#jumpIntoBeacon">jumpIntoBeacon</a></h3>
+        <a className={styles.link_to_top} href="#recipes"><strong>^</strong> top</a>
         <p><em>Jumps into a beacon to re-augment an optical device.</em></p>
         <p>
           Takes a <strong>Player</strong> card, a <strong>Beacon</strong> card and an optical device that is either a <strong>Torch</strong> or <strong>Glasses</strong> card.
@@ -1219,6 +1228,7 @@ const HowToPlay = () => (
 
       <section>
         <h3 id="jumpIntoEclipse"><a href="#jumpIntoEclipse">jumpIntoEclipse</a></h3>
+        <a className={styles.link_to_top} href="#recipes"><strong>^</strong> top</a>
         <p><em>Jumps into an eclipse to open a star door.</em></p>
         <p>
           Takes a <strong>Player</strong> card, an <strong>Eclipse</strong> card and a closed <strong>Door</strong> card and produces an open <strong>Door</strong> card.
@@ -1278,6 +1288,7 @@ const HowToPlay = () => (
 
       <section>
         <h3 id="goThroughStarDoor"><a href="#goThroughStarDoor">goThroughStarDoor</a></h3>
+        <a className={styles.link_to_top} href="#recipes"><strong>^</strong> top</a>
         <p><em>The player steps through a star door to reach a new area.</em></p>
         <p>
           Takes a <strong>Player</strong> card, an open <strong>Door</strong> card
@@ -1326,6 +1337,7 @@ const HowToPlay = () => (
 
       <section>
         <h3 id="puzzleMastery1"><a href="#puzzleMastery1">puzzleMastery1</a></h3>
+        <a className={styles.link_to_top} href="#recipes"><strong>^</strong> top</a>
         <p><em>Revisits a puzzle at the end of the game to obtain an elusive star.</em></p>
         <p>
           Takes two <strong>Artwork</strong> cards that have not been signed and produces a <strong>Star</strong> card in a random color.
@@ -1375,6 +1387,7 @@ const HowToPlay = () => (
 
       <section>
         <h3 id="puzzleMastery2"><a href="#puzzleMastery2">puzzleMastery2</a></h3>
+        <a className={styles.link_to_top} href="#recipes"><strong>^</strong> top</a>
         <p><em>Demonstrates mastery over the game by collecting a star in every color.</em></p>
         <p>
           Takes seven <strong>Star</strong> cards (one of each color) and produces an <strong>Artwork</strong> card.
