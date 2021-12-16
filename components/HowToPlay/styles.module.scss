@@ -544,6 +544,6 @@
 }
 
 @keyframes asteroid_animation_3 {
-  0% { transform: translateX(calc(70vw + 15rem)) rotate(0deg); }
-  100% { transform: translateX(calc(-70vw - 15rem)) rotate(3000deg); }
+  0% { transform: translateX(calc(-70vw - 15rem)) rotate(0deg); }
+  100% { transform: translateX(calc(70vw + 15rem)) rotate(3000deg); }
 }
