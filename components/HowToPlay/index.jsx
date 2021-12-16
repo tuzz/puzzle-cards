@@ -549,10 +549,32 @@ const HowToPlay = () => (
     <div className={styles.recipes}>
       <h2 id="recipes"><a href="#recipes">Recipes</a></h2>
 
-      <section>
+      <section className={styles.recipes_list_section}>
         <p>
-          There are <strong>12</strong> recipes in total, explained below. All cards must be the
-          same tier when applying a recipe, see <a href="#applyingRecipes">Applying Recipes</a>.
+          There are 12 recipes:
+        </p>
+        <div className={styles.spacer}>
+          <ul>
+            <li><a href="#activateSunOrMoon">activateSunOrMoon</a></li>
+            <li><a href="#discard2Pickup1">discard2Pickup1</a></li>
+            <li><a href="#lookThroughGlasses">lookThroughGlasses</a></li>
+            <li><a href="#lookThroughTelescope">lookThroughTelescope</a></li>
+            <li><a href="#shineTorchOnBasePair">shineTorchOnBasePair</a></li>
+            <li><a href="#teleportToNextArea">teleportToNextArea</a></li>
+          </ul>
+          <ul>
+            <li><a href="#changeLensColor">changeLensColor</a></li>
+            <li><a href="#jumpIntoBeacon">jumpIntoBeacon</a></li>
+            <li><a href="#jumpIntoEclipse">jumpIntoEclipse</a></li>
+            <li><a href="#goThroughStarDoor">goThroughStarDoor</a></li>
+            <li><a href="#puzzleMastery1">puzzleMastery1</a></li>
+            <li><a href="#puzzleMastery2">puzzleMastery2</a></li>
+          </ul>
+        </div>
+        <p>
+          All cards must be the same tier when <a href="#applyingRecipes">applying a recipe</a>.
+          The puzzles don't have to match to be used in a recipe, except in <a href="#puzzleMastery1">puzzleMastery1</a>.
+          Puzzle videos are paused in the recipes below to avoid overloading your browser.
         </p>
       </section>
 

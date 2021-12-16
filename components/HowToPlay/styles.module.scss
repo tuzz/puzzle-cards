@@ -332,13 +332,17 @@
     text-decoration: underline;
   }
 
-  p {
+  p, li {
     color: rgba(255, 255, 255, 0.8);
     text-shadow: 0 0 1rem black;
   }
 
   section {
     position: relative;
+  }
+
+  .recipes_list_section {
+    margin-bottom: 30rem;
   }
 }
 
@@ -526,7 +530,7 @@
 }
 
 @media only screen and (max-width: 900px) {
-  .how_to_play p, .how_to_play ol, .game_type span {
+  .how_to_play p, .how_to_play ol, .how_to_play ul, .game_type span {
     font-size: 1.3rem;
   }
 
@@ -535,6 +539,14 @@
       span {
         font-size: 1.3rem;
       }
+    }
+  }
+
+  .recipes_list_section .spacer {
+    justify-content: flex-start;
+
+    ul {
+      margin: -1.3rem 0 0 0;
     }
   }
 }
