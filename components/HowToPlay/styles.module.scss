@@ -499,6 +499,7 @@
     display: flex;
     justify-content: center;
     position: relative;
+    text-shadow: 0 0 1rem black;
 
     &:before {
       content: "all colors";

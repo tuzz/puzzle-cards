@@ -677,8 +677,8 @@ const HowToPlay = () => (
 
         <div className={`${styles.recipe} ${styles.collapse_below_850}`}>
           <ZoomableCard title="Any" hideType={true} disabled={true} className={`${styles.recipe_card} ${styles.any_card}`} autoPlay={false} card={new PuzzleCard({
-              series: "Star Gazing",
-              puzzle: "Asteroid Hopping",
+              series: "The Beginning",
+              puzzle: "God Rays",
               tier: "Mortal",
               type: "Hidden",
               color1: "None",
@@ -689,8 +689,8 @@ const HowToPlay = () => (
           })} />
           <span className={styles.plus}>+</span>
           <ZoomableCard title="Any" hideType={true} disabled={true} className={`${styles.recipe_card} ${styles.any_card}`} autoPlay={false} card={new PuzzleCard({
-              series: "Star Gazing",
-              puzzle: "Asteroid Hopping",
+              series: "The Beginning",
+              puzzle: "God Rays",
               tier: "Mortal",
               type: "Hidden",
               color1: "None",
@@ -702,8 +702,8 @@ const HowToPlay = () => (
 
           <span className={styles.equals}>=</span>
           <ZoomableCard title="Random" hideType={true} disabled={true} className={`${styles.recipe_card} ${styles.starter_card}`} autoPlay={false} card={new PuzzleCard({
-              series: "Trial of Rebirth",
-              puzzle: "Base Pair",
+              series: "The Beginning",
+              puzzle: "God Rays",
               tier: "Mortal",
               type: "Hidden",
               color1: "None",
@@ -714,7 +714,6 @@ const HowToPlay = () => (
           })} />
         </div>
       </section>
-
 
       <section>
         <h3 id="lookThroughGlasses"><a href="#lookThroughGlasses">lookThroughGlasses</a></h3>
@@ -1147,8 +1146,8 @@ const HowToPlay = () => (
 
         <div className={`${styles.recipe} ${styles.collapse_below_1580}`}>
           <ZoomableCard title="Player" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
-              series: "Star Gazing",
-              puzzle: "Asteroid Hopping",
+              series: "Teamwork",
+              puzzle: "Asymmetry",
               tier: "Mortal",
               type: "Player",
               color1: "None",
@@ -1159,8 +1158,8 @@ const HowToPlay = () => (
           })} />
           <span className={styles.plus}>+</span>
           <ZoomableCard title="Beacon" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
-              series: "Star Gazing",
-              puzzle: "Asteroid Hopping",
+              series: "Teamwork",
+              puzzle: "Asymmetry",
               tier: "Mortal",
               type: "Beacon",
               color1: "Pink",
@@ -1173,8 +1172,8 @@ const HowToPlay = () => (
 
           <div className={styles.disjunction}>
             <ZoomableCard title="Torch" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
-                series: "Trial of Rebirth",
-                puzzle: "Base Pair",
+                series: "Teamwork",
+                puzzle: "Asymmetry",
                 tier: "Mortal",
                 type: "Torch",
                 color1: "Red",
@@ -1185,8 +1184,8 @@ const HowToPlay = () => (
             })} />
             <span className={styles.or}>or</span>
             <ZoomableCard title="Glasses" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
-                series: "Trial of Rebirth",
-                puzzle: "Base Pair",
+                series: "Teamwork",
+                puzzle: "Asymmetry",
                 tier: "Mortal",
                 type: "Glasses",
                 color1: "Blue",
@@ -1200,8 +1199,8 @@ const HowToPlay = () => (
           <span className={styles.equals}>=</span>
           <div className={styles.disjunction}>
             <ZoomableCard title="Torch" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
-                series: "Trial of Rebirth",
-                puzzle: "Base Pair",
+                series: "Teamwork",
+                puzzle: "Asymmetry",
                 tier: "Mortal",
                 type: "Torch",
                 color1: "Pink",
@@ -1212,8 +1211,8 @@ const HowToPlay = () => (
             })} />
             <span className={styles.or}>or</span>
             <ZoomableCard title="Glasses" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
-                series: "Trial of Rebirth",
-                puzzle: "Base Pair",
+                series: "Teamwork",
+                puzzle: "Asymmetry",
                 tier: "Mortal",
                 type: "Glasses",
                 color1: "Pink",
@@ -1236,8 +1235,8 @@ const HowToPlay = () => (
 
         <div className={`${styles.recipe} ${styles.collapse_below_1150}`}>
           <ZoomableCard title="Player" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
-              series: "Star Gazing",
-              puzzle: "Asteroid Hopping",
+              series: "Teamwork",
+              puzzle: "Balancing Act II",
               tier: "Mortal",
               type: "Player",
               color1: "None",
@@ -1248,8 +1247,8 @@ const HowToPlay = () => (
           })} />
           <span className={styles.plus}>+</span>
           <ZoomableCard title="Eclipse" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
-              series: "Star Gazing",
-              puzzle: "Asteroid Hopping",
+              series: "Teamwork",
+              puzzle: "Balancing Act II",
               tier: "Mortal",
               type: "Eclipse",
               color1: "None",
@@ -1260,8 +1259,8 @@ const HowToPlay = () => (
           })} />
           <span className={styles.plus}>+</span>
           <ZoomableCard title="Door" subtitle="closed" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
-              series: "Star Gazing",
-              puzzle: "Asteroid Hopping",
+              series: "Teamwork",
+              puzzle: "Balancing Act II",
               tier: "Mortal",
               type: "Door",
               color1: "None",
@@ -1273,8 +1272,8 @@ const HowToPlay = () => (
 
           <span className={styles.equals}>=</span>
           <ZoomableCard title="Door" subtitle="open" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
-              series: "Trial of Rebirth",
-              puzzle: "Base Pair",
+              series: "Teamwork",
+              puzzle: "Balancing Act II",
               tier: "Mortal",
               type: "Door",
               color1: "None",
@@ -1298,7 +1297,7 @@ const HowToPlay = () => (
         <div className={`${styles.recipe} ${styles.collapse_below_860}`}>
           <ZoomableCard title="Player" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
               series: "Star Gazing",
-              puzzle: "Asteroid Hopping",
+              puzzle: "Mysterious Aura",
               tier: "Mortal",
               type: "Player",
               color1: "None",
@@ -1310,7 +1309,7 @@ const HowToPlay = () => (
           <span className={styles.plus}>+</span>
           <ZoomableCard title="Door" subtitle="open" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
               series: "Star Gazing",
-              puzzle: "Asteroid Hopping",
+              puzzle: "Mysterious Aura",
               tier: "Mortal",
               type: "Door",
               color1: "None",
@@ -1323,7 +1322,7 @@ const HowToPlay = () => (
           <span className={styles.equals}>=</span>
           <ZoomableCard title="Random" subtitle="tier above" hideType={true} disabled={true} className={`${styles.recipe_card} ${styles.starter_card}`} autoPlay={false} card={new PuzzleCard({
               series: "Star Gazing",
-              puzzle: "Asteroid Hopping",
+              puzzle: "Mysterious Aura",
               tier: "Mortal",
               type: "Hidden",
               color1: "None",
@@ -1372,7 +1371,7 @@ const HowToPlay = () => (
 
           <span className={styles.equals}>=</span>
           <ZoomableCard title="Star" subtitle="random color" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
-              series: "Pitch Black",
+              series: "Teamwork",
               puzzle: "Dark Star",
               tier: "Master",
               type: "Star",
