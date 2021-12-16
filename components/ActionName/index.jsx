@@ -63,7 +63,8 @@ const ActionName = ({ name, transactState, showingFilters, channel, generation }
   setClass(arrowRef.current, styles.visible, morph.to && stickGrounded);
   setClass(arrowRef.current, styles.showing_filters, showingFilters);
 
-  const hrefProp = name && !name.includes("connect") && { href: `/recipes#${name}` };
+  const anchor = name === "mint" ? "mintingCards" : name;
+  const hrefProp = name && !name.includes("connect") && { href: `/how-to-play#${anchor}` };
 
   return (
     <div className={`${styles.action_name} ${morph.ratio > 0 && morph.ratio < 1 && styles.morphing}`}>

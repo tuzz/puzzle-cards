@@ -3,7 +3,6 @@ import ZoomableCard from "./zoomable_card";
 import CardBack from "../CardBack";
 import WoodSliders from "../WoodSliders";
 import Toggle from "./toggle";
-import A from "./anchor";
 import styles from "./styles.module.scss";
 
 const HowToPlay = () => (
@@ -18,12 +17,12 @@ const HowToPlay = () => (
     </div>
 
     <section>
-      <h2 id="video">Watch the Video</h2>
+      <h2 id="watchTheVideo"><a href="#watchTheVideo">Watch the Video</a></h2>
       <p>TODO</p>
     </section>
 
     <section>
-      <h2 id="overview">Brief Idea of the Game</h2>
+      <h2 id="briefIdeaOfTheGame"><a href="#briefIdeaOfTheGame">Brief Idea of the Game</a></h2>
       <p>
         The idea of the game is to combine cards according to 'recipes'. A
         recipe takes two or three cards as ingredients and produces a new card
@@ -62,7 +61,7 @@ const HowToPlay = () => (
       <p>
         The <strong>upper half</strong> of each card features a puzzle from the upcoming game
         'Worship the Sun', releasing in 2022. It shows a preview of the video
-        game and has no bearing on recipes until the <A>Optional Endgame</A>.
+        game and has no bearing on recipes until the <a href="#optionalEndgame">Optional Endgame</a>.
       </p>
       <p>
         Every card has a tier which is shown in the <strong>lower right</strong> corner. The
@@ -73,7 +72,7 @@ const HowToPlay = () => (
     </section>
 
     <section>
-      <h2 id="setting-up">Setting Up</h2>
+      <h2 id="settingUp"><a href="#settingUp">Setting Up</a></h2>
       <p>
         The game runs on the Polygon network due to its vastly reduced
         environmental impact and tiny transaction fees (less than $0.001). Its
@@ -97,7 +96,7 @@ const HowToPlay = () => (
     </section>
 
     <section>
-      <h2 id="mint">Minting Cards</h2>
+      <h2 id="mintingCards"><a href="#mintingCards">Minting Cards</a></h2>
       <p>
         The first step in playing the game is to mint some cards. Place the Mint
         chip over the card outline (if it isn't already) and click on the MetaMask
@@ -131,13 +130,13 @@ const HowToPlay = () => (
       </p>
       <p>
         To mint several cards at once, click on the Mint chip to flip it over. You can
-        select a different number on the back. You can also change the <A id="card-tiers">tier</A>.
+        select a different number on the back. You can also change the <a href="#cardTiers">tier</a>.
         If lots of cards are minted at once, only the first 10 will appear over the outline.
       </p>
     </section>
 
     <section>
-      <h2 id="card-types">Card Types</h2>
+      <h2 id="cardTypes"><a href="#cardTypes">Card Types</a></h2>
       <p>
         There are 17 types of card. When a card is minted, or promoted to the next tier,
         you will receive a random 'starter' card for that tier. The probability of
@@ -169,7 +168,7 @@ const HowToPlay = () => (
       <p>
         As you can see, Player cards are most common, closely followed by Inactive
         sun and moon cards. At the end of the list there are cards that cannot
-        normally be obtained except at special <A id="card-tiers">tiers</A>.
+        normally be obtained except at special <a href="#cardTiers">tiers</a>.
       </p>
       <p>
         If you are fortunate enough to receive the more uncommon cards, you can
@@ -178,9 +177,9 @@ const HowToPlay = () => (
     </section>
 
     <section>
-      <h2 id="applying-recipes">Applying Recipes</h2>
+      <h2 id="applyingRecipes"><a href="#applyingRecipes">Applying Recipes</a></h2>
       <p>
-        To apply one of the <A>recipes</A>, drag the necessary cards over the
+        To apply one of the <a href="#recipes">recipes</a>, drag the necessary cards over the
         card outline. The name of the recipe will appear above the outline.
         Press the MetaMask button and confirm the transaction to apply the recipe.
       </p>
@@ -191,7 +190,7 @@ const HowToPlay = () => (
       </p>
       <div className={styles.spacer}>
         <div className={styles.card_outline_example}>
-          <div className={styles.text_above}><A id="activateSunOrMoon">activateSunOrMoon</A></div>
+          <div className={styles.text_above}><a href="#activateSunOrMoon">activateSunOrMoon</a></div>
           <div className={styles.back}><CardBack defects={{}} isMasterCopy={false} /></div>
           <div className={styles.front}><CardBack defects={{}} isMasterCopy={false} /></div>
         </div>
@@ -208,13 +207,13 @@ const HowToPlay = () => (
       </p>
       <p>
         The puzzle at the top of the card will be randomized each time a recipe
-        is applied, except in the <A id="optional-endgame">Optional Endgame</A> when
+        is applied, except in the <a href="#optionalEndgame">Optional Endgame</a> when
         this can be controlled.
       </p>
     </section>
 
     <section>
-      <h2 id="wooden-sliders">Wooden Sliders</h2>
+      <h2 id="woodenSliders"><a href="#woodenSliders">Wooden Sliders</a></h2>
       <div className={styles.wood_sliders}>
         <WoodSliders alwaysShow={true} />
       </div>
@@ -234,7 +233,7 @@ const HowToPlay = () => (
       <p>
         For example, you might use the working area to make a pile of Glasses
         cards on the left and Hidden cards on the right. This will make it easier to
-        apply the <A>lookThroughGlasses</A> recipe because these cards will be
+        apply the <a href="#lookThroughGlasses">lookThroughGlasses</a> recipe because these cards will be
         at hand.
       </p>
       <p>
@@ -258,7 +257,7 @@ const HowToPlay = () => (
     </section>
 
     <section>
-      <h2 id="card-conditions">Card Conditions</h2>
+      <h2 id="cardConditions"><a href="#cardConditions">Card Conditions</a></h2>
       <p>
         Every card has a condition. When a card is minted its condition is either
         Pristine, Excellent or Reasonable with equal probability.
@@ -310,7 +309,7 @@ const HowToPlay = () => (
     </section>
 
     <section>
-      <h2 id="card-tiers">Card Tiers</h2>
+      <h2 id="cardTiers"><a href="#cardTiers">Card Tiers</a></h2>
       <p>
         At the start of the game you can only mint cards at Mortal tier. The
         aim of the game is to successfully promote a card to Master tier. You
@@ -328,7 +327,7 @@ const HowToPlay = () => (
       <p>No changes. This is the base game.</p>
 
       <h3>Immortal Tier</h3>
-      <p>Cards don't degrade. This is a good thing. See <a href="#card-conditions">Card Conditions</a>.</p>
+      <p>Cards don't degrade. This is a good thing. See <a href="#cardConditions">Card Conditions</a>.</p>
 
       <h3>Ethereal Tier</h3>
       <p>
@@ -338,7 +337,7 @@ const HowToPlay = () => (
 
       <h3>Virtual Tier</h3>
       <p>
-        Instead of the <A id="card-types">usual probabilities</A>, starter cards
+        Instead of the <a href="#cardTypes">usual probabilities</a>, starter cards
         spawn as either Player, Glasses or Hidden cards with equal probability.
       </p>
 
@@ -354,13 +353,13 @@ const HowToPlay = () => (
 
       <h3>Master Tier</h3>
       <p>
-        All starter cards are Artwork cards. This is the <A>Optional Endgame</A>.
+        All starter cards are Artwork cards. This is the <a href="#optionalEndgame">Optional Endgame</a>.
       </p>
 
       <p style={{ marginTop: "4rem" }}>
         It is up to you to figure out how to adapt your play (if at all) to cope
-        with these changes. It is helpful to familiarize yourself with the <A>Recipes</A>.
-        A brief reminder of the tier's effects are shown at the bottom of each card:
+        with these changes. It is helpful to familiarize yourself with the <a href="#recipes">Recipes</a>.
+        An icon reminding you of the tier's effects are shown at the bottom of each card:
       </p>
       <div className={styles.spacer}>
         <ZoomableCard subtitle="(click to zoom)" card={new PuzzleCard({
@@ -378,7 +377,7 @@ const HowToPlay = () => (
     </section>
 
     <section>
-      <h2 id="optional-endgame">Optional Endgame (NFTs)</h2>
+      <h2 id="optionalEndgame"><a href="#optionalEndgame">Optional Endgame (NFTs)</a></h2>
       <p>
         If you are successful in promoting a card all the way to Master tier
         you will unlock special recipes that allow you to create Limited Edition
@@ -387,7 +386,7 @@ const HowToPlay = () => (
       <p>
         This endgame is completely optional and is for people who want to own a
         significant piece of the video game itself: either a puzzle or its solution.
-        These special recipes are <A>puzzleMastery1</A> and <A>puzzleMastery2</A>.
+        These special recipes are <a href="#puzzleMastery1">puzzleMastery1</a> and <a href="#puzzleMastery2">puzzleMastery2</a>.
       </p>
       <div className={styles.spacer}>
         <ZoomableCard title="Limited Edition" subtitle="(click to zoom)" card={new PuzzleCard({
@@ -428,7 +427,7 @@ const HowToPlay = () => (
     </section>
 
     <section>
-      <h2 id="future-roadmap">Future Roadmap</h2>
+      <h2 id="futureRoadmap"><a href="#futureRoadmap">Future Roadmap</a></h2>
       <p>
         The highest priority item is to finish building the video game and release it to the public.
         Brand new puzzles and artwork will be added into the card game as they are developed.
@@ -450,7 +449,7 @@ const HowToPlay = () => (
     </section>
 
     <section>
-      <h2 id="technical-details">Technical Details</h2>
+      <h2 id="technicalDetails"><a href="#technicalDetails">Technical Details</a></h2>
       <p>
         The game rules are enforced by
         the <a href={`${PuzzleCard.CONTRACT_NETWORK.explorer}/address/${PuzzleCard.CONTRACT_ADDRESS}`} target="_blank">Puzzle Card contract</a> which has been verified on Polygonscan.
@@ -473,7 +472,7 @@ const HowToPlay = () => (
           The contract is <a href="https://github.com/tuzz/puzzle-cards/tree/main/test" target="_blank">extensively tested</a> with a suite that takes ~an hour to run.
           This includes a test that automatically plays the game using
           a <a href="https://github.com/tuzz/puzzle-cards/blob/main/test/Promotion.test.js#L118-L122" target="_blank">recursive</a> strategy.
-          This test was used to balance the game and its <A id="card-tiers">rule modifers</A>.
+          This test was used to balance the game and its <a href="#cardTiers">tier modifers</a>.
         </p>
         <p>
           This website is written in React and hosted on GitHub pages. There are
@@ -517,7 +516,7 @@ const HowToPlay = () => (
     </section>
 
     <section>
-      <h2 id="personal-details">Personal Details</h2>
+      <h2 id="personalDetails"><a href="#personalDetails">Personal Details</a></h2>
       <p>
         This game was designed and developed by <a href="https://twitter.com/chrispatuzzo" target="_blank">Chris Patuzzo</a> who lives in London.
         All proceeds go towards supporting Chris's work. This includes card sales from this website and a 5% commision on OpenSea sales.
@@ -548,17 +547,17 @@ const HowToPlay = () => (
     <div className={styles.table_edge}></div>
 
     <div className={styles.recipes}>
-      <h2>Recipes</h2>
+      <h2 id="recipes"><a href="#recipes">Recipes</a></h2>
 
       <section>
         <p>
           There are <strong>12</strong> recipes in total, explained below. All cards must be the
-          same tier when applying a recipe, see <A id="applying-recipes">Applying Recipes</A>.
+          same tier when applying a recipe, see <a href="#applyingRecipes">Applying Recipes</a>.
         </p>
       </section>
 
       <section>
-        <h3 id="activateSunOrMoon">activateSunOrMoon</h3>
+        <h3 id="activateSunOrMoon"><a href="#activateSunOrMoon">activateSunOrMoon</a></h3>
         <p><em>Activates a sun or moon by walking (or flying) into it.</em></p>
         <p>
           Takes either a <strong>Player</strong>, <strong>Crab</strong> or <strong>Cloak</strong> card
@@ -568,7 +567,7 @@ const HowToPlay = () => (
         <p>
           If a <strong>Cloak</strong> card is used, its color must match
           the <strong>Inactive</strong> card. Only a <strong>Cloak</strong> card
-          will work at Ethereal and Godly <A id="card-tiers">tiers</A>.
+          will work at Ethereal and Godly <a href="#cardTiers">tiers</a>.
         </p>
 
         <div className={styles.recipe}>
@@ -641,14 +640,14 @@ const HowToPlay = () => (
       </section>
 
       <section>
-        <h3 id="discard2Pickup1">discard2Pickup1</h3>
+        <h3 id="discard2Pickup1"><a href="#discard2Pickup1">discard2Pickup1</a></h3>
         <p><em>Sacrifice two cards to a sun god in exchange for a new one.</em></p>
         <p>
           Takes any two cards of the same tier and produces a random starter card, as though it was obtained by minting.
-          This will usually follow the standard <A id="card-types">type probabilities</A> except at Virtual, Godly and Master <A id="card-tiers">tiers</A>.
+          This will usually follow the standard <a href="#cardTypes">type probabilities</a> except at Virtual, Godly and Master <a href="#cardTiers">tiers</a>.
         </p>
         <p>
-          This counts as applying a recipe so cards may <A id="card-conditions">degrade</A>.
+          This counts as applying a recipe so cards may <a href="#cardConditions">degrade</a>.
         </p>
 
         <div className={styles.recipe}>
@@ -693,11 +692,11 @@ const HowToPlay = () => (
 
 
       <section>
-        <h3 id="lookThroughGlasses">lookThroughGlasses</h3>
+        <h3 id="lookThroughGlasses"><a href="#lookThroughGlasses">lookThroughGlasses</a></h3>
         <p><em>Reveals a hidden card by looking through augmented reality sunglasses.</em></p>
         <p>
           Takes a <strong>Player</strong> card, a <strong>Glasses</strong> card and a <strong>Hidden</strong> card and
-          produces a random starter card based on the <A id="card-types">type probabilities</A> except that <strong>Player</strong> and <strong>Glasses</strong> cards
+          produces a random starter card based on the <a href="#cardTypes">type probabilities</a> except that <strong>Player</strong> and <strong>Glasses</strong> cards
           won't spawn and <strong>Crab</strong> cards are much more unlikely.
         </p>
         <p>
@@ -762,7 +761,7 @@ const HowToPlay = () => (
       <section>
         <img src="/images/asteroid2.png" className={styles.asteroid2} />
 
-        <h3 id="lookThroughTelescope">lookThroughTelescope</h3>
+        <h3 id="lookThroughTelescope"><a href="#lookThroughTelescope">lookThroughTelescope</a></h3>
         <p><em>Reveals something useful in a faraway place.</em></p>
         <p>
           Takes a <strong>Player</strong> card, a <strong>Telescope</strong> card and an <strong>Active</strong> sun or moon card and
@@ -849,7 +848,7 @@ const HowToPlay = () => (
       </section>
 
       <section>
-        <h3 id="shineTorchOnBasePair">shineTorchOnBasePair</h3>
+        <h3 id="shineTorchOnBasePair"><a href="#shineTorchOnBasePair">shineTorchOnBasePair</a></h3>
         <p><em>Activates the photo sensors of a base pair in a strand of celestial DNA. The base pair opens to reveal the location of a secret object.</em></p>
         <p>
           Takes a <strong>Player</strong> card, a <strong>Torch</strong> card and a <strong>Helix</strong> card
@@ -926,11 +925,11 @@ const HowToPlay = () => (
       </section>
 
       <section>
-        <h3 id="teleportToNextArea">teleportToNextArea</h3>
+        <h3 id="teleportToNextArea"><a href="#teleportToNextArea">teleportToNextArea</a></h3>
         <p><em>After checking the map, the player teleports to a new area.</em></p>
         <p>
           Takes a <strong>Player</strong>, <strong>Map</strong> and a <strong>Teleport</strong> card
-          and <span className={styles.promotes}>promotes</span> to the tier above. Unlocks minting at the next tier and produces a random <A id="card-types">starter card</A>.
+          and <span className={styles.promotes}>promotes</span> to the tier above. Unlocks minting at the next tier and produces a random <a href="#cardTypes">starter card</a>.
         </p>
 
         <div className={styles.recipe}>
@@ -986,7 +985,7 @@ const HowToPlay = () => (
       </section>
 
       <section>
-        <h3 id="changeLensColor">changeLensColor</h3>
+        <h3 id="changeLensColor"><a href="#changeLensColor">changeLensColor</a></h3>
         <p><em>Activates a sun or moon to re-augment an optical device.</em></p>
         <p>
           Takes either a <strong>Player</strong>, <strong>Crab</strong> or <strong>Cloak</strong> card, an <strong>Inactive</strong> card and an optical device that is either a <strong>Torch</strong> or <strong>Glasses</strong> card.
@@ -996,7 +995,7 @@ const HowToPlay = () => (
           The lens colors will be swapped in one of them matches the <strong>Inactive</strong> card. Otherwise, a random lens will be changed to the <strong>Inactive</strong> card's color.
         </p>
         <p>
-          If a <strong>Cloak</strong> card is used, its color must match the <strong>Inactive</strong> card. Only a <strong>Cloak</strong> card will work at Ethereal and Godly <A id="card-tiers">tiers</A>.
+          If a <strong>Cloak</strong> card is used, its color must match the <strong>Inactive</strong> card. Only a <strong>Cloak</strong> card will work at Ethereal and Godly <a href="#cardTiers">tiers</a>.
         </p>
 
         <div className={styles.recipe}>
@@ -1108,7 +1107,7 @@ const HowToPlay = () => (
       </section>
 
       <section>
-        <h3 id="jumpIntoBeacon">jumpIntoBeacon</h3>
+        <h3 id="jumpIntoBeacon"><a href="#jumpIntoBeacon">jumpIntoBeacon</a></h3>
         <p><em>Jumps into a beacon to re-augment an optical device.</em></p>
         <p>
           Takes a <strong>Player</strong> card, a <strong>Beacon</strong> card and an optical device that is either a <strong>Torch</strong> or <strong>Glasses</strong> card.
@@ -1197,7 +1196,7 @@ const HowToPlay = () => (
       </section>
 
       <section>
-        <h3 id="jumpIntoEclipse">jumpIntoEclipse</h3>
+        <h3 id="jumpIntoEclipse"><a href="#jumpIntoEclipse">jumpIntoEclipse</a></h3>
         <p><em>Jumps into an eclipse to open a star door.</em></p>
         <p>
           Takes a <strong>Player</strong> card, an <strong>Eclipse</strong> card and a closed <strong>Door</strong> card and produces an open <strong>Door</strong> card.
@@ -1256,11 +1255,11 @@ const HowToPlay = () => (
       </section>
 
       <section>
-        <h3 id="goThroughStarDoor">goThroughStarDoor</h3>
+        <h3 id="goThroughStarDoor"><a href="#goThroughStarDoor">goThroughStarDoor</a></h3>
         <p><em>The player steps through a star door to reach a new area.</em></p>
         <p>
           Takes a <strong>Player</strong> card, an open <strong>Door</strong> card
-          and <span className={styles.promotes}>promotes</span> to the tier above. Unlocks minting at the next tier and produces a random <A id="card-types">starter card</A>.
+          and <span className={styles.promotes}>promotes</span> to the tier above. Unlocks minting at the next tier and produces a random <a href="#cardTypes">starter card</a>.
         </p>
 
         <div className={styles.recipe}>
@@ -1304,7 +1303,7 @@ const HowToPlay = () => (
       </section>
 
       <section>
-        <h3 id="puzzleMastery1">puzzleMastery1</h3>
+        <h3 id="puzzleMastery1"><a href="#puzzleMastery1">puzzleMastery1</a></h3>
         <p><em>Revisits a puzzle at the end of the game to obtain an elusive star.</em></p>
         <p>
           Takes two <strong>Artwork</strong> cards that have not been signed and produces a <strong>Star</strong> card in a random color.
@@ -1353,7 +1352,7 @@ const HowToPlay = () => (
       </section>
 
       <section>
-        <h3 id="puzzleMastery2">puzzleMastery2</h3>
+        <h3 id="puzzleMastery2"><a href="#puzzleMastery2">puzzleMastery2</a></h3>
         <p><em>Demonstrates mastery over the game by collecting a star in every color.</em></p>
         <p>
           Takes seven <strong>Star</strong> cards (one of each color) and produces an <strong>Artwork</strong> card.
@@ -1361,7 +1360,7 @@ const HowToPlay = () => (
         </p>
         <p>
           If all of the <strong>Star</strong> cards used in the recipe are in <span className={styles.pristine}>pristine</span> condition then you will receive a Limited Edition card, but only if fewer than 100
-          have been claimed for the puzzle on the card. One of these Limited Editions, chosen at random will be the Master Copy of the puzzle. See <A id="optional-endgame">Optional Endgame</A>.
+          have been claimed for the puzzle on the card. One of these Limited Editions, chosen at random will be the Master Copy of the puzzle. See <a href="#optionalEndgame">Optional Endgame</a>.
         </p>
         <p>
           The puzzle that appears on the <strong>Artwork</strong> card will be randomly chosen based on the <strong>Star</strong> cards.
