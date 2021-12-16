@@ -1384,7 +1384,7 @@ const HowToPlay = () => (
         </div>
       </section>
 
-      <section>
+      <section style={{ paddingBottom: "10rem" }}>
         <h3 id="puzzleMastery2"><a href="#puzzleMastery2">puzzleMastery2</a></h3>
         <a className={styles.link_to_top} href="#recipes"><strong>^</strong> top</a>
         <p><em>Demonstrates mastery over the game by collecting a star in every color.</em></p>
@@ -1444,6 +1444,15 @@ const HowToPlay = () => (
         </div>
       </section>
     </div>
+
+    <img src="/images/types/crab_standing.png" className={styles.floor_crab} />
+    <img src="/images/asteroid1.png" className={styles.floor_asteroid} />
+
+    <div className={styles.floor}>
+      <img src="/images/types/idle_left.png" className={styles.player} />
+    </div>
+
+    <span className={styles.made_by_tuzz}>Made by tuzz</span>
   </div>
 );
 

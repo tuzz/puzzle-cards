@@ -274,6 +274,7 @@ fn settings_per_file() -> SettingsPerFile {
         ("../../image_sources/asteroid1.png".to_string(), (150, false, 0)),
         ("../../image_sources/asteroid2.png".to_string(), (147, false, 0)),
         ("../../image_sources/asteroid3.png".to_string(), (148, false, 0)),
+        ("../../image_sources/craters.png".to_string(), (192, false, 80)),
 
         ("../../image_sources/artwork/ancient_door.png".to_string(), (566, true, 0)),
         ("../../image_sources/artwork/anglerfish.png".to_string(), (1212, true, 0)),
