@@ -205,6 +205,11 @@ const HowToPlay = () => (
         fee seeing as the cards have already been paid for. If nothing seems to be
         happening, check you have confirmed all MetaMask popups.
       </p>
+      <p>
+        The puzzle at the top of the card will be randomized each time a recipe
+        is applied, except in the <A id="optional-endgame">Optional Endgame</A> when
+        this can be controlled.
+      </p>
     </section>
 
     <section>
@@ -515,10 +520,6 @@ const HowToPlay = () => (
     <div className={styles.table_edge}></div>
 
     <div className={styles.recipes}>
-      <img src="/images/asteroid1.png" className={styles.asteroid1} />
-      <img src="/images/asteroid2.png" className={styles.asteroid2} />
-      <img src="/images/asteroid3.png" className={styles.asteroid3} />
-
       <h2>Recipes</h2>
 
       <section>
@@ -607,9 +608,13 @@ const HowToPlay = () => (
               edition: "Standard",
           })} />
         </div>
+
+        <img src="/images/asteroid1.png" className={styles.asteroid1} />
       </section>
 
       <section>
+        <img src="/images/asteroid2.png" className={styles.asteroid2} />
+
         <h3 id="lookThroughTelescope">lookThroughTelescope</h3>
         <p><em>Reveals something useful in a faraway place.</em></p>
         <p>
@@ -758,6 +763,8 @@ const HowToPlay = () => (
               edition: "Standard",
           })} />
         </div>
+
+        <img src="/images/types/crab_standing.png" className={styles.spinning_crab} />
       </section>
 
       <section>
@@ -955,6 +962,8 @@ const HowToPlay = () => (
             })} />
           </div>
         </div>
+
+        <img src="/images/asteroid3.png" className={styles.asteroid3} />
       </section>
 
       <section>
@@ -1038,7 +1047,7 @@ const HowToPlay = () => (
               edition: "Standard",
           })} />
           <span className={styles.plus}>+</span>
-          <ZoomableCard title="Map" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+          <ZoomableCard title="Door" subtitle="open" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
               series: "Star Gazing",
               puzzle: "Asteroid Hopping",
               tier: "Mortal",
@@ -1061,6 +1070,311 @@ const HowToPlay = () => (
               variant: "None",
               condition: "Pristine",
               edition: "Standard",
+          })} />
+        </div>
+      </section>
+
+      <section>
+        <h3 id="jumpIntoBeacon">jumpIntoBeacon</h3>
+        <p><em>Jumps into a beacon to re-augment an optical device.</em></p>
+        <p>
+          Takes a <strong>Player</strong> card, a <strong>Beacon</strong> card and an optical device that is either a <strong>Torch</strong> or <strong>Glasses</strong> card.
+          Produces a card of the same (optical) type but with both lens colors set to the <strong>Beacon</strong>'s color.
+        </p>
+
+        <div className={styles.recipe}>
+          <ZoomableCard title="Player" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
+              series: "Star Gazing",
+              puzzle: "Asteroid Hopping",
+              tier: "Mortal",
+              type: "Player",
+              color1: "None",
+              color2: "None",
+              variant: "Idle Front",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Beacon" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+              series: "Star Gazing",
+              puzzle: "Asteroid Hopping",
+              tier: "Mortal",
+              type: "Beacon",
+              color1: "Pink",
+              color2: "None",
+              variant: "None",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.plus}>+</span>
+
+          <div className={styles.disjunction}>
+            <ZoomableCard title="Torch" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
+                series: "Trial of Rebirth",
+                puzzle: "Base Pair",
+                tier: "Mortal",
+                type: "Torch",
+                color1: "Red",
+                color2: "Green",
+                variant: "None",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+            <span className={styles.or}>or</span>
+            <ZoomableCard title="Glasses" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+                series: "Trial of Rebirth",
+                puzzle: "Base Pair",
+                tier: "Mortal",
+                type: "Glasses",
+                color1: "Blue",
+                color2: "Yellow",
+                variant: "None",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+          </div>
+
+          <span className={styles.equals}>=</span>
+          <div className={styles.disjunction}>
+            <ZoomableCard title="Torch" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
+                series: "Trial of Rebirth",
+                puzzle: "Base Pair",
+                tier: "Mortal",
+                type: "Torch",
+                color1: "Pink",
+                color2: "Pink",
+                variant: "None",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+            <span className={styles.or}>or</span>
+            <ZoomableCard title="Glasses" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+                series: "Trial of Rebirth",
+                puzzle: "Base Pair",
+                tier: "Mortal",
+                type: "Glasses",
+                color1: "Pink",
+                color2: "Pink",
+                variant: "None",
+                condition: "Pristine",
+                edition: "Standard",
+            })} />
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h3 id="jumpIntoEclipse">jumpIntoEclipse</h3>
+        <p><em>Jumps into an eclipse to open a star door.</em></p>
+        <p>
+          Takes a <strong>Player</strong> card, an <strong>Eclipse</strong> card and a closed <strong>Door</strong> card and produces an open <strong>Door</strong> card.
+        </p>
+
+        <div className={styles.recipe}>
+          <ZoomableCard title="Player" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
+              series: "Star Gazing",
+              puzzle: "Asteroid Hopping",
+              tier: "Mortal",
+              type: "Player",
+              color1: "None",
+              color2: "None",
+              variant: "Idle Front",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Eclipse" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+              series: "Star Gazing",
+              puzzle: "Asteroid Hopping",
+              tier: "Mortal",
+              type: "Eclipse",
+              color1: "None",
+              color2: "None",
+              variant: "None",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Door" subtitle="closed" className={`${styles.recipe_card} ${styles.second}`} autoPlay={false} card={new PuzzleCard({
+              series: "Star Gazing",
+              puzzle: "Asteroid Hopping",
+              tier: "Mortal",
+              type: "Door",
+              color1: "None",
+              color2: "None",
+              variant: "Closed",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+
+          <span className={styles.equals}>=</span>
+          <ZoomableCard title="Door" subtitle="open" className={`${styles.recipe_card} ${styles.first}`} autoPlay={false} card={new PuzzleCard({
+              series: "Trial of Rebirth",
+              puzzle: "Base Pair",
+              tier: "Mortal",
+              type: "Door",
+              color1: "None",
+              color2: "None",
+              variant: "Open",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+        </div>
+      </section>
+
+      <section>
+        <h3 id="discard2Pickup1">discard2Pickup1</h3>
+        <p><em>Sacrifices two cards to a sun god in exchange for a new one.</em></p>
+        <p>
+          Takes any two cards of the same tier and produces a random starter card, as though it was obtained by minting.
+          This will usually follow the standard <A id="card-types">type probabilities</A> except at Virtual, Godly and Master <A id="card-tiers">tiers</A>.
+        </p>
+        <p>
+          This counts as applying a recipe so cards may <A id="card-conditions">degrade</A>.
+        </p>
+
+        <div className={styles.recipe}>
+          <ZoomableCard title="Any" hideType={true} disabled={true} className={`${styles.recipe_card} ${styles.any_card}`} autoPlay={false} card={new PuzzleCard({
+              series: "Star Gazing",
+              puzzle: "Asteroid Hopping",
+              tier: "Mortal",
+              type: "Hidden",
+              color1: "None",
+              color2: "None",
+              variant: "Idle Front",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Any" hideType={true} disabled={true} className={`${styles.recipe_card} ${styles.any_card}`} autoPlay={false} card={new PuzzleCard({
+              series: "Star Gazing",
+              puzzle: "Asteroid Hopping",
+              tier: "Mortal",
+              type: "Hidden",
+              color1: "None",
+              color2: "None",
+              variant: "Idle Front",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+
+          <span className={styles.equals}>=</span>
+          <ZoomableCard title="Random" hideType={true} disabled={true} className={`${styles.recipe_card} ${styles.starter_card}`} autoPlay={false} card={new PuzzleCard({
+              series: "Trial of Rebirth",
+              puzzle: "Base Pair",
+              tier: "Mortal",
+              type: "Hidden",
+              color1: "None",
+              color2: "None",
+              variant: "None",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+        </div>
+      </section>
+
+      <section>
+        <h3 id="puzzleMastery1">puzzleMastery1</h3>
+        <p><em>Revisits a puzzle at the end of the game to obtain an elusive star.</em></p>
+        <p>
+          Takes two <strong>Artwork</strong> cards that have not been signed and produces a <strong>Star</strong> card of a random color.
+          The same puzzle must appear on both <strong>Artwork</strong> cards and it will carry over to the <strong>Star</strong> card.
+          The artwork can be different.
+        </p>
+
+        <div className={styles.recipe}>
+          <ZoomableCard title="Artwork" subtitle="same puzzle" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+              series: "Pitch Black",
+              puzzle: "Dark Star",
+              tier: "Master",
+              type: "Artwork",
+              color1: "None",
+              color2: "None",
+              variant: "Two Torches",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Artwork" subtitle="same puzzle" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+              series: "Pitch Black",
+              puzzle: "Dark Star",
+              tier: "Master",
+              type: "Artwork",
+              color1: "None",
+              color2: "None",
+              variant: "Overgrown Door",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+
+          <span className={styles.equals}>=</span>
+          <ZoomableCard title="Star" subtitle="random color" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+              series: "Pitch Black",
+              puzzle: "Dark Star",
+              tier: "Master",
+              type: "Star",
+              color1: "Yellow",
+              color2: "None",
+              variant: "None",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+        </div>
+      </section>
+
+      <section>
+        <h3 id="puzzleMastery2">puzzleMastery2</h3>
+        <p><em>Demonstrates mastery over the game by collecting a star of every color.</em></p>
+        <p>
+          Takes seven <strong>Star</strong> cards (one of each color) and produces an <strong>Artwork</strong> card.
+          The artwork will be signed by the game's creator (tuzz) in recognition of your achievement and as a token of appreciation for your support.
+        </p>
+        <p>
+          If all of the <strong>Star</strong> cards used in the recipe are in <span className={styles.pristine}>pristine</span> condition then you will receive a Limited Edition card, but only if fewer than 100
+          have been claimed for the puzzle on the card. One of these Limited Editions, chosen at random will be the Master Copy of the puzzle. See <A id="optional-endgame">Optional Endgame</A>.
+        </p>
+        <p>
+          The puzzle that appears on the <strong>Artwork</strong> card will be randomly chosen based on the <strong>Star</strong> cards.
+          If the same puzzle appears on all <strong>Star</strong> cards, that puzzle is guaranteed to appear on the <strong>Artwork</strong> card.
+          Otherwise, the probability is weighted based on how many of each puzzle are present.
+        </p>
+
+        <div className={styles.recipe}>
+          <ZoomableCard title="Star" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+              series: "Contending Claws",
+              puzzle: "Crab Island",
+              tier: "Master",
+              type: "Star",
+              color1: "Blue",
+              color2: "None",
+              variant: "Two Torches",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+          <span className={styles.plus}>+</span>
+          <ZoomableCard title="Star" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+              series: "Contending Claws",
+              puzzle: "Crab Island",
+              tier: "Master",
+              type: "Star",
+              color1: "Red",
+              color2: "None",
+              variant: "Overgrown Door",
+              condition: "Pristine",
+              edition: "Standard",
+          })} />
+
+          <span className={styles.equals}>=</span>
+          <ZoomableCard title="Artwork" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+              series: "Contending Claws",
+              puzzle: "Crab Island",
+              tier: "Master",
+              type: "Artwork",
+              color1: "None",
+              color2: "None",
+              variant: "Player Sketch",
+              condition: "Pristine",
+              edition: "Limited",
           })} />
         </div>
       </section>

@@ -296,7 +296,8 @@
   width: 100%;
 
   background-color: black;
-  background-image: url(/images/color_particles.jpeg);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+                    url(/images/color_particles.jpeg);
   background-size: 30rem;
   background-position: center;
 
@@ -308,11 +309,12 @@
   }
 
   h3 {
-    color: #97f;
+    color: rgba(230, 225, 80, 0.8);
     font-size: 2rem;
     text-decoration: none;
     text-shadow: 0 0 0.5rem black;
-    margin-top: 6rem;
+    padding-top: 4rem;
+    margin-top: 0;
   }
 
   strong {
@@ -320,42 +322,61 @@
   }
 
   p {
-    text-shadow: 0 0 0.5rem black;
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 0 0 1rem black;
+  }
+
+  section {
+    position: relative;
   }
 }
 
 .asteroid1 {
   position: absolute;
+  bottom: -25rem;
+  width: 10rem;
+  left: calc(50% - 5rem);
   animation-name: asteroid_animation_1;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
   animation-duration: 41s;
   animation-delay: -7s;
-  display: none;
 }
 
 .asteroid2 {
   position: absolute;
+  bottom: -20rem;
+  width: 15rem;
+  left: calc(50% - 7.5rem);
   animation-name: asteroid_animation_2;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
   animation-duration: 63s;
-  animation-delay: -10s;
-  width: 15rem;
-  margin-top: 30rem;
-  display: none;
+  animation-delay: -30s;
+}
+
+.spinning_crab {
+  position: absolute;
+  bottom: -30rem;
+  width: 10rem;
+  left: calc(50% - 5rem);
+  animation-name: spinning_crab_animation;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-duration: 15s;
+  animation-delay: -5s;
 }
 
 .asteroid3 {
   position: absolute;
+  bottom: -35rem;
+  width: 5rem;
+  left: calc(50% - 2.5rem);
   animation-name: asteroid_animation_3;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
   animation-duration: 15s;
   animation-delay: -10s;
-  width: 5rem;
-  margin-top: 50rem;
-  display: none;
 }
 
 .recipe {
@@ -379,16 +400,22 @@
       height: 16.8rem;
     }
 
-    &.starter_card:after {
-      content: "Starter Card";
-      position: absolute;
-      top: 70%;
-      width: 100%;
-      text-align: center;
-      color: rgba(0, 0, 0, 0.8);
-      font-size: 1.3rem;
-      font-family: "Trebuchet MS";
-      font-weight: bold;
+    &.starter_card, &.any_card {
+      &:after {
+        content: "Starter Card";
+        position: absolute;
+        top: 70%;
+        width: 100%;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.8);
+        font-size: 1.3rem;
+        font-family: "Trebuchet MS";
+        font-weight: bold;
+      }
+    }
+
+    &.any_card:after {
+      content: "Any Card";
     }
 
     .subtitle {
@@ -415,7 +442,7 @@
     font-size: 10rem;
     align-self: center;
     color: #97f;
-    text-shadow: 0 0 0.7rem #97f;
+    text-shadow: 0 0 0.5rem #97f;
   }
 
   .plus {
@@ -427,7 +454,7 @@
   }
 }
 
-.promotes {
+.promotes, .pristine {
   color: orange;
 }
 
@@ -502,16 +529,21 @@
 }
 
 @keyframes asteroid_animation_1 {
-  0% { left: -30rem; transform: rotate(1080deg); }
-  100% { left: calc(100% + 30rem); transform: rotate(0deg); }
+  0% { transform: translateX(calc(-70vw - 10rem)) rotate(1080deg); }
+  100% { transform: translateX(calc(70vw + 10rem)) rotate(0deg); }
 }
 
 @keyframes asteroid_animation_2 {
-  0% { right: -30rem; transform: rotate(0deg); }
-  100% { right: calc(100% + 30rem); transform: rotate(1080deg); }
+  0% { transform: translateX(calc(70vw + 15rem)) rotate(0deg); }
+  100% { transform: translateX(calc(-70vw - 15rem)) rotate(1080deg); }
+}
+
+@keyframes spinning_crab_animation {
+  0% { transform: translate(calc(100vw + 10rem), -50rem) rotate(0deg); }
+  100% { transform: translate(calc(-100vw - 10rem), 20rem) rotate(3000deg); }
 }
 
 @keyframes asteroid_animation_3 {
-  0% { left: -30rem; transform: rotate(0deg); }
-  100% { left: calc(100% + 30rem); transform: rotate(3000deg); }
+  0% { transform: translateX(calc(70vw + 15rem)) rotate(0deg); }
+  100% { transform: translateX(calc(-70vw - 15rem)) rotate(3000deg); }
 }
