@@ -571,8 +571,8 @@ const HowToPlay = () => (
         </p>
 
         <div className={`${styles.recipe} ${styles.collapse_below_1270}`}>
-          <div className={styles.disjunction}>
-            <ZoomableCard title="Player" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+          <div className={`${styles.disjunction} ${styles.three_cards} ${styles.player_crab_cloak}`}>
+            <ZoomableCard title="Player" className={`${styles.recipe_card} ${styles.player_card}`} autoPlay={false} card={new PuzzleCard({
                 series: "Star Gazing",
                 puzzle: "Asteroid Hopping",
                 tier: "Mortal",
@@ -807,7 +807,7 @@ const HowToPlay = () => (
           })} />
 
           <span className={styles.equals}>=</span>
-          <div className={styles.disjunction}>
+          <div className={`${styles.disjunction} ${styles.three_cards} ${styles.helix_torch_beacon}`}>
             <ZoomableCard title="Helix" subtitle="33.3%" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
                 series: "Crab’s Day Out",
                 puzzle: "Out to Sea",
@@ -832,7 +832,7 @@ const HowToPlay = () => (
                 edition: "Standard",
             })} />
             <span className={styles.or}>or</span>
-            <ZoomableCard title="Beacon" subtitle="33.3%" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+            <ZoomableCard title="Beacon" subtitle="33.3%" className={`${styles.recipe_card} ${styles.beacon_card}`} autoPlay={false} card={new PuzzleCard({
                 series: "Crab’s Day Out",
                 puzzle: "Out to Sea",
                 tier: "Mortal",
@@ -999,8 +999,8 @@ const HowToPlay = () => (
         </p>
 
         <div className={`${styles.recipe} ${styles.collapse_below_1980}`}>
-          <div className={styles.disjunction}>
-            <ZoomableCard title="Player" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+          <div className={`${styles.disjunction} ${styles.three_cards} ${styles.player_crab_cloak}`}>
+            <ZoomableCard title="Player" className={`${styles.recipe_card} ${styles.player_card}`} autoPlay={false} card={new PuzzleCard({
                 series: "Escape",
                 puzzle: "Locked In",
                 tier: "Mortal",
