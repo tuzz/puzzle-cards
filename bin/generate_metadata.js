@@ -113,7 +113,11 @@ const openSeaTitle = (card) => {
 }
 
 const openSeaDescription = (card) => {
-  let text = "Click above ^ for fullscreen.\n\n";
+  const videoID = youtubeVideoIDs[card.puzzleSlug()];
+  if (!videoID) { throw new Error(`${card.puzzleSlug()} doesn't have a YouTube video ID`); }
+
+  const watchURL = `https://www.youtube.com/watch?v=${videoID}`;
+  let text = `Click above ^ for fullscreen. View this puzzle [on YouTube](${watchURL})\n\n`;
 
   switch (card.edition) {
     case "Standard": text += "This puzzle card can be combined with others as part of an original card game by [Chris Patuzzo](https://twitter.com/chrispatuzzo)."; break;
@@ -196,6 +200,131 @@ const writeContractMetadata = () => {
 
   fs.writeFileSync(filename, JSON.stringify(metadata, null, 2) + "\n");
 };
+
+const youtubeVideoIDs = {
+  "a-leg-up": "DAsDihGY0wY",
+  "above-and-below": "TlvTRhweGbA",
+  "ahoy-me-crab": "FJnZJEWqClY",
+  "all-aboard": "ZqQn8zA77Y8",
+  "along-for-the-ride": "9jRE4VfVezA",
+  "alternating-pillars": "Fb8XexlwoMw",
+  "asteroid-hopping": "gV-ext-swHA",
+  "asymmetry": "idzLsZui95U",
+  "balancing-act-i": "Gbc61qbRNeU",
+  "balancing-act-ii": "TLBLTqottds",
+  "base-pair": "CfOiI-Tv37o",
+  "bask-briefly": "tOolTzaZX2U",
+  "be-patient": "YtOjQZp1xis",
+  "beach-obstacle": "u6mTbjCMLyk",
+  "beach-vandals": "8l0S3vEJaY0",
+  "brief-bridge": "QUDodKHsrsQ",
+  "broken-ladder": "8IiIXGVFAdM",
+  "build-a-bridge": "8g9lOArm19k",
+  "buried-in-the-sand": "-TcLKYqlWyw",
+  "catch-a-star": "wZz8uYFSIm4",
+  "come-back-earlier": "AXEeM496Mag",
+  "crab-construction": "1h_UMJU0INM",
+  "crab-island": "5D3KL0uPMoE",
+  "crab-sticks": "7zkd_jVbirU",
+  "crows-star": "g2XuhAX6Lnc",
+  "cryptic-conversation": "wZJfUEhsW44",
+  "dark-star": "AD2zNogqASU",
+  "death-pit": "u5J6nysWl1o",
+  "decoy-step": "2ux51ffj1qg",
+  "down-down-down": "U_Z1wzUO2x4",
+  "forbidden-door": "QfPuTlNAXnQ",
+  "forbidden-tv": "i7GjzbEiAAc",
+  "friendly-support": "tQfWQis7bZ4",
+  "gerald-ellyfish-i": "F8IoY7vK7uQ",
+  "gerald-ellyfish-ii": "MpOdD-_VGSI",
+  "ghost-raft": "4IsYUIWWZP4",
+  "god-rays": "p5SMyZQSkvM",
+  "green-moon-maze": "uhj5uADq-kA",
+  "guarded-door": "WdI3XmWwJAo",
+  "hands-gruber-i": "M2xUVWn5gtA",
+  "hands-gruber-ii": "w8Aihs1z6pw",
+  "hands-gruber-iii": "-PfCrrfPXig",
+  "hands-gruber-iv": "oT6RenLNV9g",
+  "hidden-blockade": "N53yeHhDdec",
+  "hidden-entrance": "qnsYmZLRud0",
+  "hop-the-barrier": "lXfOTo2v9WM",
+  "hungry-for-crab": "JVwsHfj9Y9c",
+  "in-the-dark": "AiFUxVDjkOQ",
+  "island-hopping": "9doL-fn_I70",
+  "locked-in": "_Tb3QeSljnc",
+  "locked-out": "CQSZFJJMNaQ",
+  "mental-model": "9F6L0eURFSQ",
+  "mesh": "V6oeTiQZit4",
+  "mind-your-head": "PYvT-t-ylKg",
+  "mini-gauntlet": "ZJnv75hbfIg",
+  "misdirection": "Q0htao1CwDI",
+  "missed-the-drop": "kcv1FXobs0g",
+  "missing-moon": "tqSF5okScR8",
+  "moon-stairs": "lRtD92rtb2A",
+  "muscle-memory": "lhsgWy_9Ivc",
+  "my-beautiful-children": "coamPFnGWIE",
+  "my-visiting-children": "QvBLypVrOtI",
+  "mysterious-aura": "6Rrq4r16vPQ",
+  "need-a-lift": "0myEllomiJ4",
+  "not-helpful": "yv0rMu-6jBw",
+  "not-high-enough": "zvLp-AqBEKw",
+  "one-of-each": "37DQcsU11s8",
+  "one-way-up": "iGWglRO2uLE",
+  "opposite-ends": "CFWDTSoUe-w",
+  "oscillator": "JGxRd6iZcBg",
+  "out-of-reach": "faQ82bfcgO4",
+  "out-to-sea": "nO8qFl2hp38",
+  "over-the-wall": "gKxv-HB8ctI",
+  "phase": "MqyR2yOWp7g",
+  "pillar-of-crabs": "5DSudiZcxZY",
+  "pink-gauntlet": "tg5LAQBeS14",
+  "pit-stop": "W6Y5fnc67Sc",
+  "platform-ride": "WbIUyctgImk",
+  "prior-ascent": "XhleVttXGPQ",
+  "prior-descent": "tYQvoDWZYzY",
+  "red-moon-maze": "iIfRc-GeMZc",
+  "red-room": "ig1kFtIsBZk",
+  "remote-control": "t4SwEr-8rQY",
+  "rising-pillars": "fCIRFfG9-7A",
+  "rock-jellyfish": "RvDlP9PQAbY",
+  "rock-moon": "4L9eSRyfDgs",
+  "sand-pit": "pqONuTQcJ5o",
+  "sand-trap": "TUw0fTkoPHk",
+  "self-support": "IRq1RuYv5jk",
+  "side-by-side": "lGp6WTk7K8E",
+  "six-crabs": "DUdy-7_TGUU",
+  "sky-crab": "VjhodyjGZo0",
+  "spawn-points": "YIXZqb8KSzA",
+  "squashed": "zOhBLCvSRtA",
+  "stack-building": "44Sm8QOvZkc",
+  "star-up-high": "vQD3LqgSNco",
+  "state-change": "xAob3_gY-Vw",
+  "stepping-stones": "EwuP3uIO-7E",
+  "stuck-on-the-roof": "ZpBE3IH7jvY",
+  "sunken-ring": "2b1dzC3svRE",
+  "superlumi-nonsense": "vMUsjvijGxQ",
+  "the-way-back": "VwgwwwgWevU",
+  "the-wrong-side": "oY_abQdullk",
+  "they-see-me-rollin": "1CemmcnPVNA",
+  "three-pillars": "A7jCG_jZcFQ",
+  "time-to-stack": "NkwCYQcZuAU",
+  "too-dark-to-see": "7rSO-ZifeuM",
+  "tree-timer": "NDOflSAylEI",
+  "underwater-impasse": "581qyO4UnE4",
+  "unlock-the-door": "kEJUI09Mqo4",
+  "up-we-go": "Ze-8GfWOKQg",
+  "vertical-stack": "sXqg295pPgc",
+  "watch-those-stings": "dNM7AS9rNRY",
+  "waterfall": "6_muZ4Cvzhk",
+  "what-is-this": "HcI6VcILkvE",
+  "yellow-moon-maze": "2ujaE3pwt2o",
+};
+
+const map = {};
+for (let videoID of Object.values(youtubeVideoIDs)) {
+  if (map[videoID]) { throw new Error(`Duplicate video ID: ${videoID}`); }
+  map[videoID] = true;
+}
 
 main().then(() => process.exit(0)).catch(error => {
   console.error(error);
