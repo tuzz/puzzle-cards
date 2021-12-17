@@ -512,6 +512,12 @@ const HowToPlay = () => (
           you may include <a href="https://puzzlecards.github.io/PuzzleCard.js" target="_blank">PuzzleCard.js</a> which
           provides lots of helper methods for working with the project, e.g. methods for fetching a user's deck.
         </p>
+        <p>
+          This same helper is included on the <a href="/card-table" target="_blank">/card-table</a> page. For example, you can open a JavaScript console and mint a card:
+        </p>
+        <p style={{ background: "rgba(0, 0, 0, 0.3)", color: "white", display: "inline-block", padding: "0.3rem 0.5rem", fontFamily: "Courier New, sans-serif" }}>
+          await PuzzleCard.mint(1, "Mortal")
+        </p>
       </Toggle>
     </section>
 

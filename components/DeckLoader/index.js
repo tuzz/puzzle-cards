@@ -17,6 +17,8 @@ const DeckLoader = ({ children }) => {
     PuzzleCard.attach(ethers, provider);
     PuzzleCard.connect(signer);
 
+    window.PuzzleCard = PuzzleCard;
+
     const address = await signer.getAddress().catch(() => {});
     if (address) { ensureDeck(address, network.chainId); } else { pollForConnect(); }
 
