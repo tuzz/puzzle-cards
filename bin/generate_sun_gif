@@ -11,3 +11,7 @@ ffmpeg -y -i image_sources/felt_cloth.jpeg -i image_sources/yellow_sun.png \
 ffmpeg -y -framerate 50 -i .tmp/palette.png -framerate 50 -i image_sources/felt_cloth.jpeg -loop 1 -framerate 50 -i image_sources/yellow_sun.png -ss 0 -t 5 \
   -filter_complex "[1:v]scale=350:350:flags=lanczos[felt];[2:v]scale=300:300:flags=lanczos,rotate=a=-6.2831853072 * t / 5:c=black@0[sun];[felt][sun]overlay=25:25[both];[both][0:v]paletteuse" \
   -framerate 50 -shortest public/images/spinning_sun.gif
+
+# Also generate a composited image for the YouTube channel's icon.
+ffmpeg -y -i image_sources/felt_cloth.jpeg -i image_sources/yellow_sun.png \
+  -filter_complex "[0:v]scale=1750:1750:flags=lanczos[felt];[1:v]scale=1500:1500:flags=lanczos[sun];[felt][sun]overlay=125:125" public/images/youtube_image.png
