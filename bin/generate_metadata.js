@@ -177,23 +177,12 @@ const writeContractMetadata = () => {
   const metadata = {
     name: "Worship the Sun Puzzle Cards",
     description: [
-      `'Worship the Sun' is the name of an upcoming puzzle/platform game by [Chris Patuzzo](https://twitter.com/chrispatuzzo). These Puzzle Cards were created to help fund the video game and to celebrate all of the intricately-designed puzzles and hand-drawn artwork from the game. By playing the card game, you are directly supporting its creator.`,
-      `The [card game](https://puzzlecards.github.io/) is inspired by the video game and incorporates many of its unique mechanics. For example, there are recipes such as 'lookThroughTelescope' and 'shineTorchOnBasePair' that correspond to actions from the game. However, the card game is entirely self-contained and plays separately from the video game.`,
-      `## Minting New Cards`,
-      `I've tried to keep mint prices as low as possible so that lots of people can enjoy the card game and get a glimpse at some of the puzzles. Cards can be minted from just $0.01, rising to $1 at the highest tier. To avoid spoilers, the videos featured on the cards do not show the solutions to puzzles - only a general sense of them.`,
-      `At the $1 tier it is possible to obtain Limited Edition and Master Copy cards. This endgame is completely optional and is for people who want to own a significant piece of the video game itself. These cards are limited in supply (each Master Copy is an NFT) and they represent ownership over portions of the game itself.`,
-      `## Master Copies (NFTs)`,
-      `There will only ever be 100 Limited Edition cards for each puzzle and one of these will be randomly chosen as the Master Copy.`,
-      `Ownership of the Master Copy card represents ownership of the puzzle itself from the video game. Each puzzle is a discrete piece of artwork that is an artifact all of the design, iterative development and testing that goes into making an enjoyable experience.`,
-      `Ownership of a Limited Edition card represents 1% ownership over the intended solution for the puzzle, or - if there are multiple solutions - the space of possible solutions for the puzzle. Limited Editions are complementary to the Master Copy of a puzzle.`,
-      `Although these ^ definitions seem abstract, their intention is to recognise the very real, visceral experience people have playing puzzle games; the joy of finding a solution and the invisible dialogue that happens between game designer and player.`,
-      `## Future Roadmap`,
-      `The roadmap for the project is simple. The highest priority item is to finish building the video game and release it to the public. Brand new puzzles and artwork will be added into the card game as they are developed. I estimate there will be around 300 puzzles.`,
-      `Secondly, additional features will be added to Puzzle Cards, e.g.\n- a 'PuzzléDex' so that owners can exhibit their decks and hunt down cards they are missing\n- a global leaderboard so that owners can compare their decks against others- cards that provide early access to play the video game, playtest it and receive a free copy`,
-      `However, there are no plans to change the rules of the game itself so that you can trust I won't dillute the rarity or value of cards. This is enforced by the contract which only allows a small set of things to change, e.g. to add new puzzles or artwork. You are welcome to verify for this yourself. All of the code is [open on GitHub](https://github.com/tuzz/puzzle-cards/).`,
-      `If you have ideas for the project or would like to share it with others, I'd really appreciate that. You can find me on Twitter [here](https://twitter.com/chrispatuzzo). Thanks.`,
+      `'Worship the Sun' is an upcoming puzzle/platform game by [Chris Patuzzo](https://twitter.com/chrispatuzzo). These Puzzle Cards were created to celebrate all the intricately-designed puzzles and hand-drawn artwork from the game.`,
+      `'Puzzle Cards' is an entirely separate card game that is based on the many unique mechanics from the video game. Cards are combined according to 'recipes'. [Click here](https://puzzlecards.github.io) to play the game.`,
+      `Mint prices are kept low so that lots of people can play the game and glimpse some of the puzzles. Cards can be minted from just $0.01, rising to $1 at the highest tier.`,
+      `At the $1 tier you can obtain Limited Edition and Master Copy cards. This endgame is completely optional and is for people who want to own a significant piece of the video game itself. These cards are limited in supply (each Master Copy is an NFT) and they represent ownership over puzzles within the game. [(more info)](https://puzzlecards.github.io/how-to-play#optionalEndgame)`
     ].join("\n\n"),
-    image: "https://openseacreatures.io/image.png", // TODO
+    image: "https://puzzlecards.github.io/spinning_sun.gif",
     external_link: "https://puzzlecards.github.io",
     seller_fee_basis_points: 500,
     fee_recipient: PuzzleCard.CONTRACT_OWNER,
