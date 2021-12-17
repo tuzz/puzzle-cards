@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# 1) Generate a 256-color palette from the yellow sun overlaid on the green felt
+# 2) Resize the felt background to 350x350 using Lanczos filtering
+# 3) Rotate the sun and resize it to 300x300 each frame
+# 4) Composite the sun on top of the felt background (25px indented)
+# 5) Apply the palette and output a gif at 50 frames per second
+
+ffmpeg -y -i image_sources/felt_cloth.jpeg -i image_sources/yellow_sun.png \
+  -filter_complex "[0:v]scale=350:350:flags=lanczos[felt];[1:v]scale=300:300:flags=lanczos[sun];[felt][sun]overlay=5:5,palettegen" .tmp/palette.png && \
+ffmpeg -y -framerate 50 -i .tmp/palette.png -framerate 50 -i image_sources/felt_cloth.jpeg -loop 1 -framerate 50 -i image_sources/yellow_sun.png -ss 0 -t 5 \
+  -filter_complex "[1:v]scale=350:350:flags=lanczos[felt];[2:v]scale=300:300:flags=lanczos,rotate=a=-6.2831853072 * t / 5:c=black@0[sun];[felt][sun]overlay=25:25[both];[both][0:v]paletteuse" \
+  -framerate 50 -shortest public/images/spinning_sun.gif
