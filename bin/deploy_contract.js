@@ -4,27 +4,17 @@ const network = hardhatArguments.network;
 const metadata = config.networks[network];
 
 const main = async () => {
-  let blockNumber = (await ethers.provider.getBlock("latest")).number;
-
   const [owner] = await ethers.getSigners();
   const factory = await ethers.getContractFactory("PuzzleCard");
 
   const proxyAddress = metadata.openseaProxyAddress || owner.address;
-  const contract = await factory.deploy(proxyAddress);
-  console.log(`Contract address: ${contract.address}`);
+  const receipt = await factory.deploy(proxyAddress);
+  const transaction = await receipt.deployTransaction.wait();
 
-  while (true) {
-    const block = await ethers.provider.getBlock(blockNumber);
+  console.log(`Contract address: ${transaction.contractAddress}`);
+  console.log(`Block number: ${transaction.blockNumber}`);
 
-    if (block && block.transactions.indexOf(contract.deployTransaction.hash) !== -1) {
-      console.log(`Contract block number: ${blockNumber}`);
-      break;
-    } else if (block) {
-      blockNumber += 1;
-    }
-  }
-
-  updateConstants("public/PuzzleCard.js", contract.address, owner.address, blockNumber, proxyAddress);
+  updateConstants("public/PuzzleCard.js", transaction.contractAddress, owner.address, transaction.blockNumber, proxyAddress);
 };
 
 const updateConstants = (filename, contractAddress, ownerAddress, blockNumber, proxyAddress) => {
