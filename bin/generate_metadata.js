@@ -131,13 +131,14 @@ const openSeaDescription = (card) => {
   }
 
   if (card.edition === "Limited") {
-    text += "\n\nOwnership of this card represents 1% ownership over the intended solution for the puzzle, or - if there are multiple solutions - the space of possible solutions for the puzzle.";
+    text += "\n\nEach card features a puzzle at the top of it.";
+    text += "\n\nOwnership of this card represents 1% ownership over the intended solution for that puzzle, or - if there are multiple solutions - the space of possible solutions for the puzzle.";
   } else if (card.edition === "Master Copy") {
-    text += "\n\nOwnership of this card represents ownership of the puzzle itself from the video game.";
-    text += " Each puzzle is a discrete piece of artwork that includes all the design, iterative development and testing that goes into making an enjoyable experience.";
+    text += "\n\nEach card features a puzzle at the top of it.";
+    text += "\n\nOwnership of this card represents ownership of that puzzle from the video game which is an artefact of all the design, iterative development, playtesting and tuning that goes into the making of an enjoyable, memorable experience.";
   }
 
-  text += "\n\nAll artwork is hand drawn and is from the upcoming video game 'Worship the Sun' releasing in 2022.";
+  text += "\n\nArtwork is hand drawn and is from the upcoming video game 'Worship the Sun' releasing in 2022.";
   text += "\n\nYou can play the card game for yourself and mint cards (from just $0.01) by visiting [this website](https://puzzlecards.github.io).";
 
   text += "\n\nSee 'About Worship the Sun Puzzle Cards' for more details.";
