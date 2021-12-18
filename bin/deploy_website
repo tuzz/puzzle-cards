@@ -1,3 +1,8 @@
 #!/bin/bash
 
-./bin/build_website && yarn run gh-pages --dist .gh-pages --dotfiles
+./bin/build_website && yarn run gh-pages \
+  --dist .gh-pages \
+  --dotfiles \
+  --message "Deploy the website to puzzlecards.github.io" \
+  --repo git@github.com:puzzlecards/puzzlecards.github.io.git \
+  --no-history
