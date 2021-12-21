@@ -1039,7 +1039,7 @@ const HowToPlay = () => (
           Produces a card of the same (optical) type but with different lens colors.
         </p>
         <p>
-          The lens colors will be swapped in one of them matches the <strong>Inactive</strong> card. Otherwise, a random lens will be changed to the <strong>Inactive</strong> card's color.
+          Swaps the left and right lens colors. Then, if neither lens matches the color of the <strong>Inactive</strong> card, a random lens will be changed to that color.
         </p>
         <p>
           If a <strong>Cloak</strong> card is used, its color must match the <strong>Inactive</strong> card. Only a <strong>Cloak</strong> card will work at Ethereal and Godly <a href="#cardTiers">tiers</a>.
@@ -1116,8 +1116,8 @@ const HowToPlay = () => (
                 puzzle: "Locked In",
                 tier: "Mortal",
                 type: "Glasses",
-                color1: "Green",
-                color2: "Black",
+                color1: "Black",
+                color2: "Green",
                 variant: "None",
                 condition: "Pristine",
                 edition: "Standard",
@@ -1126,7 +1126,7 @@ const HowToPlay = () => (
 
           <span className={styles.equals}>=</span>
           <div className={styles.disjunction}>
-            <ZoomableCard title="Torch" subtitle="(e.g. swapped)" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+            <ZoomableCard title="Torch" subtitle="(only swapped)" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
                 series: "Escape",
                 puzzle: "Locked In",
                 tier: "Mortal",
@@ -1138,13 +1138,13 @@ const HowToPlay = () => (
                 edition: "Standard",
             })} />
             <span className={styles.or}>or</span>
-            <ZoomableCard title="Glasses" subtitle="(e.g. changed)" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
+            <ZoomableCard title="Glasses" subtitle="(swapped + changed)" className={styles.recipe_card} autoPlay={false} card={new PuzzleCard({
                 series: "Escape",
                 puzzle: "Locked In",
                 tier: "Mortal",
                 type: "Glasses",
-                color1: "Red",
-                color2: "Black",
+                color1: "Green",
+                color2: "Red",
                 variant: "None",
                 condition: "Pristine",
                 edition: "Standard",
