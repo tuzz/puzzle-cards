@@ -82,11 +82,11 @@ const HowToPlay = () => (
       <ol>
         <li>Open Chrome, Firefox or Edge</li>
         <li>Install the <a href="https://metamask.io/" target="_blank">MetaMask</a> browser extension and create a wallet</li>
-        <li>Visit the <a href="/card-table" target="_blank">Card Table</a> and click on the MetaMask button</li>
-        <li>Click 'Confirm' on the MetaMask popup to switch networks</li>
         <li>Visit <a href="https://quickswap.exchange/" target="_blank">quickswap.exchange</a> and click 'Buy' at the top</li>
         <li>Select 'Transak' if you are in Europe or 'MoonPay' in the US</li>
         <li>Convert from your currency to MATIC (Polygon) via bank transfer</li>
+        <li>Visit the <a href="/card-table" target="_blank">Card Table</a> and click on the MetaMask button</li>
+        <li>Click 'Confirm' on the MetaMask popup to switch networks</li>
       </ol>
       <p>
         I'd recommend exchanging just a few dollars, euros or pounds to get
