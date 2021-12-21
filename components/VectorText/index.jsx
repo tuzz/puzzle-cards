@@ -20,7 +20,7 @@ const VectorText = ({ text, className, referenceText, padSide = "right", scale =
     padding = uptoNum.map(() => padChar).join("");
   }
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (textSize !== 1) { return; }
 
     const svg = svgRef.current;
@@ -37,7 +37,14 @@ const VectorText = ({ text, className, referenceText, padSide = "right", scale =
     const listener = () => setTextSize(1);
 
     addEventListener("resize", listener);
-    return () => removeEventListener("resize", listener);
+    const timeout1 = setTimeout(listener, 1000);
+    const timeout5 = setTimeout(listener, 5000);
+
+    return () => {
+      removeEventListener("resize", listener);
+      clearTimeout(timeout1);
+      clearTimeout(timeout5);
+    };
   }, []);
 
   const xmlns = "http://www.w3.org/2000/svg";
