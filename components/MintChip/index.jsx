@@ -151,7 +151,6 @@ const MintChip = ({ filters, onMoved = () => {}, onChange = () => {}, channel })
                   { label: "50 cards", value: 50 },
                   { label: "100 cards", value: 100 },
                   { label: "200 cards", value: 200 },
-                  { label: "500 cards", value: 500 },
                 ]} />
 
                 <Dropdown object={dropdowns[1]} className={tierClasses} value={tierName} onChange={handleTierChange} options={[

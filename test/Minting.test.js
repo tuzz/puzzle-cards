@@ -147,7 +147,7 @@ describe("Minting", () => {
     expect(balance).to.equal(1);
   });
 
-  it("estimates the gas limit reasonably well for different numbers of cards minted", async () => {
+  it.only("estimates the gas limit reasonably well for different numbers of cards minted", async () => {
     for (let numberToMint = 1; numberToMint <= PuzzleCard.MAX_BATCH_SIZE; numberToMint += 1) {
       const gasLimit = PuzzleCard.gasLimitToMint(numberToMint);
       let maxGas = -Infinity;
@@ -163,7 +163,7 @@ describe("Minting", () => {
         maxGas = Math.max(maxGas, gasUsed);
       }
 
-      //console.log(numberToMint, maxGas, gasLimit, maxGas / gasLimit);
+      console.log(numberToMint, maxGas, gasLimit, maxGas / gasLimit);
       expect(maxGas / gasLimit).to.be.within(0.3, 0.85, `The gas limit prediction was poor for ${numberToMint} cards.`);
 
       // Don't check every numberToMint as the number increases.
@@ -172,6 +172,12 @@ describe("Minting", () => {
       if (numberToMint >= 20) { numberToMint += 3; }
       if (numberToMint >= 70) { numberToMint += 10; }
       if (numberToMint >= 120) { numberToMint += 20; }
+
+      // Redeploy the contract when the number of cards changes. The gas usage
+      // seems to reduce the more the contract is used. See this spreadsheet:
+      // https://docs.google.com/spreadsheets/d/1j9_so0aOQGC67h7meyfrKewDpC-4mR3AbErdCnsI0Po
+      contract = await factory.deploy(constants.ZERO_ADDRESS);
+      PuzzleCard.setContract(contract);
     }
   });
 });

@@ -286,15 +286,12 @@ class PuzzleCard {
   }
 
   static gasLimitToMint(numberToMint) {
-    const [taperFrom, taperTo, overNumber] = PuzzleCard.GAS_LIMIT_PER_CARD_TAPER;
+    const [a, c] = PuzzleCard.GAS_LIMIT_EQUATION;
 
-    const taperRatio = (numberToMint - 1) / (overNumber - 1); // Inverse lerp.
-    const clampedRatio = Math.min(taperRatio, 1);
+    const upperBound = a * numberToMint + c;
+    const gasLimit = upperBound * PuzzleCard.GAS_LIMIT_SAFETY;
 
-    const gasPerCard = taperFrom * (1 - clampedRatio) + taperTo * clampedRatio;
-    const totalGas = Math.ceil(gasPerCard * (numberToMint - 1)) + PuzzleCard.GAS_LIMIT_MINIMUM;
-
-    return Math.min(totalGas, PuzzleCard.GAS_LIMIT_MAXIMUM);
+    return Math.min(Math.max(gasLimit, PuzzleCard.GAS_LIMIT_MINIMUM), PuzzleCard.GAS_LIMIT_MAXIMUM);
   }
 
   static basePriceInWei() {
@@ -761,15 +758,21 @@ PuzzleCard.OPEN_SEA_URI = "https://testnets.opensea.io/assets/mumbai/{contract}/
 PuzzleCard.GAS_LIMIT_MINIMUM = 350000;
 PuzzleCard.GAS_LIMIT_MAXIMUM = 20000000;
 
-// Taper the gas limit per card from the {first number} down to the {second number}
-// over the first {third number} cards. Gas usage becomes more predictable for more cards.
-PuzzleCard.GAS_LIMIT_PER_CARD_TAPER = [80000, 40000, 100];
+// Determines the gas limit for minting x cards: (ax + c) * safety
+PuzzleCard.GAS_LIMIT_EQUATION = [57314, 50914];
+PuzzleCard.GAS_LIMIT_SAFETY = 1.5;
+
+// TODO: reduce the coefficients of the equation after the contract has been deployed
+// for a while since the gas usage seems to decrease over time. This will cause lower
+// gas prices to be quoted in MetaMask. Consider reintroducing the 500 mint option.
+//
+// https://docs.google.com/spreadsheets/d/1j9_so0aOQGC67h7meyfrKewDpC-4mR3AbErdCnsI0Po
 
 // Can be set to a higher/lower value to make all actions use a different gas price.
 PuzzleCard.GAS_PRICE_MULTIPLIER = 1;
 
 // The maximum number of cards that could be minted without exceeding the gas limit.
-PuzzleCard.MAX_BATCH_SIZE = Math.floor(PuzzleCard.GAS_LIMIT_MAXIMUM / PuzzleCard.GAS_LIMIT_PER_CARD_TAPER[1]);
+PuzzleCard.MAX_BATCH_SIZE = 230;
 
 PuzzleCard.ERROR_STRINGS = [
   "[a player card is required]",
@@ -813,8 +816,8 @@ PuzzleCard.ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 PuzzleCard.CONTRACT_ADDRESS = "0xf726e3e55363de906da1a79c1df365e27c03f27b";
 PuzzleCard.CONTRACT_OWNER = "0xbc50c6815ff8c11fb35ea70d9f79f90d5744182a";
-PuzzleCard.CONTRACT_BLOCK = 22783305;
 PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://matic-mumbai.chainstacklabs.com","url2":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
+PuzzleCard.CONTRACT_BLOCK = 22783305;
 
 PuzzleCard.CONTRACT_ABI = [
   "event ApprovalForAll(address indexed account, address indexed operator, bool approved)",
