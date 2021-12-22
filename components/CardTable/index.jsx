@@ -95,6 +95,11 @@ const CardTable = () => {
   useEffect(() => setButtonActionBasedOnPositions(true), [chainId]);
 
   const performAction = async () => {
+    if (!PuzzleCard.MINTING_CARDS_ENABLED) {
+      alert(`Puzzle Cards is launching on ${PuzzleCard.LAUNCH_DATE_AND_TIME}.`);
+      return;
+    }
+
     const [cards, maxQuantity] = chosenCardsWithMaxQuantity();
 
     const requests = await Metamask.performAction(PuzzleCard, buttonAction, cards, maxQuantity, channel.mintArgs());
@@ -169,7 +174,7 @@ const CardTable = () => {
         <FilterRows filters={filters} setFilters={setFilters} showingFilters={showingFilters} setShowingFilters={setShowingFilters} />
 
         <DragRegion>
-          <CardsInPlay onStackMoved={handleStackMoved} transactState={transactState} chosenStacks={chosenStacks} filters={filters} setFilters={setFilters} channel={channel} />
+          {PuzzleCard.MINTING_CARDS_ENABLED && <CardsInPlay onStackMoved={handleStackMoved} transactState={transactState} chosenStacks={chosenStacks} filters={filters} setFilters={setFilters} channel={channel} />}
           <MintChip onMoved={handleChipMoved} onChange={() => setNameGeneration(g => g + 1)} filters={filters} channel={channel} />
         </DragRegion>
 
@@ -178,6 +183,7 @@ const CardTable = () => {
           <CardOutline channel={channel} />
           <WoodSliders transactState={transactState} onButtonClick={alignCardsWithSliders} onSlidersClosed={clearHourglassStacks} />
           <Pagination filters={filters} setFilters={setFilters} />
+          {!PuzzleCard.MINTING_CARDS_ENABLED && <p className={styles.launch_date}>Launching on {PuzzleCard.LAUNCH_DATE_AND_TIME}</p>}
         </div>
       </div>
     </div>

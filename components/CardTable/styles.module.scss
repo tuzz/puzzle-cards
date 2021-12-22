@@ -104,3 +104,17 @@
     transform: skew(var(--a)) translateY(var(--h));
   }
 }
+
+.launch_date {
+  color: rgba(255, 255, 255, 0.8);
+  font-family: "Trebuchet MS";
+  font-size: 2rem;
+  text-align: center;
+  margin-top: 30rem;
+}
+
+@media only screen and (max-width: 675px) {
+  .launch_date {
+    font-size: 1.5rem;
+  }
+}
