@@ -33,6 +33,27 @@ describe("Constants", () => {
     await expectRevert.unspecified(contractAsUser1.mint(1, 0, user1.address, { value: price - BigInt(1) }));
   });
 
+  it("allows the contract owner to enable/disable minting for users", async () => {
+    PuzzleCard.MINTING_CARDS_ENABLED = false;
+    await PuzzleCard.updateConstants();
+
+    // The contract owner can still mint cards.
+    await PuzzleCard.mint(1, "Mortal", user1.address);
+
+    // But users cannot.
+    PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
+    await expectRevert.unspecified(PuzzleCard.mint(1, "Mortal", user1.address));
+
+    // Re-enable minting.
+    PuzzleCard.setContract(contract);
+    PuzzleCard.MINTING_CARDS_ENABLED = true;
+    await PuzzleCard.updateConstants();
+
+    // Check that user1 can now mint cards.
+    PuzzleCard.setContract(PuzzleCard.CONTRACT.connect(user1));
+    await PuzzleCard.mint(1, "Mortal", user1.address);
+  });
+
   it("can get the price per card at a given tier", async () => {
     const priceBefore = await PuzzleCard.priceToMint("Godly");
     expect(priceBefore).to.equal(263157894736842150n);

@@ -147,7 +147,7 @@ describe("Minting", () => {
     expect(balance).to.equal(1);
   });
 
-  it.only("estimates the gas limit reasonably well for different numbers of cards minted", async () => {
+  it("estimates the gas limit reasonably well for different numbers of cards minted", async () => {
     for (let numberToMint = 1; numberToMint <= PuzzleCard.MAX_BATCH_SIZE; numberToMint += 1) {
       const gasLimit = PuzzleCard.gasLimitToMint(numberToMint);
       let maxGas = -Infinity;
@@ -163,7 +163,7 @@ describe("Minting", () => {
         maxGas = Math.max(maxGas, gasUsed);
       }
 
-      console.log(numberToMint, maxGas, gasLimit, maxGas / gasLimit);
+      //console.log(numberToMint, maxGas, gasLimit, maxGas / gasLimit);
       expect(maxGas / gasLimit).to.be.within(0.3, 0.85, `The gas limit prediction was poor for ${numberToMint} cards.`);
 
       // Don't check every numberToMint as the number increases.

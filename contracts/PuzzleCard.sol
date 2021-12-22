@@ -84,6 +84,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
 
     function mint(uint256 numberToMint, uint8 tier, address to) external payable {
         if (msg.sender != owner()) {
+          require(MINTING_CARDS_ENABLED);
           require(tier <= maxTierUnlocked[msg.sender]);
           payable(owner()).transfer(basePriceInWei * numberToMint * MINT_PRICE_MULTIPLERS[tier]);
         }
@@ -729,6 +730,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     uint256[] private POST_VIRTUAL_TYPE_PROBABILITIES_CUMULATIVE = [0, 1, 101, 301, 401, 501, 521, 541, 561, 571, 581, 581, 585, 591];
     uint256[] private MASTER_TYPE_PROBABILITIES_CUMULATIVE = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1];
 
+    bool internal MINTING_CARDS_ENABLED;
     address private PROXY_REGISTRY_ADDRESS;
     string private CONTRACT_METADATA_URI;
     uint256 private NUM_RANDOM_CALLS = 0;
@@ -736,6 +738,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     // Be very careful not to invalidate existing cards when calling this method.
     // The arrays must be append only and not reorder or remove puzzles/variants.
     function updateConstants(
+        bool mintingCardsEnabled,
         uint8[] memory numPuzzlesPerSeries,
         uint8[] memory seriesForEachPuzzle,
         uint8[] memory numVariantsPerType,
@@ -745,6 +748,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
         string memory contractMetadataURI,
         string memory tokenMetadataURI
     ) external onlyOwner {
+        MINTING_CARDS_ENABLED = mintingCardsEnabled;
         NUM_PUZZLES_PER_SERIES = numPuzzlesPerSeries;
         SERIES_FOR_EACH_PUZZLE = seriesForEachPuzzle;
         NUM_VARIANTS_PER_TYPE = numVariantsPerType;

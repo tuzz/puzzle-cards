@@ -437,6 +437,7 @@ class PuzzleCard {
 
   static updateConstants() {
     return PuzzleCard.CONTRACT.updateConstants(
+      PuzzleCard.MINTING_CARDS_ENABLED,
       PuzzleCard.NUM_PUZZLES_PER_SERIES,
       PuzzleCard.SERIES_FOR_EACH_PUZZLE,
       PuzzleCard.NUM_VARIANTS_PER_TYPE,
@@ -723,6 +724,7 @@ PuzzleCard.VARIANT_OFFSET_PER_TYPE = [5, 61, 0, 1, 1, 1, 0, 0, 0, 67, 0, 0, 0, 3
 
 // The intention is that these prices remain fixed but the base price in Wei is
 // updated as the dollar/matic exchange rate changes over time.
+PuzzleCard.MINTING_CARDS_ENABLED = false;
 PuzzleCard.MINT_PRICE_MULTIPLERS = [1, 2, 5, 10, 20, 50, 100];
 PuzzleCard.UNLOCK_PRICE_MULTIPLIER = 10000;
 PuzzleCard.BASE_PRICE_IN_DOLLARS = 0.01;
@@ -877,7 +879,7 @@ PuzzleCard.CONTRACT_ABI = [
   "function totalSupply(uint256) view returns (uint256)",
   "function transferOwnership(address newOwner)",
   "function unlockMintingAtAllTiers(address address_) payable",
-  "function updateConstants(uint8[] numPuzzlesPerSeries, uint8[] seriesForEachPuzzle, uint8[] numVariantsPerType, uint256[7] mintPriceMultipliers, uint256 unlockPriceMultiplier, address proxyRegistryAddress, string contractMetadataURI, string tokenMetadataURI)",
+  "function updateConstants(bool mintingCardsEnabled, uint8[] numPuzzlesPerSeries, uint8[] seriesForEachPuzzle, uint8[] numVariantsPerType, uint256[7] mintPriceMultipliers, uint256 unlockPriceMultiplier, address proxyRegistryAddress, string contractMetadataURI, string tokenMetadataURI)",
   "function uri(uint256) view returns (string)"
 ];
 
