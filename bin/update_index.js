@@ -1,6 +1,13 @@
 const fs = require("fs")
-const PuzzleCard = require("../public/PuzzleCard.js");
 const batchSize = 1000;
+
+let PuzzleCard;
+try {
+  PuzzleCard = require("../public/PuzzleCard.js");
+} catch (e) {
+  // The require path is different from the GitHub action.
+  PuzzleCard = require("../../../../PuzzleCard.js");
+}
 
 const main = async () => {
   fs.mkdirSync("public/decks", { recursive: true });

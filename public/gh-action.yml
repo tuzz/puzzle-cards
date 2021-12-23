@@ -1,0 +1,29 @@
+name: update-index
+on:
+  schedule:
+  - cron: '17 2/3 * * *'
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 16.x
+
+    - name: Update index
+      working-directory: .github/workflows/update-index
+      run: |
+        yarn install && \
+        chmod a+x ./bin/update_index && \
+        ./bin/update_index live && \
+        rm -rf ../../../decks && \
+        mv public/decks ../../../decks
+
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Update the public/decks index
+        file_pattern: decks

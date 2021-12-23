@@ -1,5 +1,6 @@
 #!/bin/bash
 
+./bin/update_index live && \
 ./bin/build_website && yarn run gh-pages \
   --dist .gh-pages \
   --dotfiles \

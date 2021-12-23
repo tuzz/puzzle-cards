@@ -3,13 +3,23 @@ require("@nomiclabs/hardhat-etherscan");
 require("hardhat-contract-sizer");
 require("hardhat-abi-exporter");
 
-const PuzzleCard = require("./public/PuzzleCard");
+let PuzzleCard;
+try {
+  PuzzleCard = require("./public/PuzzleCard.js");
+} catch (e) {
+  // The require path is different from the GitHub action.
+  PuzzleCard = require("../../../PuzzleCard.js");
+}
+
 const liveProxyAddress = PuzzleCard.PROXY_REGISTRY_ADDRESS;
 
 const system = (command) => require("child_process").execSync(command).toString().trim();
+let privateKey, apiKey;
 
-const privateKey = system("gpg --decrypt ~/Dropbox/Secrets/metamask/private-key.gpg 2>/dev/null");
-const apiKey = system("gpg --decrypt ~/Dropbox/Secrets/polygonscan/api-key.gpg 2>/dev/null");
+if (process.env.USER === "tuzz") {
+  privateKey = system("gpg --decrypt ~/Dropbox/Secrets/metamask/private-key.gpg 2>/dev/null");
+  apiKey = system("gpg --decrypt ~/Dropbox/Secrets/polygonscan/api-key.gpg 2>/dev/null");
+}
 
 module.exports = {
   solidity: {
@@ -47,7 +57,7 @@ module.exports = {
       symbol: "MATIC",
       explorer: "https://mumbai.polygonscan.com",
       openseaProxyAddress: "0xff7ca10af37178bdd056628ef42fd7f799fac77c",
-      accounts: [`0x${privateKey}`],
+      accounts: privateKey ? [`0x${privateKey}`] : [],
     },
     live: {
       name: "Polygon Mainnet",
@@ -57,7 +67,7 @@ module.exports = {
       symbol: "MATIC",
       explorer: "https://polygonscan.com",
       openseaProxyAddress: "0x58807bad0b376efc12f5ad86aac70e78ed67deae",
-      accounts: [`0x${privateKey}`],
+      accounts: privateKey ? [`0x${privateKey}`] : [],
       polygonscanApiKey: apiKey,
     },
   },
@@ -78,7 +88,9 @@ const fs = require('fs')
 config.task(names.TASK_COMPILE, async (_taskArguments, _hre, runSuper) => {
   await runSuper();
 
-  const json = fs.readFileSync(".abi/PuzzleCard.json", "utf8").trim();
+  let json;
+
+  try { json = fs.readFileSync(".abi/PuzzleCard.json", "utf8").trim(); } catch (e) { return; }
   const js = fs.readFileSync("public/PuzzleCard.js", "utf8");
 
   const replaced = js.replaceAll(/CONTRACT_ABI = \[[\s\S]*\]/g, `CONTRACT_ABI = ${json}`);

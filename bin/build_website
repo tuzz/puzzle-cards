@@ -1,6 +1,17 @@
 #!/bin/bash
 
-yarn run next build && \
-yarn run next export -o .gh-pages && \
-touch .gh-pages/.nojekyll && \
-mv .gh-pages/gh-pages.md .gh-pages/README.md
+yarn run next build                                                         && \
+yarn run next export -o .gh-pages                                           && \
+                                                                               \
+touch .gh-pages/.nojekyll                                                   && \
+mv .gh-pages/gh-pages.md .gh-pages/README.md                                && \
+                                                                               \
+echo "Setting up the ./bin/update_index github action"                      && \
+mkdir -p .gh-pages/.github/workflows/update-index/bin                       && \
+mv .gh-pages/gh-action.yml .gh-pages/.github/workflows/update-index.yml     && \
+                                                                               \
+cp package.json .gh-pages/.github/workflows/update-index/                   && \
+cp yarn.lock .gh-pages/.github/workflows/update-index/                      && \
+cp hardhat.config.js .gh-pages/.github/workflows/update-index/              && \
+cp bin/update_index .gh-pages/.github/workflows/update-index/bin/           && \
+cp bin/update_index.js .gh-pages/.github/workflows/update-index/bin/
