@@ -80,6 +80,9 @@
 
 .table_edge {
   height: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   background-color: #4e3a28;
   background-image: url("/images/dirt.jpeg");
@@ -88,6 +91,14 @@
 
   border-top: 0.7rem solid #38261b;
   box-sizing: border-box;
+
+  a {
+    margin: 0 3rem;
+
+    img {
+      width: 2.8rem;
+    }
+  }
 }
 
 @media only screen and (max-width: 620px) {

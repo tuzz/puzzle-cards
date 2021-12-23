@@ -20,7 +20,19 @@ const Introduction = () => (
       </div>
     </div>
 
-    <div className={styles.table_edge}></div>
+    <div className={styles.table_edge}>
+      <a href="https://twitter.com/puzzle_cards" target="_blank">
+        <img className={styles.twitter_icon} src="/images/twitter_icon.png" />
+      </a>
+
+      <a href="https://opensea.io/collection/worship-the-sun-puzzle-cards" target="_blank">
+        <img className={styles.opensea_icon} src="/images/opensea_icon.png" />
+      </a>
+
+      <a href="https://github.com/tuzz/puzzle-cards" target="_blank">
+        <img className={styles.github_icon} src="/images/github_icon.png" />
+      </a>
+    </div>
   </div>
 );
 
