@@ -751,12 +751,6 @@ PuzzleCard.OPEN_SEA_URI = "https://opensea.io/assets/mumbai/{contract}/{id}";
 PuzzleCard.DECK_INDEXES_URI = "https://puzzlecards.github.io/decks/{address}.json";
 PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
 
-// TMP
-PuzzleCard.DECK_INDEXES_URI = "http://localhost:3000/decks/{address}.json";
-PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
-PuzzleCard.CARD_VIEWS_URI = "https://daff-2a02-6b6c-a0-0-20f9-d21-5e6a-f18.ngrok.io/card?tokenID={id}&referrer={referrer}";
-PuzzleCard.OPEN_SEA_URI = "https://testnets.opensea.io/assets/mumbai/{contract}/{id}";
-
 // Set a minimum gas limit that provides enough headroom for all actions.
 // Set a maximum gas limit that matches the limit for the polygon network.
 PuzzleCard.GAS_LIMIT_MINIMUM = 350000;
@@ -815,13 +809,13 @@ PuzzleCard.ERROR_STRINGS = [
   "[a color was repeated]",
 ];
 
-PuzzleCard.PROXY_REGISTRY_ADDRESS = "0xff7ca10af37178bdd056628ef42fd7f799fac77c";
+PuzzleCard.PROXY_REGISTRY_ADDRESS = "0x58807bad0b376efc12f5ad86aac70e78ed67deae";
 PuzzleCard.ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-PuzzleCard.CONTRACT_ADDRESS = "0xf726e3e55363de906da1a79c1df365e27c03f27b";
+PuzzleCard.CONTRACT_ADDRESS = "0x8c2c67073658503d8623e22297a9bbc524a5d944";
 PuzzleCard.CONTRACT_OWNER = "0xbc50c6815ff8c11fb35ea70d9f79f90d5744182a";
-PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Test Network","url":"https://matic-mumbai.chainstacklabs.com","url2":"https://rpc-mumbai.maticvigil.com","chainId":80001,"symbol":"MATIC","explorer":"https://mumbai.polygonscan.com"};
-PuzzleCard.CONTRACT_BLOCK = 22783305;
+PuzzleCard.CONTRACT_NETWORK = {"name":"Polygon Mainnet","url":"https://matic-mainnet.chainstacklabs.com","url2":"https://rpc-mainnet.maticvigil.com","chainId":137,"symbol":"MATIC","explorer":"https://polygonscan.com"};
+PuzzleCard.CONTRACT_BLOCK = 22869109;
 
 PuzzleCard.CONTRACT_ABI = [
   "event ApprovalForAll(address indexed account, address indexed operator, bool approved)",
