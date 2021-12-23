@@ -91,6 +91,41 @@
   }
 }
 
+.video {
+  width: 100%;
+  height: 0;
+  padding-top: 56.25%;
+  position: relative;
+  border-top: 15px solid black;
+  border-bottom: 15px solid black;
+  background: black;
+
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  &:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: url(/images/youtube_thumbnail_embedded.png);
+    background-size: 100%;
+    opacity: 0;
+  }
+
+  &.thumbnail:after {
+    opacity: 1;
+  }
+}
+
 .spacer {
   display: flex;
   justify-content: space-around;
@@ -664,6 +699,11 @@
 }
 
 @media only screen and (max-width: 700px) {
+  .video {
+    border-top: 0.7rem solid black;
+    border-bottom: 0.7rem solid black;
+  }
+
   .card_outline_example {
     .arrow1, .arrow2 {
       span {
@@ -700,6 +740,13 @@
         top: -0.1rem;
       }
     }
+  }
+}
+
+@media only screen and (max-width: 500px) {
+  .video {
+    border-top: 0.5rem solid black;
+    border-bottom: 0.5rem solid black;
   }
 }
 
