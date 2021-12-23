@@ -746,7 +746,7 @@ PuzzleCard.CARD_IMAGES_URI = "https://d3fjxldyah6ziy.cloudfront.net/card_images/
 PuzzleCard.PUZZLE_VIDEOS_URI = "https://d3fjxldyah6ziy.cloudfront.net/puzzle_videos/{encoding}_{quality}_quality/{slug}.mp4",
 
 PuzzleCard.CARD_VIEWS_URI = "https://puzzlecards.github.io/card?tokenID={id}&referrer={referrer}";
-PuzzleCard.OPEN_SEA_URI = "https://opensea.io/assets/mumbai/{contract}/{id}";
+PuzzleCard.OPEN_SEA_URI = "https://opensea.io/assets/matic/{contract}/{id}";
 
 PuzzleCard.DECK_INDEXES_URI = "https://puzzlecards.github.io/decks/{address}.json";
 PuzzleCard.LAST_INDEXED_URI = PuzzleCard.DECK_INDEXES_URI.replace("{address}.json", "_last_indexed");
