@@ -53,7 +53,7 @@ contract PuzzleCard is ERC1155, Ownable, ContextMixin, NativeMetaTransaction {
     mapping(address => uint8) public maxTierUnlocked;
     mapping(uint256 => uint256) public limitedEditions;
     mapping(uint16 => uint8) public masterCopyClaimedAt;
-    uint256 public basePriceInWei = 5263157894736843; // $0.01
+    uint256 public basePriceInWei = 3904410000000000; // $0.01
 
     constructor(address proxyRegistryAddress) ERC1155("") {
         PROXY_REGISTRY_ADDRESS = proxyRegistryAddress;
