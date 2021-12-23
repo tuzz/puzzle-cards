@@ -27,6 +27,7 @@
   background-image: url("/images/felt_cloth.jpeg");
   background-repeat: repeat;
   background-size: 10rem;
+  padding: 3rem 0;
 }
 
 .card_fan {
@@ -93,7 +94,7 @@
   box-sizing: border-box;
 
   a {
-    margin: 0 3rem;
+    margin: 1rem 3rem;
 
     img {
       width: 2.8rem;
@@ -129,11 +130,5 @@
         font-size: 1.67rem;
       }
     }
-  }
-}
-
-@media only screen and (max-height: 950px) {
-  .table_edge {
-    display: none;
   }
 }
