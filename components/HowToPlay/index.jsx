@@ -403,11 +403,11 @@ const HowToPlay = () => {
       </section>
 
       <section>
-        <h2 id="optionalEndgame"><a href="#optionalEndgame">Optional Endgame (NFTs)</a></h2>
+        <h2 id="optionalEndgame"><a href="#optionalEndgame">Optional Endgame</a></h2>
         <p>
           If you are successful in promoting a card all the way to Master tier
           you will unlock special recipes that allow you to create Limited Edition
-          and Master Copy cards that can be traded on OpenSea as NFTs.
+          and Master Copy cards that can be traded on OpenSea.
         </p>
         <p>
           This endgame is completely optional and is for people who want to own a
@@ -492,7 +492,7 @@ const HowToPlay = () => {
           <p>
             Additionally, I am unable to mint arbitrary cards and have no control
             over those that belong to people. They are truly yours. I abide by the same
-            game rules as everyone else and have not pre-claimed any NFTs.
+            game rules as everyone else and have not pre-claimed any Master Copies.
           </p>
           <p>
             The contract is <a href="https://github.com/tuzz/puzzle-cards/tree/main/test" target="_blank">extensively tested</a> with a suite that takes ~an hour to run.

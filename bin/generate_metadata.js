@@ -180,7 +180,7 @@ const writeContractMetadata = () => {
       `'Worship the Sun' is an upcoming puzzle/platform game by [Chris Patuzzo](https://twitter.com/chrispatuzzo). These Puzzle Cards were created to celebrate all the intricately-designed puzzles and hand-drawn artwork from the game.`,
       `'Puzzle Cards' is an entirely separate card game that is based on the many unique mechanics from the video game. Cards are combined according to 'recipes'. [Click here](https://puzzlecards.github.io) to play the game.`,
       `Mint prices are kept low so that lots of people can play the game and glimpse some of the puzzles. Cards can be minted from just $0.01, rising to $1 at the highest tier.`,
-      `At the $1 tier you can obtain Limited Edition and Master Copy cards. This endgame is completely optional and is for people who want to own a significant piece of the video game itself. These cards are limited in supply (each Master Copy is an NFT) and they represent ownership over puzzles within the game. [(more info)](https://puzzlecards.github.io/how-to-play#optionalEndgame)`
+      `At the $1 tier you can obtain Limited Edition and Master Copy cards. This endgame is completely optional and is for people who want to own a significant piece of the video game itself. These cards are limited in supply and they represent ownership over puzzles within the game. [(more info)](https://puzzlecards.github.io/how-to-play#optionalEndgame)`
     ].join("\n\n"),
     image: "https://puzzlecards.github.io/spinning_sun.gif",
     external_link: "https://puzzlecards.github.io",
