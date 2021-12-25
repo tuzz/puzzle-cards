@@ -723,7 +723,6 @@ PuzzleCard.NUM_VARIANTS_PER_TYPE = [56, 6, 0, 2, 2, 2, 0, 0, 0, 8, 0, 0, 0, 2, 0
 PuzzleCard.VARIANT_OFFSET_PER_TYPE = [5, 61, 0, 1, 1, 1, 0, 0, 0, 67, 0, 0, 0, 3, 0, 0, 75];
 
 PuzzleCard.MINTING_CARDS_ENABLED = false;
-PuzzleCard.LAUNCH_DATE_AND_TIME = "Christmas Day at 6pm UTC"
 
 // The intention is that these prices remain fixed but the base price in Wei is
 // updated as the dollar/matic exchange rate changes over time.
