@@ -63,6 +63,9 @@ const addresses = [
   "0x9eaebaa809550d2ff7596fa59c22538e111cce8f",
   "0x77b669f2ced6b9b6cf2116e01e6d8eb173e1085e",
   "0xae99439c57be527089579a24b1cdbcc1fe354569",
+  "0xa4c56b6e747ad6efeec98fa0bb2f57ef90a54cbe",
+  "0x3bf319d7d6f6c21ae3f3ca76e379bbb1ccbfc3b4",
+  "0xfd0b889c1b6200796fe08b12b879e50d619640b0",
 ]
 
 main().then(() => process.exit(0)).catch(error => {
