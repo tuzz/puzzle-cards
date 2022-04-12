@@ -1,7 +1,7 @@
 name: update-index
 on:
   schedule:
-  - cron: '17 2/3 * * *'
+  - cron: '17 2 * * *'
 
 jobs:
   update-index:
